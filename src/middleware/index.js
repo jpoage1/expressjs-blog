@@ -24,7 +24,7 @@ function setupMiddleware(app) {
   app.use(morganError);
   app.use(loggingMiddleware);
   // app.use(helmet()); // Sets secure HTTP headers. Prevents common attacks.
-  app.use("/static", express.static("static"));
+  app.use("/static", express.static("public"));
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(routes);
   app.use(errorHandler);
