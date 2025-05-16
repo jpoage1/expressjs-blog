@@ -1,5 +1,9 @@
 # .gitignore: 
 static
+posts/*.md
+posts/*/*.md
+posts/*/*/*.md
+
 # macOS
 .DS_Store
 
