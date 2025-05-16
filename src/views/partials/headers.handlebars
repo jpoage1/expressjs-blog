@@ -1,1 +1,10 @@
-<header><nav>Site Navigation</nav></header>
+<header>
+  <div class="container">
+    <h1>{{siteOwner}}</h1>
+    <nav>
+      {{#each navLinks}}
+        <a href="{{this.href}}">{{this.label}}</a>
+      {{/each}}
+    </nav>
+  </div>
+</header>

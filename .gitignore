@@ -1,0 +1,65 @@
+# .gitignore: 
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Linux
+*~
+
+# Node.js
+node_modules/
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+venv/
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+target/
+
+# Build directories
+/dist/
+/build/
+/out/
+
+/ IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Log files
+*.log
+
+# Environment files
+.env
+
+# Miscellaneous
+*.bak
+*.tmp
+*.swp
+*.swo
+
+# Compiled binaries
+*.exe
+*.out
+*.app
+*.o
+*.a
+*.so
+
+# Docker
+*.docker/
+
+/ Coverage directories
+.coverage/

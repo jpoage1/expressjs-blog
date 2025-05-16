@@ -1,0 +1,15 @@
+{{#each years}}
+  <div class="menu-year">{{year}}</div>
+  <ul>
+    {{#each months}}
+      <li class="menu-month">
+        {{formatMonth month}}
+        <ul>
+          {{#each posts}}
+            <li><a href="/post/{{../../year}}/{{../month}}/{{slug}}">{{title}}</a></li>
+          {{/each}}
+        </ul>
+      </li>
+    {{/each}}
+  </ul>
+{{/each}}

@@ -1,16 +1,18 @@
+// src/app.js
 const express = require("express");
-const { engine: exphbs } = require("express-handlebars");
+const exphbs = require("express-handlebars");
 const setupMiddleware = require("./middleware");
+const { registerHelpers } = require("./utils/hbsHelpers");
 const app = express();
 
-app.engine(
-  "handlebars",
-  exphbs({
-    layoutsDir: "src/views/layouts",
-    partialsDir: "src/views/partials",
-    defaultLayout: "main",
-  })
-);
+const hbs = exphbs.create({
+  layoutsDir: "src/views/layouts",
+  partialsDir: "src/views/partials",
+  defaultLayout: "main",
+});
+registerHelpers(hbs);
+
+app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
 app.set("views", "./src/views");
 
