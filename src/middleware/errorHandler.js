@@ -1,4 +1,5 @@
 const path = require("path");
+const getBaseContext = require("../utils/baseContext");
 
 module.exports = async (err, req, res, next) => {
   const statusCode = err.statusCode ?? 500;
@@ -17,9 +18,12 @@ module.exports = async (err, req, res, next) => {
     console.error(err);
   }
 
-  res.status(statusCode).render("pages/error", {
-    statusCode,
+  const context = await getBaseContext({
+    title: statusCode === 404 ? "Not Found" : "Error",
     message,
-    content: "", // remove markdown HTML injection, keep content empty or static partial if needed
+    statusCode,
+    content: "",
   });
+
+  res.status(statusCode).render("pages/error", context);
 };

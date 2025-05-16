@@ -2,46 +2,63 @@
 const express = require("express");
 const router = express.Router();
 const { marked } = require("marked");
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
 const matter = require("gray-matter");
 
 const getBaseContext = require("../utils/baseContext");
-const getPostsMenu = require("../services/postsService");
-const { formatMonth } = require("../utils/formatMonth");
 
-router.get("/post/:year/:month/:name", (req, res) => {
+router.get("/post/:year/:month/:name", async (req, res, next) => {
   const { year, month, name } = req.params;
+
+  // Validate year: 4 digits only
+  if (!/^\d{4}$/.test(year)) {
+    const error = new Error("Invalid year parameter.");
+    error.statusCode = 400;
+    return next(error);
+  }
+
+  // Validate month: 01-12 only
+  if (!/^(0[1-9]|1[0-2])$/.test(month)) {
+    const error = new Error("Invalid month parameter.");
+    error.statusCode = 400;
+    return next(error);
+  }
+
+  // Validate name: allow alphanumeric, dash, underscore only (no dots, no slashes)
+  if (!/^[a-zA-Z0-9_-]+$/.test(name)) {
+    const error = new Error("Invalid post name parameter.");
+    error.statusCode = 400;
+    return next(error);
+  }
+
   const mdPath = path.join(__dirname, "../../posts", year, month, `${name}.md`);
 
-  fs.readFile(mdPath, "utf8", async (err, fileContent) => {
-    if (err) return res.status(404).send("Post not found");
-
-    const menu = await getPostsMenu(path.join(__dirname, "../../posts"));
+  try {
+    const fileContent = await fs.readFile(mdPath, "utf8");
     const { data: frontmatter, content } = matter(fileContent);
     const htmlContent = marked(content);
-    const context = getBaseContext({
+    const context = await getBaseContext({
       title: frontmatter.title,
       date: frontmatter.date,
       author: frontmatter.author,
       content: htmlContent,
-      years: menu, // pass the built menu here
-      formatMonth, // pass formatter to template
     });
     res.render("pages/post", context);
-  });
+  } catch (err) {
+    const error = new Error("The requested blog post could not be found.");
+    error.statusCode = 404;
+    next(error);
+  }
 });
 
 router.get("/", async (req, res) => {
-  const menu = await getPostsMenu(path.join(__dirname, "../../posts"));
-
   const context = getBaseContext({
     title: "Blog Home",
     content: "Welcome to the blog.",
-    years: menu, // pass the built menu here
-    formatMonth, // pass formatter to template
   });
 
   res.render("pages/home", context);
 });
+
 module.exports = router;
