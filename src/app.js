@@ -4,6 +4,7 @@ const exphbs = require("express-handlebars");
 const setupMiddleware = require("./middleware");
 const { registerHelpers } = require("./utils/hbsHelpers");
 const app = express();
+const path = require("path");
 
 const hbs = exphbs.create({
   layoutsDir: "src/views/layouts",

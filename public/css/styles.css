@@ -60,6 +60,13 @@ header nav a:focus {
   background-color: #34495e;
 }
 
+footer {
+  background: #f0f0f0;
+  padding: 1rem 0;
+  text-align: center;
+  border-top: 1px solid #ccc;
+}
+
 /* Layout */
 .layout {
   display: flex;

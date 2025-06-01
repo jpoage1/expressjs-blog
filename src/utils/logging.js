@@ -9,6 +9,7 @@ const projectRoot = path.join(__dirname, "..", "..");
 
 // Define log file paths
 const logFiles = {
+  session: path.join(logDir, "session.log"),
   info: path.join(logDir, "info", "info.log"),
   notice: path.join(logDir, "notice", "notice.log"),
   error: path.join(logDir, "error", "error.log"),
@@ -29,8 +30,11 @@ if (!fs.existsSync(functionsLogDir)) {
   fs.mkdirSync(functionsLogDir, { recursive: true });
 }
 
+const originalConsole = { ...console };
+
 // Create write streams
 const logStreams = {
+  session: fs.createWriteStream(logFiles.session, { flags: "a" }),
   info: fs.createWriteStream(logFiles.info, { flags: "a" }),
   notice: fs.createWriteStream(logFiles.notice, { flags: "a" }),
   error: fs.createWriteStream(logFiles.error, { flags: "a" }),
@@ -72,47 +76,41 @@ const functionLog = (functionName, ...args) => {
   //console.log(`[${functionName}]`, ...args)
 };
 
+// Generic log writer
+function writeLog(level, stream, consoleFn, ...args) {
+  const message = args.join(" ") + "\n";
+  stream.write(message);
+  logStreams.session.write(`[${level}] ${message}`);
+  consoleFn(`[${level}]`, ...args);
+}
+
+function patchConsole() {
+  console.log = (...args) =>
+    writeLog("INFO", logStreams.info, originalConsole.log, ...args);
+  console.error = (...args) =>
+    writeLog("ERROR", logStreams.error, originalConsole.error, ...args);
+  console.warn = (...args) =>
+    writeLog("WARN", logStreams.warn, originalConsole.warn, ...args);
+  console.info = (...args) =>
+    writeLog("INFO", logStreams.info, originalConsole.info, ...args);
+  console.debug = (...args) =>
+    writeLog("DEBUG", logStreams.debug, originalConsole.debug, ...args);
+}
+
 // Exported logger object
 const logger = {
   streams: logStreams,
   function: functionLog,
-  info: (...args) => {
-    const message = args.join(" ") + "\n";
-    logger.streams.info.write(message);
-    console.log("[INFO]", ...args);
-  },
-  function: functionLog,
-  notice: (...args) => {
-    const message = args.join(" ") + "\n";
-    logger.streams.notice.write(message);
-    console.log("[NOTICE]", ...args);
-  },
-  warn: (...args) => {
-    const message = args.join(" ") + "\n";
-    logger.streams.warn.write(message);
-    console.warn("[WARN]", ...args);
-  },
-  error: (...args) => {
-    const message = args.join(" ") + "\n";
-    logger.streams.error.write(message);
-    console.error("[ERROR]", ...args);
-  },
-  debug: (message, ...args) => {
-    let logMessage = message;
-    // If the first argument is an object, use util.inspect to handle circular structures
-    if (args.length > 0 && typeof args[0] === "object") {
-      logMessage +=
-        "\n" +
-        util.inspect(args[0], { showHidden: false, depth: null, colors: true });
-    } else {
-      logMessage += " " + args.join(" ");
-    }
-
-    // Write to file (debug log file)
-    logger.streams.debug.write(logMessage + "\n");
-
-    // Log to the console (with [DEBUG] prefix)
-    console.log("[DEBUG]", logMessage);
-  },
+  info: (...args) => writeLog("INFO", logStreams.info, console.log, ...args),
+  notice: (...args) =>
+    writeLog("NOTICE", logStreams.notice, console.log, ...args),
+  warn: (...args) => writeLog("WARN", logStreams.warn, console.warn, ...args),
+  error: (...args) =>
+    writeLog("ERROR", logStreams.error, console.error, ...args),
+  debug: (...args) =>
+    writeLog("DEBUG", logStreams.debug, console.debug, ...args),
 };
+if (process.env.NODE_ENV !== "production") {
+  patchConsole();
+}
 module.exports = logger;

@@ -27,6 +27,11 @@ function setupMiddleware(app) {
   app.use("/static", express.static("public"));
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(routes);
+  app.use((req, res, next) => {
+    const err = new Error("Not Found");
+    err.statusCode = 404;
+    next(err);
+  });
   app.use(errorHandler);
 }
 

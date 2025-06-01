@@ -18,3 +18,4 @@ This is a sample blog post written in **Markdown**.
 
 ```js
 console.log("Hello, world!");
+```

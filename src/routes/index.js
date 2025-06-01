@@ -53,12 +53,12 @@ router.get("/post/:year/:month/:name", async (req, res, next) => {
 });
 
 router.get("/", async (req, res) => {
-  const context = getBaseContext({
+  const context = await getBaseContext({
     title: "Blog Home",
     content: "Welcome to the blog.",
   });
 
-  res.render("pages/home", context);
+  res.render("pages/home.handlebars", context);
 });
 
 module.exports = router;
