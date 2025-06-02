@@ -35,3 +35,11 @@ setupMiddleware(app);
 app.listen(3400, () => {
   console.log("Server listening on http://localhost:3400");
 });
+// Global error handlers for uncaught exceptions and rejections
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled Rejection:", reason);
+});

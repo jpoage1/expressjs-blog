@@ -9,7 +9,7 @@ const contact = require("./contact");
 
 const getBaseContext = require("../utils/baseContext");
 
-router.use("/contact", contact);
+router.use(contact);
 router.get("/post/:year/:month/:name", async (req, res, next) => {
   const { year, month, name } = req.params;
 
