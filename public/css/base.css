@@ -1,0 +1,16 @@
+/* Base styles */
+html, body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  color: #212529;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* Container utility */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+}
+

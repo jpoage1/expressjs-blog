@@ -1,15 +1,18 @@
+{{!-- partials/postsMenu.handlebars --}}
 {{#each years}}
-  <div class="menu-year">{{year}}</div>
-  <ul>
-    {{#each months}}
-      <li class="menu-month">
-        {{formatMonth month}}
-        <ul>
-          {{#each posts}}
-            <li><a href="/post/{{../../year}}/{{../month}}/{{slug}}">{{title}}</a></li>
-          {{/each}}
-        </ul>
-      </li>
-    {{/each}}
-  </ul>
+  <section class="year-block">
+    <h3 class="menu-year">{{year}}</h3>
+    <ul class="months-list">
+      {{#each months}}
+        <li class="menu-month">
+          <h4>{{formatMonth month}}</h4>
+          <ul class="posts-list">
+            {{#each posts}}
+              <li><a href="/post/{{../../year}}/{{../month}}/{{slug}}">{{title}}</a></li>
+            {{/each}}
+          </ul>
+        </li>
+      {{/each}}
+    </ul>
+  </section>
 {{/each}}
