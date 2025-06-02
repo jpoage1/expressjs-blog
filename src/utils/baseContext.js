@@ -8,6 +8,7 @@ async function getBaseContext(overrides = {}) {
   return Object.assign(
     {
       siteOwner: process.env.SITE_OWNER,
+      originCountry: process.env.COUNTRY,
       navLinks: [
         { href: "/", label: "Home" },
         { href: "/about", label: "About" },
