@@ -20,7 +20,7 @@ label {
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1rem;
-  flex-wrap: no-wrap;
+  flex-wrap: nowrap;
 }
 .form-group input,
 .form-group textarea {
@@ -32,6 +32,27 @@ label {
   resize: vertical;
   flex: 1 1 auto;
   min-width: 200px;
+}
+.form-group.message-group textarea {
+  flex: 1 1 auto;
+  min-width: 250px;
+  min-height: 120px;
+  resize: vertical;
+}
+.form-group.message-group {
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.form-group.message-group label {
+  margin-right: 0;
+  margin-bottom: 0.25rem;
+  margin-top: 0.5em;
+  text-align: right;
+  align-self: flex-start;
+  width: auto;
+  flex: 0 0 120px;
 }
 
 button {
@@ -47,11 +68,13 @@ button {
 button:hover {
   background-color: #005fa3;
 }
+/*
 label {
   flex: 0 0 120px;
   font-weight: 600;
   text-align: right;
 }
+*/
 label.required::after {
   content: " *";
   color: #d33;
