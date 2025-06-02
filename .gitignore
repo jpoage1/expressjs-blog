@@ -35,6 +35,7 @@ target/
 /dist/
 /build/
 /out/
+/static/
 
 / IDEs and Editors
 .vscode/
