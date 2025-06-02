@@ -32,8 +32,10 @@ app.set("views", "./src/views");
 
 setupMiddleware(app);
 
-app.listen(3400, () => {
-  console.log("Server listening on http://localhost:3400");
+port = process.env.PORT || 3400
+
+app.listen(port, () => {
+  console.log(`Server listening on http://localhost:${port}`);
 });
 // Global error handlers for uncaught exceptions and rejections
 process.on("uncaughtException", (err) => {
