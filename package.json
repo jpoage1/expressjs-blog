@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon ./src/app.js --trace-exit",
-    "maildev": "maildev"
+    "maildev": "maildev",
+    "dev": "./node_modules/pm2/bin/pm2 start",
+    "prod": "./node_modules/pm2/bin/pm2 start --env production"
   },
   "keywords": [],
   "author": "",
@@ -28,5 +30,8 @@
     "nodemailer": "^7.0.3",
     "nodemon": "^3.1.10",
     "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "pm2": "^6.0.6"
   }
 }
