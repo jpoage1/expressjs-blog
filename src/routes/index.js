@@ -6,10 +6,12 @@ const fs = require("fs").promises;
 const path = require("path");
 const matter = require("gray-matter");
 const contact = require("./contact");
+const about = require("./about");
 
 const getBaseContext = require("../utils/baseContext");
 
 router.use(contact);
+router.use(about);
 router.get("/post/:year/:month/:name", async (req, res, next) => {
   const { year, month, name } = req.params;
 
