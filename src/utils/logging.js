@@ -78,12 +78,13 @@ const functionLog = (functionName, ...args) => {
 
 // Generic log writer
 function writeLog(level, stream, consoleFn, ...args) {
-  const message = args.join(" ") + "\n";
-  stream.write(message);
-  logStreams.session.write(`[${level}] ${message}`);
-  consoleFn(`[${level}]`, ...args);
+  const timestamp = new Date().toISOString();
+  const message = args.join(" ");
+  const logLine = `[${timestamp}] [${level}] ${message}\n`;
+  stream.write(logLine);
+  logStreams.session.write(logLine);
+  consoleFn(`[${timestamp}] [${level}]`, ...args);
 }
-
 function patchConsole() {
   console.log = (...args) =>
     writeLog("INFO", logStreams.info, originalConsole.log, ...args);

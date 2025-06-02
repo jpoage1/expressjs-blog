@@ -5,9 +5,11 @@ const { marked } = require("marked");
 const fs = require("fs").promises;
 const path = require("path");
 const matter = require("gray-matter");
+const contact = require("./contact");
 
 const getBaseContext = require("../utils/baseContext");
 
+router.use("/contact", contact);
 router.get("/post/:year/:month/:name", async (req, res, next) => {
   const { year, month, name } = req.params;
 
@@ -51,7 +53,6 @@ router.get("/post/:year/:month/:name", async (req, res, next) => {
     next(error);
   }
 });
-
 router.get("/", async (req, res) => {
   const context = await getBaseContext({
     title: "Blog Home",

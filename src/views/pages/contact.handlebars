@@ -1,0 +1,18 @@
+{{#section "styles"}}
+<link rel="stylesheet" href="/static/css/contact.css" />
+{{/section}}
+<section>
+  <h2>{{title}}</h2>
+  <form action="/contact" method="POST">
+    <label for="name">Name</label><br />
+    <input id="name" name="name" required /><br />
+
+    <label for="email">Email</label><br />
+    <input id="email" name="email" type="email" required /><br />
+
+    <label for="message">Message</label><br />
+    <textarea id="message" name="message" rows="5" required></textarea><br />
+
+    <button type="submit">Send</button>
+  </form>
+</section>

@@ -7,6 +7,7 @@ const compression = require("compression");
 const helmet = require("helmet");
 
 const routes = require("../routes");
+const formatHtml = require("./formatHtml");
 
 const {
   loggingMiddleware,
@@ -26,6 +27,7 @@ function setupMiddleware(app) {
   // app.use(helmet()); // Sets secure HTTP headers. Prevents common attacks.
   app.use("/static", express.static("public"));
   app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(formatHtml);
   app.use(routes);
   app.use((req, res, next) => {
     const err = new Error("Not Found");

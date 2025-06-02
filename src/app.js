@@ -1,6 +1,7 @@
 // src/app.js
 const express = require("express");
 const exphbs = require("express-handlebars");
+require("dotenv").config();
 const setupMiddleware = require("./middleware");
 const { registerHelpers } = require("./utils/hbsHelpers");
 const app = express();
@@ -10,7 +11,19 @@ const hbs = exphbs.create({
   layoutsDir: "src/views/layouts",
   partialsDir: "src/views/partials",
   defaultLayout: "main",
+  helpers: {
+    section: function (name, options) {
+      if (!this._sections) this._sections = {};
+      this._sections[name] = options.fn(this);
+      return null;
+    },
+  },
+  runtimeOptions: {
+    allowProtoPropertiesByDefault: true,
+    allowProtoMethodsByDefault: true,
+  },
 });
+
 registerHelpers(hbs);
 
 app.engine("handlebars", hbs.engine);
