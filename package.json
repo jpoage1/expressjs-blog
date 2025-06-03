@@ -8,7 +8,8 @@
     "start": "nodemon ./src/app.js --trace-exit",
     "maildev": "maildev",
     "dev": "./node_modules/pm2/bin/pm2 start --env development --watch",
-    "prod": "./node_modules/pm2/bin/pm2 start --env production"
+    "prod": "./node_modules/pm2/bin/pm2 start --env production",
+    "stop": "node_modules/pm2/bin/pm2 stop expressjs-blog"
   },
   "keywords": [],
   "author": "",

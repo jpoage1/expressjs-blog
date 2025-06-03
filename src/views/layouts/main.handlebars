@@ -1,24 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="/static/css/styles.css" rel="stylesheet" type="text/css" />
-    {{{_sections.styles}}}
-    <title>{{title}}</title>
-  </head>
-  <body>
-    {{> headers}}
-    <div class="layout">
-      <aside class="sidebar">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="/static/css/styles.css" rel="stylesheet" type="text/css" />
+  {{{_sections.styles}}}
+  <title>{{title}}</title>
+</head>
+
+<body>
+  {{> headers}}
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
         {{> postsMenu }}
-      </aside>
+      </nav>
+    </aside>
     <main class="container">
       {{{body}}}
     </main>
-    </div>
-    <footer>
-      {{> footer}}
-    </footer>
-  </body>
+  </div>
+  <footer>
+    {{> footer}}
+  </footer>
+</body>
+
 </html>

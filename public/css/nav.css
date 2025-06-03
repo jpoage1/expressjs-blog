@@ -1,5 +1,7 @@
-nav a {
-  text-transform: capitalize;
+.sidebar h3.menu-year,
+.sidebar h4,
+.sidebar a {
+  text-transform: capitalize !important;
 }
 /* Navigation adjustments for small screens */
 @media (max-width: 600px) {
