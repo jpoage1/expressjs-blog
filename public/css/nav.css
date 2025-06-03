@@ -1,4 +1,7 @@
 /* Navigation adjustments for small screens */
+nav a {
+  text-transform: capitalize;
+}
 @media (max-width: 600px) {
   nav {
     width: 100%;
