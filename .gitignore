@@ -3,6 +3,7 @@ static
 posts/*.md
 posts/*/*.md
 posts/*/*/*.md
+pids
 
 # macOS
 .DS_Store
