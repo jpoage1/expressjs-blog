@@ -1,7 +1,7 @@
-/* Navigation adjustments for small screens */
 nav a {
   text-transform: capitalize;
 }
+/* Navigation adjustments for small screens */
 @media (max-width: 600px) {
   nav {
     width: 100%;
