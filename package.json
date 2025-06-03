@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon ./src/app.js --trace-exit",
     "maildev": "maildev",
-    "dev": "./node_modules/pm2/bin/pm2 start",
+    "dev": "./node_modules/pm2/bin/pm2 start --env development --watch",
     "prod": "./node_modules/pm2/bin/pm2 start --env production"
   },
   "keywords": [],

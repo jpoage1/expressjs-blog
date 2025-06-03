@@ -2,7 +2,6 @@ module.exports = {
   apps: [{
     name: "expressjs-blog",
     script: "./src/app.js",
-    watch: true,
     instances: 1, // or "max" for cluster mode
     exec_mode: "fork", // or "cluster"
     env: {
