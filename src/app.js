@@ -18,6 +18,8 @@ const hbs = exphbs.create({
       return null;
     },
   },
+  defaultLayout: "main",
+  extname: ".handlebars",
   runtimeOptions: {
     allowProtoPropertiesByDefault: true,
     allowProtoMethodsByDefault: true,
