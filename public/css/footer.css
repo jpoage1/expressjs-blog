@@ -45,19 +45,17 @@ footer img:hover {
   opacity: 1;
 }
 
-
-footer p:last-of-type {
-  margin-top: 1rem;
-}
-
-footer p:last-of-type a {
-  font-size: 1rem;
-  font-weight: 600;
-}
-
 footer nav {
   margin-top: 0;
   margin-bottom: 0;
+  /* Make the nav a flex container to arrange its children horizontally */
+  display: flex;
+  /* Space out the items evenly */
+  gap: 1.5rem; /* Adjust this value to control spacing between links */
+  /* If you want them centered within the nav */
+  justify-content: center;
+  /* Allow items to wrap to the next line on smaller screens */
+  flex-wrap: wrap;
 }
 
 footer nav p {
