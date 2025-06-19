@@ -1,7 +1,104 @@
 footer {
-  background: #f0f0f0;
-  padding: 1rem 0;
+  background-color: #34495e;
+  color: #ecf0f1;
+  padding: 2rem 0;
   text-align: center;
-  border-top: 1px solid #ccc;
+  border-top: none;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+  font-size: 0.9rem;
 }
 
+footer .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+footer p {
+  font-size: 0.85rem;
+  color: #bdc3c7;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 600px;
+}
+
+footer p a {
+  color: #9bd3ff;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+footer p a:hover {
+  color: #ecf0f1;
+  text-decoration: underline;
+}
+
+footer img {
+  vertical-align: middle;
+  margin-left: 0.5rem;
+  opacity: 0.8;
+  transition: opacity 0.2s ease-in-out;
+}
+
+footer img:hover {
+  opacity: 1;
+}
+
+
+footer p:last-of-type {
+  margin-top: 1rem;
+}
+
+footer p:last-of-type a {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+footer nav {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+footer nav p {
+  margin: 0;
+
+}
+
+footer .social-contact {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+footer .social-contact p {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+footer .social-contact p img,
+footer .social-contact p svg {
+  vertical-align: middle;
+  margin: 0 0.25rem;
+  width: 24px;
+  height: 24px;
+  opacity: 0.9;
+  transition: opacity 0.2s ease-in-out;
+}
+
+footer .social-contact p img:hover,
+footer .social-contact p svg:hover {
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  footer .container {
+    padding: 1.5rem;
+  }
+  footer p {
+    font-size: 0.8rem;
+  }
+}

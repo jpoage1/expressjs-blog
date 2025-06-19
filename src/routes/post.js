@@ -1,6 +1,4 @@
-// src/routes/index.js
-const express = require("express");
-const router = express.Router();
+// src/routes/post.js
 const { marked } = require("marked");
 const fs = require("fs").promises;
 const path = require("path");
@@ -32,7 +30,13 @@ module.exports = async (req, res, next) => {
     return next(error);
   }
 
-  const mdPath = path.join(__dirname, "../../posts", year, month, `${name}.md`);
+  const mdPath = path.join(
+    __dirname,
+    "../../content/posts",
+    year,
+    month,
+    `${name}.md`
+  );
 
   try {
     const fileContent = await fs.readFile(mdPath, "utf8");

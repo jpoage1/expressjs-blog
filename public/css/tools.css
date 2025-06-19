@@ -1,0 +1,324 @@
+/* --- Page Content Container --- */
+.page-content {
+    max-width: 900px;
+    margin: 0; /* Remove auto centering as it's likely within a broader flex/grid layout */
+    padding: 3rem 2.5rem;
+    line-height: 1.7;
+    color: #2d3748;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+    position: relative;
+    overflow: hidden; /* Ensures content doesn't break rounded corners */
+}
+
+/* --- Gradient Border Top --- */
+.page-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px 12px 0 0;
+}
+
+/* --- Main Page Title (H1) --- */
+.page-content h1 {
+    font-size: 3.2rem;
+    color: #1a202c; /* Fallback color */
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    text-align: center;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    padding-bottom: 1.5rem;
+    border-bottom: 3px solid #e2e8f0;
+    margin-bottom: 2.5rem;
+}
+
+/* --- Section Headings (H2) --- */
+.page-content h2 {
+    font-size: 1.9rem;
+    color: #2d3748;
+    margin-top: 3.5rem;
+    margin-bottom: 1.2rem;
+    line-height: 1.3;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    position: relative;
+    padding-left: 1rem;
+}
+
+/* --- H2 Left Border/Accent --- */
+.page-content h2::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.2em;
+    width: 4px;
+    height: 1.2em;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 2px;
+}
+
+/* --- Paragraphs --- */
+.page-content p {
+    font-size: 1.125rem;
+    margin-bottom: 1.5rem;
+    color: #4a5568;
+    text-align: justify;
+    hyphens: auto;
+}
+
+/* --- Paragraphs immediately following H2 --- */
+.page-content h2 + p {
+    font-size: 1.2rem;
+    color: #2d3748;
+    font-weight: 500;
+    margin-bottom: 2rem;
+}
+
+/* --- List Styling (Main Level) --- */
+.page-content ul {
+    list-style: none; /* Remove default bullets */
+    margin-left: 0;
+    padding-left: 0;
+    margin-bottom: 2rem;
+}
+
+/* Apply box styling ONLY to direct children LI of ul (top-level list items) */
+.page-content ul > li {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem 1.5rem 1.5rem 3rem; /* Spacing inside the box */
+    position: relative;
+    background-color: #f8fafc; /* The 'round box' background */
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: block; /* Ensures proper block behavior */
+    line-height: 1.6;
+    color: #4a5568;
+    font-size: 1.1rem;
+}
+
+.page-content ul > li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Custom bullet points for main list items */
+.page-content ul > li::before {
+    content: '▸';
+    position: absolute;
+    left: 1rem;
+    top: 1.5rem;
+    color: #667eea;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* --- Nested List Styling --- */
+/* Targets any ul that is inside another ul (e.g., the System Concepts list) */
+.page-content ul ul {
+    list-style: disc; /* Use default disc bullets for nested lists */
+    margin-top: 1rem; /* Space above the nested list */
+    margin-bottom: 0.5rem;
+    margin-left: 2rem; /* Indent the nested list */
+    padding-left: 0; /* Keep custom bullet formatting easier if you change list-style */
+}
+
+/* Styles for items within nested lists */
+.page-content ul ul li {
+    background-color: transparent; /* Remove the box background */
+    border-left: none; /* Remove the left border */
+    box-shadow: none; /* Remove the shadow */
+    padding: 0.2rem 0; /* Simpler padding for nested items */
+    margin-bottom: 0.3rem; /* Closer spacing for nested items */
+    font-size: 1rem; /* Slightly smaller font for nested items */
+    color: #2d3748; /* Adjust color for nested items */
+    line-height: 1.5; /* Adjust line height for nested items */
+    position: static; /* Remove absolute positioning if not needed for custom bullets */
+}
+
+/* Remove ::before for nested list items if default bullets are used */
+.page-content ul ul li::before {
+    content: none;
+}
+
+
+/* --- Horizontal Rule (Separator) --- */
+.page-content hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, #cbd5e0 20%, #cbd5e0 80%, transparent 100%);
+    margin: 3.5rem 0;
+    position: relative;
+}
+
+/* --- HR Center Icon --- */
+.page-content hr::after {
+    content: '✦';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    color: #667eea;
+    padding: 0 1rem;
+    font-size: 1.2rem;
+}
+
+/* --- Strong (Bold) Text --- */
+.page-content strong {
+    font-weight: 700;
+    color: #4a5568; /* Ensures bold text is readable and consistent */
+}
+
+/* --- Standard Links --- */
+.page-content a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+/* --- Link Hover Underline Effect --- */
+.page-content a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.3s ease;
+}
+
+.page-content a:hover {
+    color: #764ba2;
+}
+
+.page-content a:hover::after {
+    width: 100%;
+}
+
+/* --- Social Media Links Special Styling (Buttons) --- */
+/* This rule needs to be applied carefully. It's currently styling ALL <a> tags
+   inside ul li, which might include links within your tool descriptions.
+   If these are only for specific social media links, consider a more specific class. */
+.page-content ul li a {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-right: 0.5rem;
+    /* This overrides the standard link underline, which is likely desired here */
+}
+
+.page-content ul li a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    color: white; /* Ensure text stays white on hover for buttons */
+}
+
+.page-content ul li a::after {
+    display: none; /* Remove the standard underline effect for these buttons */
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 900px) {
+    .page-content {
+        padding: 2rem 1.5rem;
+        margin: 0 1rem;
+        border-radius: 8px;
+    }
+    
+    .page-content h1 {
+        font-size: 2.5rem;
+    }
+    
+    .page-content h2 {
+        font-size: 1.6rem;
+        margin-top: 2.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .page-content {
+        padding: 1.5rem 1rem;
+        margin: 0 0.5rem;
+        border-radius: 6px;
+    }
+    
+    .page-content h1 {
+        font-size: 2rem;
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .page-content h2 {
+        font-size: 1.4rem;
+        margin-top: 2rem;
+    }
+    
+    .page-content p {
+        font-size: 1rem;
+        text-align: left; /* Adjust for better readability on small screens */
+    }
+    
+    .page-content ul > li { /* Target main list items */
+        padding: 1rem 1rem 1rem 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .page-content ul > li::before { /* Adjust bullet position for smaller padding */
+        top: 1rem;
+        left: 0.8rem;
+    }
+
+    .page-content hr {
+        margin: 2.5rem 0;
+    }
+
+    /* Nested list items on small screens */
+    .page-content ul ul {
+        margin-left: 1.5rem; /* Adjust nested indent */
+    }
+    .page-content ul ul li {
+        font-size: 0.95rem; /* Slightly smaller for hierarchy */
+    }
+}
+
+@media (max-width: 480px) {
+    .page-content {
+        padding: 1rem 0.8rem;
+    }
+    
+    .page-content h1 {
+        font-size: 1.8rem;
+    }
+    
+    .page-content h2 {
+        font-size: 1.3rem;
+    }
+    
+    .page-content ul li a { /* This special link styling might need a class */
+        display: block;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+}
