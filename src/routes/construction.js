@@ -23,12 +23,16 @@ const path = require("path");
 const matter = require("gray-matter");
 const { marked } = require("marked");
 
-const page = async (routePath, pageFile) => {
+const page = async (
+  routePath,
+  markdownFile = "page",
+  handlebarsFile = "page"
+) => {
   router.get(routePath, async (req, res, next) => {
     try {
       const filePath = path.join(
         __dirname,
-        `../../content/pages/${pageFile}.md`
+        `../../content/pages/${markdownFile}.md`
       );
       const fileContent = await fs.readFile(filePath, "utf8");
       const { data: frontmatter, content } = matter(fileContent);
@@ -39,7 +43,7 @@ const page = async (routePath, pageFile) => {
         content: htmlContent,
       });
 
-      res.render(`pages/${pageFile}`, context);
+      res.render(`pages/${handlebarsFile}`, context);
     } catch (err) {
       err.statusCode = 500;
       next(err);
@@ -54,7 +58,7 @@ construction("/rss-feed.xml", "RSS Feed");
 construction("/tags", "Tags");
 construction("/blog", "Blog");
 
-page("/projects", "projects", "Projects");
-page("/tools", "tools", "Tools");
+page("/projects", "projects");
+page("/tools", "tools", "tools");
 
 module.exports = router;
