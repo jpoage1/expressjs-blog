@@ -1,0 +1,281 @@
+
+.page-content {
+    max-width: 900px;
+    margin: 0; /* Remove auto centering since it's already in a flex container */
+    padding: 3rem 2.5rem;
+    line-height: 1.7;
+    color: #2d3748;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+    position: relative;
+}
+
+.page-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px 12px 0 0;
+}
+
+.page-content h1 {
+    font-size: 3.2rem;
+    color: #1a202c;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    text-align: center;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    padding-bottom: 1.5rem;
+    border-bottom: 3px solid #e2e8f0;
+    margin-bottom: 2.5rem;
+}
+
+.page-content h2 {
+    font-size: 1.9rem;
+    color: #2d3748;
+    margin-top: 3.5rem;
+    margin-bottom: 1.2rem;
+    line-height: 1.3;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    position: relative;
+    padding-left: 1rem;
+}
+
+.page-content h2::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.2em;
+    width: 4px;
+    height: 1.2em;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 2px;
+}
+
+.page-content p {
+    font-size: 1.125rem;
+    margin-bottom: 1.5rem;
+    color: #4a5568;
+    text-align: justify;
+    hyphens: auto;
+}
+
+.page-content h2 + p {
+    font-size: 1.2rem;
+    color: #2d3748;
+    font-weight: 500;
+    margin-bottom: 2rem;
+}
+
+
+.page-content ul {
+    list-style: none;
+    margin-left: 0;
+    padding-left: 0;
+    margin-bottom: 2rem;
+    space-y: 1rem;
+}
+
+.page-content ul li {
+    margin-bottom: 1.5rem;
+    padding-left: 2rem;
+    position: relative;
+    background-color: #f8fafc;
+    padding: 1.5rem 1.5rem 1.5rem 3rem;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.page-content ul li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.page-content ul li::before {
+    content: '▸';
+    position: absolute;
+    left: 1rem;
+    top: 1.5rem;
+    color: #667eea;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.page-content ul li p {
+    margin-bottom: 0.8rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.page-content ul li p:last-child {
+    margin-bottom: 0;
+}
+
+.page-content hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, #cbd5e0 20%, #cbd5e0 80%, transparent 100%);
+    margin: 3.5rem 0;
+    position: relative;
+}
+
+.page-content hr::after {
+    content: '✦';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    color: #667eea;
+    padding: 0 1rem;
+    font-size: 1.2rem;
+}
+
+.page-content strong {
+    font-weight: 700;
+    /* color: #2d3748; */
+    color: #4a5568;
+    /* background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); */
+    /* padding: 0.1em 0.3em; */
+    border-radius: 4px;
+}
+
+.page-content strong {
+    font-weight: 700; /* Keeps it bold */
+     /* Slightly darker than regular paragraph text for subtle emphasis */
+    /* Removed background, padding, and border-radius */
+}
+
+.page-content a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.page-content a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.3s ease;
+}
+
+.page-content a:hover {
+    color: #764ba2;
+}
+
+.page-content a:hover::after {
+    width: 100%;
+}
+
+/* Social media links special styling */
+.page-content ul li a {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-right: 0.5rem;
+}
+
+.page-content ul li a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+.page-content ul li a::after {
+    display: none; /* Remove the underline effect for these buttons */
+}
+
+@media (max-width: 900px) {
+    .page-content {
+        padding: 2rem 1.5rem;
+        margin: 0 1rem;
+        border-radius: 8px;
+    }
+    
+    .page-content h1 {
+        font-size: 2.5rem;
+    }
+    
+    .page-content h2 {
+        font-size: 1.6rem;
+        margin-top: 2.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .page-content {
+        padding: 1.5rem 1rem;
+        margin: 0 0.5rem;
+        border-radius: 6px;
+    }
+    
+    .page-content h1 {
+        font-size: 2rem;
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .page-content h2 {
+        font-size: 1.4rem;
+        margin-top: 2rem;
+    }
+    
+    .page-content p {
+        font-size: 1rem;
+        text-align: left;
+    }
+    
+    .page-content ul li {
+        padding: 1rem 1rem 1rem 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .page-content hr {
+        margin: 2.5rem 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-content {
+        padding: 1rem 0.8rem;
+    }
+    
+    .page-content h1 {
+        font-size: 1.8rem;
+    }
+    
+    .page-content h2 {
+        font-size: 1.3rem;
+    }
+    
+    .page-content ul li a {
+        display: block;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+}

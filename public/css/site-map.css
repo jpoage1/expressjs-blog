@@ -1,0 +1,53 @@
+/* Sitemap base styling */
+nav.sitemap {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem 2rem;
+  font-family: sans-serif;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+nav.sitemap h1 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #333;
+}
+
+/* Top-level list */
+nav.sitemap ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+nav.sitemap li {
+  margin: 0.5rem 0;
+  position: relative;
+}
+
+/* Links */
+nav.sitemap a {
+  text-decoration: none;
+  color: #007acc;
+  font-weight: 500;
+}
+
+nav.sitemap a:hover {
+  text-decoration: underline;
+}
+
+/* Nested lists */
+nav.sitemap li > ul {
+  margin-top: 0.3rem;
+  margin-left: 1.5rem;
+  padding-left: 1rem;
+  border-left: 2px solid #ddd;
+}
+
+nav.sitemap li > ul li::before {
+  content: "→ ";
+  color: #999;
+}

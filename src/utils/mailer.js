@@ -17,13 +17,13 @@ const transporter = nodemailer.createTransport({
   auth,
 });
 
-function sendContactMail({ name, email, message }) {
+function sendContactMail({ name, email, subject, message }) {
   const { DOMAIN: domain } = process.env;
   const data = {
     from: `"Contact Form" <no-reply@${domain}>`,
     to: process.env.MAIL_USER,
     replyTo: `"${name}" <${email}>`,
-    subject: "New Contact Form Submission",
+    subject: subject || "New Contact Form Submission",
     text: message,
   };
   console.log(data);

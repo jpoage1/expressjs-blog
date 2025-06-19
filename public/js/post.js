@@ -1,3 +1,5 @@
+// static/js/post.js
+
 // Syntax Highlighting with Prism.js (include Prism CSS/JS separately)
 // Automatically highlight all <pre><code> blocks
 document.querySelectorAll("pre code").forEach((block) => {

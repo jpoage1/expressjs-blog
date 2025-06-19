@@ -4,7 +4,7 @@ const getPostsMenu = require("../services/postsService");
 const { formatMonth } = require("../utils/formatMonth");
 
 async function getBaseContext(overrides = {}) {
-  const menu = await getPostsMenu(path.join(__dirname, "../../posts"));
+  const menu = await getPostsMenu(path.join(__dirname, "../../content/posts"));
   return Object.assign(
     {
       siteOwner: process.env.SITE_OWNER,
@@ -12,6 +12,9 @@ async function getBaseContext(overrides = {}) {
       navLinks: [
         { href: "/", label: "Home" },
         { href: "/about", label: "About" },
+        { href: "/newsletter", label: "Newsletter" },
+        { href: "/tools", label: "Tools I use" },
+        { href: "/projects", label: "Projects" },
         { href: "/contact", label: "Contact" },
       ],
       years: menu,

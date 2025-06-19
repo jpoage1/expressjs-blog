@@ -13,12 +13,14 @@ router.post("/contact", async (req, res, next) => {
     next(err);
   }
 });
+
 router.get("/contact", async (req, res) => {
   const context = await getBaseContext({
     title: "Contact",
   });
   res.render("pages/contact.handlebars", context);
 });
+
 router.get("/contact/thankyou", async (req, res) => {
   const context = await getBaseContext({
     title: "Thank You",
