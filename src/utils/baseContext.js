@@ -11,7 +11,14 @@ async function getBaseContext(overrides = {}) {
       originCountry: process.env.COUNTRY,
       navLinks: [
         { href: "/", label: "Home" },
-        { href: "/about", label: "About" },
+        {
+          href: "/about",
+          label: "About",
+          submenu: [
+            { href: "/about/me", label: "About Me" },
+            { href: "/about/blog", label: "About This Blog" },
+          ],
+        },
         { href: "/newsletter", label: "Newsletter" },
         { href: "/tools", label: "Tools I use" },
         { href: "/projects", label: "Projects" },
