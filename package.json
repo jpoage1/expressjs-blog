@@ -33,6 +33,7 @@
     "path": "^0.12.7"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.8.0",
     "pm2": "^6.0.6"
   }
 }

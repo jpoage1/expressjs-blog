@@ -1,3 +1,5 @@
+const matter = require("gray-matter");
+
 const path = require("path");
 const fs = require("fs").promises;
 
@@ -17,17 +19,24 @@ async function getPostsMenu(baseDir) {
       const monthPath = path.join(yearPath, monthDir.name);
       const files = await fs.readdir(monthPath);
 
-      const posts = files
-        .filter((f) => f.endsWith(".md"))
-        .map((f) => {
-          const slug = f.replace(/\.md$/, "");
-          return {
-            slug,
-            title: slug.replace(/-/g, " "),
-            year: yearDir.name,
-            month: monthDir.name,
-          };
-        });
+      const posts = await Promise.all(
+        files
+          .filter((f) => f.endsWith(".md"))
+          .map(async (f) => {
+            const slug = f.replace(/\.md$/, "");
+            const filePath = path.join(monthPath, f);
+            const fileContent = await fs.readFile(filePath, "utf8");
+            const { data } = matter(fileContent);
+
+            return {
+              slug,
+              title: data.title || slug.replace(/-/g, " "),
+              date: data.date || null,
+              year: yearDir.name,
+              month: monthDir.name,
+            };
+          })
+      );
 
       monthsData.push({ month: monthDir.name, posts });
     }

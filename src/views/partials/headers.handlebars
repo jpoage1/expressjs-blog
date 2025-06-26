@@ -1,9 +1,11 @@
 <header>
   <div class="container">
-    <h1>{{siteOwner}}</h1>
+    <div class="logo">
+      <a href="/">{{siteOwner}}</a>
+    </div>
     <nav>
       {{#each navLinks}}
-        <a href="{{this.href}}">{{this.label}}</a>
+      <a href="{{this.href}}">{{this.label}}</a>
       {{/each}}
     </nav>
   </div>

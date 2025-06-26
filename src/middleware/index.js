@@ -15,10 +15,11 @@ const {
   morganWarn,
   morganError,
 } = require("./logging");
-const limiter = rateLimit({ windowMs: 1 * 60 * 1000, max: 100 });
 
 function setupMiddleware(app) {
-  app.use(limiter);
+  if (process.env.NODE_ENV === "production") {
+    app.use(rateLimit({ windowMs: 1 * 60 * 1000, max: 100 }));
+  }
   app.use(compression());
   app.use(morganInfo);
   app.use(morganWarn);

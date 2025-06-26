@@ -1,0 +1,184 @@
+/* Enhanced TOC Styles */
+.toc {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  box-sizing: border-box;
+  margin-bottom: 1em;
+  padding: 1.5em;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.toc.sticky {
+  position: fixed;
+  top: 20px;
+  z-index: 1000;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border-color: #dee2e6;
+}
+
+.toc.sticky.bottom-boundary {
+  position: fixed;
+  max-height: none;
+  overflow-y: auto;
+}
+
+/* Custom Scrollbar - Subtle and Non-intrusive */
+.toc::-webkit-scrollbar {
+  width: 6px;
+}
+
+.toc::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+.toc::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+.toc::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Firefox Scrollbar */
+.toc {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* TOC Content Styles */
+.toc ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc li {
+  margin: 0.5rem 0;
+  position: relative;
+}
+
+.toc li.h3 {
+  margin-left: 1rem;
+  font-size: 0.9rem;
+}
+
+.toc a {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  text-decoration: none;
+  color: #495057;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+
+.toc a:hover {
+  background-color: #e9ecef;
+  color: #2c3e50;
+  border-left-color: #007bff;
+  transform: translateX(2px);
+}
+
+.toc a:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* Active link highlighting */
+.toc a.active {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border-left-color: #1976d2;
+  font-weight: 600;
+}
+
+.toc-header {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  border-bottom: 2px solid #dee2e6;
+  padding-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .toc.sticky {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: auto !important;
+    max-height: 300px;
+    z-index: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .toc {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .toc-header {
+    font-size: 1rem;
+  }
+  
+  .toc a {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .toc li.h3 {
+    margin-left: 0.5rem;
+  }
+}
+
+/* Sidebar adjustments for better TOC integration */
+.sidebar {
+  width: 250px;
+  background-color: #f8f9fa;
+  border-right: 1px solid #e0e0e0;
+  padding: 1em;
+  font-size: 0.95rem;
+  font-family: Arial, sans-serif;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  position: relative; /* Ensure proper positioning context */
+}
+
+/* Ensure proper spacing between sidebar sections */
+.sidebar nav > * + .toc {
+  margin-top: 2rem;
+  border-top: 1px solid #dee2e6;
+  padding-top: 1.5rem;
+}
+
+/* Animation for smooth transitions */
+.toc {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toc.sticky {
+  animation: slideInSticky 0.3s ease-out;
+}
+
+@keyframes slideInSticky {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

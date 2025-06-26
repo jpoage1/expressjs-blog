@@ -24,11 +24,10 @@
     background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
     border-radius: 12px 12px 0 0;
 }
-
-/* --- Main Page Title (H1) --- */
+/* 
 .page-content h1 {
     font-size: 3.2rem;
-    color: #1a202c; /* Fallback color */
+    color: #1a202c; 
     margin-bottom: 1rem;
     line-height: 1.2;
     text-align: center;
@@ -41,10 +40,10 @@
     padding-bottom: 1.5rem;
     border-bottom: 3px solid #e2e8f0;
     margin-bottom: 2.5rem;
-}
+} */
 
-/* --- Section Headings (H2) --- */
-.page-content h2 {
+/* --- Section Headings (h1) --- */
+.page-content h1 {
     font-size: 1.9rem;
     color: #2d3748;
     margin-top: 3.5rem;
@@ -56,8 +55,8 @@
     padding-left: 1rem;
 }
 
-/* --- H2 Left Border/Accent --- */
-.page-content h2::before {
+/* --- h1 Left Border/Accent --- */
+.page-content h1::before {
     content: '';
     position: absolute;
     left: 0;
@@ -77,8 +76,8 @@
     hyphens: auto;
 }
 
-/* --- Paragraphs immediately following H2 --- */
-.page-content h2 + p {
+/* --- Paragraphs immediately following h1 --- */
+.page-content h1 + p {
     font-size: 1.2rem;
     color: #2d3748;
     font-weight: 500;
@@ -246,12 +245,12 @@
         margin: 0 1rem;
         border-radius: 8px;
     }
-    
+/*     
     .page-content h1 {
         font-size: 2.5rem;
-    }
+    } */
     
-    .page-content h2 {
+    .page-content h1 {
         font-size: 1.6rem;
         margin-top: 2.5rem;
     }
@@ -263,14 +262,14 @@
         margin: 0 0.5rem;
         border-radius: 6px;
     }
-    
+/*     
     .page-content h1 {
         font-size: 2rem;
         padding-bottom: 1rem;
         margin-bottom: 1.5rem;
-    }
+    } */
     
-    .page-content h2 {
+    .page-content h1 {
         font-size: 1.4rem;
         margin-top: 2rem;
     }
@@ -307,12 +306,12 @@
     .page-content {
         padding: 1rem 0.8rem;
     }
-    
+/*     
     .page-content h1 {
         font-size: 1.8rem;
-    }
+    } */
     
-    .page-content h2 {
+    .page-content h1 {
         font-size: 1.3rem;
     }
     
