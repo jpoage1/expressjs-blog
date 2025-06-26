@@ -4,25 +4,25 @@ const router = express.Router();
 
 const getBaseContext = require("../utils/baseContext");
 
-const newsletter = require("./newsletter");
+// const newsletter = require("./newsletter");
 const contact = require("./contact");
 const about = require("./about");
 const site_map = require("./site-map");
 const post = require("./post");
 const construction = require("./construction");
 
-const isProduction = process.env.NODE_ENV === "production";
+// const isProduction = process.env.NODE_ENV === "production";
 
-if (isProduction) {
-  router.get("/newsletter", (req, res) => {
-    res.render("pages/construction", {
-      title: "Newsletter",
-      message: "This page is under construction. Please check back soon.",
-    });
-  });
-} else {
-  router.use(newsletter);
-}
+// if (isProduction) {
+//   router.get("/newsletter", (req, res) => {
+//     res.render("pages/construction", {
+//       title: "Newsletter",
+//       message: "This page is under construction. Please check back soon.",
+//     });
+//   });
+// } else {
+//   router.use(newsletter);
+// }
 
 router.use(contact);
 router.use(about);

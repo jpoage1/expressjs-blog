@@ -4,10 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "combine:css": "node combine-css.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon ./src/app.js --trace-exit",
     "maildev": "maildev",
     "dev": "./node_modules/pm2/bin/pm2 start --env development --watch",
+    "prod-test": "NODE_ENV=production nodemon ./src/app.js --trace-exit",
     "prod": "./node_modules/pm2/bin/pm2 start --env production",
     "stop": "node_modules/pm2/bin/pm2 delete expressjs-blog"
   },
@@ -34,6 +36,8 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^9.8.0",
-    "pm2": "^6.0.6"
+    "pm2": "^6.0.6",
+    "postcss": "^8.5.6",
+    "postcss-import": "^16.1.1"
   }
 }

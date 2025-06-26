@@ -1,6 +1,6 @@
 // src/utils/baseContext.js
 const path = require("path");
-const getPostsMenu = require("../services/postsService");
+const getPostsMenu = require("../services/postsMenuService");
 const { formatMonth } = require("../utils/formatMonth");
 
 async function getBaseContext(overrides = {}) {
