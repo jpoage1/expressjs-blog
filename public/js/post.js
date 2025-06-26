@@ -29,40 +29,6 @@ document.querySelectorAll("pre").forEach((pre) => {
   pre.appendChild(btn);
 });
 
-// Table of Contents Generation from h2, h3 in .post-content
-(function generateTOC() {
-  const content = document.querySelector(".post-content");
-  if (!content) return;
-  const tocContainer = document.createElement("nav");
-  tocContainer.className = "toc";
-  const tocList = document.createElement("ul");
-
-  content.querySelectorAll("h2, h3").forEach((heading) => {
-    if (!heading.id)
-      heading.id = heading.textContent
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, "-");
-
-    const li = document.createElement("li");
-    li.className = heading.tagName.toLowerCase();
-
-    const a = document.createElement("a");
-    a.href = `#${heading.id}`;
-    a.textContent = heading.textContent;
-
-    li.appendChild(a);
-    tocList.appendChild(li);
-  });
-
-  tocContainer.appendChild(tocList);
-
-  // Insert TOC before post content or in sidebar if exists
-  const sidebar = document.querySelector(".sidebar nav");
-  if (sidebar) sidebar.appendChild(tocContainer);
-  else content.parentNode.insertBefore(tocContainer, content);
-})();
-
 // Smooth Scroll for Anchor Links
 document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   anchor.addEventListener("click", (e) => {
@@ -72,32 +38,6 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     target.scrollIntoView({ behavior: "smooth" });
   });
 });
-
-// Dark Mode Toggle
-(function darkModeToggle() {
-  const toggle = document.createElement("button");
-  toggle.textContent = "Toggle Dark Mode";
-  toggle.id = "dark-mode-toggle";
-  document.body.prepend(toggle);
-
-  function applyMode(dark) {
-    document.documentElement.setAttribute(
-      "data-theme",
-      dark ? "dark" : "light"
-    );
-    localStorage.setItem("darkMode", dark);
-  }
-
-  toggle.addEventListener("click", () => {
-    const dark = document.documentElement.getAttribute("data-theme") === "dark";
-    applyMode(!dark);
-  });
-
-  // Initialize from saved preference or system
-  const saved = localStorage.getItem("darkMode");
-  if (saved !== null) applyMode(saved === "true");
-  else applyMode(window.matchMedia("(prefers-color-scheme: dark)").matches);
-})();
 
 // External Link Detection and Attributes
 document.querySelectorAll('.post-content a[href^="http"]').forEach((link) => {

@@ -1,22 +1,22 @@
-.post-content > * + * {
+.markdown-content > * + * {
     margin-top: 1.5rem;
   }
-  .post-content p, .post-content li {
+  .markdown-content p, .markdown-content li {
     line-height: 1.6;
     letter-spacing: 0.02em;
   }
-  .post-content p,
-  .post-content li {
+  .markdown-content p,
+  .markdown-content li {
     max-width: 60ch;
     line-height: 1.6;
     margin-bottom: 1.25rem;
   }
-  .post-content h2, .post-content h3 {
+  .markdown-content h1, .markdown-content h2 {
     margin-top: 2rem;
     margin-bottom: 1rem;
     font-weight: 700;
   }
-  .post-content pre {
+  .markdown-content pre {
     background-color: #2d2d2d;
     color: #ccc;
     padding: 1rem;
@@ -27,19 +27,19 @@
     margin-bottom: 1.5rem;
   }
   
-  .post-content code {
+  .markdown-content code {
     padding: 0.15rem 0.3rem;
     border-radius: 3px;
     font-family: monospace;
     font-size: 0.9rem;
   }
-  .post-content img {
+  .markdown-content img {
     max-width: 100%;
     height: auto;
     margin: 1rem 0;
     display: block;
   }
-  .post-content blockquote {
+  .markdown-content blockquote {
     border-left: 4px solid #ccc;
     padding-left: 1rem;
     color: #667;
@@ -47,12 +47,12 @@
     margin: 1rem 0;
   }
 
-  .post-content a {
+  .markdown-content a {
     color: #0366d6;
     text-decoration: none;
   }
   
-  .post-content a:hover {
+  .markdown-content a:hover {
     text-decoration: underline;
   }
   

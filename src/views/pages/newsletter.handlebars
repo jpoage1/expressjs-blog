@@ -1,0 +1,16 @@
+{{#section "styles"}}
+<link rel="stylesheet" href="/static/css/newsletter.css" />
+{{/section}}
+
+<section>
+    <h1>{{title}}</h1>
+    <form action="/newsletter" method="POST" class="newsletter-form">
+        <div class="form-group">
+            <label class="required" for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required
+                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" />
+        </div>
+        <button type="submit">Subscribe</button>
+    </form>
+    <p class="required-note"><small><sup>*</sup> Required field</small></p>
+</section>

@@ -8,7 +8,11 @@
   font-family: Arial, sans-serif;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
 }
-
+.sidebar h3.menu-year,
+.sidebar h4,
+.sidebar a {
+  text-transform: capitalize !important;
+}
 .sidebar .menu-year {
   font-weight: 700;
   font-size: 1.2rem;

@@ -51,14 +51,21 @@ const page = async (
   });
 };
 
-construction("/newsletter", "Newsletter");
+if (process.env.NODE_ENV === "production") {
+  construction("/newsletter", "Newsletter");
+  construction("/projects", "Projects");
+} else {
+  page("/projects", "projects");
+  const newsletter = require("./newsletter");
+  router.use(newsletter);
+}
+
 construction("/changelog", "Changelog");
 construction("/archive", "Archive");
 construction("/rss-feed.xml", "RSS Feed");
 construction("/tags", "Tags");
 construction("/blog", "Blog");
 
-page("/projects", "projects");
 page("/tools", "tools", "tools");
 
 module.exports = router;

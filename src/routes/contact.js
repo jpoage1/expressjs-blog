@@ -1,7 +1,7 @@
 // src/routes/contact.js
 const express = require("express");
 const router = express.Router();
-const sendContactMail = require("../utils/mailer");
+const sendContactMail = require("../utils/sendContactMail");
 const getBaseContext = require("../utils/baseContext");
 
 router.post("/contact", async (req, res, next) => {
