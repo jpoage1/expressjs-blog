@@ -7,7 +7,11 @@
       {{#each navLinks}}
       {{#if submenu}}
       <div class="dropdown">
+        {{#if this.href}}
         <a href="{{this.href}}" class="dropbtn">{{this.label}}</a>
+        {{else}}
+        <a class="dropbtn">{{this.label}}</a>
+        {{/if}}
         <div class="dropdown-content">
           {{#each submenu}}
           <a href="{{this.href}}">{{this.label}}</a>

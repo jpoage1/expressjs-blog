@@ -5,6 +5,7 @@
 
 .dropbtn {
   display: inline-block;
+  cursor: pointer;
 }
 
 .dropdown-content {

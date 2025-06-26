@@ -12,7 +12,7 @@ async function getBaseContext(overrides = {}) {
       navLinks: [
         { href: "/", label: "Home" },
         {
-          href: "/about",
+          // href: "/about",
           label: "About",
           submenu: [
             { href: "/about/me", label: "About Me" },
