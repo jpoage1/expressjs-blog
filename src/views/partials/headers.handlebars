@@ -5,7 +5,18 @@
     </div>
     <nav>
       {{#each navLinks}}
+      {{#if submenu}}
+      <div class="dropdown">
+        <a href="{{this.href}}" class="dropbtn">{{this.label}}</a>
+        <div class="dropdown-content">
+          {{#each submenu}}
+          <a href="{{this.href}}">{{this.label}}</a>
+          {{/each}}
+        </div>
+      </div>
+      {{else}}
       <a href="{{this.href}}">{{this.label}}</a>
+      {{/if}}
       {{/each}}
     </nav>
   </div>
