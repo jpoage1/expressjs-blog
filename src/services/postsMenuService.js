@@ -28,6 +28,10 @@ async function getPostsMenu(baseDir) {
             const fileContent = await fs.readFile(filePath, "utf8");
             const { data } = matter(fileContent);
 
+            if (!data.published && process.env.NODE_ENV === "production") {
+              return null;
+            }
+
             return {
               slug,
               title: data.title || slug.replace(/-/g, " "),
@@ -38,7 +42,7 @@ async function getPostsMenu(baseDir) {
           })
       );
 
-      monthsData.push({ month: monthDir.name, posts });
+      monthsData.push({ month: monthDir.name, posts: posts.filter(Boolean) });
     }
 
     menu.push({ year: yearDir.name, months: monthsData });
