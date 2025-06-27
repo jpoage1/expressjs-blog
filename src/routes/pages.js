@@ -23,6 +23,7 @@ construction.register("/archive", "Archive");
 construction.register("/rss-feed.xml", "RSS Feed");
 construction.register("/tags", "Tags");
 construction.register("/blog", "Blog");
+construction.register("/contact", "Contact Me");
 
 markdown.register("/tools", "tools", "tools");
 markdown.register("/about/me", "about-me");
