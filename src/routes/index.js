@@ -3,8 +3,10 @@ const express = require("express");
 const router = express.Router();
 
 const getBaseContext = require("../utils/baseContext");
+const analytics = require("./analytics");
 
-// const newsletter = require("./newsletter");
+router.post("/track", analytics);
+
 const contact = require("./contact");
 const site_map = require("./site-map");
 const post = require("./post");
