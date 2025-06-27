@@ -8,6 +8,7 @@ const helmet = require("helmet");
 
 const routes = require("../routes");
 const formatHtml = require("./formatHtml");
+const logEvent = require("./analytics.js");
 
 const {
   loggingMiddleware,
@@ -20,6 +21,8 @@ function setupMiddleware(app) {
   if (process.env.NODE_ENV === "production") {
     app.use(rateLimit({ windowMs: 1 * 60 * 1000, max: 100 }));
   }
+  app.use(express.json());
+  app.use(logEvent);
   app.use(compression());
   app.use(morganInfo);
   app.use(morganWarn);
