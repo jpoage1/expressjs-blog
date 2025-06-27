@@ -1,51 +1,39 @@
-const matter = require("gray-matter");
-
-const path = require("path");
-const fs = require("fs").promises;
+// src/services/postsMenuService.js (refactored)
+const { getAllPosts } = require("../utils/postFileUtils");
 
 async function getPostsMenu(baseDir) {
-  const years = (await fs.readdir(baseDir, { withFileTypes: true })).filter(
-    (dirent) => dirent.isDirectory() && /^\d{4}$/.test(dirent.name)
-  );
+  const allPosts = await getAllPosts(baseDir);
 
+  // Group posts by year and month
   const menu = [];
+  const yearMap = new Map();
 
-  for (const yearDir of years) {
-    const yearPath = path.join(baseDir, yearDir.name);
-    const months = await fs.readdir(yearPath, { withFileTypes: true });
-    const monthsData = [];
-
-    for (const monthDir of months.filter((d) => d.isDirectory())) {
-      const monthPath = path.join(yearPath, monthDir.name);
-      const files = await fs.readdir(monthPath);
-
-      const posts = await Promise.all(
-        files
-          .filter((f) => f.endsWith(".md"))
-          .map(async (f) => {
-            const slug = f.replace(/\.md$/, "");
-            const filePath = path.join(monthPath, f);
-            const fileContent = await fs.readFile(filePath, "utf8");
-            const { data } = matter(fileContent);
-
-            if (!data.published && process.env.NODE_ENV === "production") {
-              return null;
-            }
-
-            return {
-              slug,
-              title: data.title || slug.replace(/-/g, " "),
-              date: data.date || null,
-              year: yearDir.name,
-              month: monthDir.name,
-            };
-          })
-      );
-
-      monthsData.push({ month: monthDir.name, posts: posts.filter(Boolean) });
+  for (const post of allPosts) {
+    if (!yearMap.has(post.year)) {
+      yearMap.set(post.year, new Map());
     }
 
-    menu.push({ year: yearDir.name, months: monthsData });
+    const monthMap = yearMap.get(post.year);
+    if (!monthMap.has(post.month)) {
+      monthMap.set(post.month, []);
+    }
+
+    monthMap.get(post.month).push({
+      slug: post.slug,
+      title: post.title,
+      date: post.date,
+      year: post.year,
+      month: post.month,
+    });
+  }
+
+  // Convert maps to arrays
+  for (const [year, monthMap] of yearMap) {
+    const monthsData = [];
+    for (const [month, posts] of monthMap) {
+      monthsData.push({ month, posts });
+    }
+    menu.push({ year, months: monthsData });
   }
 
   return menu;

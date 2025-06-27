@@ -1,7 +1,7 @@
-// src/services/sitemapService.js
+// src/services/sitemapService.js (refactored)
 const path = require("path");
 const fs = require("fs").promises;
-const getPostsMenu = require("./postsMenuService");
+const { getAllPosts } = require("../utils/postFileUtils");
 
 class SitemapService {
   constructor() {
@@ -23,25 +23,16 @@ class SitemapService {
   }
 
   async getBlogPostUrls() {
-    const menu = await getPostsMenu(this.postsPath);
-    const urls = [];
+    const allPosts = await getAllPosts(this.postsPath);
 
-    for (const yearData of menu) {
-      for (const monthData of yearData.months) {
-        for (const post of monthData.posts) {
-          urls.push({
-            loc: `/blog/${post.year}/${post.month}/${post.slug}`,
-            lastmod: post.date
-              ? new Date(post.date).toISOString().split("T")[0]
-              : null,
-            changefreq: "monthly",
-            priority: "0.7",
-          });
-        }
-      }
-    }
-
-    return urls;
+    return allPosts.map((post) => ({
+      loc: `/blog/${post.year}/${post.month}/${post.slug}`,
+      lastmod: post.date
+        ? new Date(post.date).toISOString().split("T")[0]
+        : null,
+      changefreq: "monthly",
+      priority: "0.7",
+    }));
   }
 
   async getCompleteSitemap() {
@@ -55,7 +46,7 @@ class SitemapService {
       title: "Blog Posts",
       children: blogUrls.map((url) => ({
         loc: url.loc,
-        title: url.loc.split("/").pop().replace(/-/g, " "), // Convert slug to title
+        title: url.loc.split("/").pop().replace(/-/g, " "),
         lastmod: url.lastmod,
         changefreq: url.changefreq,
         priority: url.priority,
