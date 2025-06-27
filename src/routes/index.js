@@ -5,6 +5,7 @@ const router = express.Router();
 const getBaseContext = require("../utils/baseContext");
 const analytics = require("./analytics");
 const robots = require("./robots");
+const blog_index = require("./blog_index");
 
 router.post("/track", analytics);
 
@@ -13,12 +14,13 @@ const sitemap = require("./sitemap");
 const post = require("./post");
 const pages = require("./pages");
 
+router.use(blog_index);
 router.use(robots);
 router.use(contact);
 router.use(sitemap);
 router.use(pages);
 
-router.get("/post/:year/:month/:name", post);
+router.get("/blog/:year/:month/:name", post);
 
 router.get("/", async (req, res) => {
   const context = await getBaseContext({

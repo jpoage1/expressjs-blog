@@ -1,0 +1,39 @@
+{{#section "styles"}}
+<link rel="stylesheet" href="/static/css/blog_index.css" />
+{{/section}}
+<h1>Blog Posts</h1>
+
+{{#each collections.posts}}
+{{#if this.data.published}}
+<article class="post">
+    <header class="post-header">
+        <h2 class="post-title">
+            <a href="{{this.url}}" class="post-link">
+                {{this.data.title}}
+            </a>
+        </h2>
+        <time datetime="{{this.data.date}}" class="post-date">
+            {{this.data.date}}
+        </time>
+
+        {{#if this.data.tags}}
+        <ul class="post-tags">
+            {{#each this.data.tags}}
+            <li class="post-tag">{{this}}</li>
+            {{/each}}
+        </ul>
+        {{/if}}
+    </header>
+
+    {{#if this.templateContent}}
+    <div class="post-excerpt">
+        {{{this.templateContent}}}
+    </div>
+    {{/if}}
+
+    <div class="post-readmore">
+        <a href="{{this.url}}">Read more →</a>
+    </div>
+</article>
+{{/if}}
+{{/each}}
