@@ -4,16 +4,18 @@ const router = express.Router();
 
 const getBaseContext = require("../utils/baseContext");
 const analytics = require("./analytics");
+const robots = require("./robots");
 
 router.post("/track", analytics);
 
 const contact = require("./contact");
-const site_map = require("./site-map");
+const sitemap = require("./sitemap");
 const post = require("./post");
 const pages = require("./pages");
 
+router.use(robots);
 router.use(contact);
-router.use(site_map);
+router.use(sitemap);
 router.use(pages);
 
 router.get("/post/:year/:month/:name", post);

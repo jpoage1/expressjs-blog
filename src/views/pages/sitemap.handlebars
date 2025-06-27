@@ -1,0 +1,52 @@
+{{!-- views/pages/sitemap.handlebars --}}
+{{#section "styles"}}
+<link rel="stylesheet" href="/static/css/sitemap.css" />
+{{/section}}
+
+<nav class="sitemap">
+    <h1>Site Map</h1>
+    <ul>
+        {{#each sitemap}}
+        <li {{#if children}}class="sitemap-group{{#if class}} {{class}}{{/if}}" {{/if}}>
+            {{#if children}}
+            {{#if title}}
+            <span class="sitemap-section-title">{{title}}</span>
+            {{else}}
+            <span class="sitemap-section-title">{{label}}</span>
+            {{/if}}
+            <ul>
+                {{#each children}}
+                <li>
+                    <a href="{{loc}}">
+                        {{#if title}}
+                        {{title}}
+                        {{else if label}}
+                        {{label}}
+                        {{else}}
+                        {{loc}}
+                        {{/if}}
+                    </a>
+                    {{#if lastmod}}
+                    <span class="sitemap-date">({{lastmod}})</span>
+                    {{/if}}
+                </li>
+                {{/each}}
+            </ul>
+            {{else}}
+            <a href="{{loc}}">
+                {{#if title}}
+                {{title}}
+                {{else if label}}
+                {{label}}
+                {{else}}
+                {{loc}}
+                {{/if}}
+            </a>
+            {{#if lastmod}}
+            <span class="sitemap-date">({{lastmod}})</span>
+            {{/if}}
+            {{/if}}
+        </li>
+        {{/each}}
+    </ul>
+</nav>
