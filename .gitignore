@@ -69,3 +69,5 @@ target/
 
 / Coverage directories
 .coverage/
+*.sqlite3
+*.sqlite
