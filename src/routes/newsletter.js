@@ -16,7 +16,7 @@ router.get("/newsletter/success", async (req, res) => {
   const context = await getBaseContext({
     title: "Thank You",
   });
-  res.render("pages/thankyou.handlebars", context);
+  res.render("pages/newsletter-success.handlebars", context);
 });
 
 router.post("/newsletter", async (req, res, next) => {
