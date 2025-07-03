@@ -33,8 +33,8 @@ function setupMiddleware(app) {
             "data:",
             "https://licensebuttons.net",
             "https://cdn.jsdelivr.net",
-            "https://newassets.hcaptcha.com",
           ],
+          frameSrc: ["'self'", "https://newassets.hcaptcha.com"],
           // add other directives as needed
         },
       })
