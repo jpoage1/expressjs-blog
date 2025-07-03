@@ -5,9 +5,6 @@ const errorHandler = require("./errorHandler");
 const rateLimit = require("express-rate-limit");
 const compression = require("compression");
 const helmet = require("helmet");
-const cookieParser = require("cookie-parser");
-
-const csrf = require("csurf");
 
 const routes = require("../routes");
 const formatHtml = require("./formatHtml");
@@ -22,12 +19,14 @@ const {
 
 function setupMiddleware(app) {
   if (process.env.NODE_ENV === "production") {
+    app.disable("x-powered-by");
     app.use(rateLimit({ windowMs: 1 * 60 * 1000, max: 100 }));
     app.use(
       helmet.contentSecurityPolicy({
         directives: {
           defaultSrc: ["'self'"],
           scriptSrc: ["'self'", "https://hcaptcha.com"],
+          styleSrc: ["'self'", "https:"],
           imgSrc: [
             "'self'",
             "data:",
@@ -35,6 +34,9 @@ function setupMiddleware(app) {
             "https://cdn.jsdelivr.net",
           ],
           frameSrc: ["'self'", "https://newassets.hcaptcha.com"],
+          objectSrc: ["'none'"],
+          upgradeInsecureRequests: [],
+
           // add other directives as needed
         },
       })
@@ -47,7 +49,19 @@ function setupMiddleware(app) {
   app.use(morganWarn);
   app.use(morganError);
   app.use(loggingMiddleware);
-  app.use("/static", express.static("public"));
+
+  app.use(
+    "/static",
+    express.static("public", {
+      dotfiles: "deny",
+      index: false,
+      extensions: false,
+      fallthrough: false,
+      setHeaders: (res) => {
+        res.set("Cache-Control", "public, max-age=31536000, immutable");
+      },
+    })
+  );
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(formatHtml);
   app.use(routes);
@@ -58,8 +72,8 @@ function setupMiddleware(app) {
   });
   app.use((err, req, res, next) => {
     if (err.code === "EBADCSRFTOKEN") {
-      res.status(403).send("CSRF token invalid.");
-      return;
+      err.message = "CSRF token invalid.";
+      err.statusCode = 403;
     }
     next(err);
   });

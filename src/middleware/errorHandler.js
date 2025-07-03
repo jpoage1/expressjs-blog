@@ -11,19 +11,40 @@ module.exports = async (err, req, res, next) => {
         message,
         stack: err.stack || "No stack trace available",
         method: req.method,
-        url: req.url,
+        url: req.originalUrl || req.url,
+        statusCode,
+        code: err.code || null,
       })
     );
   } else {
     console.error(err);
   }
-
-  const context = await getBaseContext({
-    title: statusCode === 404 ? "Not Found" : "Error",
+  const errorContextMap = {
+    EBADCSRFTOKEN: {
+      title: "Forbidden",
+      message:
+        "Invalid CSRF token. Your request was blocked for security reasons.",
+      statusCode: 403,
+    },
+    404: {
+      title: "Not Found",
+      message: "The requested resource was not found.",
+      statusCode: 404,
+    },
+  };
+  const errorKey = err.code || err.statusCode;
+  const errorContext = errorContextMap[errorKey] || {
+    title: "Error",
     message,
     statusCode,
+  };
+
+  const context = await getBaseContext({
+    title: errorContext.title,
+    message: errorContext.message,
+    statusCode: errorContext.statusCode,
     content: "",
   });
 
-  res.status(statusCode).render("pages/error", context);
+  res.status(errorContext.statusCode).render("pages/error", context);
 };
