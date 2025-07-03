@@ -16,7 +16,7 @@ const pages = require("./pages");
 
 router.use(blog_index);
 router.use(robots);
-// router.use(contact);
+router.use(contact);
 router.use(sitemap);
 router.use(pages);
 
