@@ -22,13 +22,17 @@ router.use(pages);
 
 router.get("/blog/:year/:month/:name", post);
 
-router.get("/", async (req, res) => {
-  const context = await getBaseContext({
-    title: "Blog Home",
-    content: "Welcome to the blog.",
-  });
+// router.get("/", async (req, res) => {
+//   const context = await getBaseContext({
+//     title: "Blog Home",
+//     content: "Welcome to the blog.",
+//   });
 
-  res.render("pages/home.handlebars", context);
+//   res.render("pages/home.handlebars", context);
+// });
+
+router.get("/", async (req, res) => {
+  res.redirect(301, "/blog");
 });
 
 module.exports = router;
