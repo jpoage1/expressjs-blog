@@ -23,7 +23,21 @@ const {
 function setupMiddleware(app) {
   if (process.env.NODE_ENV === "production") {
     app.use(rateLimit({ windowMs: 1 * 60 * 1000, max: 100 }));
-    app.use(helmet()); // Sets secure HTTP headers. Prevents common attacks.
+    app.use(
+      helmet.contentSecurityPolicy({
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "https://hcaptcha.com"],
+          imgSrc: [
+            "'self'",
+            "data:",
+            "https://licensebuttons.net",
+            "https://cdn.jsdelivr.net",
+          ],
+          // add other directives as needed
+        },
+      })
+    ); // Sets secure HTTP headers. Prevents common attacks.
   }
   app.use(express.json());
   app.use(logEvent);

@@ -5,7 +5,7 @@ const { formatMonth } = require("../utils/formatMonth");
 
 async function getBaseContext(overrides = {}) {
   const menu = await getPostsMenu(path.join(__dirname, "../../content/posts"));
-  console.log(process.env.HCAPTCHA_KEY);
+
   return Object.assign(
     {
       siteOwner: process.env.SITE_OWNER,
