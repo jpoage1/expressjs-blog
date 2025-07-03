@@ -39,8 +39,10 @@ async function getAllPosts(baseDir, options = {}) {
             ) {
               return null;
             }
+            const url = `/blog/${yearDir.name}/${monthDir.name}/${slug}`;
 
             return {
+              url,
               slug,
               title: data.title || slug.replace(/-/g, " "),
               date: data.date || null,
