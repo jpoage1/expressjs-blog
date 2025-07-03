@@ -19,6 +19,7 @@ async function getPostsMenu(baseDir) {
     }
 
     monthMap.get(post.month).push({
+      url: post.url,
       slug: post.slug,
       title: post.title,
       date: post.date,
