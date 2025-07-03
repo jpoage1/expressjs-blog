@@ -2,6 +2,8 @@
 const fs = require("fs");
 const path = require("path");
 const util = require("util");
+const { createLogger, format, transports } = require("winston");
+const DailyRotateFile = require("winston-daily-rotate-file");
 
 // Define the root log directory
 const logDir = path.join(__dirname, "..", "..", "logs");
@@ -85,6 +87,24 @@ function writeLog(level, stream, consoleFn, ...args) {
   logStreams.session.write(logLine);
   consoleFn(`[${timestamp}] [${level}]`, ...args);
 }
+
+function buildTransport(level, filename) {
+  return new DailyRotateFile({
+    dirname: path.join(logDir, level),
+    filename: `${filename}-%DATE%.log`,
+    datePattern: "YYYY-MM-DD",
+    zippedArchive: true,
+    maxFiles: "14d",
+    level,
+    format: format.combine(
+      format.timestamp(),
+      format.printf(
+        ({ timestamp, level, message }) =>
+          `[${timestamp}] [${level.toUpperCase()}] ${message}`
+      )
+    ),
+  });
+}
 function patchConsole() {
   console.log = (...args) =>
     writeLog("INFO", logStreams.info, originalConsole.log, ...args);
@@ -99,7 +119,7 @@ function patchConsole() {
 }
 
 // Exported logger object
-const logger = {
+const manualLogger = {
   streams: logStreams,
   function: functionLog,
   info: (...args) => writeLog("INFO", logStreams.info, console.log, ...args),
@@ -111,7 +131,25 @@ const logger = {
   debug: (...args) =>
     writeLog("DEBUG", logStreams.debug, console.debug, ...args),
 };
+// Winston logger
+const winstonLogger = createLogger({
+  transports: [
+    buildTransport("info", "info"),
+    buildTransport("error", "error"),
+    buildTransport("warn", "warn"),
+    buildTransport("debug", "debug"),
+    buildTransport("notice", "notice"),
+    new transports.Console({
+      level: "debug",
+      format: format.combine(format.colorize(), format.simple()),
+    }),
+  ],
+});
+
 if (process.env.NODE_ENV !== "production") {
   patchConsole();
 }
-module.exports = logger;
+module.exports = {
+  manualLogger,
+  winstonLogger,
+};

@@ -71,3 +71,4 @@ target/
 .coverage/
 *.sqlite3
 *.sqlite
+/logs/*/*.json
