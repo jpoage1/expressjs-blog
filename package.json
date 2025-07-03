@@ -29,6 +29,7 @@
     "gray-matter": "^4.0.3",
     "hbs": "^4.2.0",
     "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
     "js-beautify": "^1.15.4",
     "marked": "^15.0.11",
     "morgan": "^1.10.0",
@@ -39,7 +40,8 @@
     "rss": "^1.2.2",
     "sqlite3": "^5.1.7",
     "winston": "^3.17.0",
-    "winston-daily-rotate-file": "^5.0.0"
+    "winston-daily-rotate-file": "^5.0.0",
+    "xss-clean": "^0.1.4"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.8.0",
