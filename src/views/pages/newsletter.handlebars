@@ -1,15 +1,19 @@
 {{#section "styles"}}
 <link rel="stylesheet" href="/static/css/newsletter.css" />
 {{/section}}
-
+{{#section "scripts"}}
+<script src="https://hcaptcha.com/1/api.js" async defer></script>
+{{/section}}
 <section>
     <h1>{{title}}</h1>
     <form action="/newsletter" method="POST" class="newsletter-form">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <div class="form-group">
             <label class="required" for="email">Email</label>
             <input id="email" name="email" type="email" placeholder="you@example.com" required
                 pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" />
         </div>
+        <div class="h-captcha" data-sitekey="{{hCaptchaKey}}"></div>
         <button type="submit">Subscribe</button>
     </form>
     <p class="required-note"><small><sup>*</sup> Required field</small></p>
