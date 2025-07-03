@@ -23,6 +23,21 @@ input[type="email"] {
   font-size: 1rem;
   transition: border-color 0.3s ease;
 }
+label.required::after {
+  content: " *";
+  color: #d33;
+  font-weight: normal;
+  margin-left: 0.2em;
+  font-size: 1.1em;
+  vertical-align: super;
+  font-family: sans-serif;
+}  
+.required-note {
+  color: #d33;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  font-family: sans-serif;
+}
 
 input[type="email"]:focus {
   border-color: #2980b9;
