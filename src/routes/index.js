@@ -13,12 +13,14 @@ const contact = require("./contact");
 const sitemap = require("./sitemap");
 const post = require("./post");
 const pages = require("./pages");
+const rssFeed = require("./rssFeed");
 
 router.use(blog_index);
 router.use(robots);
 router.use(contact);
 router.use(sitemap);
 router.use(pages);
+router.use(rssFeed);
 
 router.get("/blog/:year/:month/:name", post);
 
