@@ -5,6 +5,9 @@ const errorHandler = require("./errorHandler");
 const rateLimit = require("express-rate-limit");
 const compression = require("compression");
 const helmet = require("helmet");
+const cookieParser = require("cookie-parser");
+
+const csrf = require("csurf");
 
 const routes = require("../routes");
 const formatHtml = require("./formatHtml");
@@ -36,6 +39,13 @@ function setupMiddleware(app) {
   app.use((req, res, next) => {
     const err = new Error("Not Found");
     err.statusCode = 404;
+    next(err);
+  });
+  app.use((err, req, res, next) => {
+    if (err.code === "EBADCSRFTOKEN") {
+      res.status(403).send("CSRF token invalid.");
+      return;
+    }
     next(err);
   });
   app.use(errorHandler);

@@ -2,11 +2,13 @@ const express = require("express");
 const router = express.Router();
 const sendNewsletterSubscriptionMail = require("../utils/sendNewsletterSubscriptionMail");
 const { saveEmail } = require("../services/newsletterService");
+const formLimiter = require("../utils/formLimiter");
 
 const getBaseContext = require("../utils/baseContext");
 
 router.get("/newsletter", async (req, res) => {
   const context = await getBaseContext({
+    csrfToken: res.locals.csrfToken,
     title: "Newsletter",
   });
   res.render("pages/newsletter.handlebars", context);
@@ -19,7 +21,7 @@ router.get("/newsletter/success", async (req, res) => {
   res.render("pages/newsletter-success.handlebars", context);
 });
 
-router.post("/newsletter", async (req, res, next) => {
+router.post("/newsletter", formLimiter, async (req, res, next) => {
   const { email } = req.body;
   if (!email) {
     return res.status(400).send("Email is required");

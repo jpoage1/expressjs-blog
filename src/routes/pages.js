@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const ConstructionRoutes = require("../utils/ConstructionRoutes");
 const MarkdownRoutes = require("../utils/MarkdownRoutes");
+const csrfToken = require("../utils/csrfToken");
 
 const construction = new ConstructionRoutes();
 const markdown = new MarkdownRoutes();
@@ -17,7 +18,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 const newsletter = require("./newsletter");
-router.use(newsletter);
+router.use(newsletter, csrfToken);
 
 construction.register("/changelog", "Changelog");
 construction.register("/archive", "Archive");

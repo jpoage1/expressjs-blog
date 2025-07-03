@@ -3,10 +3,19 @@ const express = require("express");
 const router = express.Router();
 const sendContactMail = require("../utils/sendContactMail");
 const getBaseContext = require("../utils/baseContext");
+const formLimiter = require("../utils/formLimiter");
+const verifyHCaptcha = require("../utils/verifyHCaptcha");
 
-router.post("/contact", async (req, res, next) => {
+router.post("/contact", formLimiter, async (req, res, next) => {
   try {
-    const { name, email, message } = req.body;
+    const { name, email, message, hcaptchaToken } = req.body;
+    if (!hcaptchaToken) {
+      return res.status(400).send("Captcha token missing");
+    }
+    const valid = await verifyHCaptcha(hcaptchaToken);
+    if (!valid) {
+      return res.status(400).send("Captcha verification failed");
+    }
     await sendContactMail({ name, email, message });
     res.redirect("/contact/thankyou");
   } catch (err) {
@@ -16,6 +25,7 @@ router.post("/contact", async (req, res, next) => {
 
 router.get("/contact", async (req, res) => {
   const context = await getBaseContext({
+    csrfToken: res.locals.csrfToken,
     title: "Contact",
   });
   res.render("pages/contact.handlebars", context);

@@ -6,6 +6,7 @@ const getBaseContext = require("../utils/baseContext");
 const analytics = require("./analytics");
 const robots = require("./robots");
 const blog_index = require("./blog_index");
+const csrfToken = require("../utils/csrfToken");
 
 router.post("/track", analytics);
 
@@ -17,7 +18,7 @@ const rssFeed = require("./rssFeed");
 
 router.use(blog_index);
 router.use(robots);
-router.use(contact);
+router.use(contact, csrfToken);
 router.use(sitemap);
 router.use(pages);
 router.use(rssFeed);
