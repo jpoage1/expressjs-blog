@@ -20,6 +20,7 @@ const {
 function setupMiddleware(app) {
   if (process.env.NODE_ENV === "production") {
     app.use(rateLimit({ windowMs: 1 * 60 * 1000, max: 100 }));
+    app.use(helmet()); // Sets secure HTTP headers. Prevents common attacks.
   }
   app.use(express.json());
   app.use(logEvent);
@@ -28,7 +29,6 @@ function setupMiddleware(app) {
   app.use(morganWarn);
   app.use(morganError);
   app.use(loggingMiddleware);
-  // app.use(helmet()); // Sets secure HTTP headers. Prevents common attacks.
   app.use("/static", express.static("public"));
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(formatHtml);
