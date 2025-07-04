@@ -4,6 +4,8 @@ const exphbs = require("express-handlebars");
 require("dotenv").config();
 const setupMiddleware = require("./middleware");
 const { registerHelpers } = require("./utils/hbsHelpers");
+
+const { manualLogger } = require("./utils/logging");
 const app = express();
 // const path = require("path");
 
@@ -40,11 +42,10 @@ app.listen(port, () => {
   console.log(`Server listening on http://localhost:${port}`);
 });
 
-// Global error handlers for uncaught exceptions and rejections
 process.on("uncaughtException", (err) => {
-  console.error("Uncaught Exception:", err);
+  manualLogger.error("Uncaught Exception:", err.stack || err);
 });
 
-process.on("unhandledRejection", (reason) => {
-  console.error("Unhandled Rejection:", reason);
+process.on("unhandledRejection", (reason, promise) => {
+  manualLogger.error("Unhandled Rejection:", reason?.stack || reason);
 });
