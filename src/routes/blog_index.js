@@ -19,7 +19,6 @@ router.get("/blog", async (req, res, next) => {
   // Prepare context compatible with the blog-index.hbs layout
   // Add `templateContent` as excerpt or limited content if needed here
   // For now, use a simple excerpt from markdown or placeholder
-  console.log(publishedPosts);
   const posts = publishedPosts.map((post) => ({
     url: post.url,
     data: {

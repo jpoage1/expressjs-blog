@@ -8,10 +8,8 @@ const sendNewsletterSubscriptionMail = async function ({ email }) {
     subject: "New Newsletter Subscription",
     text: `Please add this email to the newsletter list: ${process.env.MAIL_NEWSLETTER}`,
   };
-  console.log(data);
   try {
     const result = await transporter.sendMail(data);
-    console.log(result);
     return result;
   } catch (e) {
     console.log(e);

@@ -6,10 +6,11 @@ const rateLimit = require("express-rate-limit");
 const compression = require("compression");
 const helmet = require("helmet");
 const hpp = require("hpp");
-const xss = require("xss-clean");
+// const xss = require("xss-clean");
 const routes = require("../routes");
 const formatHtml = require("./formatHtml");
 const logEvent = require("./analytics.js");
+const xssSanitizer = require("./xssSanitizer");
 
 const {
   loggingMiddleware,
@@ -22,9 +23,14 @@ function setupMiddleware(app) {
   if (process.env.NODE_ENV === "production") {
     app.disable("x-powered-by");
     app.set("trust proxy", true);
+    app.use((req, res, next) => {
+      console.log(req.ip);
+      next();
+    });
+    app.set("trust-proxy", false);
     app.use(hpp());
-    app.use(xss());
-    app.use(rateLimit({ windowMs: 1 * 60 * 1000, max: 100 }));
+    app.use(xssSanitizer);
+    // app.use(rateLimit({ windowMs: 1 * 60 * 1000, max: 100 }));
     app.use((req, res, next) => {
       const host = req.hostname;
       if (["127.0.0.1", "localhost"].includes(host)) {
