@@ -22,8 +22,16 @@ const {
 function setupMiddleware(app) {
   if (process.env.NODE_ENV === "production") {
     app.disable("x-powered-by");
+    app.use((req, res, next) => {
+      const { winstonLogger, manualLogger } = require("../utils/logging");
+      winstonLogger.info(req.ip);
+      console.log(req.ip);
+      next();
+    });
     app.set("trust proxy", true);
     app.use((req, res, next) => {
+      const { winstonLogger, manualLogger } = require("../utils/logging");
+      winstonLogger.info(req.ip);
       console.log(req.ip);
       next();
     });
