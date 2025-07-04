@@ -16,6 +16,8 @@ module.exports = (req, res) => {
   //   req.connection.remoteAddress ||
   //   "";
   const ip = req.ip;
+  req.logger.debug("Ip Address", req.ip);
+  req.logger.debug("headers", req.headers);
   const timestamp = Date.now();
 
   db.run(

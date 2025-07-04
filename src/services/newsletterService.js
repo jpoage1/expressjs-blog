@@ -54,7 +54,6 @@ async function saveEmail(email) {
     console.error("Failed to save email:", err);
     throw err;
   }
-  console.log("test2");
   return await writeLock;
 }
 
