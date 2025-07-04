@@ -21,6 +21,7 @@ const {
 function setupMiddleware(app) {
   if (process.env.NODE_ENV === "production") {
     app.disable("x-powered-by");
+    app.set("trust proxy", true);
     app.use(hpp());
     app.use(xss());
     app.use(rateLimit({ windowMs: 1 * 60 * 1000, max: 100 }));
