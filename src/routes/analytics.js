@@ -11,10 +11,11 @@ module.exports = (req, res) => {
     event = "",
   } = req.body;
 
-  const ip =
-    req.headers["x-forwarded-for"]?.split(",")[0] ||
-    req.connection.remoteAddress ||
-    "";
+  // const ip =
+  //   req.headers["x-forwarded-for"]?.split(",")[0] ||
+  //   req.connection.remoteAddress ||
+  //   "";
+  const ip = req.ip;
   const timestamp = Date.now();
 
   db.run(
@@ -22,6 +23,6 @@ module.exports = (req, res) => {
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [timestamp, url, referrer, userAgent, viewport, loadTime, event, ip, 1]
   );
-
-  res.sendStatus(204);
+  res.send("Tracked");
+  //res.sendStatus(204);
 };

@@ -2,10 +2,11 @@ const db = require("../utils/sqlite3");
 
 module.exports = (req, res, next) => {
   if (req.method === "GET" && req.accepts("html")) {
-    const ip =
-      req.headers["x-forwarded-for"]?.split(",")[0] ||
-      req.connection.remoteAddress ||
-      "";
+    const ip = req.ip;
+    // const ip =
+    //   req.headers["x-forwarded-for"]?.split(",")[0] ||
+    //   req.connection.remoteAddress ||
+    //   "";
     const timestamp = Date.now();
     const url = req.originalUrl;
     const referrer = req.get("Referer") || "";
