@@ -13,7 +13,7 @@ module.exports = {
         NODE_ENV: "production",
         PORT: 3000,
       },
-      ignore_watch: ["data", "node_modules", "logs"],
+      ignore_watch: ["pids", "data", "node_modules", "logs"],
       log_date_format: "YYYY-MM-DD HH:mm Z",
       error_file: "./logs/err.log",
       out_file: "./logs/out.log",
