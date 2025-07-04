@@ -5,14 +5,14 @@ module.exports = {
       script: "./src/app.js",
       instances: 1, // or "max" for cluster mode
       exec_mode: "fork", // or "cluster"
-      env: {
-        NODE_ENV: "development",
-        PORT: 3400,
-      },
-      env_production: {
-        NODE_ENV: "production",
-        PORT: 3000,
-      },
+      // env: {
+      //   NODE_ENV: "development",
+      //   PORT: 3400,
+      // },
+      // env_production: {
+      //   NODE_ENV: "production",
+      //   PORT: 3000,
+      // },
       ignore_watch: ["pids", "data", "node_modules", "logs"],
       log_date_format: "YYYY-MM-DD HH:mm Z",
       error_file: "./logs/err.log",
