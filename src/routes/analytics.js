@@ -16,6 +16,8 @@ module.exports = (req, res) => {
   //   req.connection.remoteAddress ||
   //   "";
   const ip = req.ip;
+  req.logger.debug("Ip Address", req.ip);
+  req.logger.debug("headers", req.headers);
   const timestamp = Date.now();
 
   db.run(
@@ -23,6 +25,6 @@ module.exports = (req, res) => {
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [timestamp, url, referrer, userAgent, viewport, loadTime, event, ip, 1]
   );
-  res.send("Tracked");
-  //res.sendStatus(204);
+
+  res.sendStatus(204);
 };
