@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 function setupNavToggle() {
+=======
+window.addEventListener("DOMContentLoaded", () => {
+>>>>>>> testing
   const nav = document.getElementById("siteNav");
   const toggleBtn = document.getElementById("menuToggle");
 
@@ -15,11 +19,25 @@ function setupNavToggle() {
       }
     });
   }
+<<<<<<< HEAD
 }
 
 window.addEventListener("DOMContentLoaded", setupNavToggle);
 window.addEventListener("resize", setupNavToggle);
+=======
+<<<<<<< Updated upstream
+});
+=======
+}
+>>>>>>> Stashed changes
+>>>>>>> testing
 
 function toggleMenu() {
   document.getElementById("siteNav").classList.toggle("hide");
 }
+<<<<<<< HEAD
+=======
+
+window.addEventListener("DOMContentLoaded", setupNavToggle);
+window.addEventListener("resize", setupNavToggle);
+>>>>>>> testing
