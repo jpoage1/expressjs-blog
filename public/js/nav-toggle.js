@@ -15,8 +15,15 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+<<<<<<< Updated upstream
 });
+=======
+}
+>>>>>>> Stashed changes
 
 function toggleMenu() {
   document.getElementById("siteNav").classList.toggle("hide");
 }
+
+window.addEventListener("DOMContentLoaded", setupNavToggle);
+window.addEventListener("resize", setupNavToggle);

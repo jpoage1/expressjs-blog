@@ -11,6 +11,7 @@ const logEvent = require("./analytics.js");
 const applyProductionSecurity = require("./applyProductionSecurity");
 const validateRequestIntegrity = require("./validateRequestIntegrity");
 const { registerHelpers } = require("../utils/hbsHelpers");
+const errorHandler = require("./errorHandler");
 
 const {
   loggingMiddleware,
@@ -59,6 +60,7 @@ function setupApp() {
   app.use(validateRequestIntegrity);
   app.use(formatHtml);
   app.use(routes);
+  app.use(errorHandler);
   return app;
 }
 
