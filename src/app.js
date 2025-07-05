@@ -34,7 +34,7 @@ app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
 app.set("views", "./src/views");
 
-setupMiddleware(app);
+app.use(setupMiddleware());
 
 port = process.env.PORT || 3400;
 

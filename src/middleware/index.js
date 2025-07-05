@@ -16,7 +16,8 @@ const {
   morganError,
 } = require("./logging");
 
-function setupMiddleware(app) {
+function setupMiddleware() {
+  const app = express();
   app.use(logEvent);
   app.use(morganInfo);
   app.use(morganWarn);
@@ -50,6 +51,7 @@ function setupMiddleware(app) {
     next(err);
   });
   app.use(errorHandler);
+  return app;
 }
 
 module.exports = setupMiddleware;
