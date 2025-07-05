@@ -23,6 +23,6 @@ module.exports = (req, res) => {
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [timestamp, url, referrer, userAgent, viewport, loadTime, event, ip, 1]
   );
-  res.send("Tracked");
-  //res.sendStatus(204);
+  // res.send("Tracked");
+  res.sendStatus(204);
 };
