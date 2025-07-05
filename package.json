@@ -10,7 +10,7 @@
     "maildev": "maildev",
     "main": "pm2 start ecosystem.config.js --only expressjs-blog-main",
     "testing": "pm2 start ecosystem.config.js --only expressjs-blog-testing",
-    "stop": "node_modules/pm2/bin/pm2 delete expressjs-blog-main",
+    "stop-main": "node_modules/pm2/bin/pm2 delete expressjs-blog-main",
     "stop-testing": "node_modules/pm2/bin/pm2 delete expressjs-blog-testing"
   },
   "keywords": [],
