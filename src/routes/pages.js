@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const ConstructionRoutes = require("../utils/ConstructionRoutes");
 const MarkdownRoutes = require("../utils/MarkdownRoutes");
-const csrfToken = require("../utils/csrfToken");
+const csrfToken = require("../middleware/csrfToken");
 
 const construction = new ConstructionRoutes();
 const markdown = new MarkdownRoutes();

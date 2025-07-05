@@ -1,10 +1,8 @@
-const express = require("express");
 const helmet = require("helmet");
 const hpp = require("hpp");
 const xssSanitizer = require("./xssSanitizer");
 
-function setupMiddleware() {
-  const app = express();
+function applyProductionSecurity(app) {
   app.disable("x-powered-by");
   app.set("trust proxy", true);
 
@@ -52,7 +50,6 @@ function setupMiddleware() {
       },
     })
   ); // Sets secure HTTP headers. Prevents common attacks.
-  return app;
 }
 
-module.exports = setupMiddleware;
+module.exports = applyProductionSecurity;
