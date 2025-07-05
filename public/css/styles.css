@@ -91,6 +91,10 @@ footer .social-contact p img:hover,
 footer .social-contact p svg:hover {
   opacity: 1;
 }
+.xml-sitemap-link {
+  font-size: 0.85em;
+  color: #777;
+}
 /* Header */
 header#site-header {
   background-color: #2c3e50;
