@@ -17,9 +17,9 @@ function setupNavToggle() {
   }
 }
 
-window.addEventListener("DOMContentLoaded", setupNavToggle);
-window.addEventListener("resize", setupNavToggle);
-
 function toggleMenu() {
   document.getElementById("siteNav").classList.toggle("hide");
 }
+
+window.addEventListener("DOMContentLoaded", setupNavToggle);
+window.addEventListener("resize", setupNavToggle);
