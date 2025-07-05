@@ -1,8 +1,10 @@
 // src/setupMiddleware.js
 const express = require("express");
+const path = require("path");
 const exphbs = require("express-handlebars");
 const bodyParser = require("body-parser");
 const compression = require("compression");
+
 const routes = require("../routes");
 const formatHtml = require("./formatHtml");
 const logEvent = require("./analytics.js");
@@ -17,29 +19,24 @@ const {
   morganError,
 } = require("./logging");
 
-function setupMiddleware() {
+function setupApp() {
   const app = express();
   // Setup logging
-  app.use(logEvent);
-  app.use(morganInfo);
-  app.use(morganWarn);
-  app.use(morganError);
-  app.use(loggingMiddleware);
+  app.use(logEvent, morganInfo, morganWarn, morganError, loggingMiddleware);
 
   // Setup view engine
 
   const hbs = exphbs.create({
-    layoutsDir: "src/views/layouts",
-    partialsDir: "src/views/partials",
+    layoutsDir: path.join(__dirname, "../views/layouts"),
+    partialsDir: path.join(__dirname, "../views/partials"),
     defaultLayout: "main",
     helpers: {
       section: function (name, options) {
-        if (!this._sections) this._sections = {};
+        this._sections ??= {};
         this._sections[name] = options.fn(this);
         return null;
       },
     },
-    defaultLayout: "main",
     extname: ".handlebars",
     runtimeOptions: {
       allowProtoPropertiesByDefault: true,
@@ -49,11 +46,13 @@ function setupMiddleware() {
   registerHelpers(hbs);
   app.engine("handlebars", hbs.engine);
   app.set("view engine", "handlebars");
-  app.set("views", "./src/views");
+  app.set("views", path.join(__dirname, "../views"));
 
+  // Setup production environment
   if (process.env.NODE_ENV === "production") {
     applyProductionSecurity(app);
   }
+
   app.use(express.json({ limit: "4kb" }));
   app.use(bodyParser.urlencoded({ extended: false, limit: "4kb" }));
   app.use(compression());
@@ -63,4 +62,4 @@ function setupMiddleware() {
   return app;
 }
 
-module.exports = setupMiddleware;
+module.exports = setupApp;
