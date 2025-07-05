@@ -89,12 +89,3 @@ footer .social-contact p img:hover,
 footer .social-contact p svg:hover {
   opacity: 1;
 }
-
-@media (max-width: 600px) {
-  footer .container {
-    padding: 1.5rem;
-  }
-  footer p {
-    font-size: 0.8rem;
-  }
-}

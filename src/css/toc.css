@@ -112,50 +112,6 @@
   letter-spacing: 0.5px;
 }
 
-/* Responsive adjustments */
-@media (max-width: 900px) {
-  .toc.sticky {
-    position: relative;
-    top: auto;
-    left: auto;
-    width: auto !important;
-    max-height: 300px;
-    z-index: auto;
-  }
-}
-
-@media (max-width: 600px) {
-  .toc {
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .toc-header {
-    font-size: 1rem;
-  }
-  
-  .toc a {
-    padding: 0.4rem 0.5rem;
-    font-size: 0.9rem;
-  }
-  
-  .toc li.h3 {
-    margin-left: 0.5rem;
-  }
-}
-
-/* Sidebar adjustments for better TOC integration */
-.sidebar {
-  width: 250px;
-  background-color: #f8f9fa;
-  border-right: 1px solid #e0e0e0;
-  padding: 1em;
-  font-size: 0.95rem;
-  font-family: Arial, sans-serif;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
-  position: relative; /* Ensure proper positioning context */
-}
-
 /* Ensure proper spacing between sidebar sections */
 .sidebar nav > * + .toc {
   margin-top: 2rem;
