@@ -1,5 +1,4 @@
 const path = require("path");
-const getBaseContext = require("../utils/baseContext");
 
 module.exports = async (err, req, res, next) => {
   const statusCode = err.statusCode ?? 500;
