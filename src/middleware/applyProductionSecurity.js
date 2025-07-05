@@ -3,7 +3,7 @@ const helmet = require("helmet");
 const hpp = require("hpp");
 const xssSanitizer = require("./xssSanitizer");
 
-function setupMiddleware(app) {
+function setupMiddleware() {
   const app = express();
   app.disable("x-powered-by");
   app.set("trust proxy", true);
