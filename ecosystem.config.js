@@ -1,19 +1,20 @@
-const { config } = require("dotenv");
+const dotenv = require("dotenv");
+dotenv.config(); // optional, if loading .env
 
-config = function (branch) {
+function createAppConfig(branch) {
   return {
-    name: `expressjs-blog${branch}`,
+    name: `expressjs-blog-${branch}`,
     script: "./src/app.js",
-    instances: 1, // or "max" for cluster mode
-    exec_mode: "fork", // or "cluster"
+    instances: 1,
+    exec_mode: "fork",
     ignore_watch: ["pids", "data", "node_modules", "logs"],
     log_date_format: "YYYY-MM-DD HH:mm Z",
     error_file: "./logs/err.log",
     out_file: "./logs/out.log",
     pid_file: "./pids/pm2.pid",
   };
-};
+}
 
 module.exports = {
-  apps: [config("main"), config("testing")],
+  apps: [createAppConfig("main"), createAppConfig("testing")],
 };
