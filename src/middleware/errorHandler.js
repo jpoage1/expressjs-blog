@@ -22,8 +22,7 @@ module.exports = async (err, req, res, next) => {
   const errorContextMap = {
     EBADCSRFTOKEN: {
       title: "Forbidden",
-      message:
-        "Invalid CSRF token. Your request was blocked for security reasons.",
+      message: "Your request could not be processed.",
       statusCode: 403,
     },
     404: {
@@ -33,18 +32,12 @@ module.exports = async (err, req, res, next) => {
     },
   };
   const errorKey = err.code || err.statusCode;
-  const errorContext = errorContextMap[errorKey] || {
-    title: "Error",
-    message,
+  const defaultErrorContext = {
+    title: `Error ${statusCode}`,
+    message: "An unexpected error occurred. Please try again later.",
     statusCode,
   };
+  const errorContext = errorContextMap[errorKey] || defaultErrorContext;
 
-  const context = await getBaseContext({
-    title: errorContext.title,
-    message: errorContext.message,
-    statusCode: errorContext.statusCode,
-    content: "",
-  });
-
-  res.status(errorContext.statusCode).render("pages/error", context);
+  res.redirect(`/error?code=${errorContext.statusCode}`);
 };

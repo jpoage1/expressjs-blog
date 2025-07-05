@@ -2,12 +2,11 @@
 const express = require("express");
 const router = express.Router();
 
-// const getBaseContext = require("../utils/baseContext");
 const analytics = require("./analytics");
 const robots = require("./robots");
 const blog_index = require("./blog_index");
 const csrfToken = require("../middleware/csrfToken");
-const errorHandler = require("./errorHandler");
+const errorPage = require("./errorPage");
 
 const contact = require("./contact");
 const sitemap = require("./sitemap");
@@ -15,6 +14,10 @@ const post = require("./post");
 const pages = require("./pages");
 const rssFeed = require("./rssFeed");
 
+router.get("/error", errorPage); // Landing page after error is logged
+
+router.get("/favicon.ico", (req, res) => res.status(204).end());
+router.post("/track", analytics);
 router.use(
   "/static",
   express.static("public", {
@@ -27,9 +30,6 @@ router.use(
     },
   })
 );
-router.get("/favicon.ico", (req, res) => res.status(204).end());
-
-router.post("/track", analytics);
 
 router.use(blog_index);
 router.use(robots);
@@ -40,15 +40,6 @@ router.use(rssFeed);
 
 router.get("/blog/:year/:month/:name", post);
 
-// router.get("/", async (req, res) => {
-//   const context = await getBaseContext({
-//     title: "Blog Home",
-//     content: "Welcome to the blog.",
-//   });
-
-//   res.render("pages/home.handlebars", context);
-// });
-
 router.get("/", async (req, res) => {
   res.redirect(301, "/blog");
 });
@@ -58,7 +49,5 @@ router.use((req, res, next) => {
   err.statusCode = 404;
   next(err);
 });
-
-router.use(errorHandler);
 
 module.exports = router;
