@@ -27,6 +27,8 @@ router.use(
     },
   })
 );
+router.get("/favicon.ico", (req, res) => res.status(204).end());
+
 router.post("/track", analytics);
 
 router.use(blog_index);

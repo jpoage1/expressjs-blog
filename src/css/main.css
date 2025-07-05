@@ -20,23 +20,15 @@ main article p {
   color: #444;
 }
 
-/* Content area */
 main {
-  margin-left: 200px;
   padding: 1rem;
 }
 
-/* Responsive main */
-@media (max-width: 900px) {
-  main.container {
-    margin: 0;
-  }
+.layout {
+  display: flex;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  gap: 2rem;
 }
-
-@media (max-width: 600px) {
-  main {
-    margin-left: 0;
-    padding: 1rem 0.5rem;
-  }
-}
-
