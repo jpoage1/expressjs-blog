@@ -1,4 +1,3 @@
-/* Sidebar */
 .sidebar {
   width: 250px;
   background-color: #f8f9fa;
@@ -7,10 +6,17 @@
   font-size: 0.95rem;
   font-family: Arial, sans-serif;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  position: relative;
 }
-.sidebar h3.menu-year,
-.sidebar h4,
-.sidebar a {
+
+/* Apply to all lists */
+.sidebar nav ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.sidebar h4.month-label,
+.sidebar a.post-label {
   text-transform: capitalize !important;
 }
 .sidebar .menu-year {
@@ -24,24 +30,19 @@
   letter-spacing: 1px;
 }
 
-.sidebar nav ul {
-  list-style: none;
-  padding-left: 0;
-}
-
 .sidebar .menu-month {
   margin-bottom: 1rem;
   font-weight: 600;
   color: #555555;
 }
 
-.sidebar .menu-month ul {
+.sidebar .menu-month ul.posts-list {
   list-style: none;
   padding-left: 1rem;
   margin-top: 0.3rem;
 }
 
-.sidebar .menu-month li a {
+.sidebar .menu-month li.post-label a {
   color: #2c3e50;
   text-decoration: none;
   display: block;
@@ -49,18 +50,17 @@
   transition: color 0.2s ease-in-out;
 }
 
-.sidebar .menu-month li a:hover {
+.sidebar .menu-month li.post-label a:hover {
   color: #1a73e8;
   text-decoration: underline;
 }
 
-/* Responsive sidebar */
-@media (max-width: 900px) {
-  .sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #e0e0e0;
-    margin-bottom: 1rem;
-  }
-}
+.sidebar .menu-year {                 
+  margin-bottom: 1em;
+}                                                            
 
+.sidebar .month-label {
+  font-weight: normal;
+  display: block;
+  margin-bottom: 0.3em;
+}
