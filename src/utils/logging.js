@@ -4,6 +4,8 @@ const path = require("path");
 const util = require("util");
 const { createLogger, format, transports } = require("winston");
 const DailyRotateFile = require("winston-daily-rotate-file");
+const SQLiteTransport = require("../utils/SQLiteTransport");
+const sqliteTransport = new SQLiteTransport();
 
 // Define the root log directory
 const logDir = path.join(__dirname, "..", "..", "logs");
@@ -131,8 +133,27 @@ const manualLogger = {
   debug: (...args) =>
     writeLog("DEBUG", logStreams.debug, console.debug, ...args),
 };
-// Winston logger
+// // Winston logger
+// const winstonLogger = createLogger({
+//   transports: [
+//     buildTransport("info", "info"),
+//     buildTransport("error", "error"),
+//     buildTransport("warn", "warn"),
+//     buildTransport("debug", "debug"),
+//     buildTransport("notice", "notice"),
+//     new transports.Console({
+//       level: "debug",
+//       format: format.combine(format.colorize(), format.simple()),
+//     }),
+//   ],
+// });
 const winstonLogger = createLogger({
+  format: format.combine(
+    format.timestamp(),
+    format.printf(
+      ({ timestamp, level, message }) => `[${timestamp}] [${level}] ${message}`
+    )
+  ),
   transports: [
     buildTransport("info", "info"),
     buildTransport("error", "error"),
@@ -143,6 +164,7 @@ const winstonLogger = createLogger({
       level: "debug",
       format: format.combine(format.colorize(), format.simple()),
     }),
+    sqliteTransport,
   ],
 });
 
