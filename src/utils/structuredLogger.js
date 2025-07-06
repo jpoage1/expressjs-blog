@@ -16,6 +16,7 @@ module.exports = (level) => (req, res, next) => {
     ) {
       // Flatten nested objects into key-value pairs for metadata
       const flatten = (obj, prefix = "") => {
+        if (!obj || typeof obj !== "object") return {};
         const res = {};
         for (const [k, v] of Object.entries(obj)) {
           const key = prefix ? `${prefix}.${k}` : k;

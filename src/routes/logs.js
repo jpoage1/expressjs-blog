@@ -8,7 +8,7 @@ const allowedLevels = ["warn", "error", "info", "debug", "functions", "notice"];
 const allowedTypes = ["testing", "live", "dev"];
 
 const dbPath = path.resolve(__dirname, "../../data/logs.sqlite3");
-console.log(dbPath);
+
 if (!fs.existsSync(dbPath)) {
   // Create empty file to allow readonly open later
   fs.closeSync(fs.openSync(dbPath, "w"));

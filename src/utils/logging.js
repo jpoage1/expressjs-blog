@@ -164,6 +164,14 @@ const winstonLogger = createLogger({
       level: "debug",
       format: format.combine(format.colorize(), format.simple()),
     }),
+    // new transports.Console({
+    //   level: "debug", // or "warn"/"error"
+    //   format: format.combine(
+    //     format.colorize(),
+    //     format.printf(({ level, message }) => `[${level}] ${message}`)
+    //   ),
+    // }),
+
     sqliteTransport,
   ],
 });
