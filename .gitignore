@@ -72,3 +72,4 @@ target/
 *.sqlite3
 *.sqlite
 /logs/*/*.json
+*.gz
