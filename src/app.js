@@ -12,6 +12,7 @@ port = process.env.PORT || 3400;
 
 app.listen(port, () => {
   console.log(`Server listening on http://localhost:${port}`);
+  console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
 });
 
 process.on("uncaughtException", (err) => {

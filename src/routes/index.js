@@ -20,8 +20,7 @@ router.get("/error", errorPage); // Landing page after error is logged
 
 router.get("/favicon.ico", (req, res) => res.status(204).end());
 
-if (!isDev) {
-  const logs = require("./logs");
+if (isDev) {
   router.use(logs);
 }
 
