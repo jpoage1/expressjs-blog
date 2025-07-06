@@ -13,10 +13,17 @@ const sitemap = require("./sitemap");
 const post = require("./post");
 const pages = require("./pages");
 const rssFeed = require("./rssFeed");
+const logs = require("./logs");
 
 router.get("/error", errorPage); // Landing page after error is logged
 
 router.get("/favicon.ico", (req, res) => res.status(204).end());
+
+if (process.env.NODE_ENV != "production") {
+  const logs = require("./logs");
+  // router.use(logs);
+}
+
 router.post("/track", analytics);
 router.use(
   "/static",
@@ -31,8 +38,6 @@ router.use(
   })
 );
 router.get("/favicon.ico", (req, res) => res.status(204).end());
-
-router.post("/track", analytics);
 
 router.use(blog_index);
 router.use(robots);

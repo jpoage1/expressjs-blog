@@ -15,5 +15,18 @@ db.run(`
     js_enabled INTEGER
   )
 `);
-
+db.run(`
+CREATE VIEW IF NOT EXISTS analytics_view AS
+SELECT
+  id,
+  datetime(timestamp / 1000, 'unixepoch') AS timestamp_human,
+  url,
+  referrer,
+  user_agent,
+  viewport,
+  load_time,
+  event,
+  ip,
+  js_enabled
+FROM analytics;`);
 module.exports = db;

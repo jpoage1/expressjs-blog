@@ -1,0 +1,37 @@
+{{!-- pages/logs.hbs --}}
+<h1>Log Viewer</h1>
+
+<form id="filterForm">
+    <label for="log_type">Log Type:</label>
+    <select id="log_type" name="log_type">
+        <option value="*">All</option>
+        <option value="testing">Testing</option>
+        <option value="live">Live</option>
+        <option value="dev">Dev</option>
+    </select>
+
+    <label for="log_level">Log Level:</label>
+    <select id="log_level" name="log_level">
+        <option value="*">All</option>
+        <option value="warn">Warn</option>
+        <option value="error">Error</option>
+        <option value="info">Info</option>
+        <option value="debug">Debug</option>
+        <option value="functions">Functions</option>
+        <option value="notice">Notice</option>
+    </select>
+
+    <label for="date">Date (YYYY-MM-DD):</label>
+    <input type="text" id="date" name="date" placeholder="2025-07-05" />
+
+    <button type="submit">Load Logs</button>
+</form>
+
+<table id="logsTable" aria-label="Logs table">
+    <thead>
+        <tr id="logsTableHeaderRow"></tr>
+    </thead>
+    <tbody id="logsTableBody"></tbody>
+</table>
+
+<script src="static/js/logs.js"></script>
