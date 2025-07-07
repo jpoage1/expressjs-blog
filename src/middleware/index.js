@@ -34,7 +34,7 @@ function setupApp() {
     helpers: {
       section: function (name, options) {
         this._sections ??= {};
-        this._sections[name] = options.fn(this);
+        this._sections[name] = (this._sections[name] || '') + options.fn(this);
         return null;
       },
     },

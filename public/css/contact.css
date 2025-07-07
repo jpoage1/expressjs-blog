@@ -10,7 +10,8 @@ form {
 
 label {
   font-weight: 600;
-  flex: 0 0 120px; /* fixed label width */
+  flex: 0 0 120px;
+  /* fixed label width */
   margin-right: 0.5rem;
   text-align: right;
 }
@@ -22,6 +23,7 @@ label {
   margin-bottom: 1rem;
   flex-wrap: nowrap;
 }
+
 .form-group input,
 .form-group textarea {
   padding: 0.5em;
@@ -33,12 +35,14 @@ label {
   flex: 1 1 auto;
   min-width: 200px;
 }
+
 .form-group.message-group textarea {
   flex: 1 1 auto;
   min-width: 250px;
   min-height: 120px;
   resize: vertical;
 }
+
 .form-group.message-group {
   flex-direction: row;
   align-items: center;
@@ -68,13 +72,7 @@ button {
 button:hover {
   background-color: #005fa3;
 }
-/*
-label {
-  flex: 0 0 120px;
-  font-weight: 600;
-  text-align: right;
-}
-*/
+
 label.required::after {
   content: " *";
   color: #d33;
@@ -83,15 +81,19 @@ label.required::after {
   font-size: 1.1em;
   vertical-align: super;
   font-family: sans-serif;
-}  
+}
+
 .required-note {
   color: #d33;
   font-size: 0.9rem;
   margin-top: 0.5rem;
   font-family: sans-serif;
 }
+
 @media (max-width: 600px) {
-  form, .form-group {
+
+  form,
+  .form-group {
     flex-direction: column;
     align-items: stretch;
   }
@@ -102,7 +104,89 @@ label.required::after {
     text-align: left;
   }
 
-  input, textarea {
+  input,
+  textarea {
     width: 100%;
   }
+}
+
+.h-captcha {
+  margin: 1rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.honeypot {
+  position: absolute !important;
+  left: -9999px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* 
+.char-counter {
+  text-align: right;
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 5px;
+} */
+
+.char-counter {
+  text-align: right;
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 5px;
+  margin-right: 0.5rem;
+}
+
+.security-notice {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  border-left: 4px solid #007bff;
+}
+
+.security-notice details {
+  cursor: pointer;
+}
+
+.security-notice summary {
+  font-weight: bold;
+  color: #007bff;
+  outline: none;
+}
+
+.security-content {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #dee2e6;
+}
+
+.security-content ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.security-content li {
+  margin: 5px 0;
+}
+
+#submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-group.message-group {
+  position: relative;
+}
+
+.form-group input:invalid,
+.form-group textarea:invalid {
+  border-color: #dc3545;
+}
+
+.form-group input:valid,
+.form-group textarea:valid {
+  border-color: #28a745;
 }
