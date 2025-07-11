@@ -49,7 +49,9 @@ const verifyHCaptcha = require("../utils/verifyHCaptcha");
 const crypto = require("crypto");
 const fs = require("fs").promises;
 const path = require("path");
-const HttpError = require("../utils/HttpError")
+const HttpError = require("../utils/HttpError");
+const { baseUrl } = require("../utils/baseUrl");
+const { qualifyLink } = require("../utils/qualifyLinks");
 
 // Threat detection patterns
 const THREAT_PATTERNS = {
@@ -371,6 +373,8 @@ router.get("/contact", async (req, res) => {
   const context = await getBaseContext({
     csrfToken: res.locals.csrfToken,
     title: "Contact",
+    formAction: qualifyLink("/contact"),
+    formMethod: "POST"
   });
   res.render("pages/contact.handlebars", context);
 });

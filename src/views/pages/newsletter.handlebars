@@ -6,7 +6,7 @@
 {{/section}}
 <section>
     <h1>{{title}}</h1>
-    <form action="{{formAction}}/newsletter" method="POST" class="newsletter-form">
+    <form action="{{formAction}}" method="{{formMethod}}" class="newsletter-form">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <div class="form-group">
             <label class="required" for="email">Email</label>
