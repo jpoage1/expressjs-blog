@@ -42,7 +42,7 @@ module.exports = async (err, req, res, next) => {
     return;
   }
 
-  const context = buildErrorRenderContext({
+  const context = {
     req,
     requestId,
     timestamp,
@@ -51,8 +51,8 @@ module.exports = async (err, req, res, next) => {
     message,
     stack,
     errorContext,
-  });
+  };
 
-  const errorPageContext = await getBaseContext(context);
-  res.status(errorContext.statusCode).render("pages/error", errorPageContext);
+  res.status(errorContext.statusCode);
+  res.renderWithBaseContext("pages/error", context);
 };

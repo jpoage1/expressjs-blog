@@ -9,6 +9,7 @@ const logEvent = require("./analytics.js");
 const applyProductionSecurity = require("./applyProductionSecurity");
 const validateRequestIntegrity = require("./validateRequestIntegrity");
 const errorHandler = require("./errorHandler");
+const baseContext = require("./baseContext");
 const hbs = require("./hbs");
 
 const {
@@ -20,7 +21,10 @@ const {
 
 function setupApp() {
   const app = express();
-
+  app.use((req, res, next) => {
+    req.isAuthenticated = !!req.headers['remote-user'];
+    next();
+  });
   const excludedPaths = ['/contact', '/analytics', '/track'];
   const DATA_LIMIT_BYTES = 10 * 1024; // 10k
 
@@ -51,11 +55,12 @@ function setupApp() {
   });
 
 
-  // Setup logging
-  app.use(logEvent, morganInfo, morganWarn, morganError, loggingMiddleware);
-
   // Setup handlebars
   app.use(hbs);
+  app.use(baseContext)
+
+  // Setup logging
+  app.use(logEvent, morganInfo, morganWarn, morganError, loggingMiddleware);
 
   // Setup production environment
   if (process.env.NODE_ENV === "production") {

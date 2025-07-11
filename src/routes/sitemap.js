@@ -26,11 +26,11 @@ const xmlTpl = Handlebars.compile(xmlTplSrc);
 
 // HTML sitemap page
 router.get("/sitemap", async (req, res) => {
-  const context = await getBaseContext({
+  const context = {
     title: "Site Map",
     sitemap: await sitemapService.getCompleteSitemap(),
-  });
-  res.render("pages/sitemap", context);
+  }
+  res.renderWithBaseContext("pages/sitemap", context);
 });
 
 // const getBaseUrl = require("../utils/baseUrl");
