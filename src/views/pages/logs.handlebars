@@ -1,4 +1,10 @@
 {{!-- pages/logs.hbs --}}
+{{#section "styles"}}
+<link href="{{baseUrl}}/static/css/logs.css" rel="stylesheet" type="text/css" />
+{{/section}}
+{{#section "scripts"}}
+<script src="{{baseUrl}}/static/js/logs.js"></script>
+{{/section}}
 <h1>Log Viewer</h1>
 
 <form id="filterForm">
@@ -33,5 +39,3 @@
     </thead>
     <tbody id="logsTableBody"></tbody>
 </table>
-
-<script src="{{baseUrl}}/static/js/logs.js"></script>
