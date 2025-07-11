@@ -13,7 +13,7 @@ function isValidEmail(email) {
 }
 
 function sendContactMail({ name, email, subject, message }) {
-  const { DOMAIN: domain } = process.env;
+  const { MAIL_DOMAIN: domain } = process.env;
 
   // Sanitize inputs
   const cleanName = sanitizeInput(name);

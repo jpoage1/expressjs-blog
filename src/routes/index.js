@@ -25,6 +25,8 @@ if (isDev) {
 }
 
 router.post("/track", analytics);
+router.post("/analytics", analytics);
+
 router.use(
   "/static",
   express.static("public", {
@@ -53,9 +55,7 @@ router.get("/", async (req, res) => {
 });
 
 router.use((req, res, next) => {
-  const err = new Error();
-  err.statusCode = 404;
-  next(err);
+  next(new HttpError(null, 404));
 });
 
 module.exports = router;

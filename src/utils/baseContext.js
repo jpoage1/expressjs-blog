@@ -1,9 +1,13 @@
 // src/utils/baseContext.js
 const path = require("path");
 const getPostsMenu = require("../services/postsMenuService");
-const { formatMonth } = require("../utils/formatMonth");
+const { formatMonth } = require("./formatMonth");
+const { qualifyNavLinks } = require("./qualifyLinks.js");
+const navLinks = require(path.join(__dirname, "../../content/navLinks.json"));
 
 async function getBaseContext(overrides = {}) {
+
+  const qualifiedNavLinks = qualifyNavLinks(navLinks);
   const menu = await getPostsMenu(path.join(__dirname, "../../content/posts"));
 
   return Object.assign(
@@ -11,21 +15,7 @@ async function getBaseContext(overrides = {}) {
       siteOwner: process.env.SITE_OWNER,
       originCountry: process.env.COUNTRY,
       hCaptchaKey: process.env.HCAPTCHA_KEY,
-      navLinks: [
-        { href: "/", label: "Home" },
-        {
-          // href: "/about",
-          label: "About",
-          submenu: [
-            { href: "/about/me", label: "About Me" },
-            { href: "/about/blog", label: "About This Blog" },
-          ],
-        },
-        { href: "/newsletter", label: "Newsletter" },
-        { href: "/tools", label: "Tools I use" },
-        { href: "/projects", label: "Projects" },
-        { href: "/contact", label: "Contact" },
-      ],
+      navLinks: qualifiedNavLinks,
       years: menu,
       formatMonth,
     },

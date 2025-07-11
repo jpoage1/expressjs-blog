@@ -1,3 +1,4 @@
+const HttpError = require("../utils/HttpError")
 module.exports = (req, res, next) => {
   const allowedMethods = ["GET", "POST"];
   const contentLength = parseInt(req.get("content-length") || "0", 10);
@@ -6,27 +7,25 @@ module.exports = (req, res, next) => {
 
   if (!allowedMethods.includes(req.method)) {
     return next(
-      Object.assign(new Error("Method Not Allowed"), { statusCode: 405 })
+      new HttpError("Method Not Allowed", 405)
     );
   }
 
   if (contentLength > 4096) {
     return next(
-      Object.assign(new Error("Payload Too Large"), { statusCode: 413 })
+      new HttpError("Payload Too Large", 413)
     );
   }
 
   if (contentType.includes("multipart/form-data")) {
     return next(
-      Object.assign(new Error("File uploads are not allowed."), {
-        statusCode: 400,
-      })
+      new HttpError("File uploads are not allowed.", 400)
     );
   }
 
   if (headerCount > 100) {
     return next(
-      Object.assign(new Error("Too many headers."), { statusCode: 400 })
+      new HttpError("Too many headers.", 400)
     );
   }
 

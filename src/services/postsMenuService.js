@@ -1,5 +1,6 @@
 // src/services/postsMenuService.js (refactored)
 const { getAllPosts } = require("../utils/postFileUtils");
+const { qualifyLink } = require("../utils/qualifyLinks");
 
 async function getPostsMenu(baseDir) {
   const allPosts = await getAllPosts(baseDir);
@@ -19,7 +20,7 @@ async function getPostsMenu(baseDir) {
     }
 
     monthMap.get(post.month).push({
-      url: post.url,
+      url: qualifyLink(post.url),
       slug: post.slug,
       title: post.title,
       date: post.date,

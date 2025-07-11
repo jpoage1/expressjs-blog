@@ -1,7 +1,7 @@
 // src/utils/sendNewsletterSubscriptionMail.js
 const transporter = require("./transporter");
 const sendNewsletterSubscriptionMail = async function ({ email }) {
-  const { DOMAIN: domain } = process.env;
+  const { MAIL_DOMAIN: domain } = process.env;
   const data = {
     from: `"Newsletter" <no-reply@${domain}>`,
     to: email,

@@ -1,4 +1,5 @@
 // src/app.js
+console.log('CWD:', process.cwd());
 
 require("dotenv").config();
 const setupMiddleware = require("./middleware");

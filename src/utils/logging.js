@@ -162,7 +162,21 @@ const winstonLogger = createLogger({
     buildTransport("notice", "notice"),
     new transports.Console({
       level: "debug",
-      format: format.combine(format.colorize(), format.simple()),
+      format: format.combine(
+        format.colorize(),
+        format.timestamp(),
+        format.printf(({ timestamp, level, message, ...meta }) => {
+          let stack = meta.stack || "";
+          if (stack) delete meta.stack;
+
+          let metaString = "";
+          if (Object.keys(meta).length > 0) {
+            metaString = JSON.stringify(meta, null, 2);
+          }
+
+          return `[${timestamp}] [${level}] ${message}\n${stack}\n${metaString}`;
+        })
+      ),
     }),
     // new transports.Console({
     //   level: "debug", // or "warn"/"error"
