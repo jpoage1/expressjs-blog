@@ -5,11 +5,14 @@ const { saveEmail } = require("../services/newsletterService");
 const formLimiter = require("../utils/formLimiter");
 
 const getBaseContext = require("../utils/baseContext");
+const { qualifyLink } = require("../utils/qualifyLinks");
 
 router.get("/newsletter", async (req, res) => {
   const context = await getBaseContext({
     csrfToken: res.locals.csrfToken,
     title: "Newsletter",
+    formAction: qualifyLink("/newsletter"),
+    formMethod: "POST"
   });
   res.render("pages/newsletter.handlebars", context);
 });

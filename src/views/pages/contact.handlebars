@@ -7,7 +7,7 @@
 {{/section}}
 <section>
   <h1>{{title}}</h1>
-  <form action="{{formAction}}/contact" method="POST" id="contactForm">
+  <form action="{{formAction}}" method="{{formMethod}}" id="contactForm">
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     {{!-- Honeypot fiel for bot detection --}}
     <input type="text" name="website" class="honeypot" tabindex="-1" autocomplete="off">
