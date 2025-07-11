@@ -1,13 +1,13 @@
 {{#section "styles"}}
-<link rel="stylesheet" href="/static/css/contact.css" />
+<link rel="stylesheet" href="{{baseUrl}}/static/css/contact.css" />
 {{/section}}
 {{#section "scripts"}}
 <script src="https://hcaptcha.com/1/api.js" async defer></script>
-<script src="/static/js/forensicTracker.js"></script>
+<script src="{{baseUrl}}/static/js/forensicTracker.js"></script>
 {{/section}}
 <section>
   <h1>{{title}}</h1>
-  <form action="/contact" method="POST" id="contactForm">
+  <form action="{{formAction}}/contact" method="POST" id="contactForm">
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     {{!-- Honeypot fiel for bot detection --}}
     <input type="text" name="website" class="honeypot" tabindex="-1" autocomplete="off">

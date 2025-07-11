@@ -3,6 +3,7 @@ const path = require("path");
 const getPostsMenu = require("../services/postsMenuService");
 const { formatMonth } = require("./formatMonth");
 const { qualifyNavLinks } = require("./qualifyLinks.js");
+const { baseUrl } = require("./baseUrl.js");
 const navLinks = require(path.join(__dirname, "../../content/navLinks.json"));
 
 async function getBaseContext(overrides = {}) {
@@ -18,6 +19,7 @@ async function getBaseContext(overrides = {}) {
       navLinks: qualifiedNavLinks,
       years: menu,
       formatMonth,
+      baseUrl
     },
     overrides
   );
