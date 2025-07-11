@@ -20,6 +20,8 @@ module.exports = async function getBaseContext(isAuthenticated, overrides = {}) 
     years: menu,
     formatMonth,
     baseUrl,
-    isAuthenticated
+    isAuthenticated,
+    showSidebar: true,
+    showFooter: true
   }, overrides);
 };

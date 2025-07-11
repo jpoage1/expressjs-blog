@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="alternate" type="application/rss+xml" title="Jason Poage's Blog RSS Feed"
+        href="{{baseUrl}}/rss-feed.xml" />
+    <link href="{{baseUrl}}/static/css/styles.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="{{baseUrl}}/static/js/track.js">
+    </script>
+    {{{_sections.styles}}}
+    <title>{{title}}</title>
+</head>
+
+<body>
+
+    <footer>
+        {{> footer}}
+    </footer>
+    {{{_sections.scripts}}}
+</body>
+
+</html>
