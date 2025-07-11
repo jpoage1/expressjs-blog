@@ -22,7 +22,6 @@ const {
 
 function setupApp() {
   const app = express();
-  app.use(authentication);
   const excludedPaths = ['/contact', '/analytics', '/track'];
   const DATA_LIMIT_BYTES = 10 * 1024; // 10k
 
@@ -53,12 +52,16 @@ function setupApp() {
   });
 
 
-  // Setup handlebars
+  
   app.use(hbs);
-  app.use(baseContext)
 
   // Setup logging
   app.use(logEvent, morganInfo, morganWarn, morganError, loggingMiddleware);
+
+  app.use(authentication);
+  
+  // Setup handlebars
+  app.use(baseContext)
 
   // Setup production environment
   if (process.env.NODE_ENV === "production") {

@@ -19,7 +19,7 @@ if (!fs.existsSync(dbPath)) {
 const db = new Database(dbPath, { readonly: true });
 
 router.get("/logs", secured, (req, res) => {
-  res.renderWithBaseContext("pages/logs", { layout: "logs" });
+  res.render("pages/logs", { layout: "logs" });
 });
 
 router.post("/logs", secured, (req, res) => {
