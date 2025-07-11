@@ -21,11 +21,11 @@ class MarkdownRoutes extends BaseRoute {
         const fileContent = await fs.readFile(filePath, "utf8");
         const { data: frontmatter, content } = matter(fileContent);
         const htmlContent = marked(content);
-        const context = await getBaseContext({
+        const context = {
           title: frontmatter.title,
           content: htmlContent,
-        });
-        res.render(`pages/${handlebarsFile}`, context);
+        }
+        res.renderWithBaseContext(`pages/${handlebarsFile}`, context);
       } catch (err) {
         err.statusCode = 500;
         next(err);

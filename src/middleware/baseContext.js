@@ -2,7 +2,7 @@
 const getBaseContext = require("../utils/baseContext");
 
 module.exports = async function baseContextMiddleware(req, res, next) {
-  const isAuthenticated = !!req.isAuthenticated;
+  const isAuthenticated = req.isAuthenticated;
   const baseContext = await getBaseContext(isAuthenticated);
   res.locals.baseContext = baseContext;
 
