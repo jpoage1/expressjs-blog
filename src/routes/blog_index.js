@@ -1,7 +1,6 @@
 const express = require("express");
 const path = require("path");
 const { getAllPosts } = require("../utils/postFileUtils");
-const getBaseContext = require("../utils/baseContext");
 const router = express.Router();
 
 router.get("/blog", async (req, res, next) => {
@@ -30,8 +29,7 @@ router.get("/blog", async (req, res, next) => {
     templateContent: post.excerpt || "",
   }));
 
-  const context = await getBaseContext({ collections: { posts } });
-  res.render("pages/blog_index", context);
+  res.renderWithBaseContext("pages/blog_index", { collections: { posts } });
 });
 
 module.exports = router;

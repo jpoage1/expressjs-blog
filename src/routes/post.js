@@ -40,13 +40,13 @@ module.exports = async (req, res, next) => {
       throw new Error("Attempted to access an unpublished page in production");
     }
     const htmlContent = marked(content);
-    const context = await getBaseContext({
+    const context = {
       title: frontmatter.title,
       date: frontmatter.date,
       author: frontmatter.author,
       content: htmlContent,
-    });
-    res.render("pages/post", context);
+    }
+    res.renderWithBaseContext("pages/post", context);
   } catch (err) {
     next(new HttpError("The requested blog post could not be found.", 404));
   }

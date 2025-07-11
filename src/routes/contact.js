@@ -370,13 +370,13 @@ router.get("/contact", async (req, res) => {
   
   await logSecurityEvent(securityData, 'page_access');
   
-  const context = await getBaseContext({
+  const context = {
     csrfToken: res.locals.csrfToken,
     title: "Contact",
     formAction: qualifyLink("/contact"),
     formMethod: "POST"
-  });
-  res.render("pages/contact.handlebars", context);
+  };
+  res.renderWithBaseContext("pages/contact.handlebars", context);
 });
 
 router.get("/contact/thankyou", async (req, res) => {
@@ -387,10 +387,9 @@ router.get("/contact/thankyou", async (req, res) => {
   
   await logSecurityEvent(securityData, 'thankyou_access');
   
-  const context = await getBaseContext({
+  res.renderWithBaseContext("pages/thankyou.handlebars", {
     title: "Thank You",
   });
-  res.render("pages/thankyou.handlebars", context);
 });
 
 module.exports = router;

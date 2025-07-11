@@ -8,20 +8,20 @@ const getBaseContext = require("../utils/baseContext");
 const { qualifyLink } = require("../utils/qualifyLinks");
 
 router.get("/newsletter", async (req, res) => {
-  const context = await getBaseContext({
+  const context = {
     csrfToken: res.locals.csrfToken,
     title: "Newsletter",
     formAction: qualifyLink("/newsletter"),
     formMethod: "POST"
-  });
-  res.render("pages/newsletter.handlebars", context);
+  }
+  res.renderWithBaseContext("pages/newsletter.handlebars", context);
 });
 
 router.get("/newsletter/success", async (req, res) => {
-  const context = await getBaseContext({
+  const context = {
     title: "Thank You",
-  });
-  res.render("pages/newsletter-success.handlebars", context);
+  }
+  res.renderWithBaseContext("pages/newsletter-success.handlebars", context);
 });
 
 router.post("/newsletter", formLimiter, async (req, res, next) => {

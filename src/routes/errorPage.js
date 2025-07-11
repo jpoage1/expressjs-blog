@@ -6,12 +6,13 @@ module.exports = async (req, res) => {
   const code = parseInt(req.query.code, 10) || 500;
   const errorContext = getErrorContext(code);
 
-  const context = await getBaseContext({
+  const context = {
     title: errorContext.title,
     message: errorContext.message,
     statusCode: errorContext.statusCode,
     content: "",
-  });
+  };
 
-  res.status(errorContext.statusCode).render("pages/error", context);
+  res.status(errorContext.statusCode)
+  res.renderWithBaseContext("pages/error", context);
 };

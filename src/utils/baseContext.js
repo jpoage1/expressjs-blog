@@ -5,24 +5,21 @@ const { formatMonth } = require("./formatMonth");
 const { qualifyNavLinks } = require("./qualifyLinks.js");
 const { baseUrl } = require("./baseUrl.js");
 const navLinks = require(path.join(__dirname, "../../content/navLinks.json"));
+const filterSecureLinks = require("../utils/filterSecureLinks");
 
-async function getBaseContext(overrides = {}) {
-
-  const qualifiedNavLinks = qualifyNavLinks(navLinks);
+module.exports = async function getBaseContext(isAuthenticated, overrides = {}) {
+  const filteredNavLinks = filterSecureLinks(navLinks, isAuthenticated);
+  const qualifiedNavLinks = qualifyNavLinks(filteredNavLinks);
   const menu = await getPostsMenu(path.join(__dirname, "../../content/posts"));
 
-  return Object.assign(
-    {
-      siteOwner: process.env.SITE_OWNER,
-      originCountry: process.env.COUNTRY,
-      hCaptchaKey: process.env.HCAPTCHA_KEY,
-      navLinks: qualifiedNavLinks,
-      years: menu,
-      formatMonth,
-      baseUrl
-    },
-    overrides
-  );
-}
-
-module.exports = getBaseContext;
+  return Object.assign({
+    siteOwner: process.env.SITE_OWNER,
+    originCountry: process.env.COUNTRY,
+    hCaptchaKey: process.env.HCAPTCHA_KEY,
+    navLinks: qualifiedNavLinks,
+    years: menu,
+    formatMonth,
+    baseUrl,
+    isAuthenticated
+  }, overrides);
+};
