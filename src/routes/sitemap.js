@@ -7,7 +7,7 @@ const Handlebars = require("handlebars");
 const getBaseContext = require("../utils/baseContext");
 const sitemapService = require("../services/sitemapService");
 const { qualifyLink } = require("../utils/qualifyLinks.js");
-const { baseUrl } = require("../utils/baseUrl");
+// const { baseUrl } = require("../utils/baseUrl");
 
 // Precompile XML template once
 const xmlTplSrc = fs.readFileSync(
@@ -33,7 +33,8 @@ router.get("/sitemap", async (req, res) => {
   res.render("pages/sitemap", context);
 });
 
-const getBaseUrl = require("../utils/baseUrl");
+// const getBaseUrl = require("../utils/baseUrl");
+
 // XML sitemap endpoint
 router.get("/sitemap.xml", async (req, res) => {
   const urls = await sitemapService.getAllUrls();
@@ -47,7 +48,7 @@ router.get("/sitemap.xml", async (req, res) => {
     priority: url.priority,
   }));
 
-  const xml = xmlTpl({ urls: formattedUrls, baseUrl });
+  const xml = xmlTpl({ urls: formattedUrls });
   res.type("application/xml").send(xml);
 });
 
