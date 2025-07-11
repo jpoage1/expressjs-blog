@@ -9,8 +9,8 @@ class ConstructionRoutes extends BaseRoute {
 
   register(path, title) {
     this.router.get(path, async (req, res) => {
-      const context = await getBaseContext({ title });
-      res.render("pages/construction.handlebars", context);
+      const context = { title };
+      res.renderWithBaseContext("pages/construction.handlebars", context);
     });
   }
 }

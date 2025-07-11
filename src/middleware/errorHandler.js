@@ -38,7 +38,7 @@ module.exports = async (err, req, res, next) => {
   const errorContext = getErrorContext(code || statusCode);
 
   if (!isDev) {
-    res.redirect(`/error?code=${errorContext.statusCode}`);
+    // res.redirect(`/error?code=${errorContext.statusCode}`);
     return;
   }
 
