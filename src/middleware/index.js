@@ -11,6 +11,7 @@ const validateRequestIntegrity = require("./validateRequestIntegrity");
 const errorHandler = require("./errorHandler");
 const baseContext = require("./baseContext");
 const hbs = require("./hbs");
+const authentication = require("./authentication.js");
 
 const {
   loggingMiddleware,
@@ -21,10 +22,7 @@ const {
 
 function setupApp() {
   const app = express();
-  app.use((req, res, next) => {
-    req.isAuthenticated = !!req.headers['remote-user'];
-    next();
-  });
+  app.use(authentication);
   const excludedPaths = ['/contact', '/analytics', '/track'];
   const DATA_LIMIT_BYTES = 10 * 1024; // 10k
 
