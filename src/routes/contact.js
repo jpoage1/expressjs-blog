@@ -49,6 +49,7 @@ const verifyHCaptcha = require("../utils/verifyHCaptcha");
 const crypto = require("crypto");
 const fs = require("fs").promises;
 const path = require("path");
+const HttpError = require("../utils/HttpError")
 
 // Threat detection patterns
 const THREAT_PATTERNS = {
@@ -244,7 +245,30 @@ router.use((req, res, next) => {
 router.post("/contact", formLimiter, async (req, res, next) => {
   try {
     const { name, email, message, subject, hcaptchaToken, clientData } = req.body;
-    
+    // Basic input validation
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254;
+    }
+
+    function isReasonableLength(str, maxLen) {
+      return typeof str === 'string' && str.trim().length > 0 && str.length <= maxLen;
+    }
+
+    if (
+      !isReasonableLength(name, 100) ||
+      !isValidEmail(email) ||
+      !isReasonableLength(subject, 150) ||
+      !isReasonableLength(message, 2000)
+    ) {
+      const invalidData = captureSecurityData(req, {
+        formData: { name, email, subject, message },
+        failureReason: 'invalid_input',
+        processingStep: 'validation'
+      });
+
+      await logSecurityEvent(invalidData, 'validation_failure');
+      return next(new HttpError("Invalid input", 400));
+    }
     // Capture security data
     const securityData = captureSecurityData(req, {
       formData: { name, email, message, subject },
@@ -275,7 +299,7 @@ router.post("/contact", formLimiter, async (req, res, next) => {
         failureReason: 'missing_captcha'
       }, 'validation_failure');
       
-      return res.status(400).send("Captcha token missing");
+      return next(new HttpError("Captcha token missing", 400));
     }
     
     const valid = await verifyHCaptcha(hcaptchaToken);
@@ -287,7 +311,7 @@ router.post("/contact", formLimiter, async (req, res, next) => {
         failureReason: 'captcha_failed'
       }, 'validation_failure');
       
-      return res.status(400).send("Captcha verification failed");
+      return next(new HttpError("Captcha verification failed", 400));
     }
 
     // High threat handling
