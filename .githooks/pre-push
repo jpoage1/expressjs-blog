@@ -1,0 +1,10 @@
+#!/bin/sh
+# Push content subrepo before pushing main repo
+remote="$1"
+
+set -euo pipefail
+set -x
+
+cd content
+git push "$remote" main
+

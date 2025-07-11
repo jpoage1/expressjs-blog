@@ -1,0 +1,27 @@
+#!/bin/bash
+deploy_expressjs_blog() {
+  set -x
+  local ref="$1"
+  local branch="${ref#refs/heads/}"
+  local path="/srv/jasonpoage.com/expressjs-blog-$branch"
+
+  if [[ "$branch" == "production" || "$branch" == "main" || "$branch" == "testing" ]]; then
+    GIT_WORK_TREE="$path" git checkout -f "$branch"
+
+    cd "$path" || return 1
+    yarn
+    yarn combine:css
+    systemctl --user restart express-blog@"$branch".service
+    cp /srv/jasonpoage.com/$branch.env "$path"/.env
+
+    # Blog content
+    GIT_DIR="/srv/jasonpoage.com/expressjs-blog-posts.git"
+    # Always checkout the main branch of the blog posts
+    GIT_WORK_TREE="$path/content" git checkout -f main
+  fi
+  set +x
+}
+while read -r oldrev newrev ref; do
+  deploy_expressjs_blog "$ref"
+done
+
