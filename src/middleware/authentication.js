@@ -24,15 +24,15 @@ async function checkAuthFallback(req) {
 
     const body = await res.text();
 
-    console.log("[AuthCheck] Response status:", res.status);
-    console.log("[AuthCheck] Response headers:", Object.fromEntries(res.headers.entries()));
-    console.log("[AuthCheck] Response body:", body);
+    req.log.debug("[AuthCheck] Response status:", res.status);
+    req.log.debug("[AuthCheck] Response headers:", Object.fromEntries(res.headers.entries()));
+    req.log.debug("[AuthCheck] Response body:", body);
 
     sessionCache.set(cacheKey(req), { timestamp: Date.now(), status: res.status });
 
     return res.status === 200;
   } catch (err) {
-    console.error("[AuthCheck] Fetch error:", err);
+    req.log.error("[AuthCheck] Fetch error:", err);
     return false;
   }
 }
@@ -41,19 +41,19 @@ module.exports = async (req, res, next) => {
   const remoteUser = req.headers["remote-user"];
   if (remoteUser) {
     req.isAuthenticated = true;
-    console.log("Authenticated: ", remoteUser)
+    req.log.info("Authenticated: ", remoteUser)
     return next();
   }
 
   const key = cacheKey(req);
   if (isCachedValid(key) !== false ) {
     req.isAuthenticated = true;
-    console.log("Authenticated Key", key)
+    req.log.info("Authenticated Key", key)
     return next();
   }
 
   req.isAuthenticated = await checkAuthFallback(req);
 
-  console.log("Authenticated Result", req.isAuthenticated)
+  req.log.info("Authenticated Result", req.isAuthenticated)
   next();
 };

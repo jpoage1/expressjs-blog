@@ -38,11 +38,11 @@ module.exports = async (err, req, res, next) => {
   const errorContext = getErrorContext(code || statusCode);
 
   if (!isDev) {
-    // res.redirect(`/error?code=${errorContext.statusCode}`);
+    res.redirect(`/error?code=${errorContext.statusCode}`);
     return;
   }
 
-  const context = {
+  const context = buildErrorRenderContext({
     req,
     requestId,
     timestamp,
@@ -51,8 +51,8 @@ module.exports = async (err, req, res, next) => {
     message,
     stack,
     errorContext,
-  };
+  });
 
-  res.status(errorContext.statusCode);
-  res.renderWithBaseContext("pages/error", context);
+  const errorPageContext = await getBaseContext(req?.isAuthenticated, context);
+  res.status(errorContext.statusCode).render("pages/error", errorPageContext);
 };
