@@ -14,15 +14,12 @@ const post = require("./post");
 const pages = require("./pages");
 const rssFeed = require("./rssFeed");
 const logs = require("./logs");
-const { isDev } = require("../utils/env");
 
 router.get("/error", errorPage); // Landing page after error is logged
 
 router.get("/favicon.ico", (req, res) => res.status(204).end());
 
-if (isDev) {
-  router.use(logs);
-}
+router.use(logs);
 
 router.post("/track", analytics);
 router.post("/analytics", analytics);
