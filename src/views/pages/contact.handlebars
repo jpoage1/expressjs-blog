@@ -8,9 +8,9 @@
 <section>
   <h1>{{title}}</h1>
   <form action="{{formAction}}" method="{{formMethod}}" id="contactForm">
-    <input type="hidden" name="_csrf" value="{{csrfToken}}">
-    {{!-- Honeypot fiel for bot detection --}}
-    <input type="text" name="website" class="honeypot" tabindex="-1" autocomplete="off">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+    {{!-- Honeypot field for bot detection --}}
+    <input type="text" name="website" class="honeypot" tabindex="-1" autocomplete="off" />
     <div class="form-group">
       <label class="required" for="name">Name</label>
       <input id="name" name="name" placeholder="Your name" required autocomplete="name" />
