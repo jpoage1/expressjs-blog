@@ -14,10 +14,14 @@ const post = require("./post");
 const pages = require("./pages");
 const rssFeed = require("./rssFeed");
 const logs = require("./logs");
+const { qualifyLink } = require("../utils/qualifyLinks");
 
 router.get("/error", errorPage); // Landing page after error is logged
 
 router.get("/favicon.ico", (req, res) => res.status(204).end());
+router.head("/healthcheck", (req, res) => {
+  res.sendStatus(200);
+});
 
 router.use(logs);
 
@@ -47,9 +51,10 @@ router.use(rssFeed);
 
 router.get("/blog/:year/:month/:name", post);
 
-router.get("/", async (req, res) => {
-  res.redirect(301, "/blog");
-});
+// router.get("/", (req, res) => {
+//   console.log(qualifyLink("/blog"));
+//   res.redirect(301, qualifyLink("/blog"));
+// });
 
 router.use((req, res, next) => {
   next(new HttpError(null, 404));
