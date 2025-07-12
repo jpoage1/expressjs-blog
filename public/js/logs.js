@@ -20,6 +20,7 @@ form.addEventListener("submit", async (e) => {
 
     if (!res.ok) throw new Error(await res.text());
     const logs = await res.json();
+    console.log(logs);
 
     if (logs.length === 0) {
       tbody.innerHTML = '<tr><td colspan="1">No logs found</td></tr>';
