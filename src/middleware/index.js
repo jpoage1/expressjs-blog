@@ -11,7 +11,7 @@ const validateRequestIntegrity = require("./validateRequestIntegrity");
 const errorHandler = require("./errorHandler");
 const baseContext = require("./baseContext");
 const hbs = require("./hbs");
-const authentication = require("./authentication.js");
+const authCheck = require("./authCheck");
 
 const {
   loggingMiddleware,
@@ -22,7 +22,7 @@ const {
 
 function setupApp() {
   const app = express();
-  const excludedPaths = ['/contact', '/analytics', '/track'];
+  const excludedPaths = ["/contact", "/analytics", "/track"];
   const DATA_LIMIT_BYTES = 10 * 1024; // 10k
 
   // General parsers for non-excluded routes
@@ -30,18 +30,22 @@ function setupApp() {
     if (excludedPaths.includes(req.path)) return next();
     express.json({ limit: DATA_LIMIT_BYTES })(req, res, (err) => {
       if (err) return next(err);
-      express.urlencoded({ extended: false, limit: DATA_LIMIT_BYTES })(req, res, next);
+      express.urlencoded({ extended: false, limit: DATA_LIMIT_BYTES })(
+        req,
+        res,
+        next
+      );
     });
   });
 
   // Raw parser + manual truncation for excluded routes
-  const rawBodyParser = express.raw({ type: '*/*', limit: '100kb' });
+  const rawBodyParser = express.raw({ type: "*/*", limit: "100kb" });
   app.use((req, res, next) => {
     if (!excludedPaths.includes(req.path)) return next();
     rawBodyParser(req, res, (err) => {
       if (err) return next(err);
       try {
-        const raw = req.body.toString('utf8');
+        const raw = req.body.toString("utf8");
         const truncated = raw.slice(0, DATA_LIMIT_BYTES);
         req.body = JSON.parse(truncated);
       } catch (e) {
@@ -51,17 +55,15 @@ function setupApp() {
     });
   });
 
-
-  
   app.use(hbs);
 
   // Setup logging
   app.use(logEvent, morganInfo, morganWarn, morganError, loggingMiddleware);
 
-  app.use(authentication);
-  
+  app.use(authCheck);
+
   // Setup handlebars
-  app.use(baseContext)
+  app.use(baseContext);
 
   // Setup production environment
   if (process.env.NODE_ENV === "production") {
