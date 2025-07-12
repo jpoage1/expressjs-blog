@@ -102,7 +102,6 @@ router.post("/logs", secured, (req, res) => {
         ...meta,
       };
     });
-    console.log(logs.length);
 
     res.json(logs);
   } catch {
