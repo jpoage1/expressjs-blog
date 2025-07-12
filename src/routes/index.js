@@ -15,6 +15,7 @@ const pages = require("./pages");
 const rssFeed = require("./rssFeed");
 const logs = require("./logs");
 const { qualifyLink } = require("../utils/qualifyLinks");
+const HttpError = require("../utils/HttpError");
 
 router.get("/error", errorPage); // Landing page after error is logged
 
@@ -57,10 +58,10 @@ router.use(rssFeed);
 
 router.get("/blog/:year/:month/:name", post);
 
-// router.get("/", (req, res) => {
-//   console.log(qualifyLink("/blog"));
-//   res.redirect(301, qualifyLink("/blog"));
-// });
+router.get("/", (req, res) => {
+  console.log(qualifyLink("/blog"));
+  res.redirect(301, qualifyLink("/blog"));
+});
 
 router.use((req, res, next) => {
   next(new HttpError(null, 404));
