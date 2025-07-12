@@ -6,7 +6,6 @@ const fs = require("fs");
 const secured = require("../middleware/secured");
 
 const allowedLevels = ["warn", "error", "info", "debug", "functions", "notice"];
-const allowedTypes = ["testing", "live", "dev"];
 
 const dbPath = path.resolve(__dirname, "../../data/logs.sqlite3");
 
@@ -27,16 +26,16 @@ router.get("/logs", secured, (req, res) => {
 });
 
 router.post("/logs", secured, (req, res) => {
-  const log_type = req.query.log_type || "*";
+  // const log_type = req.query.log_type || "*";
   const log_level = req.query.log_level || "*";
   const date = req.query.date || "*";
 
   if (log_level !== "*" && !allowedLevels.includes(log_level)) {
     return res.status(400).json({ error: "Invalid log_level" });
   }
-  if (log_type !== "*" && !allowedTypes.includes(log_type)) {
-    return res.status(400).json({ error: "Invalid log_type" });
-  }
+  // if (log_type !== "*" && !allowedTypes.includes(log_type)) {
+  //   return res.status(400).json({ error: "Invalid log_type" });
+  // }
 
   const conditions = [];
   const params = [];
@@ -51,14 +50,14 @@ router.post("/logs", secured, (req, res) => {
     params.push(date);
   }
 
-  if (log_type !== "*") {
-    conditions.push(`EXISTS (
-      SELECT 1 FROM log_metadata m
-      JOIN keys k ON k.id = m.key_id
-      WHERE m.log_id = l.id AND k.key = 'type' AND m.value = ?
-    )`);
-    params.push(log_type);
-  }
+  // if (log_type !== "*") {
+  //   conditions.push(`EXISTS (
+  //     SELECT 1 FROM log_metadata m
+  //     JOIN keys k ON k.id = m.key_id
+  //     WHERE m.log_id = l.id AND k.key = 'type' AND m.value = ?
+  //   )`);
+  //   params.push(log_type);
+  // }
 
   const whereClause = conditions.length
     ? "WHERE " + conditions.join(" AND ")
@@ -103,6 +102,7 @@ router.post("/logs", secured, (req, res) => {
         ...meta,
       };
     });
+    console.log(logs.length);
 
     res.json(logs);
   } catch {
