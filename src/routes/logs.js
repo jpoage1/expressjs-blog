@@ -10,15 +10,12 @@ const allowedLevels = ["warn", "error", "info", "debug", "functions", "notice"];
 const dbPath = path.resolve(__dirname, "../../data/logs.sqlite3");
 
 if (!fs.existsSync(dbPath)) {
-  // Create empty file to allow readonly open later
   fs.closeSync(fs.openSync(dbPath, "w"));
-  // Optionally initialize schema here or open writable once for setup
 }
 
 const db = new Database(dbPath, { readonly: true });
 
 router.get("/logs", secured, (req, res) => {
-  // res.render("pages/logs", { layout: "logs" });
   res.renderWithBaseContext("pages/logs", {
     showSidebar: false,
     showFooter: false,
@@ -26,16 +23,15 @@ router.get("/logs", secured, (req, res) => {
 });
 
 router.post("/logs", secured, (req, res) => {
-  // const log_type = req.query.log_type || "*";
   const log_level = req.query.log_level || "*";
   const date = req.query.date || "*";
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 50;
+  const offset = (page - 1) * limit;
 
   if (log_level !== "*" && !allowedLevels.includes(log_level)) {
     return res.status(400).json({ error: "Invalid log_level" });
   }
-  // if (log_type !== "*" && !allowedTypes.includes(log_type)) {
-  //   return res.status(400).json({ error: "Invalid log_type" });
-  // }
 
   const conditions = [];
   const params = [];
@@ -50,19 +46,21 @@ router.post("/logs", secured, (req, res) => {
     params.push(date);
   }
 
-  // if (log_type !== "*") {
-  //   conditions.push(`EXISTS (
-  //     SELECT 1 FROM log_metadata m
-  //     JOIN keys k ON k.id = m.key_id
-  //     WHERE m.log_id = l.id AND k.key = 'type' AND m.value = ?
-  //   )`);
-  //   params.push(log_type);
-  // }
-
   const whereClause = conditions.length
     ? "WHERE " + conditions.join(" AND ")
     : "";
 
+  // Get total count for pagination
+  const countQuery = `
+    SELECT COUNT(DISTINCT l.id) as total
+    FROM logs l
+    ${whereClause}
+  `;
+
+  const totalResult = db.prepare(countQuery).get(...params);
+  const total = totalResult.total;
+
+  // Get paginated results
   const query = `
     SELECT
       l.id,
@@ -75,11 +73,11 @@ router.post("/logs", secured, (req, res) => {
     ${whereClause}
     GROUP BY l.id
     ORDER BY l.timestamp DESC
-    LIMIT 500
+    LIMIT ? OFFSET ?
   `;
 
   try {
-    const rows = db.prepare(query).all(...params);
+    const rows = db.prepare(query).all(...params, limit, offset);
 
     const logs = rows.map((row) => {
       const meta = {};
@@ -103,7 +101,16 @@ router.post("/logs", secured, (req, res) => {
       };
     });
 
-    res.json(logs);
+    res.json({
+      logs,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasMore: page < Math.ceil(total / limit),
+      },
+    });
   } catch {
     res.status(500).json({ error: "Failed to query logs" });
   }

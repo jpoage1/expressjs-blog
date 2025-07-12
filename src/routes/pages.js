@@ -24,7 +24,6 @@ construction.register("/changelog", "Changelog");
 construction.register("/archive", "Archive");
 // construction.register("/rss-feed.xml", "RSS Feed");
 construction.register("/tags", "Tags");
-construction.register("/blog", "Blog");
 construction.register("/about/blog", "About This Blog");
 // construction.register("/contact", "Contact Me");
 

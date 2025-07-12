@@ -1,32 +1,75 @@
-        body {
-            font-family: monospace, monospace;
-            margin: 20px;
-        }
+body {
+    font-family: monospace, monospace;
+    margin: 20px;
+}
 
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
 
-        th,
-        td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-        }
+th,
+td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
 
-        th {
-            background: #eee;
-        }
+th {
+    background: #eee;
+}
 
-        textarea {
-            width: 100%;
-            height: 100px;
-            font-family: monospace;
-            white-space: pre-wrap;
-        }
+textarea {
+    width: 100%;
+    height: 100px;
+    font-family: monospace;
+    white-space: pre-wrap;
+}
 
-        select,
-        button {
-            margin: 5px 0;
-        }
+select,
+button {
+    margin: 5px 0;
+}
+.pagination-container {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f5f5f5;
+  border-radius: 5px;
+}
+
+.pagination-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.pagination-controls button {
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.pagination-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-controls button:not(:disabled):hover {
+  background: #e9e9e9;
+}
+
+.loading-indicator {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+}

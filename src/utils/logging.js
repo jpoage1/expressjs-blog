@@ -133,20 +133,7 @@ const manualLogger = {
   debug: (...args) =>
     writeLog("DEBUG", logStreams.debug, console.debug, ...args),
 };
-// // Winston logger
-// const winstonLogger = createLogger({
-//   transports: [
-//     buildTransport("info", "info"),
-//     buildTransport("error", "error"),
-//     buildTransport("warn", "warn"),
-//     buildTransport("debug", "debug"),
-//     buildTransport("notice", "notice"),
-//     new transports.Console({
-//       level: "debug",
-//       format: format.combine(format.colorize(), format.simple()),
-//     }),
-//   ],
-// });
+
 const winstonLogger = createLogger({
   format: format.combine(
     format.timestamp(),
@@ -178,13 +165,6 @@ const winstonLogger = createLogger({
         })
       ),
     }),
-    // new transports.Console({
-    //   level: "debug", // or "warn"/"error"
-    //   format: format.combine(
-    //     format.colorize(),
-    //     format.printf(({ level, message }) => `[${level}] ${message}`)
-    //   ),
-    // }),
 
     sqliteTransport,
   ],
