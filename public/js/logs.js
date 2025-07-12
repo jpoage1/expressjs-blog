@@ -10,6 +10,7 @@ class LogsViewer {
     this.hasMore = true;
     this.totalPages = 0;
     this.currentFilters = {};
+    this.abortController = null; // For canceling requests
 
     this.setupEventListeners();
     this.setupPaginationControls();
@@ -21,11 +22,15 @@ class LogsViewer {
       this.resetAndLoad();
     });
 
-    // Continuous scrolling
+    // Debounced scroll handler to prevent excessive calls
+    let scrollTimeout;
     window.addEventListener("scroll", () => {
-      if (this.isNearBottom() && !this.isLoading && this.hasMore) {
-        this.loadNextPage();
-      }
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        if (this.isNearBottom() && !this.isLoading && this.hasMore) {
+          this.loadNextPage();
+        }
+      }, 100);
     });
   }
 
@@ -87,12 +92,20 @@ class LogsViewer {
   }
 
   async resetAndLoad() {
+    // Cancel any pending request
+    if (this.abortController) {
+      this.abortController.abort();
+    }
+
     this.currentPage = 1;
     this.hasMore = true;
-    this.theadRow.innerHTML = "";
-    this.tbody.innerHTML = "";
     this.columns = [];
     this.currentFilters = new URLSearchParams(new FormData(this.form));
+
+    // Clear table efficiently
+    this.theadRow.innerHTML = "";
+    this.tbody.innerHTML = "";
+
     await this.loadLogs(false);
   }
 
@@ -105,10 +118,18 @@ class LogsViewer {
 
   async goToPage(page) {
     if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+      // Cancel any pending request
+      if (this.abortController) {
+        this.abortController.abort();
+      }
+
       this.currentPage = page;
+      this.columns = [];
+
+      // Clear table efficiently
       this.theadRow.innerHTML = "";
       this.tbody.innerHTML = "";
-      this.columns = [];
+
       await this.loadLogs(false);
     }
   }
@@ -118,6 +139,9 @@ class LogsViewer {
 
     this.isLoading = true;
     this.showLoading();
+
+    // Create new abort controller for this request
+    this.abortController = new AbortController();
 
     const params = new URLSearchParams(this.currentFilters);
     params.append("page", this.currentPage);
@@ -131,6 +155,7 @@ class LogsViewer {
           Accept: "application/json",
         },
         body: params.toString(),
+        signal: this.abortController.signal,
       });
 
       if (!res.ok) throw new Error(await res.text());
@@ -152,6 +177,11 @@ class LogsViewer {
         data.pagination.total
       );
     } catch (error) {
+      // Don't show error if request was aborted
+      if (error.name === "AbortError") {
+        return;
+      }
+
       const errorMsg = `<tr><td colspan="1">Error loading logs: ${error.message}</td></tr>`;
       if (append) {
         this.tbody.innerHTML += errorMsg;
@@ -167,7 +197,7 @@ class LogsViewer {
   renderLogs(logs, append = false) {
     if (logs.length === 0) return;
 
-    // Build column set
+    // Build column set more efficiently
     const columnSet = new Set(this.columns);
     for (const log of logs) {
       Object.keys(log).forEach((key) => columnSet.add(key));
@@ -178,31 +208,69 @@ class LogsViewer {
     // Update headers if new columns or not appending
     if (!append || newColumns.length > this.columns.length) {
       this.columns = newColumns;
-      this.theadRow.innerHTML = "";
-      for (const col of this.columns) {
-        const th = document.createElement("th");
-        th.textContent = col;
-        this.theadRow.appendChild(th);
-      }
+      this.updateHeaders();
     }
 
-    // Add rows
+    // Use DocumentFragment for better performance
+    const fragment = document.createDocumentFragment();
+
     for (const log of logs) {
       const tr = document.createElement("tr");
+
       for (const col of this.columns) {
         const td = document.createElement("td");
         const value = log[col];
+
         if (col === "stack" && typeof value === "string") {
-          td.innerHTML = `<pre>${value
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")}</pre>`;
+          // Create pre element for stack traces
+          const pre = document.createElement("pre");
+          pre.textContent = value; // textContent automatically escapes
+          td.appendChild(pre);
+        } else if (col === "timestamp") {
+          // Format timestamp nicely
+          td.textContent = value ? new Date(value).toLocaleString() : "";
+        } else if (typeof value === "object" && value !== null) {
+          // Handle objects/arrays
+          td.textContent = JSON.stringify(value, null, 2);
+          td.style.fontFamily = "monospace";
         } else {
           td.textContent = value ?? "";
         }
+
         tr.appendChild(td);
       }
-      this.tbody.appendChild(tr);
+
+      fragment.appendChild(tr);
     }
+
+    // Single DOM append operation
+    this.tbody.appendChild(fragment);
+  }
+
+  updateHeaders() {
+    // Clear and rebuild headers efficiently
+    this.theadRow.innerHTML = "";
+
+    // Use DocumentFragment for headers too
+    const fragment = document.createDocumentFragment();
+
+    for (const col of this.columns) {
+      const th = document.createElement("th");
+      th.textContent = col;
+
+      // Add some basic styling for better UX
+      if (col === "timestamp") {
+        th.style.minWidth = "150px";
+      } else if (col === "level") {
+        th.style.width = "80px";
+      } else if (col === "stack") {
+        th.style.width = "300px";
+      }
+
+      fragment.appendChild(th);
+    }
+
+    this.theadRow.appendChild(fragment);
   }
 
   updatePaginationInfo(page, totalPages, total) {
@@ -219,16 +287,22 @@ class LogsViewer {
 
     firstBtn.disabled = page <= 1;
     prevBtn.disabled = page <= 1;
-    nextBtn.disabled = page >= totalPages;
-    lastBtn.disabled = page >= totalPages;
+    nextBtn.disabled = page >= totalPages || totalPages === 0;
+    lastBtn.disabled = page >= totalPages || totalPages === 0;
   }
 
   showLoading() {
-    document.getElementById("loadingIndicator").style.display = "block";
+    const indicator = document.getElementById("loadingIndicator");
+    if (indicator) {
+      indicator.style.display = "block";
+    }
   }
 
   hideLoading() {
-    document.getElementById("loadingIndicator").style.display = "none";
+    const indicator = document.getElementById("loadingIndicator");
+    if (indicator) {
+      indicator.style.display = "none";
+    }
   }
 }
 

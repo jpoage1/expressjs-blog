@@ -23,11 +23,15 @@ router.get("/logs", secured, (req, res) => {
 });
 
 router.post("/logs", secured, (req, res) => {
+  const start = process.hrtime.bigint();
+
   const log_level = req.query.log_level || "*";
   const date = req.query.date || "*";
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 50;
   const offset = (page - 1) * limit;
+
+  const parseStart = process.hrtime.bigint();
 
   if (log_level !== "*" && !allowedLevels.includes(log_level)) {
     return res.status(400).json({ error: "Invalid log_level" });
@@ -37,12 +41,12 @@ router.post("/logs", secured, (req, res) => {
   const params = [];
 
   if (log_level !== "*") {
-    conditions.push("l.level = ?");
+    conditions.push("level = ?");
     params.push(log_level);
   }
 
   if (date !== "*") {
-    conditions.push("date(l.timestamp) = ?");
+    conditions.push("date(timestamp) = ?");
     params.push(date);
   }
 
@@ -50,55 +54,81 @@ router.post("/logs", secured, (req, res) => {
     ? "WHERE " + conditions.join(" AND ")
     : "";
 
-  // Get total count for pagination
-  const countQuery = `
-    SELECT COUNT(DISTINCT l.id) as total
-    FROM logs l
-    ${whereClause}
-  `;
+  const countStart = process.hrtime.bigint();
 
+  // Count query - simple and fast
+  const countQuery = `SELECT COUNT(*) as total FROM logs ${whereClause}`;
   const totalResult = db.prepare(countQuery).get(...params);
   const total = totalResult.total;
 
-  // Get paginated results
-  const query = `
-    SELECT
-      l.id,
-      l.timestamp,
-      l.level,
-      GROUP_CONCAT(k.key || '=' || m.value, '||') AS meta_kv
-    FROM logs l
-    LEFT JOIN log_metadata m ON m.log_id = l.id
-    LEFT JOIN keys k ON k.id = m.key_id
+  const queryStart = process.hrtime.bigint();
+
+  // STEP 1: Get just the log records we need (fast!)
+  const logQuery = `
+    SELECT id, timestamp, level
+    FROM logs
     ${whereClause}
-    GROUP BY l.id
-    ORDER BY l.timestamp DESC
+    ORDER BY timestamp DESC
     LIMIT ? OFFSET ?
   `;
 
   try {
-    const rows = db.prepare(query).all(...params, limit, offset);
+    const logRows = db.prepare(logQuery).all(...params, limit, offset);
 
-    const logs = rows.map((row) => {
-      const meta = {};
-      if (row.meta_kv) {
-        for (const pair of row.meta_kv.split("||")) {
-          const [k, v] = pair.split("=");
-          if (k && v !== undefined) {
-            try {
-              meta[k] = JSON.parse(v);
-            } catch {
-              meta[k] = v;
-            }
-          }
-        }
+    if (logRows.length === 0) {
+      return res.json({
+        logs: [],
+        pagination: { page, limit, total, totalPages: 0, hasMore: false },
+      });
+    }
+
+    // STEP 2: Get metadata only for these specific logs
+    const logIds = logRows.map((row) => row.id);
+    const placeholders = logIds.map(() => "?").join(",");
+
+    const metadataQuery = `
+      SELECT 
+        m.log_id,
+        k.key,
+        m.value
+      FROM log_metadata m
+      JOIN keys k ON k.id = m.key_id
+      WHERE m.log_id IN (${placeholders})
+    `;
+
+    const metadataRows = db.prepare(metadataQuery).all(...logIds);
+
+    const mapStart = process.hrtime.bigint();
+
+    // STEP 3: Build metadata lookup map
+    const metadataMap = {};
+    metadataRows.forEach((row) => {
+      if (!metadataMap[row.log_id]) {
+        metadataMap[row.log_id] = {};
       }
-      return {
-        id: row.id,
-        timestamp: row.timestamp,
-        level: row.level,
-        ...meta,
-      };
+      try {
+        metadataMap[row.log_id][row.key] = JSON.parse(row.value);
+      } catch {
+        metadataMap[row.log_id][row.key] = row.value;
+      }
+    });
+
+    // STEP 4: Combine logs with their metadata
+    const logs = logRows.map((row) => ({
+      id: row.id,
+      timestamp: row.timestamp,
+      level: row.level,
+      ...(metadataMap[row.id] || {}),
+    }));
+
+    const end = process.hrtime.bigint();
+
+    req.log.info("logs route timings", {
+      totalMs: Number(end - start) / 1e6,
+      parseMs: Number(parseStart - start) / 1e6,
+      countMs: Number(queryStart - countStart) / 1e6,
+      queryMs: Number(mapStart - queryStart) / 1e6,
+      mapMs: Number(end - mapStart) / 1e6,
     });
 
     res.json({
@@ -111,7 +141,8 @@ router.post("/logs", secured, (req, res) => {
         hasMore: page < Math.ceil(total / limit),
       },
     });
-  } catch {
+  } catch (error) {
+    console.error("Query error:", error);
     res.status(500).json({ error: "Failed to query logs" });
   }
 });
