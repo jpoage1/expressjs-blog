@@ -20,7 +20,10 @@ const db = new Database(dbPath, { readonly: true });
 
 router.get("/logs", secured, (req, res) => {
   // res.render("pages/logs", { layout: "logs" });
-  res.renderWithBaseContext("pages/logs", { showSidebar: false, showFooter: false });
+  res.renderWithBaseContext("pages/logs", {
+    showSidebar: false,
+    showFooter: false,
+  });
 });
 
 router.post("/logs", secured, (req, res) => {
