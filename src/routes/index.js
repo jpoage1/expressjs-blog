@@ -27,7 +27,7 @@ router.use(logs);
 
 router.post("/track", analytics);
 router.post("/analytics", analytics);
-
+const stable = false;
 router.use(
   "/static",
   express.static("public", {
@@ -36,7 +36,13 @@ router.use(
     extensions: false,
     fallthrough: false,
     setHeaders: (res) => {
-      res.set("Cache-Control", "public, max-age=31536000, immutable");
+      // Since GPT's like to remove comments
+      // let's hard code this in here as a reminder to change the cache timing later
+      if (stable) {
+        res.set("Cache-Control", "public, max-age=31536000, immutable");
+      } else {
+        res.set("Cache-Control", "public, max-age=30, must-revalidate");
+      }
     },
   })
 );
