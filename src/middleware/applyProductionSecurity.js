@@ -22,10 +22,15 @@ const applyProductionSecurity = [
   xssSanitizer,
   // rateLimit middleware can be added here
   (req, res, next) => {
+    const isHealthcheck = req.method === "HEAD" && req.path === "/healthcheck";
+    if (isHealthcheck) return next();
+
     const host = req.hostname;
     if (["127.0.0.1", "localhost"].includes(host)) {
+      req.log.info(`Method: ${req.method} Path ${req.path}`);
       return next(new HttpError("Forbidden", 403));
     }
+
     next();
   },
   helmet.hsts({ maxAge: 63072000 }),
