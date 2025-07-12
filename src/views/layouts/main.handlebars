@@ -16,18 +16,22 @@
 <body>
   {{> headers}}
   <div class="layout">
+    {{#if showSidebar}}
     <aside class="sidebar">
       <nav>
         {{> postsMenu }}
       </nav>
     </aside>
+    {{/if}}
     <main class="container">
       {{{body}}}
     </main>
   </div>
+  {{#if showFooter}}
   <footer>
     {{> footer}}
   </footer>
+  {{/if}}
   {{{_sections.scripts}}}
 </body>
 
