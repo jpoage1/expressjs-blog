@@ -51,7 +51,7 @@ class LogsViewer {
         </div>
       </div>
       <div class="loading-indicator" id="loadingIndicator" style="display: none;">
-        Loading more logs...
+        Loading logs...
       </div>
     `;
 
