@@ -1,11 +1,14 @@
 // src/app.js
-console.log('CWD:', process.cwd());
+console.log("CWD:", process.cwd());
 
 require("dotenv").config();
 const setupMiddleware = require("./middleware");
 
 const { manualLogger } = require("./utils/logging");
 // const path = require("path");
+
+const { startTokenCleanup } = require("./utils/tokenCleanup");
+startTokenCleanup();
 
 app = setupMiddleware();
 

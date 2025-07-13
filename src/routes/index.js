@@ -7,6 +7,7 @@ const robots = require("./robots");
 const blog_index = require("./blog_index");
 const csrfToken = require("../middleware/csrfToken");
 const errorPage = require("./errorPage");
+const admin = require("./admin");
 
 const contact = require("./contact");
 const sitemap = require("./sitemap");
@@ -25,6 +26,7 @@ router.head("/healthcheck", (req, res) => {
 });
 
 router.use(logs);
+router.use(admin);
 
 router.post("/track", analytics);
 router.post("/analytics", analytics);
