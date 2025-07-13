@@ -73,3 +73,5 @@ target/
 *.sqlite
 /logs/*/*.json
 *.gz
+data/*
+!data/.gitkeep
