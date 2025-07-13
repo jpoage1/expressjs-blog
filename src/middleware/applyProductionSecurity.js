@@ -7,7 +7,6 @@ const { baseUrl } = require("../utils/baseUrl");
 const applyProductionSecurity = [
   (req, res, next) => {
     req.app.disable("x-powered-by");
-    req.app.set("trust proxy", true);
     next();
   },
   (req, res, next) => {

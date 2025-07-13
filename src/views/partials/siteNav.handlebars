@@ -1,0 +1,37 @@
+<nav class="site-nav" id="siteNav">
+    {{#each navLinks}}
+    {{#if submenu}}
+    <div class="dropdown">
+        {{#if this.href}}
+        <a href="{{this.href}}" class="dropbtn">{{this.label}}</a>
+        {{else}}
+        <a class="dropbtn">{{this.label}}</a>
+        {{/if}}
+        <div class="dropdown-content">
+            {{#each submenu}}
+            {{#if this.method}}
+            <form action="{{this.href}}" method="{{this.method}}" style="display:inline;">
+                <button type="submit" class="dropdown-link-button">{{this.label}}</button>
+            </form>
+            {{else}}
+            <a href="{{this.href}}">{{this.label}}</a>
+            {{/if}}
+            {{/each}}
+        </div>
+    </div>
+    {{else}}
+    <a href="{{this.href}}">{{this.label}}</a>
+    {{/if}}
+    {{/each}}
+</nav>
+
+
+<script>
+    function submitMethodForm(action, method) {
+        const form = document.createElement('form');
+        form.method = method.toUpperCase();
+        form.action = action;
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>

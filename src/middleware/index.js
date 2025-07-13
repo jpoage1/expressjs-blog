@@ -24,6 +24,7 @@ function setupApp() {
   const app = express();
   const excludedPaths = ["/contact", "/analytics", "/track"];
   const DATA_LIMIT_BYTES = 10 * 1024; // 10k
+  app.set("trust proxy", true);
 
   // General parsers for non-excluded routes
   app.use((req, res, next) => {
