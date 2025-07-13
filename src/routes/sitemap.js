@@ -4,7 +4,6 @@ const router = express.Router();
 const fs = require("fs");
 const path = require("path");
 const Handlebars = require("handlebars");
-const getBaseContext = require("../utils/baseContext");
 const sitemapService = require("../services/sitemapService");
 const { qualifyLink } = require("../utils/qualifyLinks.js");
 // const { baseUrl } = require("../utils/baseUrl");
@@ -29,7 +28,7 @@ router.get("/sitemap", async (req, res) => {
   const context = {
     title: "Site Map",
     sitemap: await sitemapService.getCompleteSitemap(),
-  }
+  };
   res.renderWithBaseContext("pages/sitemap", context);
 });
 
@@ -51,6 +50,5 @@ router.get("/sitemap.xml", async (req, res) => {
   const xml = xmlTpl({ urls: formattedUrls });
   res.type("application/xml").send(xml);
 });
-
 
 module.exports = router;

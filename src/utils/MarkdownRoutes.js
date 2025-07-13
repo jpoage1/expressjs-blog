@@ -4,7 +4,6 @@ const fs = require("fs/promises");
 const path = require("path");
 const matter = require("gray-matter");
 const { marked } = require("marked");
-const getBaseContext = require("./baseContext");
 
 class MarkdownRoutes extends BaseRoute {
   constructor() {
@@ -24,7 +23,7 @@ class MarkdownRoutes extends BaseRoute {
         const context = {
           title: frontmatter.title,
           content: htmlContent,
-        }
+        };
         res.renderWithBaseContext(`pages/${handlebarsFile}`, context);
       } catch (err) {
         err.statusCode = 500;
