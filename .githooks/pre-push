@@ -1,10 +1,14 @@
 #!/bin/sh
 # Push content subrepo before pushing main repo
 remote="$1"
+export GIT_TRACE=1
+export GIT_TRACE_PACKET=1
+export GIT_TRACE_PERFORMANCE=1
+export GIT_SSH_COMMAND="ssh -vvv"
 
 set -euo pipefail
 set -x
 
 cd content
 git push "$remote" main
-
+cd ..
