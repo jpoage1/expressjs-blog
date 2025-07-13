@@ -1,5 +1,4 @@
 // src/routes/errorPage
-const getBaseContext = require("../utils/baseContext");
 const { getErrorContext } = require("../utils/errorContext");
 
 module.exports = async (req, res) => {
@@ -13,6 +12,6 @@ module.exports = async (req, res) => {
     content: "",
   };
 
-  res.status(errorContext.statusCode)
+  res.status(errorContext.statusCode);
   res.renderWithBaseContext("pages/error", context);
 };

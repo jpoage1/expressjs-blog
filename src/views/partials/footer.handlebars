@@ -1,7 +1,14 @@
 <div class="container">
   <p>
     To the extent possible under law, {{siteOwner}} has waived all copyright and related or neighboring rights to this
-    work.
+    work
+    <small style="color: #666; font-size: 10px; opacity: 0.3;">
+      {{#if adminLoginUrl}}
+      <a href="{{{adminLoginUrl}}}" style="color: inherit;">.</a>
+      {{else}}
+      .
+      {{/if}}
+    </small>
     <a href="https://creativecommons.org/publicdomain/zero/1.0/">
       <img src="https://licensebuttons.net/p/zero/1.0/88x31.png" alt="CC0" />
     </a>
