@@ -4,8 +4,7 @@ const fs = require("fs").promises;
 const path = require("path");
 const matter = require("gray-matter");
 
-const getBaseContext = require("../utils/baseContext");
-const HttpError = require("../utils/HttpError")
+const HttpError = require("../utils/HttpError");
 
 module.exports = async (req, res, next) => {
   const { year, month, name } = req.params;
@@ -45,7 +44,7 @@ module.exports = async (req, res, next) => {
       date: frontmatter.date,
       author: frontmatter.author,
       content: htmlContent,
-    }
+    };
     res.renderWithBaseContext("pages/post", context);
   } catch (err) {
     next(new HttpError("The requested blog post could not be found.", 404));
