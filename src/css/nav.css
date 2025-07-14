@@ -1,8 +1,15 @@
 header#site-header nav.site-nav {
   display: flex;
   gap: 1rem;
+  position: relative;
+  z-index: 10;
 }
-
+nav.site-nav .dropdown {
+  position: relative;
+}
+nav.site-nav .dropdown-content {
+  position: absolute;
+}
 header#site-header nav.site-nav a,
 nav.site-nav .dropdown-content form button {
   text-decoration: none;
@@ -52,7 +59,6 @@ nav.site-nav .dropdown-content {
   position: absolute;
   background-color: white;
   min-width: 160px;
-  z-index: 1;
   box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
 }
 

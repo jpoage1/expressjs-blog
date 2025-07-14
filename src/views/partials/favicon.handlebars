@@ -1,93 +1,17 @@
-<style>
-    #favicon-preview {
-        width: 24px;
-        height: 24px;
-        border-radius: 4px;
-        background-color: #333;
-        display: inline-block;
-        vertical-align: middle;
-        margin-left: 8px;
-    }
-
-    .concept {
-        width: 64px;
-        height: 64px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        /*gap: 16px;*/
-    }
-
-    .icon {
-        width: 64px;
-        height: 64px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 48px;
-        user-select: none;
-    }
-
-    /* 1. Deep Dive Lambda */
-    .deep-dive {
-        background-color: #0A192F;
-        border-radius: 8px;
-        color: #00CED1;
-        font-weight: 700;
-        box-shadow:
-            0 0 4px #00CED1,
-            0 0 12px #00CED1;
-    }
-
-    /* 2. Ghost Lambda */
-    .ghost {
-        background-color: #F0F8FFCC;
-        /* semi-transparent AliceBlue */
-        border-radius: 8px;
-        color: #008B8B;
-        font-weight: 800;
-        text-shadow:
-            0 0 1px rgba(0, 0, 0, 0.2);
-    }
-
-    /* 3. Circle of Logic */
-    .circle {
-        background-color: #1E90FF;
-        border-radius: 50%;
-        color: #E0FFFF;
-        font-weight: 600;
-    }
-
-    .label {
-        font-size: 0.875rem;
-        text-align: center;
-        max-width: 128px;
-        line-height: 1.2;
-        user-select: none;
-    }
-
-    div.concept {
-        display: none;
-    }
-
-    div.concept#favicon1 {
-        display: inline-block;
-    }
-</style>
 <section id="favicon-preview">
-    <div class="concept" id="favicon1">
+    <div class="concept" id="favicon">
         <div class="icon deep-dive">λ</div>
-        <!-- div class="label">Deep Dive Lambda<br><small>Dark navy background, glowing cyan λ</small></div -->
-    </div>
-
-    <div class="concept" id="favicon2">
-        <div class="icon ghost">λ</div>
-        <!-- div class="label">Ghost Lambda<br><small>Light transparent background, solid cyan λ</small></div -->
-    </div>
-
-    <div class="concept" id="favicon3">
-        <div class="icon circle">λ</div>
-        <!-- div class="label">Circle of Logic<br><small>Blue circle, white/light cyan λ</small></div -->
     </div>
 </section>
+<div class="icon deep-dive-enhanced">
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    <div class="corner-accent top-left"></div>
+    <div class="corner-accent top-right"></div>
+    <div class="corner-accent bottom-left"></div>
+    <div class="corner-accent bottom-right"></div>
+    <span class="icon-text">D</span>
+</div>
