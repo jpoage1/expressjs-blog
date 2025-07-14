@@ -85,3 +85,24 @@ header#site-header .menu-toggle {
 nav.site-nav .dropdown-content form {
   margin: 0;
 }
+
+/* Navigation row with consistent left alignment */
+.nav-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding-left: 64px; /* Same as icon width + gap to align with site title */
+}
+
+/* Logo icon that acts as home link - spans from site title to nav */
+.nav-logo {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: flex-end;
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  bottom: 1rem;
+}

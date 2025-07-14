@@ -3,11 +3,10 @@ const router = express.Router();
 const Database = require("better-sqlite3");
 const path = require("path");
 const fs = require("fs");
-const secured = require("../middleware/secured");
 
 const allowedLevels = ["warn", "error", "info", "debug", "functions", "notice"];
 
-const dbPath = path.resolve(__dirname, "../../data/logs.sqlite3");
+const dbPath = path.resolve(__dirname, "../../../data/logs.sqlite3");
 
 if (!fs.existsSync(dbPath)) {
   fs.closeSync(fs.openSync(dbPath, "w"));
@@ -15,14 +14,14 @@ if (!fs.existsSync(dbPath)) {
 
 const db = new Database(dbPath, { readonly: true });
 
-router.get("/logs", secured, (req, res) => {
+router.get("/logs", (req, res) => {
   res.renderWithBaseContext("pages/logs", {
     showSidebar: false,
     showFooter: false,
   });
 });
 
-router.post("/logs", secured, (req, res) => {
+router.post("/logs", (req, res) => {
   const start = process.hrtime.bigint();
 
   const log_level = req.query.log_level || "*";

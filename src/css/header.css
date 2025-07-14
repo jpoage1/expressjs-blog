@@ -5,28 +5,71 @@ header#site-header {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-header#site-header .container {
+/* header#site-header .container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.5rem;
   padding: 1rem 0;
-}
-
-header#site-header .logo {
-  font-size: 1.8rem;
-  font-weight: bolder;
+} */
+header#site-header .container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
   position: relative;
 }
 
-header#site-header .logo a {
+/* header#site-header .logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.8rem;
+  font-weight: bolder;
+  position: relative;
+} */
+/* Logo section - positioned above nav */
+header#site-header .logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.8rem;
+  font-weight: bolder;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  gap: 1rem;
+  margin-left: 10px;
+  padding-left: 64px; /* Space for the icon */
+}
+
+
+/* .site-title {
+  margin: 0 1rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+  color: inherit;
+  text-decoration: none;
+  font-weight: bolder;
+  font-size: 
+  1.8rem;
+} */
+header#site-header .site-title {
   color: inherit;
   text-decoration: none;
   position: relative;
   display: inline-block;
 }
 
-header#site-header .logo a::after {
+header#site-header .site-title, a {
+  color: inherit;
+  text-decoration: none;
+  position: relative;
+  display: inline-block;
+}
+
+header#site-header .site-title a::after {
   content: "";
   position: absolute;
   left: 0;
@@ -39,7 +82,73 @@ header#site-header .logo a::after {
   transition: transform 0.3s ease;
 }
 
-header#site-header .logo a:hover::after {
+header#site-header .site-title a:hover::after {
   transform: scaleX(1);
 }
 
+
+
+/* Favicon styles */
+#favicon-preview {
+  width: 64px;
+  height: 64px;
+  border-radius: 4px;
+  background-color: #333;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.concept {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  user-select: none;
+}
+
+/* Deep Dive Lambda */
+.deep-dive {
+  background-color: #0A192F;
+  border-radius: 8px;
+  color: #00CED1;
+  font-weight: 700;
+  box-shadow:
+    0 0 4px #00CED1,
+    0 0 12px #00CED1;
+}
+
+/* Ghost Lambda */
+.ghost {
+  background-color: #F0F8FFCC;
+  border-radius: 8px;
+  color: #008B8B;
+  font-weight: 800;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+/* Circle of Logic */
+.circle {
+  background-color: #1E90FF;
+  border-radius: 50%;
+  color: #E0FFFF;
+  font-weight: 600;
+}
+
+div.concept {
+  display: none;
+}
+
+div.concept#favicon1 {
+  display: inline-block;
+}
