@@ -1,4 +1,4 @@
-// src/services/postsMenuService.js (refactored)
+// src/services/postsMenuService.js
 const { getAllPosts } = require("../utils/postFileUtils");
 const { qualifyLink } = require("../utils/qualifyLinks");
 

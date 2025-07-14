@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Background Pattern Options</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+
+    .demo-section {
+      margin-bottom: 3rem;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .demo-header {
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      padding: 2rem;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .demo-content {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .demo-icon {
+      width: 32px;
+      height: 32px;
+      background-color: #0A192F;
+      border-radius: 8px;
+      color: #00CED1;
+      font-weight: 700;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 4px #00CED1, 0 0 12px #00CED1;
+    }
+
+    .demo-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    .demo-nav {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .demo-nav a {
+      color: #ecf0f1;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    .demo-nav a:hover {
+      background-color: #34495e;
+    }
+
+    .label {
+      background-color: #34495e;
+      color: #ecf0f1;
+      padding: 0.5rem 1rem;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    /* Pattern 1: Geometric Grid */
+    .pattern-grid {
+      background-image: 
+        linear-gradient(rgba(236, 240, 241, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(236, 240, 241, 0.1) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    /* Pattern 2: Dot Pattern */
+    .pattern-dots {
+      background-image: radial-gradient(circle, rgba(236, 240, 241, 0.15) 1px, transparent 1px);
+      background-size: 15px 15px;
+    }
+
+    /* Pattern 3: Lambda Watermarks */
+    .pattern-lambda {
+      background-image: 
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 50px,
+          rgba(236, 240, 241, 0.08) 50px,
+          rgba(236, 240, 241, 0.08) 52px
+        );
+      position: relative;
+    }
+
+    .pattern-lambda::before {
+      content: '</> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </> </>';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      font-size: 2rem;
+      color: rgba(236, 240, 241, 0.05);
+      letter-spacing: 2rem;
+      line-height: 3rem;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    /* Pattern 4: Hexagonal Tessellation */
+    .pattern-hexagon {
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(236, 240, 241, 0.08) 10px, transparent 10px),
+        radial-gradient(circle at 25% 25%, rgba(236, 240, 241, 0.05) 8px, transparent 8px),
+        radial-gradient(circle at 75% 75%, rgba(236, 240, 241, 0.05) 6px, transparent 6px);
+      background-size: 40px 40px, 30px 30px, 20px 20px;
+    }
+
+    /* Pattern 5: Circuit Board */
+    .pattern-circuit {
+      background-image: 
+        linear-gradient(90deg, rgba(236, 240, 241, 0.1) 1px, transparent 1px),
+        linear-gradient(rgba(236, 240, 241, 0.1) 1px, transparent 1px),
+        linear-gradient(45deg, transparent 25%, rgba(236, 240, 241, 0.05) 25%, rgba(236, 240, 241, 0.05) 30%, transparent 30%);
+      background-size: 30px 30px, 30px 30px, 60px 60px;
+    }
+
+    /* Pattern 6: Triangular Tessellation */
+    .pattern-triangle {
+      background-image: 
+        linear-gradient(60deg, rgba(236, 240, 241, 0.08) 25%, transparent 25%),
+        linear-gradient(-60deg, rgba(236, 240, 241, 0.08) 25%, transparent 25%),
+        linear-gradient(60deg, transparent 75%, rgba(236, 240, 241, 0.05) 75%),
+        linear-gradient(-60deg, transparent 75%, rgba(236, 240, 241, 0.05) 75%);
+      background-size: 30px 52px;
+    }
+
+    /* Pattern 7: Gradient Mesh */
+    .pattern-mesh {
+      background-image: 
+        radial-gradient(circle at 20% 20%, rgba(236, 240, 241, 0.1) 20%, transparent 20%),
+        radial-gradient(circle at 80% 80%, rgba(236, 240, 241, 0.08) 20%, transparent 20%),
+        radial-gradient(circle at 40% 60%, rgba(236, 240, 241, 0.06) 20%, transparent 20%);
+      background-size: 80px 80px, 60px 60px, 40px 40px;
+    }
+
+    /* Pattern 8: Topographical Lines */
+    .pattern-topo {
+      background-image: 
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 8px,
+          rgba(236, 240, 241, 0.08) 8px,
+          rgba(236, 240, 241, 0.08) 9px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 12px,
+          rgba(236, 240, 241, 0.05) 12px,
+          rgba(236, 240, 241, 0.05) 13px
+        );
+    }
+
+    /* Pattern 9: Polygon Shapes */
+    .pattern-polygon {
+      background-image: 
+        polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      background-size: 25px 25px;
+      background-image: 
+        linear-gradient(45deg, rgba(236, 240, 241, 0.08) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(236, 240, 241, 0.08) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(236, 240, 241, 0.05) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(236, 240, 241, 0.05) 75%);
+      background-size: 25px 25px;
+    }
+
+    /* Pattern 10: Soft Bokeh */
+    .pattern-bokeh {
+      background-image: 
+        radial-gradient(circle at 15% 35%, rgba(236, 240, 241, 0.1) 15%, transparent 15%),
+        radial-gradient(circle at 85% 65%, rgba(236, 240, 241, 0.08) 20%, transparent 20%),
+        radial-gradient(circle at 45% 85%, rgba(236, 240, 241, 0.06) 10%, transparent 10%),
+        radial-gradient(circle at 75% 25%, rgba(236, 240, 241, 0.05) 25%, transparent 25%);
+      background-size: 100px 100px, 80px 80px, 60px 60px, 120px 120px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Subtle Background Pattern Options</h1>
+  <p>Each pattern uses low opacity (5-15%) to maintain readability while adding visual interest.</p>
+
+  <div class="demo-section">
+    <div class="label">1. Geometric Grid Pattern</div>
+    <div class="demo-header pattern-grid">
+      <div class="demo-content">
+        <div class="demo-icon">λ</div>
+        <div class="demo-title">Jason Poage</div>
+      </div>
+      <div class="demo-nav">
+        <a href="#">About</a>
+        <a href="#">Projects</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <div class="label">2. Dot Pattern</div>
+    <div class="demo-header pattern-dots">
+      <div class="demo-content">
+        <div class="demo-icon">λ</div>
+        <div class="demo-title">Jason Poage</div>
+      </div>
+      <div class="demo-nav">
+        <a href="#">About</a>
+        <a href="#">Projects</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <div class="label">3. Lambda Watermarks</div>
+    <div class="demo-header pattern-lambda">
+      <div class="demo-content">
+        <div class="demo-icon">λ</div>
+        <div class="demo-title">Jason Poage</div>
+      </div>
+      <div class="demo-nav">
+        <a href="#">About</a>
+        <a href="#">Projects</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <div class="label">4. Hexagonal Tessellation</div>
+    <div class="demo-header pattern-hexagon">
+      <div class="demo-content">
+        <div class="demo-icon">λ</div>
+        <div class="demo-title">Jason Poage</div>
+      </div>
+      <div class="demo-nav">
+        <a href="#">About</a>
+        <a href="#">Projects</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <div class="label">5. Circuit Board Pattern</div>
+    <div class="demo-header pattern-circuit">
+      <div class="demo-content">
+        <div class="demo-icon">λ</div>
+        <div class="demo-title">Jason Poage</div>
+      </div>
+      <div class="demo-nav">
+        <a href="#">About</a>
+        <a href="#">Projects</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <div class="label">6. Triangular Tessellation</div>
+    <div class="demo-header pattern-triangle">
+      <div class="demo-content">
+        <div class="demo-icon">λ</div>
+        <div class="demo-title">Jason Poage</div>
+      </div>
+      <div class="demo-nav">
+        <a href="#">About</a>
+        <a href="#">Projects</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <div class="label">7. Gradient Mesh Pattern</div>
+    <div class="demo-header pattern-mesh">
+      <div class="demo-content">
+        <div class="demo-icon">λ</div>
+        <div class="demo-title">Jason Poage</div>
+      </div>
+      <div class="demo-nav">
+        <a href="#">About</a>
+        <a href="#">Projects</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <div class="label">8. Topographical Lines</div>
+    <div class="demo-header pattern-topo">
+      <div class="demo-content">
+        <div class="demo-icon">λ</div>
+        <div class="demo-title">Jason Poage</div>
+      </div>
+      <div class="demo-nav">
+        <a href="#">About</a>
+        <a href="#">Projects</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <div class="label">9. Polygon Shapes</div>
+    <div class="demo-header pattern-polygon">
+      <div class="demo-content">
+        <div class="demo-icon">λ</div>
+        <div class="demo-title">Jason Poage</div>
+      </div>
+      <div class="demo-nav">
+        <a href="#">About</a>
+        <a href="#">Projects</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <div class="label">10. Soft Bokeh Effect</div>
+    <div class="demo-header pattern-bokeh">
+      <div class="demo-content">
+        <div class="demo-icon">λ</div>
+        <div class="demo-title">Jason Poage</div>
+      </div>
+      <div class="demo-nav">
+        <a href="#">About</a>
+        <a href="#">Projects</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
