@@ -25,14 +25,3 @@
     {{/if}}
     {{/each}}
 </nav>
-
-
-<script>
-    function submitMethodForm(action, method) {
-        const form = document.createElement('form');
-        form.method = method.toUpperCase();
-        form.action = action;
-        document.body.appendChild(form);
-        form.submit();
-    }
-</script>
