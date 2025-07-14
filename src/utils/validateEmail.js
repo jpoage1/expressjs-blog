@@ -1,29 +1,33 @@
 const validator = require("validator");
 
-// Email validation function
+const MESSAGES = {
+  REQUIRED: "Email is required",
+  TOO_LONG: "Email address is too long",
+  INVALID: "Please enter a valid email address",
+};
+
+const MAX_EMAIL_LENGTH = 254;
+
 const validateEmail = (email) => {
-  if (!email || typeof email !== 'string') {
-    return { valid: false, message: "Email is required" };
+  if (!email || typeof email !== "string") {
+    return { valid: false, message: MESSAGES.REQUIRED };
   }
-  
-  // Trim and normalize
+
   email = email.trim().toLowerCase();
-  
-  // Length check
-  if (email.length > 254) {
-    return { valid: false, message: "Email address is too long" };
+
+  if (email.length > MAX_EMAIL_LENGTH) {
+    return { valid: false, message: MESSAGES.TOO_LONG };
   }
-  
-  // Basic validation
-  if (!validator.isEmail(email)) {
-    return { valid: false, message: "Please enter a valid email address" };
+
+  if (
+    !validator.isEmail(email) ||
+    email.includes("..") ||
+    email.startsWith(".") ||
+    email.endsWith(".")
+  ) {
+    return { valid: false, message: MESSAGES.INVALID };
   }
-  
-  // Additional checks for suspicious patterns
-  if (email.includes('..') || email.startsWith('.') || email.endsWith('.')) {
-    return { valid: false, message: "Please enter a valid email address" };
-  }
-  
+
   return { valid: true, email };
 };
 

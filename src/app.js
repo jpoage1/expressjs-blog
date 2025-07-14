@@ -1,28 +1,36 @@
 // src/app.js
-console.log("CWD:", process.cwd());
-
 require("dotenv").config();
+
 const setupMiddleware = require("./middleware");
-
 const { manualLogger } = require("./utils/logging");
-// const path = require("path");
-
 const { startTokenCleanup } = require("./utils/tokenCleanup");
+
+const PORT = process.env.PORT || 3400;
+const CWD_LOG = `CWD: ${process.cwd()}`;
+const SERVER_LISTEN_LOG = (port) =>
+  `Server listening on http://localhost:${port}`;
+const NODE_ENV_LOG = `NODE_ENV: ${process.env.NODE_ENV}`;
+const UNCUGHT_EXCEPTION_MSG = "Uncaught Exception:";
+const UNHANDLED_REJECTION_MSG = "Unhandled Rejection:";
+
+function handleUncaughtException(err) {
+  manualLogger.error(UNCUGHT_EXCEPTION_MSG, err.stack || err);
+}
+
+function handleUnhandledRejection(reason) {
+  manualLogger.error(UNHANDLED_REJECTION_MSG, reason?.stack || reason);
+}
+
+console.log(CWD_LOG);
+
 startTokenCleanup();
 
-app = setupMiddleware();
+const app = setupMiddleware();
 
-port = process.env.PORT || 3400;
-
-app.listen(port, () => {
-  console.log(`Server listening on http://localhost:${port}`);
-  console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
+app.listen(PORT, () => {
+  console.log(SERVER_LISTEN_LOG(PORT));
+  console.log(NODE_ENV_LOG);
 });
 
-process.on("uncaughtException", (err) => {
-  manualLogger.error("Uncaught Exception:", err.stack || err);
-});
-
-process.on("unhandledRejection", (reason, promise) => {
-  manualLogger.error("Unhandled Rejection:", reason?.stack || reason);
-});
+process.on("uncaughtException", handleUncaughtException);
+process.on("unhandledRejection", handleUnhandledRejection);

@@ -57,6 +57,12 @@
   .sidebar {
     width: 100%;
   }
+  header#site-header .container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
   header#site-header nav.site-nav {
     flex-direction: column;
     gap: 0;
@@ -77,6 +83,22 @@
   }
   header#site-header #siteNav.hide a {
     display: none;
+  }
+  nav.site-nav {
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+  }
+  .nav-row {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding-left: 0;
+  }
+  .nav-logo {
+    position: relative;
+    left: 0;
+    margin-bottom: 0.5rem;
   }
   nav.site-nav ul {
     display: block;

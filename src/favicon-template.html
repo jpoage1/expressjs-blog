@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style type="text/css">
+    body, html {
+        background: transparent !important;
+        margin: 0;
+        padding: 0;
+    }
+    body {
+        margin: 0;
+        padding: 0;
+        width: 512px;
+        height: 512px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+    }
+    .icon {
+        margin: 0;
+        padding: 0;
+        width: 512px;
+        height: 512px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 420px;
+        user-select: none;
+    }
+
+    .icon {
+        width: 512px;
+        height: 512px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 420px;
+        user-select: none;
+    }
+
+    .deep-dive-enhanced {
+        background: linear-gradient(135deg, #0A192F 0%, #1a2744 30%, #0f1b36 70%, #0A192F 100%);
+        border-radius: 8px;
+        color: #00CED1;
+        font-weight: 700;
+        position: relative;
+        overflow: hidden;
+        box-shadow:
+            0 0 8px rgba(0, 206, 209, 0.4),
+            0 0 20px rgba(0, 206, 209, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            inset 0 0 20px rgba(0, 206, 209, 0.05);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0, 206, 209, 0.2);
+    }
+
+    .deep-dive-enhanced:hover {
+        transform: translateY(-1px);
+        box-shadow:
+            0 0 12px rgba(0, 206, 209, 0.6),
+            0 0 30px rgba(0, 206, 209, 0.25),
+            0 2px 8px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15),
+            inset 0 0 25px rgba(0, 206, 209, 0.08);
+        border-color: rgba(0, 206, 209, 0.4);
+    }
+
+    .deep-dive-enhanced::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        /* left: 038%; */
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, transparent, rgba(236, 240, 241, 0.08), transparent);
+        /* animation: shimmer 4s; */
+    }
+
+    .deep-dive-enhanced::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        right: 2px;
+        bottom: 2px;
+        background: linear-gradient(135deg, rgba(0, 206, 209, 0.03) 0%, transparent 50%, rgba(0, 206, 209, 0.03) 100%);
+        border-radius: 6px;
+        pointer-events: none;
+    }
+
+    .icon-text {
+        position: relative;
+        z-index: 2;
+        text-shadow: 0 0 8px rgba(0, 206, 209, 0.5);
+        text-shadow: 0 0 12px rgba(0, 206, 209, 0.8), 0 0 20px rgba(0, 206, 209, 0.3);
+    }
+
+    @keyframes shimmer {
+        0% {
+            left: -100%;
+        }
+        100% {
+            left: 100%;
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            text-shadow: 0 0 8px rgba(0, 206, 209, 0.5);
+        }
+        50% {
+            text-shadow: 0 0 12px rgba(0, 206, 209, 0.8), 0 0 20px rgba(0, 206, 209, 0.3);
+        }
+    }
+
+    /* Floating particles effect */
+    .particles {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        border-radius: 12px;
+    }
+
+    .particle {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background: #00CED1;
+        border-radius: 50%;
+        opacity: 0.6;
+        animation: float 6s linear infinite;
+    }
+
+    .particle:nth-child(1) {
+        left: 20%;
+        animation-delay: -1s;
+        animation-duration: 5s;
+    }
+
+    .particle:nth-child(2) {
+        left: 50%;
+        animation-delay: -2s;
+        animation-duration: 7s;
+    }
+
+    .particle:nth-child(3) {
+        left: 80%;
+        animation-delay: -3s;
+        animation-duration: 6s;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translateY(70px) scale(0);
+            opacity: 0;
+        }
+        10% {
+            opacity: 0.6;
+        }
+        90% {
+            opacity: 0.6;
+        }
+        100% {
+            transform: translateY(-10px) scale(1);
+            opacity: 0;
+        }
+    }
+
+    /* Corner accents */
+    .corner-accent {
+        position: absolute;
+        width: 6px;
+        height: 1px;
+        background: rgba(236, 240, 241, 0.3);
+        opacity: 0.8;
+    }
+
+    .corner-accent.top-left {
+        top: 4px;
+        left: 4px;
+        transform: rotate(45deg);
+    }
+
+    .corner-accent.bottom-right {
+        bottom: 4px;
+        right: 4px;
+        transform: rotate(45deg);
+    }
+
+    .corner-accent.top-right {
+        top: 4px;
+        right: 4px;
+        transform: rotate(-45deg);
+    }
+
+    .corner-accent.bottom-left {
+        bottom: 4px;
+        left: 4px;
+        transform: rotate(-45deg);
+    }
+  </style>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const container = document.querySelector(".particles");
+  const icon = document.querySelector(".icon");
+  const rect = icon.getBoundingClientRect();
+  const area = rect.width * rect.height;
+
+  const baseSize = 48; // baseline icon size for timing
+  const sizeRatio = rect.width / baseSize;
+
+  const density = 0.001; // particles per pixel
+  const count = Math.floor(area * density);
+
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement("div");
+    p.className = "particle";
+    p.style.left = `${Math.random() * 100}%`;
+    p.style.top = `${Math.random() * 100}%`;
+    p.style.animationDelay = `${-Math.random() * 6 * sizeRatio}s`;
+    p.style.animationDuration = `${(4 + Math.random() * 4) * sizeRatio}s`;
+    container.appendChild(p);
+  }
+});
+</script>
+
+
+</head>
+<body>
+    <div class="icon deep-dive-enhanced">
+        <div class="particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+        <div class="corner-accent top-left"></div>
+        <div class="corner-accent top-right"></div>
+        <div class="corner-accent bottom-left"></div>
+        <div class="corner-accent bottom-right"></div>
+        <span class="icon-text">λ</span>
+    </div>
+</body>
+</html>

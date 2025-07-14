@@ -1,5 +1,21 @@
-<div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
-    <h2>Redirecting...</h2>
-    <p>Please wait while we redirect you to the authentication service.</p>
-    <p>If you are not redirected automatically, <a href="{{adminLoginUrl}}">click here</a>.</p>
+{{#section "headers"}}
+<meta http-equiv="refresh" content="0; url={{redirectUrl}}">
+<link rel="prerender" href="{{redirectUrl}}">
+{{/section}}
+{{#section "styles"}}
+<link href="{{baseUrl}}/static/css/redirect.css" rel="stylesheet" type="text/css" />
+{{/section}}
+{{#section " scripts"}}
+<script src="{{baseUrl}}/static/js/redirect.js">
+</script>
+{{/section}}
+<div class="redirect-container">
+    <div class="redirect-content">
+        <div class="spinner"></div>
+        <h1>Redirecting...</h1>
+        <p>Taking you to your destination.</p>
+        <p>
+            <a href="{{redirectUrl}}" class="redirect-link">Go Now</a>
+        </p>
+    </div>
 </div>

@@ -1,22 +1,27 @@
-// src/services/sitemapService.js (refactored)
+// src/services/sitemapService.js
 const path = require("path");
 const fs = require("fs").promises;
 const { getAllPosts } = require("../utils/postFileUtils");
+const {
+  STATIC_SITEMAP_PATH,
+  POSTS_PATH,
+  DEFAULT_CHANGEFREQ,
+  DEFAULT_PRIORITY,
+  BLOG_POST_CHANGEFREQ,
+  BLOG_POST_PRIORITY,
+} = require("../constants/sitemapConstants");
 
 class SitemapService {
   constructor() {
-    this.staticSitemapPath = path.resolve(
-      __dirname,
-      "../../content/sitemap.json"
-    );
-    this.postsPath = path.join(__dirname, "../../content/posts");
+    this.staticSitemapPath = path.resolve(__dirname, STATIC_SITEMAP_PATH);
+    this.postsPath = path.join(__dirname, POSTS_PATH);
   }
 
   async getStaticPages() {
     try {
       const data = await fs.readFile(this.staticSitemapPath, "utf-8");
       return JSON.parse(data);
-    } catch (error) {
+    } catch {
       console.warn("Could not load static sitemap.json, using empty array");
       return [];
     }
@@ -30,8 +35,8 @@ class SitemapService {
       lastmod: post.date
         ? new Date(post.date).toISOString().split("T")[0]
         : null,
-      changefreq: "monthly",
-      priority: "0.7",
+      changefreq: BLOG_POST_CHANGEFREQ,
+      priority: BLOG_POST_PRIORITY,
     }));
   }
 
@@ -41,7 +46,6 @@ class SitemapService {
       this.getBlogPostUrls(),
     ]);
 
-    // Add blog posts as a section in the sitemap
     const blogSection = {
       title: "Blog Posts",
       children: blogUrls.map((url) => ({
@@ -67,8 +71,8 @@ class SitemapService {
         out.push({
           loc: entry.loc,
           lastmod: entry.lastmod,
-          changefreq: entry.changefreq || "monthly",
-          priority: entry.priority || "0.5",
+          changefreq: entry.changefreq || DEFAULT_CHANGEFREQ,
+          priority: entry.priority || DEFAULT_PRIORITY,
         });
       }
       if (Array.isArray(entry.children)) {

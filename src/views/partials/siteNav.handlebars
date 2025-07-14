@@ -1,3 +1,4 @@
+<button id="menuToggle" class="menu-toggle">☰ Menu</button>
 <nav class="site-nav" id="siteNav">
     {{#each navLinks}}
     {{#if submenu}}
@@ -24,14 +25,3 @@
     {{/if}}
     {{/each}}
 </nav>
-
-
-<script>
-    function submitMethodForm(action, method) {
-        const form = document.createElement('form');
-        form.method = method.toUpperCase();
-        form.action = action;
-        document.body.appendChild(form);
-        form.submit();
-    }
-</script>

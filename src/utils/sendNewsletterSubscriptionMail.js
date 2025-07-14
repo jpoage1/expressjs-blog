@@ -1,19 +1,26 @@
-// src/utils/sendNewsletterSubscriptionMail.js
 const transporter = require("./transporter");
-const sendNewsletterSubscriptionMail = async function ({ email }) {
-  const { MAIL_DOMAIN: domain } = process.env;
-  const data = {
-    from: `"Newsletter" <no-reply@${domain}>`,
+
+const MAIL_DOMAIN = process.env.MAIL_DOMAIN;
+const MAIL_NEWSLETTER = process.env.MAIL_NEWSLETTER;
+
+const MAIL_SUBJECT = "New Newsletter Subscription";
+const MAIL_FROM = `Newsletter <no-reply@${MAIL_DOMAIN}>`;
+const MAIL_TEXT_TEMPLATE = (email) =>
+  `Please add this email to the newsletter list: ${MAIL_NEWSLETTER}`;
+
+async function sendNewsletterSubscriptionMail({ email }) {
+  const mailData = {
+    from: MAIL_FROM,
     to: email,
-    subject: "New Newsletter Subscription",
-    text: `Please add this email to the newsletter list: ${process.env.MAIL_NEWSLETTER}`,
+    subject: MAIL_SUBJECT,
+    text: MAIL_TEXT_TEMPLATE(email),
   };
+
   try {
-    const result = await transporter.sendMail(data);
-    return result;
-  } catch (e) {
-    console.log(e);
+    return await transporter.sendMail(mailData);
+  } catch (error) {
+    console.error(error);
   }
-};
+}
 
 module.exports = sendNewsletterSubscriptionMail;

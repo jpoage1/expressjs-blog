@@ -1,23 +1,23 @@
 // middleware/authCheck.js
 const fetch = require("node-fetch");
-
-const VERIFY_URL = process.env.AUTH_VERIFY;
-const CACHE_TTL = parseInt(process.env.AUTH_CACHE_TTL) || 120000; // 2 minutes default
+const {
+  VERIFY_URL,
+  CACHE_TTL,
+  AUTH_TIMEOUT_MS,
+  LOG_MESSAGES,
+} = require("../constants/authConstants");
 
 // Simple in-memory cache
 const authCache = new Map();
 
-// Helper to generate cache key
 function getCacheKey(cookie, authHeader) {
   return `${cookie}:${authHeader}`;
 }
 
-// Helper to check if cache entry is valid
 function isCacheValid(entry) {
   return entry && Date.now() - entry.timestamp < CACHE_TTL;
 }
 
-// Clean expired cache entries periodically
 setInterval(() => {
   const now = Date.now();
   for (const [key, entry] of authCache.entries()) {
@@ -25,60 +25,45 @@ setInterval(() => {
       authCache.delete(key);
     }
   }
-}, CACHE_TTL); // Clean up when entries would expire
+}, CACHE_TTL);
 
 module.exports = async (req, res, next) => {
   const cookie = req.headers["cookie"] || "";
   const authHeader = req.headers["authorization"] || "";
   const cacheKey = getCacheKey(cookie, authHeader);
 
-  // Check cache first
   const cached = authCache.get(cacheKey);
   if (isCacheValid(cached)) {
     req.isAuthenticated = cached.isAuthenticated;
     return next();
   }
 
-  // Default to unauthenticated
   req.isAuthenticated = false;
 
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+    const timeout = setTimeout(() => controller.abort(), AUTH_TIMEOUT_MS);
 
     const resVerify = await fetch(VERIFY_URL, {
-      headers: {
-        cookie,
-        authorization: authHeader,
-      },
+      headers: { cookie, authorization: authHeader },
       credentials: "include",
       signal: controller.signal,
     });
 
     clearTimeout(timeout);
 
-    const isAuthenticated = resVerify.status === 200;
+    req.isAuthenticated = resVerify.status === 200;
 
-    // Cache the result
     authCache.set(cacheKey, {
-      isAuthenticated,
+      isAuthenticated: req.isAuthenticated,
       timestamp: Date.now(),
     });
-
-    req.isAuthenticated = isAuthenticated;
-  } catch (err) {
-    // Auth server down/timeout - silently fail, don't crash the app
+  } catch {
     req.isAuthenticated = false;
-
-    // Optional: Log for debugging, but don't spam logs
     if (req.log) {
-      req.log.warn(
-        "[AuthCheck] Auth server unavailable, continuing unauthenticated"
-      );
+      req.log.warn(LOG_MESSAGES.AUTH_SERVER_UNAVAILABLE);
     } else {
-      console.warn(
-        "[AuthCheck] Auth server unavailable, continuing unauthenticated"
-      );
+      console.warn(LOG_MESSAGES.AUTH_SERVER_UNAVAILABLE);
     }
   }
 

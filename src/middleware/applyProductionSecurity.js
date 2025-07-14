@@ -3,51 +3,50 @@ const hpp = require("hpp");
 const xssSanitizer = require("./xssSanitizer");
 const HttpError = require("../utils/HttpError");
 const { baseUrl } = require("../utils/baseUrl");
+const {
+  LOCALHOST_HOSTNAMES,
+  HEALTHCHECK_METHOD,
+  HEALTHCHECK_PATH,
+  FORBIDDEN_MESSAGE,
+  FORBIDDEN_STATUS_CODE,
+  HSTS_MAX_AGE,
+  CSP_DIRECTIVES,
+} = require("../constants/securityConstants");
+
+const disablePoweredBy = (req, res, next) => {
+  req.app.disable("x-powered-by");
+  next();
+};
+
+const logIps = (req, res, next) => {
+  const forwardedIp = req.ip;
+  const directIp = req.connection.remoteAddress;
+  req.log?.info?.(`Forwarded IP: ${forwardedIp}`);
+  req.log?.info?.(`Direct IP: ${directIp}`);
+  next();
+};
+
+const blockLocalhostAccess = (req, res, next) => {
+  if (req.method === HEALTHCHECK_METHOD && req.path === HEALTHCHECK_PATH) {
+    return next();
+  }
+  if (LOCALHOST_HOSTNAMES.includes(req.hostname)) {
+    req.log.info(`Method: ${req.method} Path ${req.path}`);
+    return next(new HttpError(FORBIDDEN_MESSAGE, FORBIDDEN_STATUS_CODE));
+  }
+  next();
+};
 
 const applyProductionSecurity = [
-  (req, res, next) => {
-    req.app.disable("x-powered-by");
-    next();
-  },
-  (req, res, next) => {
-    const forwardedIp = req.ip;
-    const directIp = req.connection.remoteAddress;
-
-    req.log?.info?.(`Forwarded IP: ${forwardedIp}`);
-    req.log?.info?.(`Direct IP: ${directIp}`);
-    next();
-  },
+  disablePoweredBy,
+  logIps,
   hpp(),
   xssSanitizer,
   // rateLimit middleware can be added here
-  (req, res, next) => {
-    const isHealthcheck = req.method === "HEAD" && req.path === "/healthcheck";
-    if (isHealthcheck) return next();
-
-    const host = req.hostname;
-    if (["127.0.0.1", "localhost"].includes(host)) {
-      req.log.info(`Method: ${req.method} Path ${req.path}`);
-      return next(new HttpError("Forbidden", 403));
-    }
-
-    next();
-  },
-  helmet.hsts({ maxAge: 63072000 }),
+  blockLocalhostAccess,
+  helmet.hsts({ maxAge: HSTS_MAX_AGE }),
   helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'", baseUrl],
-      scriptSrc: ["'self'", "https://hcaptcha.com"],
-      styleSrc: ["'self'", "https:"],
-      imgSrc: [
-        "'self'",
-        "data:",
-        "https://licensebuttons.net",
-        "https://cdn.jsdelivr.net",
-      ],
-      frameSrc: ["'self'", "https://newassets.hcaptcha.com"],
-      objectSrc: ["'none'"],
-      upgradeInsecureRequests: [],
-    },
+    directives: { ...CSP_DIRECTIVES, defaultSrc: ["'self'", baseUrl] },
   }),
 ];
 

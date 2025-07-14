@@ -1,7 +1,12 @@
-// src/utils/sendContactMail.js
 const transporter = require("./transporter");
 
-// Basic sanitization and validation functions
+const MAIL_DOMAIN = process.env.MAIL_DOMAIN;
+const MAIL_USER = process.env.MAIL_USER;
+const DEFAULT_SUBJECT = "New Contact Form Submission";
+const MAX_MESSAGE_LENGTH = 2000;
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 function sanitizeInput(input) {
   return String(input)
     .replace(/[\r\n<>]/g, "")
@@ -9,37 +14,32 @@ function sanitizeInput(input) {
 }
 
 function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  return EMAIL_REGEX.test(email);
 }
 
 function sendContactMail({ name, email, subject, message }) {
-  const { MAIL_DOMAIN: domain } = process.env;
-
-  // Sanitize inputs
   const cleanName = sanitizeInput(name);
   const cleanEmail = sanitizeInput(email);
-  const cleanSubject = sanitizeInput(subject || "New Contact Form Submission");
+  const cleanSubject = sanitizeInput(subject || DEFAULT_SUBJECT);
   const cleanMessage = sanitizeInput(message);
 
-  // Validate email
   if (!isValidEmail(cleanEmail)) {
     throw new Error("Invalid email format");
   }
 
-  const data = {
-    from: `"Contact Form" <no-reply@${domain}>`,
-    to: process.env.MAIL_USER,
+  if (cleanMessage.length > MAX_MESSAGE_LENGTH) {
+    throw new Error("Message too long");
+  }
+
+  const mailData = {
+    from: `"Contact Form" <no-reply@${MAIL_DOMAIN}>`,
+    to: MAIL_USER,
     replyTo: `"${cleanName}" <${cleanEmail}>`,
     subject: cleanSubject,
     text: cleanMessage,
   };
 
-  // Optional: limit message length to prevent abuse
-  if (cleanMessage.length > 2000) {
-    throw new Error("Message too long");
-  }
-
-  return transporter.sendMail(data);
+  return transporter.sendMail(mailData);
 }
 
 module.exports = sendContactMail;

@@ -49,10 +49,8 @@ footer nav {
   margin-top: 0;
   margin-bottom: 0;
   display: flex;
-  gap: 1.5rem; /* Adjust this value to control spacing between links */
-  /* If you want them centered within the nav */
+  gap: 1.5rem;
   justify-content: center;
-  /* Allow items to wrap to the next line on smaller screens */
   flex-wrap: wrap;
 }
 

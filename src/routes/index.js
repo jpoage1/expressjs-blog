@@ -1,6 +1,7 @@
 // src/routes/index.js
 const express = require("express");
 const router = express.Router();
+const path = require("path");
 
 const analytics = require("./analytics");
 const robots = require("./robots");
@@ -14,18 +15,25 @@ const sitemap = require("./sitemap");
 const post = require("./post");
 const pages = require("./pages");
 const rssFeed = require("./rssFeed");
-const logs = require("./logs");
+// const logs = require("./logs");
 const { qualifyLink } = require("../utils/qualifyLinks");
 const HttpError = require("../utils/HttpError");
 
+const securedMiddleware = require("../middleware/secured");
+const securedRoutes = require("./secured");
+
+const favicon = require("serve-favicon");
+const faviconsPath = path.join(__dirname, "..", "..", "public", "favicons");
+const faviconFile = path.resolve(faviconsPath, "favicon.ico");
+
+router.use(securedMiddleware, securedRoutes);
+
 router.get("/error", errorPage); // Landing page after error is logged
 
-router.get("/favicon.ico", (req, res) => res.status(204).end());
 router.head("/healthcheck", (req, res) => {
   res.sendStatus(200);
 });
 
-router.use(logs);
 router.use(admin);
 
 router.post("/track", analytics);
@@ -49,7 +57,8 @@ router.use(
     },
   })
 );
-router.get("/favicon.ico", (req, res) => res.status(204).end());
+router.use("/favicons", express.static(faviconsPath));
+router.use(favicon(faviconFile));
 
 router.use(blog_index);
 router.use(robots);
@@ -60,13 +69,59 @@ router.use(rssFeed);
 
 router.get("/blog/:year/:month/:name", post);
 
+// function flattenRouterLayers(stack, acc = []) {
+//   for (const layer of stack) {
+//     acc.push(layer);
+//     const h = layer.handle;
+//     if (typeof h === "function") {
+//       if (h.stack && Array.isArray(h.stack)) {
+//         flattenRouterLayers(h.stack, acc);
+//       } else if (h.handle && h.handle.stack && Array.isArray(h.handle.stack)) {
+//         flattenRouterLayers(h.handle.stack, acc);
+//       }
+//     }
+//   }
+//   return acc;
+// }
+
+// router.use((req, res) => {
+//   const rootStack = req.app._router?.stack || req.app.router?.stack;
+//   if (!rootStack) return res.sendStatus(500);
+//   const flat = flattenRouterLayers(rootStack);
+//   const routes = [];
+//   flat.forEach((l) => {
+//     if (l.route) {
+//       routes.push(l.route.path);
+//     }
+//   });
+//   res.json(routes).send(200);
+// });
+
+// router.use((req, res) => {
+//   const appStack = req.app._router?.stack || req.app.router?.stack;
+//   if (!appStack) return res.sendStatus(500);
+//   const flatStack = flattenRouterStack(appStack);
+//   flatStack.forEach((layer) => {
+//     console.log(layer);
+//   });
+//   res.sendStatus(200);
+// });
+
 router.get("/", (req, res) => {
   console.log(qualifyLink("/blog"));
-  res.redirect(301, qualifyLink("/blog"));
+  // res.redirect(301, qualifyLink("/blog"));
+  res.redirect(301, "/blog");
 });
 
-router.use((req, res, next) => {
-  next(new HttpError(null, 404));
-});
+router.use(
+  (req, res, next) => {
+    console.log(path.join(__dirname, "static/favicons"));
+    next();
+  },
+  (req, res, next) => {
+    console.log(req.url);
+    next(new HttpError("Page not found", 404));
+  }
+);
 
 module.exports = router;
