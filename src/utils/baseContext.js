@@ -14,10 +14,11 @@ module.exports = async function getBaseContext(
   const filteredNavLinks = filterSecureLinks(navLinks, isAuthenticated);
   const qualifiedNavLinks = qualifyNavLinks(filteredNavLinks);
   const menu = await getPostsMenu(path.join(__dirname, "../../content/posts"));
-
+  const siteOwner = process.env.SITE_OWNER;
   return Object.assign(
     {
-      siteOwner: process.env.SITE_OWNER,
+      title: `${siteOwner}'s Software Blog`,
+      siteOwner,
       originCountry: process.env.COUNTRY,
       hCaptchaKey: process.env.HCAPTCHA_KEY,
       navLinks: qualifiedNavLinks,

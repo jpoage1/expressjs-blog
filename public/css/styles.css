@@ -56,10 +56,8 @@ footer nav {
   margin-top: 0;
   margin-bottom: 0;
   display: flex;
-  gap: 1.5rem; /* Adjust this value to control spacing between links */
-  /* If you want them centered within the nav */
+  gap: 1.5rem;
   justify-content: center;
-  /* Allow items to wrap to the next line on smaller screens */
   flex-wrap: wrap;
 }
 footer nav p {
@@ -101,25 +99,66 @@ header#site-header {
   color: #ecf0f1;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-header#site-header .container {
+/* header#site-header .container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.5rem;
   padding: 1rem 0;
+} */
+header#site-header .container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  position: relative;
 }
-header#site-header .logo {
+/* header#site-header .logo {
+  display: flex;
+  align-items: center;
   font-size: 1.8rem;
   font-weight: bolder;
   position: relative;
+} */
+/* Logo section - positioned above nav */
+header#site-header .logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.8rem;
+  font-weight: bolder;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  gap: 1rem;
+    margin-left: 10px;
+  padding-left: 64px; /* Space for the icon */
 }
-header#site-header .logo a {
+/* .site-title {
+  margin: 0 1rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+  color: inherit;
+  text-decoration: none;
+  font-weight: bolder;
+  font-size: 
+  1.8rem;
+} */
+header#site-header .site-title {
   color: inherit;
   text-decoration: none;
   position: relative;
   display: inline-block;
 }
-header#site-header .logo a::after {
+header#site-header .site-title, a {
+  color: inherit;
+  text-decoration: none;
+  position: relative;
+  display: inline-block;
+}
+header#site-header .site-title a::after {
   content: "";
   position: absolute;
   left: 0;
@@ -131,8 +170,76 @@ header#site-header .logo a::after {
   transform-origin: left;
   transition: transform 0.3s ease;
 }
-header#site-header .logo a:hover::after {
+header#site-header .site-title a:hover::after {
   transform: scaleX(1);
+}
+/* Logo icon that acts as home link - spans from site title to nav */
+.nav-logo {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: flex-end;
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  bottom: 1rem;
+}
+/* Favicon styles */
+#favicon-preview {
+  width: 64px;
+  height: 64px;
+  border-radius: 4px;
+  background-color: #333;
+  display: inline-block;
+  vertical-align: middle;
+}
+.concept {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  user-select: none;
+}
+/* Deep Dive Lambda */
+.deep-dive {
+  background-color: #0A192F;
+  border-radius: 8px;
+  color: #00CED1;
+  font-weight: 700;
+  box-shadow:
+    0 0 4px #00CED1,
+    0 0 12px #00CED1;
+}
+/* Ghost Lambda */
+.ghost {
+  background-color: #F0F8FFCC;
+  border-radius: 8px;
+  color: #008B8B;
+  font-weight: 800;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+}
+/* Circle of Logic */
+.circle {
+  background-color: #1E90FF;
+  border-radius: 50%;
+  color: #E0FFFF;
+  font-weight: 600;
+}
+div.concept {
+  display: none;
+}
+div.concept#favicon1 {
+  display: inline-block;
 }
 .layout {
   display: flex;
@@ -245,6 +352,25 @@ header#site-header .menu-toggle {
 }
 nav.site-nav .dropdown-content form {
   margin: 0;
+}
+/* Navigation row with consistent left alignment */
+.nav-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding-left: 64px; /* Same as icon width + gap to align with site title */
+}
+/* Logo icon that acts as home link - spans from site title to nav */
+.nav-logo {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: flex-end;
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  bottom: 1rem;
 }
 /* Reset */
 * {
@@ -487,6 +613,12 @@ nav.site-nav .dropdown-content form {
   .sidebar {
     width: 100%;
   }
+  header#site-header .container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
   header#site-header nav.site-nav {
     flex-direction: column;
     gap: 0;
@@ -507,6 +639,22 @@ nav.site-nav .dropdown-content form {
   }
   header#site-header #siteNav.hide a {
     display: none;
+  }
+  nav.site-nav {
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+  }
+  .nav-row {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding-left: 0;
+  }
+  .nav-logo {
+    position: relative;
+    left: 0;
+    margin-bottom: 0.5rem;
   }
   nav.site-nav ul {
     display: block;
