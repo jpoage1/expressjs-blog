@@ -14,3 +14,22 @@ html, body {
   padding: 1rem 1.5rem;
 }
 
+.pattern-dots {
+  position: relative;
+  background-image: radial-gradient(circle, rgba(0,0,0,0.07) 1px, transparent 1px);
+  background-size: 15px 15px;
+  z-index: 0;
+}
+
+.pattern-dots::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 90%);
+}
+
+.pattern-dots > * {
+  position: relative;
+  z-index: 1;
+}

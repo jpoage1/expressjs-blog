@@ -1,0 +1,37 @@
+#favicon-preview {
+  width: 64px;
+  height: 64px;
+  border-radius: 4px;
+  background-color: #333;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.concept {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 36px;
+  user-select: none;
+}
+
+.deep-dive {
+  background-color: #0A192F;
+  border-radius: 8px;
+  color: #00CED1;
+  font-weight: 700;
+  box-shadow:
+    0 0 4px #00CED1,
+    0 0 12px #00CED1;
+}
