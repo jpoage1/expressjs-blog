@@ -1,21 +1,16 @@
 {{#section "headers"}}
 <meta http-equiv="refresh" content="0; url={{redirectUrl}}">
-<link rel="prerender" href="{{redirectUrl}}">
 {{/section}}
 {{#section "styles"}}
 <link href="{{baseUrl}}/static/css/redirect.css" rel="stylesheet" type="text/css" />
 {{/section}}
 {{#section " scripts"}}
-<script src="{{baseUrl}}/static/js/redirect.js">
+<script src="{{baseUrl}}/static/js/redirect.j">
 </script>
 {{/section}}
 <div class="redirect-container">
     <div class="redirect-content">
         <div class="spinner"></div>
-        <h1>Redirecting...</h1>
-        <p>Taking you to your destination.</p>
-        <p>
-            <a href="{{redirectUrl}}" class="redirect-link">Go Now</a>
-        </p>
+        <h1>Loading...</h1>
     </div>
 </div>

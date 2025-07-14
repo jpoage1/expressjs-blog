@@ -109,7 +109,8 @@ router.get("/blog/:year/:month/:name", post);
 
 router.get("/", (req, res) => {
   console.log(qualifyLink("/blog"));
-  res.redirect(301, qualifyLink("/blog"));
+  // res.redirect(301, qualifyLink("/blog"));
+  res.redirect(301, "/blog");
 });
 
 router.use(
