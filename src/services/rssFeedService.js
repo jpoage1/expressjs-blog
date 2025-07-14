@@ -1,22 +1,27 @@
 // src/services/rssFeedService.js
 const RSS = require("rss");
 const { getAllPosts } = require("../utils/postFileUtils");
+const {
+  FEED_TITLE,
+  FEED_DESCRIPTION,
+  FEED_LANGUAGE,
+} = require("../constants/rssConstants");
 
 async function generateRSSFeed(baseDir, siteUrl) {
   const allPosts = await getAllPosts(baseDir);
 
   const feed = new RSS({
-    title: "My Blog",
-    description: "Latest posts from my blog",
+    title: FEED_TITLE,
+    description: FEED_DESCRIPTION,
     feed_url: `${siteUrl}/rss.xml`,
     site_url: siteUrl,
-    language: "en",
+    language: FEED_LANGUAGE,
   });
 
   for (const post of allPosts) {
     feed.item({
       title: post.title,
-      description: post.excerpt || "", // optional: add excerpt to post object
+      description: post.excerpt || "",
       url: `${siteUrl}${post.url}`,
       date: post.date,
     });

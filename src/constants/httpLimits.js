@@ -1,0 +1,12 @@
+// constants/httpLimits.js
+const ALLOWED_HTTP_METHODS = ["HEAD", "GET", "POST"];
+const MAX_HEADER_COUNT = 100;
+const DISALLOWED_CONTENT_TYPE_SUBSTRINGS = ["multipart/form-data"];
+const MAX_CONTENT_LENGTH = 4096;
+
+module.exports = {
+  ALLOWED_HTTP_METHODS,
+  MAX_HEADER_COUNT,
+  DISALLOWED_CONTENT_TYPE_SUBSTRINGS,
+  MAX_CONTENT_LENGTH,
+};
