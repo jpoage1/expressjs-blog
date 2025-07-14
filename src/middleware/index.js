@@ -12,6 +12,7 @@ const errorHandler = require("./errorHandler");
 const baseContext = require("./baseContext");
 const hbs = require("./hbs");
 const authCheck = require("./authCheck");
+const { redirectMiddleware } = require("./redirect");
 
 const {
   loggingMiddleware,
@@ -86,6 +87,7 @@ function setupApp() {
   app.use(compression());
   app.use(validateRequestIntegrity);
   app.use(formatHtml);
+  app.use(redirectMiddleware);
   app.use(routes);
   app.use(errorHandler);
   return app;
