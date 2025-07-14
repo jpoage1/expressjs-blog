@@ -1,6 +1,7 @@
 // src/routes/index.js
 const express = require("express");
 const router = express.Router();
+const path = require("path");
 
 const analytics = require("./analytics");
 const robots = require("./robots");
@@ -20,11 +21,15 @@ const HttpError = require("../utils/HttpError");
 
 const securedMiddleware = require("../middleware/secured");
 const securedRoutes = require("./secured");
+
+const favicon = require("serve-favicon");
+const faviconsPath = path.join(__dirname, "..", "..", "public", "favicons");
+const faviconFile = path.resolve(faviconsPath, "favicon.ico");
+
 router.use(securedMiddleware, securedRoutes);
 
 router.get("/error", errorPage); // Landing page after error is logged
 
-router.get("/favicon.ico", (req, res) => res.status(204).end());
 router.head("/healthcheck", (req, res) => {
   res.sendStatus(200);
 });
@@ -52,7 +57,8 @@ router.use(
     },
   })
 );
-router.get("/favicon.ico", (req, res) => res.status(204).end());
+router.use("/favicons", express.static(faviconsPath));
+router.use(favicon(faviconFile));
 
 router.use(blog_index);
 router.use(robots);
@@ -106,8 +112,15 @@ router.get("/", (req, res) => {
   res.redirect(301, qualifyLink("/blog"));
 });
 
-router.use((req, res, next) => {
-  next(new HttpError(null, 404));
-});
+router.use(
+  (req, res, next) => {
+    console.log(path.join(__dirname, "static/favicons"));
+    next();
+  },
+  (req, res, next) => {
+    console.log(req.url);
+    next(new HttpError("Page not found", 404));
+  }
+);
 
 module.exports = router;
