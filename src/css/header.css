@@ -4,6 +4,7 @@ header#site-header {
   color: #ecf0f1;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position:relative;
+  z-index: 10;
 }
 
 /* header#site-header .container {
@@ -69,8 +70,6 @@ header#site-header .site-title a:hover::after {
   transform: scaleX(1);
 }
 
-
-/* Pattern 3: Lambda Watermarks */
 .pattern-lambda {
   background-image: 
     repeating-linear-gradient(

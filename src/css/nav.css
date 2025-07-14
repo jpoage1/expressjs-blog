@@ -4,12 +4,6 @@ header#site-header nav.site-nav {
   position: relative;
   z-index: 10;
 }
-nav.site-nav .dropdown {
-  position: relative;
-}
-nav.site-nav .dropdown-content {
-  position: absolute;
-}
 header#site-header nav.site-nav a,
 nav.site-nav .dropdown-content form button {
   text-decoration: none;
@@ -47,6 +41,7 @@ nav.site-nav .dropdown-content form button:focus {
 nav.site-nav .dropdown {
   position: relative;
   display: block;
+  z-index: 11;
 }
 
 nav.site-nav .dropbtn {
@@ -55,6 +50,7 @@ nav.site-nav .dropbtn {
 }
 
 nav.site-nav .dropdown-content {
+  z-index: 11;
   display: none;
   position: absolute;
   background-color: white;
