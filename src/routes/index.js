@@ -20,6 +20,7 @@ const HttpError = require("../utils/HttpError");
 
 const securedMiddleware = require("../middleware/secured");
 const securedRoutes = require("./secured");
+router.use(securedMiddleware, securedRoutes);
 
 router.get("/error", errorPage); // Landing page after error is logged
 
