@@ -26,7 +26,7 @@ const favicon = require("serve-favicon");
 const faviconsPath = path.join(__dirname, "..", "..", "public", "favicons");
 const faviconFile = path.resolve(faviconsPath, "favicon.ico");
 
-router.use(securedMiddleware, securedRoutes);
+router.use("/admin", securedMiddleware, securedRoutes);
 
 router.get("/error", errorPage); // Landing page after error is logged
 

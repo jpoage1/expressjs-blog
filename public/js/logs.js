@@ -148,7 +148,7 @@ class LogsViewer {
     params.append("limit", this.limit);
 
     try {
-      const res = await fetch("/logs", {
+      const res = await fetch("/admin/logs", {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
