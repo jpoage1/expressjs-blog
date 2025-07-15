@@ -1,6 +1,7 @@
 class LogsViewer {
   constructor() {
     this.form = document.getElementById("filterForm");
+    this.log_path = document.getElementById("log_path");
     this.theadRow = document.getElementById("logsTableHeaderRow");
     this.tbody = document.querySelector("#logsTable tbody");
     this.currentPage = 1;
@@ -148,7 +149,7 @@ class LogsViewer {
     params.append("limit", this.limit);
 
     try {
-      const res = await fetch("/admin/logs", {
+      const res = await fetch(this.log_path.value, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -163,6 +164,8 @@ class LogsViewer {
 
       this.hasMore = data.pagination.hasMore;
       this.totalPages = data.pagination.totalPages;
+
+      console.log(data.logs);
 
       if (data.logs.length === 0 && !append) {
         this.tbody.innerHTML = '<tr><td colspan="1">No logs found</td></tr>';

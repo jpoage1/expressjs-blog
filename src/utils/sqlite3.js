@@ -1,6 +1,6 @@
 const sqlite3 = require("sqlite3").verbose();
 
-const db = new sqlite3.Database("./data/analytics.sqlite3");
+const db = new sqlite3.Database("./data/analytic2.sqlite3");
 db.run(`
   CREATE TABLE IF NOT EXISTS analytics (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -11,7 +11,8 @@ db.run(`
     viewport TEXT,
     load_time REAL,
     event TEXT,
-    ip TEXT,
+    forwardedIp TEXT,
+    DirectIp TEXT,
     js_enabled INTEGER
   )
 `);
@@ -26,7 +27,8 @@ SELECT
   viewport,
   load_time,
   event,
-  ip,
+  forwardedIp,
+  directIp,
   js_enabled
 FROM analytics;`);
 module.exports = db;

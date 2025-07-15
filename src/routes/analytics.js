@@ -11,18 +11,25 @@ module.exports = (req, res) => {
     event = "",
   } = req.body;
 
-  // const ip =
-  //   req.headers["x-forwarded-for"]?.split(",")[0] ||
-  //   req.connection.remoteAddress ||
-  //   "";
-  const ip = req.ip;
+  const forwardedIp = req.ip;
+  const directIp = req.connection.remoteAddress;
   const timestamp = Date.now();
 
   db.run(
-    `INSERT INTO analytics (timestamp, url, referrer, user_agent, viewport, load_time, event, ip, js_enabled)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [timestamp, url, referrer, userAgent, viewport, loadTime, event, ip, 1]
+    `INSERT INTO analytics (timestamp, url, referrer, user_agent, viewport, load_time, event, forwardedIp, directIp, js_enabled)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      timestamp,
+      url,
+      referrer,
+      userAgent,
+      viewport,
+      loadTime,
+      event,
+      forwardedIp,
+      directIp,
+      1,
+    ]
   );
-  // res.send("Tracked");
   res.sendStatus(204);
 };
