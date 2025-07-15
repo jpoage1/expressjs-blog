@@ -203,9 +203,6 @@ const winstonLogger = createLogger({
   ],
 });
 
-// Log session start
-winstonLogger.info(`Session started: ${sessionTimestamp}`);
-
 // Clean up old session directories (optional)
 function cleanupOldSessions() {
   const sessionsDir = path.join(logDir, "sessions");

@@ -4,8 +4,6 @@ module.exports = (level) => (req, res, next) => {
   const start = process.hrtime();
 
   res.on("finish", () => {
-    const [s, ns] = process.hrtime(start);
-    const ms = (s * 1e3 + ns / 1e6).toFixed(3);
     const { method, url, headers, query, body, ip, connection } = req;
     const { statusCode } = res;
 
@@ -33,7 +31,6 @@ module.exports = (level) => (req, res, next) => {
         statusCode: String(statusCode),
         directIp: String(connection.remoteAddress),
         forwardedIp: String(ip),
-        responseTime: `${ms}ms`,
         contentLength: String(res.getHeader("content-length") || "0"),
         ...flatten(headers, "headers"),
         ...flatten(query, "query"),
