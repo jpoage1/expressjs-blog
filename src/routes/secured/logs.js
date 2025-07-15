@@ -15,7 +15,7 @@ if (!fs.existsSync(dbPath)) {
 const db = new Database(dbPath, { readonly: true });
 
 router.get("/logs", (req, res) => {
-  res.renderWithBaseContext("pages/logs", {
+  res.renderWithBaseContext("admin-pages/logs", {
     showSidebar: false,
     showFooter: false,
   });

@@ -11,13 +11,17 @@ const sqliteTransport = new SQLiteTransport();
 const logDir = path.join(__dirname, "..", "..", "logs");
 const projectRoot = path.join(__dirname, "..", "..");
 
+// Create session-specific directory with timestamp
+const sessionTimestamp = new Date().toISOString().replace(/[:.]/g, "-");
+const sessionDir = path.join(logDir, "sessions", sessionTimestamp);
+
 // Define log file paths
 const logFiles = {
-  session: path.join(logDir, "session.log"),
+  session: path.join(sessionDir, "session.log"),
   info: path.join(logDir, "info", "info.log"),
   notice: path.join(logDir, "notice", "notice.log"),
   error: path.join(logDir, "error", "error.log"),
-  warn: path.join(logDir, "warn", "warning.log"),
+  warn: path.join(logDir, "warn", "warn.log"),
   debug: path.join(logDir, "debug", "debug.log"),
 };
 
@@ -38,13 +42,28 @@ const originalConsole = { ...console };
 
 // Create write streams
 const logStreams = {
-  session: fs.createWriteStream(logFiles.session, { flags: "a" }),
   info: fs.createWriteStream(logFiles.info, { flags: "a" }),
   notice: fs.createWriteStream(logFiles.notice, { flags: "a" }),
   error: fs.createWriteStream(logFiles.error, { flags: "a" }),
   warn: fs.createWriteStream(logFiles.warn, { flags: "a" }),
   debug: fs.createWriteStream(logFiles.debug, { flags: "a" }),
 };
+
+// Session-specific daily rotate transport
+const sessionTransport = new DailyRotateFile({
+  dirname: sessionDir,
+  filename: "session-%DATE%.log",
+  datePattern: "YYYY-MM-DD",
+  zippedArchive: true,
+  maxFiles: "30d", // Keep session logs for 30 days
+  format: format.combine(
+    format.timestamp(),
+    format.printf(
+      ({ timestamp, level, message }) =>
+        `[${timestamp}] [${level.toUpperCase()}] ${message}`
+    )
+  ),
+});
 
 // Utility function for custom function logs
 const dynamicCustomStreams = {};
@@ -58,6 +77,7 @@ function formatLogMessage(functionName, args) {
   const timestamp = new Date().toISOString();
   return `[${timestamp}] ${args.join(" ")}\n`;
 }
+
 const functionLog = (functionName, ...args) => {
   const safeFunctionName = formatFunctionName(functionName).replace(
     /[^a-z0-9_\-]/gi,
@@ -80,13 +100,19 @@ const functionLog = (functionName, ...args) => {
   //console.log(`[${functionName}]`, ...args)
 };
 
-// Generic log writer
+// Generic log writer with session logging
 function writeLog(level, stream, consoleFn, ...args) {
   const timestamp = new Date().toISOString();
   const message = args.join(" ");
   const logLine = `[${timestamp}] [${level}] ${message}\n`;
+
+  // Write to specific log file
   stream.write(logLine);
-  logStreams.session.write(logLine);
+
+  // Write to session log via winston transport
+  sessionTransport.write({ level: level.toLowerCase(), message, timestamp });
+
+  // Console output
   consoleFn(`[${timestamp}] [${level}]`, ...args);
 }
 
@@ -107,6 +133,7 @@ function buildTransport(level, filename) {
     ),
   });
 }
+
 function patchConsole() {
   console.log = (...args) =>
     writeLog("INFO", logStreams.info, originalConsole.log, ...args);
@@ -132,6 +159,12 @@ const manualLogger = {
     writeLog("ERROR", logStreams.error, console.error, ...args),
   debug: (...args) =>
     writeLog("DEBUG", logStreams.debug, console.debug, ...args),
+  // Add session info method
+  sessionInfo: () => ({
+    sessionId: sessionTimestamp,
+    sessionDir: sessionDir,
+    startTime: new Date().toISOString(),
+  }),
 };
 
 const winstonLogger = createLogger({
@@ -147,6 +180,7 @@ const winstonLogger = createLogger({
     buildTransport("warn", "warn"),
     buildTransport("debug", "debug"),
     buildTransport("notice", "notice"),
+    sessionTransport, // Add session transport to winston
     new transports.Console({
       level: "debug",
       format: format.combine(
@@ -165,14 +199,38 @@ const winstonLogger = createLogger({
         })
       ),
     }),
-
     sqliteTransport,
   ],
 });
 
+// Log session start
+winstonLogger.info(`Session started: ${sessionTimestamp}`);
+
+// Clean up old session directories (optional)
+function cleanupOldSessions() {
+  const sessionsDir = path.join(logDir, "sessions");
+  if (fs.existsSync(sessionsDir)) {
+    const sessions = fs.readdirSync(sessionsDir);
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - 30); // Keep 30 days of sessions
+
+    sessions.forEach((sessionFolder) => {
+      const sessionPath = path.join(sessionsDir, sessionFolder);
+      const stats = fs.statSync(sessionPath);
+      if (stats.isDirectory() && stats.mtime < cutoffDate) {
+        fs.rmSync(sessionPath, { recursive: true, force: true });
+      }
+    });
+  }
+}
+
+// Run cleanup on startup
+cleanupOldSessions();
+
 if (process.env.NODE_ENV !== "production") {
   patchConsole();
 }
+
 module.exports = {
   manualLogger,
   winstonLogger,

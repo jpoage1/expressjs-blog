@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "/srv/projects/jasonpoage.com/expressjs-blog/logs/sessions/2025-07-15T03-28-59-461Z/.dd471705688f18d97d1b8da76bb9d23e6bdef615-audit.json",
+    "files": [
+        {
+            "date": 1752550139500,
+            "name": "/srv/projects/jasonpoage.com/expressjs-blog/logs/sessions/2025-07-15T03-28-59-461Z/session-2025-07-14.log",
+            "hash": "ccfb43a01c5cacce778cc7874996adfd8265e914c12d3531acf94a305cc0d0e8"
+        }
+    ],
+    "hashType": "sha256"
+}
