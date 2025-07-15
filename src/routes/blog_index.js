@@ -10,7 +10,10 @@ router.get("/blog", async (req, res) => {
   });
 
   const publishedPosts = allPosts.filter(
-    (post) => post.published || process.env.NODE_ENV === "production"
+    (post) =>
+      post.published ||
+      process.env.NODE_ENV === "production" ||
+      process.env.NODE_ENV === "testing"
   );
   // Sort posts descending by date
   publishedPosts.sort((a, b) => new Date(b.date) - new Date(a.date));

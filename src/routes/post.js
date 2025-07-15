@@ -35,7 +35,11 @@ module.exports = async (req, res, next) => {
   try {
     const fileContent = await fs.readFile(mdPath, "utf8");
     const { data: frontmatter, content } = matter(fileContent);
-    if (!frontmatter.published && process.env.NODE_ENV === "production") {
+    if (
+      !frontmatter.published &&
+      (process.env.NODE_ENV === "production" ||
+        process.env.NODE_ENV === "testing")
+    ) {
       throw new Error("Attempted to access an unpublished page in production");
     }
     const htmlContent = marked(content);

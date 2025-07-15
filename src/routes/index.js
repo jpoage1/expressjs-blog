@@ -30,10 +30,6 @@ router.head("/health", (req, res) => {
   res.sendStatus(200);
 });
 
-router.head("/healthcheck", (req, res) => {
-  res.sendStatus(200);
-});
-
 router.use("/admin", securedMiddleware, securedRoutes);
 router.use(
   "/test",
@@ -98,18 +94,18 @@ function flattenRouterLayers(stack, acc = []) {
   return acc;
 }
 
-router.use((req, res) => {
-  const rootStack = req.app._router?.stack || req.app.router?.stack;
-  if (!rootStack) return res.sendStatus(500);
-  const flat = flattenRouterLayers(rootStack);
-  const routes = [];
-  flat.forEach((l) => {
-    if (l.route) {
-      routes.push(l.route.path);
-    }
-  });
-  res.json(routes).send(200);
-});
+// router.use((req, res) => {
+//   const rootStack = req.app._router?.stack || req.app.router?.stack;
+//   if (!rootStack) return res.sendStatus(500);
+//   const flat = flattenRouterLayers(rootStack);
+//   const routes = [];
+//   flat.forEach((l) => {
+//     if (l.route) {
+//       routes.push(l.route.path);
+//     }
+//   });
+//   res.json(routes).send(200);
+// });
 
 // router.use((req, res) => {
 //   const appStack = req.app._router?.stack || req.app.router?.stack;
@@ -127,15 +123,9 @@ router.get("/", (req, res) => {
   res.redirect(301, "/blog");
 });
 
-router.use(
-  (req, res, next) => {
-    console.log(path.join(__dirname, "static/favicons"));
-    next();
-  },
-  (req, res, next) => {
-    console.log(req.url);
-    next(new HttpError("Page not found", 404));
-  }
-);
+router.use((req, res, next) => {
+  console.log(req.url);
+  next(new HttpError("Page not found", 404));
+});
 
 module.exports = router;

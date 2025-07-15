@@ -1,9 +1,9 @@
 // src/utils/baseUrl.js
-function getBaseUrl({ protocol = null, host = null } = {}) {
-  const envProtocol = process.env.PROTOCOL;
-  const envDomain = process.env.DOMAIN;
+function getBaseUrl({ schema = null, host = null } = {}) {
+  const envSchema = process.env.SERVER_SCHEMA;
+  const envDomain = process.env.SERVER_DOMAIN;
 
-  const finalProtocol = envProtocol || protocol || "https";
+  const finalProtocol = envSchema || schema || "https";
   const finalDomain = (envDomain || host || "localhost")
     .replace(/^https?:\/\//, "")
     .replace(/\/$/, "");
