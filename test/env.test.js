@@ -6,16 +6,28 @@ describe("Environment Variables Validation", () => {
     expect(process.env.SITE_OWNER).to.be.a("string").and.not.empty;
   });
 
-  it("should have DOMAIN defined as a non-empty string", () => {
-    expect(process.env.DOMAIN).to.be.a("string").and.not.empty;
+  it("should have SERVER_DOMAIN defined as a non-empty string", () => {
+    expect(process.env.SERVER_DOMAIN).to.be.a("string").and.not.empty;
   });
 
-  it("should have NODE_ENV defined and be either 'development' or 'production'", () => {
-    expect(process.env.NODE_ENV).to.be.oneOf(["development", "production"]);
+  it("should have SERVER_ADDRESS defined as a non-empty string", () => {
+    expect(process.env.SERVER_ADDRESS).to.be.a("string").and.not.empty;
   });
 
-  it("should have PORT defined and be a valid port number", () => {
-    const port = Number(process.env.PORT);
+  it("should have SERVER_SCHEMA defined and be either 'http' or 'https'", () => {
+    expect(process.env.SERVER_SCHEMA).to.be.oneOf(["http", "https"]);
+  });
+
+  it("should have NODE_ENV defined and be either 'development', 'testing' or 'production'", () => {
+    expect(process.env.NODE_ENV).to.be.oneOf([
+      "development",
+      "testing",
+      "production",
+    ]);
+  });
+
+  it("should have SERVER_PORT defined and be a valid port number", () => {
+    const port = Number(process.env.SERVER_PORT);
     expect(port)
       .to.be.a("number")
       .and.satisfy((num) => num > 0 && num < 65536);

@@ -1,5 +1,4 @@
 const { baseUrl } = require("../utils/baseUrl");
-// const baseUrl = getBaseUrl({ protocol: req.protocol, host: req.get("host") });
 
 function qualifyLink(href) {
   if (!href) return href;
@@ -10,7 +9,7 @@ function qualifyLink(href) {
 }
 
 function qualifyNavLinks(links) {
-  return links.map(link => {
+  return links.map((link) => {
     const qualified = { ...link };
     if (qualified.href) {
       qualified.href = qualifyLink(qualified.href);
@@ -22,4 +21,4 @@ function qualifyNavLinks(links) {
   });
 }
 
-module.exports = { qualifyNavLinks, qualifyLink }
+module.exports = { qualifyNavLinks, qualifyLink };

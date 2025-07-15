@@ -3,7 +3,7 @@
 module.exports = {
   LOCALHOST_HOSTNAMES: ["127.0.0.1", "localhost"],
   HEALTHCHECK_METHOD: "HEAD",
-  HEALTHCHECK_PATH: "/healthcheck",
+  HEALTHCHECK_PATH: "/health",
   FORBIDDEN_MESSAGE: "Forbidden",
   FORBIDDEN_STATUS_CODE: 403,
   HSTS_MAX_AGE: 63072000,

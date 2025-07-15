@@ -1,23 +1,52 @@
 #!/bin/bash
+set -euo pipefail
+
+# Function to wait for a service to become available
+wait_for_service() {
+  local url="$1"
+  local timeout=30 # seconds
+  local start_time=$(date +%s)
+  echo "Waiting for service at $url to become available (timeout: ${timeout}s)..."
+  while :; do
+    if curl --silent --fail "$url" >/dev/null; then
+      echo "Service at $url is up!"
+      return 0
+    fi
+    current_time=$(date +%s)
+    if ((current_time - start_time >= timeout)); then
+      echo "Error: Service at $url did not become available within ${timeout}s."
+      return 1
+    fi
+    sleep 1
+  done
+}
 
 deploy_expressjs_blog() {
   local ref="$1"
+  local custom_path="${2:-}"
+  local custom_env="${3:-}"
   local branch="${ref#refs/heads/}"
-  local path="/srv/jasonpoage.com/expressjs-blog-$branch"
+  local path="${custom_path:-/srv/jasonpoage.com/expressjs-blog-$branch}"
+  local envfile="${custom_env:-/srv/jasonpoage.com/$branch.env}"
 
   set -x
+
+  GIT_DIR="/srv/jasonpoage.com/expressjs-blog.git"
+
   if [[ "$branch" == "production" || "$branch" == "main" || "$branch" == "testing" ]]; then
+
     GIT_WORK_TREE="$path" git checkout -f "$branch"
 
     cd "$path" || return 1
+    [[ -z "$custom_path" ]] && ln -f "$envfile" "$path/.env" || {
+      cp -f "$envfile" "$path/.env"
+    }
     yarn
     yarn combine:css
-    systemctl --user restart express-blog@"$branch".service
-    ln -f /srv/jasonpoage.com/"$branch".env "$path"/.env
+    [[ -z "$custom_path" ]] && systemctl --user restart express-blog@"$branch".service
 
-    # Blog content
-    GIT_DIR="/srv/jasonpoage.com/expressjs-blog-posts.git"
-    GIT_WORK_TREE="$path/content" git checkout -f main
+    git --git-dir=/srv/jasonpoage.com/expressjs-blog-posts.git --work-tree="$path/content" checkout -f main
+    unset GIT_DIR GIT_WORK_TREE
   fi
   set +x
 }
@@ -28,21 +57,29 @@ run_postreceive_tests() {
   tmpdir=$(mktemp -d)
   pidfile="$tmpdir/test.pid"
   logfile="$tmpdir/test.log"
-  trap 'kill $(cat "$pidfile" 2>/dev/null) 2>/dev/null; rm -rf "$tmpdir"' EXIT
+  trap "kill $(cat "$pidfile" 2>/dev/null) 2>/dev/null; rm -rf \"$tmpdir\"" EXIT
 
-  git clone . "$tmpdir" --quiet
+  git clone . "$tmpdir" --quiet --branch "$branch"
+
+  deploy_expressjs_blog "refs/heads/$branch" "$tmpdir" "/srv/jasonpoage.com/${branch}.env"
+
   cd "$tmpdir" || return 1
-  cp /srv/jasonpoage.com/"${branch}".env .env
+  export TEST_PORT=4123
 
-  yarn install --silent
-  export PORT=4123
-
+  export NODE_ENV=testing
   nohup yarn start >>"$logfile" 2>&1 &
   echo $! >"$pidfile"
 
-  sleep 2
+  # Wait for the application to become responsive
+  if ! wait_for_service "http://127.0.0.1:$TEST_PORT"; then
+    echo "Application did not start or respond. Check logs:"
+    cat "$logfile" # Display logs on failure
+    return 1
+  fi
+
   if ! npm run test:postreceive; then
     kill "$(cat "$pidfile")" 2>/dev/null
+    cat "$logfile"
     return 1
   fi
 

@@ -6,7 +6,6 @@ const path = require("path");
 const Handlebars = require("handlebars");
 const sitemapService = require("../services/sitemapService");
 const { qualifyLink } = require("../utils/qualifyLinks.js");
-// const { baseUrl } = require("../utils/baseUrl");
 
 // Precompile XML template once
 const xmlTplSrc = fs.readFileSync(
@@ -14,14 +13,6 @@ const xmlTplSrc = fs.readFileSync(
   "utf-8"
 );
 const xmlTpl = Handlebars.compile(xmlTplSrc);
-
-// function flatten(entries, out = []) {
-//   for (const e of entries) {
-//     if (e.loc) out.push(e.loc);
-//     if (Array.isArray(e.children)) flatten(e.children, out);
-//   }
-//   return out;
-// }
 
 // HTML sitemap page
 router.get("/sitemap", async (req, res) => {
@@ -41,12 +32,9 @@ router.get("/sitemap.json", async (req, res) => {
   res.json(context);
 });
 
-// const getBaseUrl = require("../utils/baseUrl");
-
 // XML sitemap endpoint
 router.get("/sitemap.xml", async (req, res) => {
   const urls = await sitemapService.getAllUrls();
-  // const baseUrl = getBaseUrl({ protocol: req.protocol, host: req.get("host") });
 
   // Format URLs for XML template
   const formattedUrls = urls.map((url) => ({

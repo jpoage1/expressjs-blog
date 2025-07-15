@@ -22,7 +22,10 @@ const blockLocalhostAccess = (req, res, next) => {
   if (req.method === HEALTHCHECK_METHOD && req.path === HEALTHCHECK_PATH) {
     return next();
   }
-  if (LOCALHOST_HOSTNAMES.includes(req.hostname)) {
+  if (
+    process.env.NODE_ENV === "production" &&
+    LOCALHOST_HOSTNAMES.includes(req.hostname)
+  ) {
     req.log.info(`Method: ${req.method} Path ${req.path}`);
     return next(new HttpError(FORBIDDEN_MESSAGE, FORBIDDEN_STATUS_CODE));
   }

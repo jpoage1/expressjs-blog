@@ -81,7 +81,10 @@ function setupApp() {
   app.use(baseContext);
 
   // Setup production environment
-  if (process.env.NODE_ENV === "production") {
+  if (
+    process.env.NODE_ENV === "production" ||
+    process.env.NODE_ENV === "testing"
+  ) {
     app.use(applyProductionSecurity);
   }
 

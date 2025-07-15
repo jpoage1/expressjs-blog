@@ -8,7 +8,10 @@ const csrfToken = require("../middleware/csrfToken");
 const construction = new ConstructionRoutes();
 const markdown = new MarkdownRoutes();
 
-if (process.env.NODE_ENV === "production") {
+if (
+  process.env.NODE_ENV === "production" ||
+  process.env.NODE_ENV === "testing"
+) {
   // construction.register("/newsletter", "Newsletter");
   construction.register("/projects", "Projects");
   construction.register("/about/blog", "About this blog");

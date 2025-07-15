@@ -3,10 +3,14 @@ const fetch = require("node-fetch");
 const { expect } = require("chai");
 const http = require("http");
 
+let port = process.env.TEST_PORT;
 require("dotenv").config();
 
-const domain = process.env.DOMAIN;
-const baseUrl = `http://127.0.0.1:3400`;
+const domain = process.env.SERVER_DOMAIN;
+port = port || process.env.SERVER_PORT;
+const server_address = process.env.SERVER_ADDRESS;
+const schema = process.env.TEST_SCHEMA || process.env.SERVER_SCHEMA;
+const baseUrl = `${schema}://${server_address}:${port}`;
 
 // Create a proper HTTP agent
 const httpAgent = new http.Agent({
@@ -31,7 +35,9 @@ describe(`API route status tests with dependencies at ${baseUrl}`, () => {
       agent: httpAgent,
       timeout: 5000,
       method: "HEAD",
+      redirect: "manual",
     });
+    console.log("Healthcheck body: ", res.text());
     expect(res.ok).to.be.true;
     serverOnline = true;
   });

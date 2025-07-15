@@ -5,7 +5,7 @@ const setupMiddleware = require("./middleware");
 const { manualLogger } = require("./utils/logging");
 const { startTokenCleanup } = require("./utils/tokenCleanup");
 
-const PORT = process.env.PORT || 3400;
+const SERVER_PORT = process.env.TEST_PORT || process.env.SERVER_PORT || 3400;
 const CWD_LOG = `CWD: ${process.cwd()}`;
 const SERVER_LISTEN_LOG = (port) =>
   `Server listening on http://localhost:${port}`;
@@ -27,8 +27,8 @@ startTokenCleanup();
 
 const app = setupMiddleware();
 
-app.listen(PORT, () => {
-  console.log(SERVER_LISTEN_LOG(PORT));
+app.listen(SERVER_PORT, () => {
+  console.log(SERVER_LISTEN_LOG(SERVER_PORT));
   console.log(NODE_ENV_LOG);
 });
 

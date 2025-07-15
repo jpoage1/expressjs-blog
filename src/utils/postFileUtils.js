@@ -34,7 +34,8 @@ async function getAllPosts(baseDir, options = {}) {
             // Filter unpublished posts in production unless explicitly included
             if (
               !data.published &&
-              process.env.NODE_ENV === "production" &&
+              (process.env.NODE_ENV === "production" ||
+                process.env.NODE_ENV === "testing") &&
               !includeUnpublished
             ) {
               return null;
