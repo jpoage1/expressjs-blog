@@ -1,13 +1,20 @@
 #!/bin/sh
 # Push content subrepo before pushing main repo
 remote="$1"
-export GIT_TRACE=1
-export GIT_TRACE_PACKET=1
-export GIT_TRACE_PERFORMANCE=1
-export GIT_SSH_COMMAND="ssh -vvv"
+#export GIT_TRACE=1
+#export GIT_TRACE_PACKET=1
+#export GIT_TRACE_PERFORMANCE=1
+#export GIT_SSH_COMMAND="ssh -vvv"
 
 set -euo pipefail
 set -x
+
+npm run test:prepush
+
+if [ $? -ne 0 ]; then
+  echo "Tests failed. Push aborted."
+  exit 1
+fi
 
 cd content
 git push "$remote" main
