@@ -32,6 +32,15 @@ router.get("/sitemap", async (req, res) => {
   res.renderWithBaseContext("pages/sitemap", context);
 });
 
+// HTML sitemap page
+router.get("/sitemap.json", async (req, res) => {
+  const context = {
+    title: "Site Map",
+    sitemap: await sitemapService.getCompleteSitemap(),
+  };
+  res.json(context);
+});
+
 // const getBaseUrl = require("../utils/baseUrl");
 
 // XML sitemap endpoint

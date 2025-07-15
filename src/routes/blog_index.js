@@ -3,7 +3,7 @@ const path = require("path");
 const { getAllPosts } = require("../utils/postFileUtils");
 const router = express.Router();
 
-router.get("/blog", async (req, res, next) => {
+router.get("/blog", async (req, res) => {
   const postsDir = path.join(__dirname, "../../content/posts");
   const allPosts = await getAllPosts(postsDir, {
     includeUnpublished: req.query.drafts === "true",

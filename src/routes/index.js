@@ -20,18 +20,33 @@ const HttpError = require("../utils/HttpError");
 
 const securedMiddleware = require("../middleware/secured");
 const securedRoutes = require("./secured");
+const testingRoutes = require("./testing");
 
 const favicon = require("serve-favicon");
 const faviconsPath = path.join(__dirname, "..", "..", "public", "favicons");
 const faviconFile = path.resolve(faviconsPath, "favicon.ico");
 
-router.use("/admin", securedMiddleware, securedRoutes);
-
-router.get("/error", errorPage); // Landing page after error is logged
+router.head("/health", (req, res) => {
+  res.sendStatus(200);
+});
 
 router.head("/healthcheck", (req, res) => {
   res.sendStatus(200);
 });
+
+router.use("/admin", securedMiddleware, securedRoutes);
+router.use(
+  "/test",
+  (req, res, next) => {
+    if (process.env.NODE_ENV !== "production") {
+      return next();
+    }
+    next(new HttpError(403, "Attempt to access test data"));
+  },
+  testingRoutes
+);
+
+router.get("/error", errorPage); // Landing page after error is logged
 
 router.use(admin);
 
@@ -68,33 +83,33 @@ router.use(rssFeed);
 
 router.get("/blog/:year/:month/:name", post);
 
-// function flattenRouterLayers(stack, acc = []) {
-//   for (const layer of stack) {
-//     acc.push(layer);
-//     const h = layer.handle;
-//     if (typeof h === "function") {
-//       if (h.stack && Array.isArray(h.stack)) {
-//         flattenRouterLayers(h.stack, acc);
-//       } else if (h.handle && h.handle.stack && Array.isArray(h.handle.stack)) {
-//         flattenRouterLayers(h.handle.stack, acc);
-//       }
-//     }
-//   }
-//   return acc;
-// }
+function flattenRouterLayers(stack, acc = []) {
+  for (const layer of stack) {
+    acc.push(layer);
+    const h = layer.handle;
+    if (typeof h === "function") {
+      if (h.stack && Array.isArray(h.stack)) {
+        flattenRouterLayers(h.stack, acc);
+      } else if (h.handle && h.handle.stack && Array.isArray(h.handle.stack)) {
+        flattenRouterLayers(h.handle.stack, acc);
+      }
+    }
+  }
+  return acc;
+}
 
-// router.use((req, res) => {
-//   const rootStack = req.app._router?.stack || req.app.router?.stack;
-//   if (!rootStack) return res.sendStatus(500);
-//   const flat = flattenRouterLayers(rootStack);
-//   const routes = [];
-//   flat.forEach((l) => {
-//     if (l.route) {
-//       routes.push(l.route.path);
-//     }
-//   });
-//   res.json(routes).send(200);
-// });
+router.use((req, res) => {
+  const rootStack = req.app._router?.stack || req.app.router?.stack;
+  if (!rootStack) return res.sendStatus(500);
+  const flat = flattenRouterLayers(rootStack);
+  const routes = [];
+  flat.forEach((l) => {
+    if (l.route) {
+      routes.push(l.route.path);
+    }
+  });
+  res.json(routes).send(200);
+});
 
 // router.use((req, res) => {
 //   const appStack = req.app._router?.stack || req.app.router?.stack;

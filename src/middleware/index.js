@@ -15,6 +15,16 @@ const authCheck = require("./authCheck");
 const { redirectMiddleware } = require("./redirect");
 
 const {
+  TRUST_PROXY,
+  EXCLUDED_PATHS,
+  DATA_LIMIT_BYTES,
+  RAW_BODY_LIMIT_BYTES,
+  RAW_BODY_TYPE,
+  FALLBACK_ENCODING,
+  FALLBACK_BODY,
+} = require("../constants/middlewareConstants");
+
+const {
   loggingMiddleware,
   morganInfo,
   morganWarn,
@@ -23,15 +33,8 @@ const {
 
 function setupApp() {
   const app = express();
-  const {
-    TRUST_PROXY,
-    EXCLUDED_PATHS,
-    DATA_LIMIT_BYTES,
-    RAW_BODY_LIMIT_BYTES,
-    RAW_BODY_TYPE,
-    FALLBACK_ENCODING,
-    FALLBACK_BODY,
-  } = require("../constants/middlewareConstants");
+
+  app.disable("x-powered-by");
   app.set("trust proxy", TRUST_PROXY);
 
   // General parsers for non-excluded routes
