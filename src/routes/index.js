@@ -15,7 +15,6 @@ const sitemap = require("./sitemap");
 const post = require("./post");
 const pages = require("./pages");
 const rssFeed = require("./rssFeed");
-// const logs = require("./logs");
 const { qualifyLink } = require("../utils/qualifyLinks");
 const HttpError = require("../utils/HttpError");
 

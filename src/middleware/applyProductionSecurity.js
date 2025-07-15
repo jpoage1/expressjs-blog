@@ -18,14 +18,6 @@ const disablePoweredBy = (req, res, next) => {
   next();
 };
 
-const logIps = (req, res, next) => {
-  const forwardedIp = req.ip;
-  const directIp = req.connection.remoteAddress;
-  req.log?.info?.(`Forwarded IP: ${forwardedIp}`);
-  req.log?.info?.(`Direct IP: ${directIp}`);
-  next();
-};
-
 const blockLocalhostAccess = (req, res, next) => {
   if (req.method === HEALTHCHECK_METHOD && req.path === HEALTHCHECK_PATH) {
     return next();
@@ -39,7 +31,6 @@ const blockLocalhostAccess = (req, res, next) => {
 
 const applyProductionSecurity = [
   disablePoweredBy,
-  logIps,
   hpp(),
   xssSanitizer,
   // rateLimit middleware can be added here
