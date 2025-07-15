@@ -1,10 +1,11 @@
 #!/bin/bash
+
 deploy_expressjs_blog() {
-  set -x
   local ref="$1"
   local branch="${ref#refs/heads/}"
   local path="/srv/jasonpoage.com/expressjs-blog-$branch"
 
+  set -x
   if [[ "$branch" == "production" || "$branch" == "main" || "$branch" == "testing" ]]; then
     GIT_WORK_TREE="$path" git checkout -f "$branch"
 
@@ -12,16 +13,48 @@ deploy_expressjs_blog() {
     yarn
     yarn combine:css
     systemctl --user restart express-blog@"$branch".service
-    cp /srv/jasonpoage.com/$branch.env "$path"/.env
+    ln -f /srv/jasonpoage.com/"$branch".env "$path"/.env
 
     # Blog content
     GIT_DIR="/srv/jasonpoage.com/expressjs-blog-posts.git"
-    # Always checkout the main branch of the blog posts
     GIT_WORK_TREE="$path/content" git checkout -f main
   fi
   set +x
 }
-while read -r oldrev newrev ref; do
-  deploy_expressjs_blog "$ref"
-done
 
+run_postreceive_tests() {
+  local branch="$1"
+  local tmpdir pidfile logfile
+  tmpdir=$(mktemp -d)
+  pidfile="$tmpdir/test.pid"
+  logfile="$tmpdir/test.log"
+  trap 'kill $(cat "$pidfile" 2>/dev/null) 2>/dev/null; rm -rf "$tmpdir"' EXIT
+
+  git clone . "$tmpdir" --quiet
+  cd "$tmpdir" || return 1
+  cp /srv/jasonpoage.com/"${branch}".env .env
+
+  yarn install --silent
+  export PORT=4123
+
+  nohup yarn start >>"$logfile" 2>&1 &
+  echo $! >"$pidfile"
+
+  sleep 2
+  if ! npm run test:postreceive; then
+    kill "$(cat "$pidfile")" 2>/dev/null
+    return 1
+  fi
+
+  kill "$(cat "$pidfile")" 2>/dev/null
+}
+
+while read -r oldrev newrev ref; do
+  branch="${ref#refs/heads/}"
+  if run_postreceive_tests "$branch"; then
+    deploy_expressjs_blog "$ref"
+  else
+    echo "Post-receive tests failed. Deployment aborted."
+    exit 1
+  fi
+done
