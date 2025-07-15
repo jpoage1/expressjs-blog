@@ -53,6 +53,8 @@ const HttpError = require("../utils/HttpError");
 const { baseUrl } = require("../utils/baseUrl");
 const { qualifyLink } = require("../utils/qualifyLinks");
 
+const { winstonLogger } = require("../utils/logging");
+
 // Threat detection patterns
 const THREAT_PATTERNS = {
   // Common phishing/spam indicators
@@ -224,35 +226,33 @@ function analyzeThreatLevel(formData, securityData) {
   };
 }
 
-// Enhanced logging with threat analysis
 async function logSecurityEvent(data, eventType = "contact_submission") {
   try {
-    const logDir = path.join(__dirname, "..", "logs", "security");
-    await fs.mkdir(logDir, { recursive: true });
-
-    const logFile = path.join(
-      logDir,
-      `${eventType}_${new Date().toISOString().split("T")[0]}.log`
-    );
+    const date = new Date().toISOString().split("T")[0];
     const logEntry = {
+      eventType,
       ...data,
       loggedAt: new Date().toISOString(),
     };
 
-    await fs.appendFile(logFile, JSON.stringify(logEntry) + "\n");
+    // Log security event at custom 'security' level
+    winstonLogger.log("security", logEntry);
 
-    // Create separate high-threat log
+    // Separate high-threat log file
     if (data.threatAnalysis?.level === "high") {
-      const alertFile = path.join(
-        logDir,
-        `high_threat_${new Date().toISOString().split("T")[0]}.log`
-      );
-      await fs.appendFile(alertFile, JSON.stringify(logEntry) + "\n");
+      const logDir = path.join(__dirname, "..", "..", "logs", "security");
+      await fs.mkdir(logDir, { recursive: true });
+
+      const alertFile = path.join(logDir, `high_threat_${date}.log`);
+      await fs.appendFile(alertFile, message + "\n");
     }
   } catch (err) {
-    console.error("Failed to log security event:", err);
+    // Fail silently or log to error log, depending on requirements
+    winstonLogger.error(`Failed to log security event: ${err.message}`);
   }
 }
+
+module.exports = { logSecurityEvent };
 
 // Middleware to capture request start time
 router.use((req, res, next) => {

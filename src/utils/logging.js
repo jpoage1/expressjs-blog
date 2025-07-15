@@ -1,8 +1,32 @@
 // utils/logging.js
+
+const customLevels = {
+  levels: {
+    error: 0,
+    warn: 1,
+    security: 2, // Custom level
+    notice: 3,
+    info: 4,
+    debug: 5,
+  },
+  colors: {
+    error: "red",
+    warn: "yellow",
+    security: "magenta", // Optional color
+    notice: "cyan",
+    info: "green",
+    debug: "blue",
+  },
+};
+
 const fs = require("fs");
 const path = require("path");
 const util = require("util");
-const { createLogger, format, transports } = require("winston");
+
+const winston = require("winston");
+winston.addColors(customLevels.colors);
+const { createLogger, format, transports } = winston;
+
 const DailyRotateFile = require("winston-daily-rotate-file");
 const SQLiteTransport = require("../utils/SQLiteTransport");
 const sqliteTransport = new SQLiteTransport();
@@ -168,6 +192,7 @@ const manualLogger = {
 };
 
 const winstonLogger = createLogger({
+  levels: customLevels.levels,
   format: format.combine(
     format.timestamp(),
     format.printf(
@@ -180,6 +205,7 @@ const winstonLogger = createLogger({
     buildTransport("warn", "warn"),
     buildTransport("debug", "debug"),
     buildTransport("notice", "notice"),
+    buildTransport("security", "security"),
     sessionTransport, // Add session transport to winston
     new transports.Console({
       level: "debug",
