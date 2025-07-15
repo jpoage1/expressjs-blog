@@ -9,17 +9,22 @@ module.exports = function (req, res, next) {
   const originalSend = res.send;
 
   res.send = function (body) {
-    const contentType = res.get("Content-Type") || "";
-    const isHTML =
-      contentType.includes("text/html") ||
-      (typeof body === "string" && body.trim().startsWith("<"));
+    if (res.headersSent) {
+      req.log.warn("Attempted to send after headers were already sent.");
+      return next();
+    }
 
-    if (isHTML) {
-      try {
-        body = beautify(body, BEAUTIFY_OPTIONS);
-      } catch (e) {
-        console.error(ERROR_MESSAGES.BEAUTIFY_ERROR, e);
-      }
+    const contentType = res.get("Content-Type") || "";
+    const isHTML = contentType.includes("text/html");
+
+    if (!isHTML) {
+      return originalSend.call(this, body);
+    }
+
+    try {
+      body = beautify(body, BEAUTIFY_OPTIONS);
+    } catch (e) {
+      req.log.error(ERROR_MESSAGES.BEAUTIFY_ERROR, e);
     }
 
     return originalSend.call(this, body);

@@ -22,7 +22,6 @@ const hbsMiddleware = (req, res, next) => {
           this._sections ??= {};
           this._sections[name] ??= "";
           this._sections[name] += options.fn(this);
-          req.log.debug(name, this._sections);
           return null;
         },
       },

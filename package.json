@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "combine:css": "node combine-css.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node ./test/runTests.js",
     "start": "nodemon ./src/app.js --trace-exit",
     "maildev": "maildev",
     "main": "pm2 start ecosystem.config.js --only expressjs-blog-main",
@@ -53,6 +53,8 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^9.8.0",
+    "chai": "^5.2.1",
+    "mocha": "^11.7.1",
     "pm2": "^6.0.6",
     "postcss": "^8.5.6",
     "postcss-import": "^16.1.1"
