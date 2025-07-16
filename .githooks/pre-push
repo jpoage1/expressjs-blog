@@ -7,7 +7,7 @@ remote="$1"
 #export GIT_SSH_COMMAND="ssh -vvv"
 
 set -euo pipefail
-set -x
+# set -x
 
 npm run test:prepush
 
@@ -19,3 +19,4 @@ fi
 cd content
 git push "$remote" main
 cd ..
+# set +x

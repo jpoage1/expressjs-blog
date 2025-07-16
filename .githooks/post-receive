@@ -74,8 +74,8 @@ deploy_expressjs_blog() {
     # Restart service (only for actual deployments)
     [[ -z "$custom_path" ]] && systemctl --user restart express-blog@"$branch".service
 
-  fi     # End of branch check
-  set +x # Disable command tracing
+  fi # End of branch check
+  # set +x # Disable command tracing
 }
 
 update_node_pkgs() {
@@ -172,10 +172,10 @@ run_tests() {
 }
 
 combine_css() {
-  set +e
+  set +u
   oldrev="$1"
   newrev="$2"
-  set -e
+  set -u
 
   # For live deployments, pass the oldrev, newrev, and MAIN_APP_BARE_REPO
   yarn --production=false combine:css "$oldrev" "$newrev" "$MAIN_APP_BARE_REPO" || {
