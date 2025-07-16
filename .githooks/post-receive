@@ -45,8 +45,24 @@ deploy_expressjs_blog() {
     yarn combine:css
     [[ -z "$custom_path" ]] && systemctl --user restart express-blog@"$branch".service
 
-    git --git-dir=/srv/jasonpoage.com/expressjs-blog-posts.git --work-tree="$path/content" checkout -f main
-    unset GIT_DIR GIT_WORK_TREE
+    if [[ -d "$path/content" ]]; then
+      cd "$path/content" || return 1
+      current_commit=$(git rev-parse HEAD)
+      git fetch origin
+      latest_commit=$(git rev-parse origin/main)
+
+      if [[ "$current_commit" != "$latest_commit" ]]; then
+        git reset --hard origin/main
+        echo "Content updated to latest commit"
+      else
+        echo "Content already up to date"
+      fi
+      return 0
+    fi
+    local force_refresh="${4:-false}"
+    if [[ "$force_refresh" == "true" ]] || [[ ! -d "$path/content" ]]; then
+      git clone --branch main /srv/jasonpoage.com/expressjs-blog-posts.git "$path/content"
+    fi
   fi
   set +x
 }
