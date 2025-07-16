@@ -22,31 +22,75 @@ wait_for_service() {
 }
 
 deploy_expressjs_blog() {
-  local ref="$1"
-  local custom_path="${2:-}"
-  local custom_env="${3:-}"
+  local oldrev="$1"
+  local newrev="$2"
+  local ref="$3"
+  local custom_path="${4:-}"
+  local custom_env="${5:-}"
   local branch="${ref#refs/heads/}"
+
   local path="${custom_path:-/srv/jasonpoage.com/expressjs-blog-$branch}"
   local envfile="${custom_env:-/srv/jasonpoage.com/$branch.env}"
 
   set -x
 
-  GIT_DIR="/srv/jasonpoage.com/expressjs-blog.git"
+  # Define the bare main application repository (used explicitly when needed)
+  local MAIN_APP_BARE_REPO="/srv/jasonpoage.com/expressjs-blog.git"
+  # Define the bare content repository (used explicitly when needed)
+  local CONTENT_BARE_REPO="/srv/jasonpoage.com/expressjs-blog-posts.git"
 
   if [[ "$branch" == "production" || "$branch" == "main" || "$branch" == "testing" ]]; then
 
     GIT_WORK_TREE="$path" git checkout -f "$branch"
 
-    cd "$path" || return 1
+    cd "$path" || {
+      echo "Error: Could not change directory to $path"
+      return 1
+    }
     [[ -z "$custom_path" ]] && ln -f "$envfile" "$path/.env" || {
       cp -f "$envfile" "$path/.env"
     }
-    yarn
-    yarn combine:css
+
+    local install_required=true
+    if [[ -z "$custom_path" && -n "$oldrev" && "$oldrev" != "0000000000000000000000000000000000000000" ]]; then
+      # This block only runs for actual deployments (not test runs)
+      # and if it's not the initial clone (oldrev is not all zeros)
+
+      # Use git diff-tree to check if package.json or yarn.lock changed between old and new revision
+      # --name-only shows only file names
+      # -r makes it recursive
+      # $oldrev..$newrev compares the commits
+      if ! git --git-dir="$MAIN_APP_BARE_REPO" diff-tree --name-only -r "$oldrev..$newrev" | grep -qE "(package\.json|yarn\.lock)$"; then
+        echo "No changes detected in package.json or yarn.lock. Skipping yarn install."
+        install_required=false
+      else
+        echo "Changes detected in package.json or yarn.lock. Running yarn install."
+      fi
+    else
+      echo "Running yarn install (initial deployment or test environment)."
+    fi
+
+    if [[ "$install_required" == "true" ]]; then
+      yarn
+    fi
+
+    # This script checks if css bundle needs updated, and updates it
+    if [[ -z "$custom_path" ]]; then
+      # For live deployments, pass the oldrev, newrev, and MAIN_APP_BARE_REPO
+      yarn combine:css "$oldrev" "$newrev" "$MAIN_APP_BARE_REPO"
+    else
+      # For temporary test environments, run without Git comparison arguments.
+      # This will trigger the "No Git revisions provided. Forcing full CSS bundling." path in combine-css.js
+      yarn combine:css
+    fi
+
     [[ -z "$custom_path" ]] && systemctl --user restart express-blog@"$branch".service
 
-    if [[ -d "$path/content" ]]; then
-      cd "$path/content" || return 1
+    if [[ -d "$path/content" && -d "$path/content" ]]; then
+      cd "$path/content" || {
+        echo "Error: Could not change directory to $path/content"
+        return 1
+      }
       current_commit=$(git rev-parse HEAD)
       git fetch origin
       latest_commit=$(git rev-parse origin/main)
@@ -58,6 +102,8 @@ deploy_expressjs_blog() {
         echo "Content already up to date"
       fi
       return 0
+    else
+      git clone --branch main "$CONTENT_BARE_REPO" "$path/content"
     fi
     local force_refresh="${4:-false}"
     if [[ "$force_refresh" == "true" ]] || [[ ! -d "$path/content" ]]; then
@@ -73,11 +119,11 @@ run_postreceive_tests() {
   tmpdir=$(mktemp -d)
   pidfile="$tmpdir/test.pid"
   logfile="$tmpdir/test.log"
-  trap "kill $(cat "$pidfile" 2>/dev/null) 2>/dev/null; rm -rf \"$tmpdir\"" EXIT
+  trap "kill $(cat "$pidfile" 2>/dev/null) 2>/dev/null || true; rm -rf \"$tmpdir\"" EXIT
 
   git clone . "$tmpdir" --quiet --branch "$branch"
 
-  deploy_expressjs_blog "refs/heads/$branch" "$tmpdir" "/srv/jasonpoage.com/${branch}.env"
+  deploy_expressjs_blog "" "" "refs/heads/$branch" "$tmpdir" "/srv/jasonpoage.com/${branch}.env"
 
   cd "$tmpdir" || return 1
   export TEST_PORT=4123
@@ -94,18 +140,18 @@ run_postreceive_tests() {
   fi
 
   if ! npm run test:postreceive; then
-    kill "$(cat "$pidfile")" 2>/dev/null
+    kill "$(cat "$pidfile")" 2>/dev/null || true
     cat "$logfile"
     return 1
   fi
 
-  kill "$(cat "$pidfile")" 2>/dev/null
+  kill "$(cat "$pidfile")" 2>/dev/null || true
 }
 
 while read -r oldrev newrev ref; do
   branch="${ref#refs/heads/}"
   if run_postreceive_tests "$branch"; then
-    deploy_expressjs_blog "$ref"
+    deploy_expressjs_blog "$oldrev" "$newrev" "$ref"
   else
     echo "Post-receive tests failed. Deployment aborted."
     exit 1

@@ -40,7 +40,7 @@ router.get("/:token", (req, res, next) => {
   res
     .status(301)
     .set("Location", adminLoginUrl)
-    .render("pages/redirect", { layout: "layouts/redirect", adminLoginUrl });
+    .render("pages/redirect", { layout: "redirect", adminLoginUrl });
 });
 
 module.exports = router;
