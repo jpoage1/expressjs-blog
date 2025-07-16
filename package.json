@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "combine:css": "node combine-css.js",
+    "combine:css": "node scripts/combine-css.js",
     "start": "nodemon ./src/app.js --trace-exit",
     "maildev": "maildev",
     "main": "pm2 start ecosystem.config.js --only expressjs-blog-main",
