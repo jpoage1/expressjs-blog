@@ -1,5 +1,8 @@
 #!/bin/bash
-set -euo pipefail
+set -euo pipefail # -e: exit on error, -u: exit on unset var, -o pipefail: catch errors in pipes
+
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+MAIN_APP_BARE_REPO="/srv/jasonpoage.com/expressjs-blog.git"
 
 # Function to wait for a service to become available
 wait_for_service() {
@@ -25,92 +28,78 @@ deploy_expressjs_blog() {
   local oldrev="$1"
   local newrev="$2"
   local ref="$3"
-  local custom_path="${4:-}"
+  local custom_path="${4:-}" # If custom_path is provided, this is a test deployment
   local custom_env="${5:-}"
   local branch="${ref#refs/heads/}"
 
+  # Define deployment path and env file path
   local path="${custom_path:-/srv/jasonpoage.com/expressjs-blog-$branch}"
   local envfile="${custom_env:-/srv/jasonpoage.com/$branch.env}"
 
-  set -x
-
-  # Define the bare main application repository (used explicitly when needed)
-  local MAIN_APP_BARE_REPO="/srv/jasonpoage.com/expressjs-blog.git"
-  # Define the bare content repository (used explicitly when needed)
-  local CONTENT_BARE_REPO="/srv/jasonpoage.com/expressjs-blog-posts.git"
+  # set -x # Enable command tracing for debugging
 
   if [[ "$branch" == "production" || "$branch" == "main" || "$branch" == "testing" ]]; then
 
-    GIT_WORK_TREE="$path" git checkout -f "$branch"
+    # Ensure the deployment directory exists and is clean for a fresh clone
+    if [[ -d "$path" ]]; then
+      echo "Deployment path '$path' exists, removing for fresh clone..."
+      rm -rf "$path"
+    fi
+    mkdir -p "$(dirname "$path")" # Ensure parent directory exists
+
+    echo "Cloning main application from bare repo '$MAIN_APP_BARE_REPO' to '$path'..."
+
+    git clone --branch "$branch" "$MAIN_APP_BARE_REPO" "$path" || {
+      echo "Error: Failed to clone main application to $path"
+      return 1
+    }
 
     cd "$path" || {
       echo "Error: Could not change directory to $path"
       return 1
     }
-    [[ -z "$custom_path" ]] && ln -f "$envfile" "$path/.env" || {
-      cp -f "$envfile" "$path/.env"
+
+    echo "Ensuring content submodule is initialized and updated."
+    git --work-tree="$path" submodule update --init --remote --depth=1 --checkout --recursive || {
+      echo "Error: Failed to update submodules."
+      return 1
     }
 
-    local install_required=true
-    if [[ -z "$custom_path" && -n "$oldrev" && "$oldrev" != "0000000000000000000000000000000000000000" ]]; then
-      # This block only runs for actual deployments (not test runs)
-      # and if it's not the initial clone (oldrev is not all zeros)
+    # Handle .env file
+    ln -f "$envfile" "$path/.env"
 
-      # Use git diff-tree to check if package.json or yarn.lock changed between old and new revision
-      # --name-only shows only file names
-      # -r makes it recursive
-      # $oldrev..$newrev compares the commits
-      if ! git --git-dir="$MAIN_APP_BARE_REPO" diff-tree --name-only -r "$oldrev..$newrev" | grep -qE "(package\.json|yarn\.lock)$"; then
-        echo "No changes detected in package.json or yarn.lock. Skipping yarn install."
-        install_required=false
-      else
-        echo "Changes detected in package.json or yarn.lock. Running yarn install."
-      fi
-    else
-      echo "Running yarn install (initial deployment or test environment)."
-    fi
+    update_node_pkgs || return 1
+    combine_css "$oldrev" "$newrev" || return 1
 
-    if [[ "$install_required" == "true" ]]; then
-      yarn
-    fi
-
-    # This script checks if css bundle needs updated, and updates it
-    if [[ -z "$custom_path" ]]; then
-      # For live deployments, pass the oldrev, newrev, and MAIN_APP_BARE_REPO
-      yarn combine:css "$oldrev" "$newrev" "$MAIN_APP_BARE_REPO"
-    else
-      # For temporary test environments, run without Git comparison arguments.
-      # This will trigger the "No Git revisions provided. Forcing full CSS bundling." path in combine-css.js
-      yarn combine:css
-    fi
-
+    # Restart service (only for actual deployments)
     [[ -z "$custom_path" ]] && systemctl --user restart express-blog@"$branch".service
 
-    if [[ -d "$path/content" && -d "$path/content" ]]; then
-      cd "$path/content" || {
-        echo "Error: Could not change directory to $path/content"
-        return 1
-      }
-      current_commit=$(git rev-parse HEAD)
-      git fetch origin
-      latest_commit=$(git rev-parse origin/main)
+  fi     # End of branch check
+  set +x # Disable command tracing
+}
 
-      if [[ "$current_commit" != "$latest_commit" ]]; then
-        git reset --hard origin/main
-        echo "Content updated to latest commit"
-      else
-        echo "Content already up to date"
-      fi
-      return 0
+update_node_pkgs() {
+  # Yarn install logic
+  local install_required=true
+  if [[ -z "$custom_path" && -n "$oldrev" && "$oldrev" != "0000000000000000000000000000000000000000" ]]; then
+    # This block only runs for actual deployments (not test runs)
+    # Use --git-dir for this diff against the bare repo's commits
+    if ! git --git-dir="$MAIN_APP_BARE_REPO" diff-tree --name-only -r "$oldrev..$newrev" | grep -qE "(package\.json|yarn\.lock)$"; then
+      echo "No changes detected in package.json or yarn.lock. Skipping yarn install."
+      install_required=false
     else
-      git clone --branch main "$CONTENT_BARE_REPO" "$path/content"
+      echo "Changes detected in package.json or yarn.lock. Running yarn install."
     fi
-    local force_refresh="${4:-false}"
-    if [[ "$force_refresh" == "true" ]] || [[ ! -d "$path/content" ]]; then
-      git clone --branch main /srv/jasonpoage.com/expressjs-blog-posts.git "$path/content"
-    fi
+  else
+    echo "Running yarn install (initial deployment or test environment)."
   fi
-  set +x
+
+  if [[ "$install_required" == "true" ]]; then
+    yarn || {
+      echo "Error: yarn install failed."
+      return 1
+    }
+  fi
 }
 
 run_postreceive_tests() {
@@ -118,42 +107,94 @@ run_postreceive_tests() {
   local tmpdir pidfile logfile
   tmpdir=$(mktemp -d)
   pidfile="$tmpdir/test.pid"
-  logfile="$tmpdir/test.log"
+  logfile="/srv/jasonpoage.com/logs/receive-$TIMESTAMP.log"
+  # Trap to ensure cleanup even if script exits unexpectedly
   trap "kill $(cat "$pidfile" 2>/dev/null) 2>/dev/null || true; rm -rf \"$tmpdir\"" EXIT
 
-  git clone . "$tmpdir" --quiet --branch "$branch"
+  echo "Running post-receive tests for branch '$branch' in temporary environment."
 
-  deploy_expressjs_blog "" "" "refs/heads/$branch" "$tmpdir" "/srv/jasonpoage.com/${branch}.env"
+  # This creates a proper working tree at $tmpdir, which is essential for submodules.
+  git clone --branch "$branch" "$GIT_DIR" "$tmpdir" || {
+    echo "Error: Failed to clone main application for tests to $tmpdir"
+    return 1
+  }
 
-  cd "$tmpdir" || return 1
+  cd "$tmpdir" || {
+    echo "Error: Could not change directory to $tmpdir"
+    return 1
+  }
+
+  echo "Initializing and updating submodules for test environment..."
+  git --work-tree="$tmpdir" submodule update --init --recursive || {
+    ls "$tmpdir" -a
+    echo "Error: Failed to initialize/update submodules for test environment."
+    return 1
+  }
+
+  # Copy the .env file for the test environment
+  cp "/srv/jasonpoage.com/${branch}.env" "$tmpdir/.env" || {
+    echo "Error: Failed to copy .env file for test environment."
+    return 1
+  }
+
   export TEST_PORT=4123
-
   export NODE_ENV=testing
+
+  echo "Starting application for tests..."
+  yarn
+  combine_css || return 1
+
   nohup yarn start >>"$logfile" 2>&1 &
   echo $! >"$pidfile"
 
   # Wait for the application to become responsive
   if ! wait_for_service "http://127.0.0.1:$TEST_PORT"; then
-    echo "Application did not start or respond. Check logs:"
+    echo "Application did not start or respond for tests. Check logs in $logfile:"
     cat "$logfile" # Display logs on failure
     return 1
   fi
 
+  run_tests || return 1
+
+  kill "$(cat "$pidfile")" 2>/dev/null || true
+  echo "Tests passed for branch '$branch' in temporary environment."
+  return 0
+}
+
+run_tests() {
+  echo "Running npm tests..."
   if ! npm run test:postreceive; then
     kill "$(cat "$pidfile")" 2>/dev/null || true
+    echo "Tests failed for branch '$branch'. Application logs from $logfile:"
     cat "$logfile"
     return 1
   fi
-
-  kill "$(cat "$pidfile")" 2>/dev/null || true
 }
 
+combine_css() {
+  set +e
+  oldrev="$1"
+  newrev="$2"
+  set -e
+
+  # For live deployments, pass the oldrev, newrev, and MAIN_APP_BARE_REPO
+  yarn --production=false combine:css "$oldrev" "$newrev" "$MAIN_APP_BARE_REPO" || {
+    echo "Error: yarn combine:css failed."
+    return 1
+  }
+}
+
+# Main script execution loop
 while read -r oldrev newrev ref; do
   branch="${ref#refs/heads/}"
+  echo "--- Processing push for branch: $branch (from $oldrev to $newrev) ---"
   if run_postreceive_tests "$branch"; then
-    deploy_expressjs_blog "$oldrev" "$newrev" "$ref"
+    echo "Tests passed for $branch. Proceeding with deployment."
+    # Pass all original variables to deploy_expressjs_blog for the actual deployment
+    deploy_expressjs_blog "$oldrev" "$newrev" "$ref" "" "" # Empty custom_path/env for real deploy
+    echo "Deployment of $branch complete."
   else
-    echo "Post-receive tests failed. Deployment aborted."
+    echo "Post-receive tests failed for $branch. Deployment aborted."
     exit 1
   fi
 done
