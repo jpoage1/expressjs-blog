@@ -78,6 +78,41 @@ deploy_expressjs_blog() {
   # set +x # Disable command tracing
 }
 
+deploy_tested_expressjs_blog() {
+  local oldrev="$1"
+  local newrev="$2"
+  local ref="$3"
+  local custom_path="${4:-}"
+  local custom_env="${5:-}"
+  local branch="${ref#refs/heads/}"
+
+  # Define deployment path and env file path
+  local path="${custom_path:-/srv/jasonpoage.com/expressjs-blog-$branch}"
+  local envfile="${custom_env:-/srv/jasonpoage.com/$branch.env}"
+
+  # set -x # Enable command tracing for debugging
+
+  if [[ "$branch" == "production" || "$branch" == "main" || "$branch" == "testing" ]]; then
+
+    echo "Moving tested deployment from '$test_dir' to '$path'..."
+    [[ -d "$path" ]] && rm -rf "$path"
+    mv "$test_dir" "$path"
+
+    cd "$path" || {
+      echo "Error: Could not change directory to $path"
+      return 1
+    }
+
+    # Handle .env file
+    ln -f "$envfile" "$path/.env"
+
+    # Restart service (only for actual deployments)
+    [[ -z "$custom_path" ]] && systemctl --user restart express-blog@"$branch".service
+
+  fi # End of branch check
+  # set +x # Disable command tracing
+}
+
 update_node_pkgs() {
   # Yarn install logic
   local install_required=true
@@ -140,10 +175,11 @@ run_postreceive_tests() {
   export TEST_PORT=4123
   export NODE_ENV=testing
 
-  echo "Starting application for tests..."
+  echo "Running build scripts..."
   yarn
   combine_css || return 1
 
+  echo "Starting application for tests..."
   nohup yarn start >>"$logfile" 2>&1 &
   echo $! >"$pidfile"
 
@@ -154,6 +190,7 @@ run_postreceive_tests() {
     return 1
   fi
 
+  echo "Running tests..."
   run_tests || return 1
 
   kill "$(cat "$pidfile")" 2>/dev/null || true
@@ -177,11 +214,17 @@ combine_css() {
   newrev="$2"
   set -u
 
-  # For live deployments, pass the oldrev, newrev, and MAIN_APP_BARE_REPO
-  yarn --production=false combine:css "$oldrev" "$newrev" "$MAIN_APP_BARE_REPO" || {
-    echo "Error: yarn combine:css failed."
-    return 1
-  }
+  if [[ -z "$oldrev" && -z "$newrev" ]]; then
+    yarn --production=false combine:css || {
+      echo "Error: yarn combine:css failed."
+      return 1
+    }
+  else
+    yarn --production=false combine:css "$oldrev" "$newrev" "$MAIN_APP_BARE_REPO" || {
+      echo "Error: yarn combine:css with args failed."
+      return 1
+    }
+  fi
 }
 
 # Main script execution loop
@@ -190,8 +233,7 @@ while read -r oldrev newrev ref; do
   echo "--- Processing push for branch: $branch (from $oldrev to $newrev) ---"
   if run_postreceive_tests "$branch"; then
     echo "Tests passed for $branch. Proceeding with deployment."
-    # Pass all original variables to deploy_expressjs_blog for the actual deployment
-    deploy_expressjs_blog "$oldrev" "$newrev" "$ref" "" "" # Empty custom_path/env for real deploy
+    deploy_tested_expressjs_blog "$oldrev" "$newrev" "$ref"
     echo "Deployment of $branch complete."
   else
     echo "Post-receive tests failed for $branch. Deployment aborted."
