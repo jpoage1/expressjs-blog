@@ -155,7 +155,7 @@ deploy_expressjs_blog() {
     deploy_path=$(get_deploy_path "$branch")
     envfile=$(get_deploy_env_file "$branch")
 
-    if [[ "$branch" == "production" || "$branch" == "main" || "$branch" == "testing" ]]; then
+    if [[ "$branch" == "staging" || "$branch" == "main" || "$branch" == "testing" ]]; then
         
         # For testing environments, use the efficient method (replace everything)
         if [[ "$branch" == "testing" ]]; then

@@ -14,20 +14,17 @@ if (
 ) {
   // construction.register("/newsletter", "Newsletter");
   construction.register("/projects", "Projects");
-  construction.register("/about/blog", "About this blog");
 } else {
-  markdown.register("/about/blog", "about-blog");
   markdown.register("/projects", "projects");
 }
+markdown.register("/about/blog", "about-blog");
 
 const newsletter = require("./newsletter");
 router.use(newsletter, csrfToken);
 
 construction.register("/changelog", "Changelog");
 construction.register("/archive", "Archive");
-// construction.register("/rss-feed.xml", "RSS Feed");
 construction.register("/tags", "Tags");
-construction.register("/about/blog", "About This Blog");
 // construction.register("/contact", "Contact Me");
 
 markdown.register("/tools", "tools", "tools");
