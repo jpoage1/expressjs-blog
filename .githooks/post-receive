@@ -83,7 +83,7 @@ conservative_deploy_expressjs_blog() {
     local MAIN_APP_BARE_REPO="$GIT_DIR"
     local CONTENT_BARE_REPO="/srv/jasonpoage.com/expressjs-blog-posts.git"
 
-    set -x
+    # set -x
 
     # Update the working tree in place
     git --git-dir="$MAIN_APP_BARE_REPO" --work-tree="$deploy_path" checkout -f "$branch"
@@ -141,7 +141,7 @@ conservative_deploy_expressjs_blog() {
         git clone --branch main "$CONTENT_BARE_REPO" "$deploy_path/content"
     fi
 
-    set +x
+    # set +x
 }
 
 deploy_expressjs_blog() {
@@ -179,7 +179,6 @@ run_postreceive_tests() {
   # Trap to ensure cleanup even if script exits unexpectedly
   trap "kill \"$(cat "$pidfile" 2>/dev/null)\" 2>/dev/null || true; rm -f \"$pidfile\"" EXIT
 
-
   echo "Running post-receive tests for branch '$branch' in temporary environment."
 
   clone_branch "$branch" "$tmpdir" || return 1
@@ -205,9 +204,9 @@ run_postreceive_tests() {
   nohup yarn start >>"$logfile" 2>&1 &
   echo $! >"$pidfile"
 
-  set +x
+  # set +x
   wait_for_service "$logfile"
-  set -x
+  # set -x
 
   echo "Running tests..."
   run_tests "$branch" "$pidfile" "$logfile" || return 1
@@ -258,7 +257,7 @@ combine_css() {
   }
 }
 
-set -x
+# set -x
 SKIP_DEPLOYMENT=true
 # Main script execution loop
 while read -r oldrev newrev ref; do
@@ -278,4 +277,4 @@ while read -r oldrev newrev ref; do
     exit 1
   fi
 done
-set +x
+# set +x
