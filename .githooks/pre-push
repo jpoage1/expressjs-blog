@@ -9,6 +9,7 @@ remote="$1"
 set -euo pipefail
 # set -x
 
+export TEST_SCHEMA="http"
 npm run test:prepush
 
 if [ $? -ne 0 ]; then

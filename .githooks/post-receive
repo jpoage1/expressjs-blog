@@ -259,6 +259,7 @@ combine_css() {
 }
 
 set -x
+SKIP_DEPLOYMENT=true
 # Main script execution loop
 while read -r oldrev newrev ref; do
   tmpdir=$(mktemp -d)
@@ -266,8 +267,12 @@ while read -r oldrev newrev ref; do
   echo "--- Processing push for branch: $branch (from $oldrev to $newrev) ---"
   if run_postreceive_tests "$branch" "$tmpdir"; then
     echo "Tests passed for $branch. Proceeding with deployment."
-    deploy_expressjs_blog "$branch" "$tmpdir"
-    echo "Deployment of $branch complete."
+    if [[ -z "$SKIP_DEPLOYMENT" ]]; then
+      deploy_expressjs_blog "$branch" "$tmpdir"
+      echo "Deployment of $branch complete."
+    else
+      echo "Deployed to: $tmpdir"
+    fi
   else
     echo "Post-receive tests failed for $branch. Deployment aborted."
     exit 1
