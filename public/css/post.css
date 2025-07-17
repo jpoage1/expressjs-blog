@@ -7,9 +7,11 @@
   }
   .markdown-content p,
   .markdown-content li {
-    max-width: 60ch;
+    max-width: 70ch;
     line-height: 1.6;
     margin-bottom: 1.25rem;
+    padding-left: 0.5rem;
+    text-indent: 0.5rem;
   }
   .markdown-content h1, .markdown-content h2 {
     margin-top: 2rem;
@@ -55,4 +57,19 @@
   .markdown-content a:hover {
     text-decoration: underline;
   }
-  
+  .markdown-content h2 {
+  padding-left: 0.5rem;
+  border-left: 4px solid #ccc;
+  margin-left: -0.5rem;
+}
+
+.markdown-content ul {
+  padding-left: 1.25rem; /* increase left padding */
+  list-style-position: outside;
+  list-style-type: disc;
+}
+
+.markdown-content ul li {
+  margin-bottom: 0.75rem;
+  text-indent: -0.25rem; /* slight hanging indent */
+}

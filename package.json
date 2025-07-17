@@ -12,7 +12,8 @@
     "stop-main": "node_modules/pm2/bin/pm2 delete expressjs-blog-main",
     "stop-testing": "node_modules/pm2/bin/pm2 delete expressjs-blog-testing",
     "test:prepush": "node scripts/test-prepush.js",
-    "test:postreceive": "node scripts/test-postreceive.js"
+    "test:postreceive": "node scripts/test-postreceive.js",
+    "update-submodules": "git submodule update --init --recursive --remote"
   },
   "keywords": [],
   "author": "",
