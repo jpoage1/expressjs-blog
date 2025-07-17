@@ -194,6 +194,7 @@ run_postreceive_tests() {
   initialize_submodules "$tmpdir" || return 1
 
   export TEST_PORT=4123
+  export TEST_SCHEMA=http
   export NODE_ENV=testing
 
   echo "Running build scripts..."
@@ -212,7 +213,7 @@ run_postreceive_tests() {
   run_tests "$branch" "$pidfile" "$logfile" || return 1
 
   kill "$(cat "$pidfile")" 2>/dev/null || true
-  unset TEST_PORT NODE_ENV
+  unset TEST_PORT TEST_SCHEMA NODE_ENV
 
   echo "Tests passed for branch '$branch' in temporary environment."
   return 0

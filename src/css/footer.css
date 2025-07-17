@@ -91,3 +91,10 @@ footer .social-contact p svg:hover {
   font-size: 0.85em;
   color: #777;
 }
+
+footer small {
+  color: #666; font-size: 10px; opacity: 0.3;
+}
+footer small a {
+   color: inherit
+}

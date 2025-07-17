@@ -37,10 +37,7 @@ router.get("/:token", (req, res, next) => {
 
   const adminLoginUrl = `${process.env.AUTH_LOGIN}${rd}`;
   res.set("Content-Type", "text/html");
-  res
-    .status(301)
-    .set("Location", adminLoginUrl)
-    .render("pages/redirect", { layout: "redirect", adminLoginUrl });
+  res.customRedirect(adminLoginUrl, 301);
 });
 
 module.exports = router;

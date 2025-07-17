@@ -33,3 +33,9 @@ html, body {
   position: relative;
   z-index: 1;
 }
+.hide {
+  display: none;
+}
+.inline {
+  display: inline
+}

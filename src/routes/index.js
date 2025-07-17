@@ -119,8 +119,8 @@ function flattenRouterLayers(stack, acc = []) {
 
 router.get("/", (req, res) => {
   console.log(qualifyLink("/blog"));
-  // res.redirect(301, qualifyLink("/blog"));
-  res.redirect(301, "/blog");
+  // res.customRedirect(qualifyLink("/blog"), 301);
+  res.customRedirect("/blog", 301);
 });
 
 router.use((req, res, next) => {

@@ -40,24 +40,43 @@ class SitemapService {
     }));
   }
 
+  injectPlaceholder(tree, key, items) {
+    for (const node of tree) {
+      if (Array.isArray(node.children)) {
+        const index = node.children.findIndex(
+          (child) => child.loc === `#inject:${key}`
+        );
+
+        if (index !== -1) {
+          const placeholder = node.children[index];
+          node.children.splice(index, 1, ...items);
+          return true;
+        }
+
+        if (this.injectPlaceholder(node.children, key, items)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   async getCompleteSitemap() {
     const [staticPages, blogUrls] = await Promise.all([
       this.getStaticPages(),
       this.getBlogPostUrls(),
     ]);
 
-    const blogSection = {
-      title: "Blog Posts",
-      children: blogUrls.map((url) => ({
-        loc: url.loc,
-        title: url.loc.split("/").pop().replace(/-/g, " "),
-        lastmod: url.lastmod,
-        changefreq: url.changefreq,
-        priority: url.priority,
-      })),
-    };
-
-    return [...staticPages, blogSection];
+    const blogPosts = blogUrls.map((url) => ({
+      loc: url.loc,
+      title: url.loc.split("/").pop().replace(/-/g, " "),
+      lastmod: url.lastmod,
+      changefreq: url.changefreq,
+      priority: url.priority,
+    }));
+    this.injectPlaceholder(staticPages, "blog-posts", blogPosts);
+    // return [...staticPages, blogSection];
+    return staticPages;
   }
 
   async getAllUrls() {

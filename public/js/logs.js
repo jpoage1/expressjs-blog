@@ -46,12 +46,12 @@ class LogsViewer {
         <div class="pagination-controls">
           <button id="firstPage" disabled>First</button>
           <button id="prevPage" disabled>Previous</button>
-          <input type="number" id="pageInput" min="1" value="1" style="width: 60px;">
+          <input type="number" id="pageInput" min="1" value="1">
           <button id="nextPage" disabled>Next</button>
           <button id="lastPage" disabled>Last</button>
         </div>
       </div>
-      <div class="loading-indicator" id="loadingIndicator" style="display: none;">
+      <div class="loading-indicator hide" id="loadingIndicator">
         Loading logs...
       </div>
     `;
@@ -297,14 +297,14 @@ class LogsViewer {
   showLoading() {
     const indicator = document.getElementById("loadingIndicator");
     if (indicator) {
-      indicator.style.display = "block";
+      indicator.classList.remove("hide");
     }
   }
 
   hideLoading() {
     const indicator = document.getElementById("loadingIndicator");
     if (indicator) {
-      indicator.style.display = "none";
+      indicator.classList.add("hide");
     }
   }
 }

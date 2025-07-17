@@ -73,3 +73,6 @@ button {
   color: #666;
   font-style: italic;
 }
+.pagination-controls  input[type="number"] {
+  width: 60px;
+}
