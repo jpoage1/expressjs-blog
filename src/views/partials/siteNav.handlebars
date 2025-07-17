@@ -11,7 +11,7 @@
         <div class="dropdown-content">
             {{#each submenu}}
             {{#if this.method}}
-            <form action="{{this.href}}" method="{{this.method}}" style="display:inline;">
+            <form action="{{this.href}}" method="{{this.method}}" class="inline">
                 <button type="submit" class="dropdown-link-button">{{this.label}}</button>
             </form>
             {{else}}

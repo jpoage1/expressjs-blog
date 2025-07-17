@@ -24,7 +24,7 @@ function buildRedirectUrl(req, targetPath) {
 }
 
 // Generic redirect handler
-function handleRedirect(req, res, targetPath) {
+function handleRedirect(req, res, targetPath, status = 302) {
   const redirectUrl = buildRedirectUrl(req, targetPath);
 
   // Log the redirect for debugging
@@ -50,10 +50,12 @@ function handleRedirect(req, res, targetPath) {
 
 // Middleware function to check for redirects
 function redirectMiddleware(req, res, next) {
+  res.customRedirect = (targetPath, status) =>
+    handleRedirect(req, res, targetPath, status);
   const targetPath = redirectConfig[req.path];
 
   if (targetPath) {
-    return handleRedirect(req, res, targetPath);
+    return handleRedirect(req, res, targetPath, 301);
   }
 
   // No redirect needed, continue to next middleware
