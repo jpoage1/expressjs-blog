@@ -142,7 +142,7 @@ conservative_deploy_expressjs_blog() {
 
     echo "Using preserving deployment method for production environment..."
 
-    set -x
+    # set -x
 
     # Initialize the deployment directory if it doesn't exist
     if [[ ! -d "$deploy_path" ]]; then
@@ -195,7 +195,8 @@ deploy_expressjs_blog() {
           return 0
         ;;
       "main")
-        echo "Deployment available at: $deploy_path"
+        conservative_deploy_expressjs_blog "$branch" "$oldrev" "$newrev" "$deploy_path" "$envfile"
+        # echo "Deployment available at: $deploy_path"
         ;;
 
     esac
@@ -210,7 +211,6 @@ run_postreceive_tests() {
   logfile=$(get_log_file_path)
   # Trap to ensure cleanup even if script exits unexpectedly
   trap "kill \"$(cat "$pidfile" 2>/dev/null)\" 2>/dev/null || true; rm -f \"$pidfile\"" EXIT
-
 
   echo "Running post-receive tests for branch '$branch' in temporary environment."
 
@@ -229,8 +229,8 @@ run_postreceive_tests() {
   export TEST_SCHEMA=http
   export NODE_ENV=testing
 
-  echo "Skipping tests"
-  return 0
+  # echo "Skipping tests"
+  # return 0
 
   echo "Running build scripts..."
   yarn
@@ -240,9 +240,9 @@ run_postreceive_tests() {
   nohup yarn start >>"$logfile" 2>&1 &
   echo $! >"$pidfile"
 
-  set +x
+  # set +x
   wait_for_service "$logfile"
-  set -x
+  # set -x
 
   echo "Running tests..."
   run_tests "$branch" "$pidfile" "$logfile" || return 1
@@ -300,8 +300,7 @@ combine_css() {
   }
 }
 
-set -x
-SKIP_DEPLOYMENT=false
+# set -x
 # Main script execution loop
 while read -r oldrev newrev ref; do
   tmpdir=$(mktemp -d)
@@ -316,4 +315,4 @@ while read -r oldrev newrev ref; do
     exit 1
   fi
 done
-set +x
+# set +x
