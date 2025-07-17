@@ -1,6 +1,7 @@
 // src/app.js
 require("dotenv").config();
 
+const net = require("net");
 const setupMiddleware = require("./middleware");
 const { manualLogger } = require("./utils/logging");
 const { startTokenCleanup } = require("./utils/tokenCleanup");
@@ -27,10 +28,26 @@ startTokenCleanup();
 
 const app = setupMiddleware();
 
-app.listen(SERVER_PORT, () => {
-  console.log(SERVER_LISTEN_LOG(SERVER_PORT));
-  console.log(NODE_ENV_LOG);
+const server = net.createServer();
+server.once("error", (err) => {
+  if (err.code === "EADDRINUSE") {
+    console.error(`Port ${SERVER_PORT} is already in use.`);
+    process.exit(1);
+  } else {
+    throw err;
+  }
 });
+
+server.once("listening", () => {
+  server.close();
+
+  app.listen(SERVER_PORT, () => {
+    console.log(SERVER_LISTEN_LOG(SERVER_PORT));
+    console.log(NODE_ENV_LOG);
+  });
+});
+
+server.listen(SERVER_PORT);
 
 process.on("uncaughtException", handleUncaughtException);
 process.on("unhandledRejection", handleUnhandledRejection);
