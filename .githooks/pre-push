@@ -9,12 +9,24 @@ remote="$1"
 set -euo pipefail
 # set -x
 
-export TEST_SCHEMA="http"
-npm run test:prepush
 
-if [ $? -ne 0 ]; then
-  echo "Tests failed. Push aborted."
-  exit 1
+export TEST_SCHEMA="http"
+
+# Path to store last tested commit hash
+TEST_CACHE_FILE=".last_tested_commit"
+
+# Get current commit hash
+CURRENT_COMMIT=$(git rev-parse HEAD)
+
+if [ -f "$TEST_CACHE_FILE" ] && grep -q "$CURRENT_COMMIT" "$TEST_CACHE_FILE"; then
+  echo "Tests already passed for commit $CURRENT_COMMIT. Skipping tests."
+else
+  npm run test:prepush
+
+  if [ $? -ne 0 ]; then
+    echo "Tests failed. Push aborted."
+    exit 1
+  fi
 fi
 
 cd content
