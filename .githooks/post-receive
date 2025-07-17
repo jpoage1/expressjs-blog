@@ -57,23 +57,116 @@ _wait_for_service() {
   done
 }
 
-deploy_expressjs_blog() {
-  local branch="$1"
-  local test_dir="$2"
-
-  # Define deployment path and env file path
-  local deploy_path envfile
-  deploy_path=$(get_deploy_path "$branch")
-  envfile=$(get_deploy_env_file "$branch")
-
-  if [[ "$branch" == "production" || "$branch" == "main" || "$branch" == "testing" ]]; then
+quick_deploy_expressjs_blog() {
+    local branch="$1"
+    local test_dir="$2"
+    local deploy_path="$3"
+    local envfile="$4"
     echo "Moving tested deployment from '$test_dir' to '$deploy_path'..."
     [[ -d "$deploy_path" ]] && rm -rf "$deploy_path"
     mv "$test_dir" "$deploy_path"
     ln -f "$envfile" "$deploy_path/.env"
 
     systemctl --user restart express-blog@"$branch".service
-  fi
+}
+
+conservative_deploy_expressjs_blog() {
+    local branch="$1"
+    local oldrev="${2:-}"
+    local newrev="${3:-}"
+    local deploy_path="${4:-}"
+    local envfile="${5:-}"
+
+    echo "Using preserving deployment method for production environment..."
+    
+    # Define the bare repositories
+    local MAIN_APP_BARE_REPO="$GIT_DIR"
+    local CONTENT_BARE_REPO="/srv/jasonpoage.com/expressjs-blog-posts.git"
+
+    set -x
+
+    # Update the working tree in place
+    git --git-dir="$MAIN_APP_BARE_REPO" --work-tree="$deploy_path" checkout -f "$branch"
+
+    cd "$deploy_path" || {
+        echo "Error: Could not change directory to $deploy_path"
+        return 1
+    }
+    
+    ln -f "$envfile" "$deploy_path/.env"
+
+    # Smart dependency installation (only if package files changed)
+    local install_required=true
+    if [[ -n "$oldrev" && "$oldrev" != "0000000000000000000000000000000000000000" ]]; then
+        if ! git --git-dir="$MAIN_APP_BARE_REPO" diff-tree --name-only -r "$oldrev..$newrev" | grep -qE "(package\.json|yarn\.lock)$"; then
+            echo "No changes detected in package.json or yarn.lock. Skipping yarn install."
+            install_required=false
+        else
+            echo "Changes detected in package.json or yarn.lock. Running yarn install."
+        fi
+    else
+        echo "Running yarn install (initial deployment)."
+    fi
+
+    if [[ "$install_required" == "true" ]]; then
+        yarn
+    fi
+
+    # Smart CSS bundling (only if CSS files changed)
+    if [[ -n "$oldrev" && -n "$newrev" ]]; then
+        yarn combine:css "$oldrev" "$newrev" "$MAIN_APP_BARE_REPO"
+    else
+        yarn combine:css
+    fi
+
+    systemctl --user restart express-blog@"$branch".service
+
+    # Handle content repository updates
+    if [[ -d "$deploy_path/content" ]]; then
+        cd "$deploy_path/content" || {
+            echo "Error: Could not change directory to $deploy_path/content"
+            return 1
+        }
+        current_commit=$(git rev-parse HEAD)
+        git fetch origin
+        latest_commit=$(git rev-parse origin/main)
+
+        if [[ "$current_commit" != "$latest_commit" ]]; then
+            git reset --hard origin/main
+            echo "Content updated to latest commit"
+        else
+            echo "Content already up to date"
+        fi
+    else
+        git clone --branch main "$CONTENT_BARE_REPO" "$deploy_path/content"
+    fi
+
+    set +x
+}
+
+deploy_expressjs_blog() {
+    local branch="$1"
+    local test_dir="$2"
+    local oldrev="${3:-}"
+    local newrev="${4:-}"
+
+    # Define deployment path and env file path
+    local deploy_path envfile
+    deploy_path=$(get_deploy_path "$branch")
+    envfile=$(get_deploy_env_file "$branch")
+
+    if [[ "$branch" == "production" || "$branch" == "main" || "$branch" == "testing" ]]; then
+        
+        # For testing environments, use the efficient method (replace everything)
+        if [[ "$branch" == "testing" ]]; then
+            quick_deploy_expressjs_blog "$branch" "$test_dir" "$deploy_path" "$envfile"
+            return 0
+        else
+            # For production/main, use the preserving method (keep logs, update in place)
+            conservative_deploy_expressjs_blog "$branch" "$oldrev" "$newrev" "$deploy_path" "$envfile"
+            return 0
+        fi
+    fi
 }
 
 
