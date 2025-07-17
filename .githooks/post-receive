@@ -70,6 +70,69 @@ quick_deploy_expressjs_blog() {
     systemctl --user restart express-blog@"$branch".service
 }
 
+# Smart dependency installation (only if package files changed)
+get_dependencies() {
+  local oldrev="$1"
+  local newrev="$2"
+  local install_required=true
+  if [[ -n "$oldrev" && "$oldrev" != "0000000000000000000000000000000000000000" ]]; then
+      if ! git --git-dir="$GIT_DIR" diff-tree --name-only -r "$oldrev..$newrev" | grep -qE "(package\.json|yarn\.lock)$"; then
+          echo "No changes detected in package.json or yarn.lock. Skipping yarn install."
+          install_required=false
+      else
+          echo "Changes detected in package.json or yarn.lock. Running yarn install."
+      fi
+  else
+      echo "Running yarn install (initial deployment)."
+  fi
+
+  if [[ "$install_required" == "true" ]]; then
+      yarn
+  fi
+}
+
+# Single function to handle all repo and submodule updates (force-push safe)
+update_repo_and_submodules() {
+    local branch="$1"
+    local deploy_path="$2"
+    
+    echo "Updating repository and submodules (force-push safe)..."
+    
+    cd "$deploy_path" || {
+        echo "Error: Could not change directory to $deploy_path"
+        return 1
+    }
+    SAVED_GIT_DIR="$GIT_DIR"
+    unset GIT_DIR
+
+    git remote show
+    git branch -l
+    # Update main repository - always fetch and hard reset (handles force pushes)
+    echo "Fetching and updating main repository..."
+    git fetch origin || {
+        echo "Error: Failed to fetch from origin"
+        return 1
+    }
+    
+    git reset --hard "origin/$branch" || {
+        echo "Error: Failed to reset to origin/$branch"
+        return 1
+    }
+    
+    # Update submodules - handle force pushes by resetting each submodule
+    echo "Updating submodules..."
+    git  submodule update --init --recursive --force || {
+      echo "Standard submodule update failed, cleaning and retrying..."
+      return 1
+    }
+    
+    echo "Repository and submodules updated successfully"
+
+    export GIT_DIR="$SAVED_GIT_DIR"
+    unset SAVED_GIT_DIR
+}
+
+# Updated conservative deployment function using the unified update
 conservative_deploy_expressjs_blog() {
     local branch="$1"
     local oldrev="${2:-}"
@@ -78,70 +141,35 @@ conservative_deploy_expressjs_blog() {
     local envfile="${5:-}"
 
     echo "Using preserving deployment method for production environment..."
-    
-    # Define the bare repositories
-    local MAIN_APP_BARE_REPO="$GIT_DIR"
-    local CONTENT_BARE_REPO="/srv/jasonpoage.com/expressjs-blog-posts.git"
 
     # set -x
 
-    # Update the working tree in place
-    git --git-dir="$MAIN_APP_BARE_REPO" --work-tree="$deploy_path" checkout -f "$branch"
+    # Initialize the deployment directory if it doesn't exist
+    if [[ ! -d "$deploy_path" ]]; then
+        echo "Creating deployment directory..."
+        git clone --branch "$branch" "$GIT_DIR" "$deploy_path" || {
+            echo "Error: Failed to create deployment directory"
+            return 1
+        }
+    fi
 
+    # Single unified update function handles everything
+    update_repo_and_submodules "$branch" "$deploy_path" "$GIT_DIR" || return 1
+    
     cd "$deploy_path" || {
         echo "Error: Could not change directory to $deploy_path"
         return 1
     }
     
-    ln -f "$envfile" "$deploy_path/.env"
+    ln -f "$envfile" "$deploy_path/.env" || return 1
 
-    # Smart dependency installation (only if package files changed)
-    local install_required=true
-    if [[ -n "$oldrev" && "$oldrev" != "0000000000000000000000000000000000000000" ]]; then
-        if ! git --git-dir="$MAIN_APP_BARE_REPO" diff-tree --name-only -r "$oldrev..$newrev" | grep -qE "(package\.json|yarn\.lock)$"; then
-            echo "No changes detected in package.json or yarn.lock. Skipping yarn install."
-            install_required=false
-        else
-            echo "Changes detected in package.json or yarn.lock. Running yarn install."
-        fi
-    else
-        echo "Running yarn install (initial deployment)."
-    fi
+    get_dependencies "$oldrev" "$newrev" || return 1
 
-    if [[ "$install_required" == "true" ]]; then
-        yarn
-    fi
-
-    # Smart CSS bundling (only if CSS files changed)
-    if [[ -n "$oldrev" && -n "$newrev" ]]; then
-        yarn combine:css "$oldrev" "$newrev" "$MAIN_APP_BARE_REPO"
-    else
-        yarn combine:css
-    fi
+    yarn combine:css "$oldrev" "$newrev" "$GIT_DIR" || return 1
 
     systemctl --user restart express-blog@"$branch".service
 
-    # Handle content repository updates
-    if [[ -d "$deploy_path/content" ]]; then
-        cd "$deploy_path/content" || {
-            echo "Error: Could not change directory to $deploy_path/content"
-            return 1
-        }
-        current_commit=$(git rev-parse HEAD)
-        git fetch origin
-        latest_commit=$(git rev-parse origin/main)
-
-        if [[ "$current_commit" != "$latest_commit" ]]; then
-            git reset --hard origin/main
-            echo "Content updated to latest commit"
-        else
-            echo "Content already up to date"
-        fi
-    else
-        git clone --branch main "$CONTENT_BARE_REPO" "$deploy_path/content"
-    fi
-
-    # set +x
+    set +x
 }
 
 deploy_expressjs_blog() {
@@ -155,18 +183,23 @@ deploy_expressjs_blog() {
     deploy_path=$(get_deploy_path "$branch")
     envfile=$(get_deploy_env_file "$branch")
 
-    if [[ "$branch" == "staging" || "$branch" == "main" || "$branch" == "testing" ]]; then
-        
-        # For testing environments, use the efficient method (replace everything)
-        if [[ "$branch" == "testing" ]]; then
-            quick_deploy_expressjs_blog "$branch" "$test_dir" "$deploy_path" "$envfile"
-            return 0
-        else
-            # For production/main, use the preserving method (keep logs, update in place)
-            conservative_deploy_expressjs_blog "$branch" "$oldrev" "$newrev" "$deploy_path" "$envfile"
-            return 0
-        fi
-    fi
+
+    case "$branch" in
+      "testing")
+          quick_deploy_expressjs_blog "$branch" "$test_dir" "$deploy_path" "$envfile"
+          return 0
+        ;;
+      "staging")
+          # For production/main, use the preserving method (keep logs, update in place)
+          conservative_deploy_expressjs_blog "$branch" "$oldrev" "$newrev" "$deploy_path" "$envfile"
+          return 0
+        ;;
+      "main")
+        conservative_deploy_expressjs_blog "$branch" "$oldrev" "$newrev" "$deploy_path" "$envfile"
+        # echo "Deployment available at: $deploy_path"
+        ;;
+
+    esac
 }
 
 
@@ -196,6 +229,9 @@ run_postreceive_tests() {
   export TEST_SCHEMA=http
   export NODE_ENV=testing
 
+  # echo "Skipping tests"
+  # return 0
+
   echo "Running build scripts..."
   yarn
   combine_css || return 1
@@ -219,12 +255,19 @@ run_postreceive_tests() {
 }
 
 initialize_submodules() {
-  local tmpdir="$1"
+  local worktree="$1"
   echo "Initializing and updating submodules for test environment..."
-  git --work-tree="$tmpdir" submodule update --init --recursive || {
-    ls "$tmpdir" -a
+  git --work-tree="$worktree" submodule update --init --recursive || {
+    ls "$worktree" -a
     echo "Error: Failed to initialize/update submodules for test environment."
     return 1
+  }
+}
+update_submodules() {
+  local worktree="$1"
+    git --work-tree="$worktree" submodule update --init --recursive || {
+      echo "Error: Failed to initialize/update submodules in deployment"
+      return 1
   }
 }
 wait_for_service() {
@@ -258,7 +301,6 @@ combine_css() {
 }
 
 # set -x
-SKIP_DEPLOYMENT=true
 # Main script execution loop
 while read -r oldrev newrev ref; do
   tmpdir=$(mktemp -d)
@@ -266,12 +308,8 @@ while read -r oldrev newrev ref; do
   echo "--- Processing push for branch: $branch (from $oldrev to $newrev) ---"
   if run_postreceive_tests "$branch" "$tmpdir"; then
     echo "Tests passed for $branch. Proceeding with deployment."
-    if [[ -z "$SKIP_DEPLOYMENT" ]]; then
-      deploy_expressjs_blog "$branch" "$tmpdir"
-      echo "Deployment of $branch complete."
-    else
-      echo "Deployed to: $tmpdir"
-    fi
+    deploy_expressjs_blog "$branch" "$tmpdir"
+    echo "Deployment of $branch complete."
   else
     echo "Post-receive tests failed for $branch. Deployment aborted."
     exit 1
