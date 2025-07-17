@@ -38,7 +38,7 @@ describe(`API route status tests with dependencies at ${baseUrl}`, () => {
       method: "HEAD",
       redirect: "manual",
     });
-    console.log("Healthcheck body: ", res.text());
+    // console.log("Healthcheck body: ", res.text());
     expect(res.ok).to.be.true;
     serverOnline = true;
   });
@@ -100,7 +100,7 @@ describe(`API route status tests with dependencies at ${baseUrl}`, () => {
       //   "Extracted routes:",
       //   routes.map((r) => r.loc || "NO_LOC")
       // );
-      console.log("Total routes found:", routes.length);
+      // console.log("Total routes found:", routes.length);
 
       expect(routes).to.be.an("array").that.is.not.empty;
     } catch (error) {
@@ -120,7 +120,7 @@ describe(`API route status tests with dependencies at ${baseUrl}`, () => {
       // Skip the root route and any routes without a proper loc
       if (route.loc && route.loc !== "/" && route.loc !== "#") {
         const url = baseUrl + route.loc;
-        console.log(`Testing route: ${route.loc}`);
+        // console.log(`Testing route: ${route.loc}`);
 
         try {
           const res = await fetch(url, {

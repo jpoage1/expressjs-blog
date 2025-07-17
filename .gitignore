@@ -76,3 +76,4 @@ target/
 *.gz
 data/*
 !data/.gitkeep
+.last_tested_commit
