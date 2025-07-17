@@ -4,12 +4,13 @@ const { expect } = require("chai");
 const http = require("http");
 
 let port = process.env.TEST_PORT;
+let schema = process.env.TEST_SCHEMA;
 require("dotenv").config();
 
-const domain = process.env.SERVER_DOMAIN;
-port = port || process.env.SERVER_PORT;
+// const domain = process.env.SERVER_DOMAIN;
+port = port || process.env.TEST_PORT || process.env.SERVER_PORT;
+schema = schema || process.env.TEST_SCHEMA || process.env.SERVER_SCHEMA;
 const server_address = process.env.SERVER_ADDRESS;
-const schema = process.env.TEST_SCHEMA || process.env.SERVER_SCHEMA;
 const baseUrl = `${schema}://${server_address}:${port}`;
 
 // Create a proper HTTP agent
