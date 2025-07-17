@@ -1,4 +1,6 @@
 const Mocha = require("mocha");
+const { execSync } = require("child_process");
+const fs = require("fs");
 
 async function runTestFile(filePath, description) {
   console.log(`Running ${description}...`);
@@ -28,6 +30,9 @@ async function runTests() {
 
     await runTestFile("./test/routes.test.js", "route tests");
     console.log("✓ All tests passed!");
+
+    const commitHash = execSync("git rev-parse HEAD").toString().trim();
+    fs.writeFileSync(".last_tested_commit", commitHash + "\n");
   } catch (error) {
     console.error("Test execution failed:", error.message);
     process.exit(1);
