@@ -65,6 +65,7 @@ quick_deploy_expressjs_blog() {
     echo "Moving tested deployment from '$test_dir' to '$deploy_path'..."
     [[ -d "$deploy_path" ]] && rm -rf "$deploy_path"
     mv "$test_dir" "$deploy_path"
+    git config -f /srv/jasonpoage.com/expressjs-blog.git/modules/content/config core.worktree "/srv/jasonpoage.com/expressjs-blog-testing/content"
     ln -f "$envfile" "$deploy_path/.env"
 
     systemctl --user restart express-blog@"$branch".service
@@ -257,7 +258,7 @@ run_postreceive_tests() {
 initialize_submodules() {
   local worktree="$1"
   echo "Initializing and updating submodules for test environment..."
-  git --work-tree="$worktree" submodule update --init --recursive || {
+  git --git-dir="$worktree/.git" --work-tree="$worktree" submodule update --init --recursive || {
     ls "$worktree" -a
     echo "Error: Failed to initialize/update submodules for test environment."
     return 1

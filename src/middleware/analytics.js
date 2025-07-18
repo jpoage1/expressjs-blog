@@ -11,7 +11,7 @@ module.exports = (req, res, next) => {
 
     db.run(
       `INSERT INTO analytics (timestamp, url, referrer, user_agent, js_enabled, forwardedIp, directIp)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`, // fixme
+       VALUES (?, ?, ?, ?, ?, ?, ?)`, // fixme, join together in main table? i dont know what i was suppose to fix. it works fine
       [timestamp, url, referrer, userAgent, 0, forwardedIp, directIp]
     );
   }
