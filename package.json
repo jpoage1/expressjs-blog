@@ -30,6 +30,7 @@
     "express": "^5.1.0",
     "express-handlebars": "^8.0.2",
     "express-rate-limit": "^7.5.0",
+    "fast-glob": "^3.3.3",
     "gray-matter": "^4.0.3",
     "hbs": "^4.2.0",
     "helmet": "^8.1.0",

@@ -1,14 +1,19 @@
+{{!-- pages/redirect.handlebars --}}
+
 {{#section "headers"}}
 <meta http-equiv="refresh" content="0; url={{redirectUrl}}">
 <link rel="prerender" href="{{redirectUrl}}">
 {{/section}}
+
 {{#section "styles"}}
 <link href="{{baseUrl}}/static/css/redirect.css" rel="stylesheet" type="text/css" />
 {{/section}}
+
 {{#section " scripts"}}
 <script src="{{baseUrl}}/static/js/redirect.js">
 </script>
 {{/section}}
+
 <div class="redirect-container">
     <div class="redirect-content">
         <div class="spinner"></div>

@@ -9,7 +9,6 @@ const {
   DEFAULT_STACK_TRACE,
   DEFAULT_STATUS_CODE,
   DEFAULT_LOG_LEVEL,
-  ERROR_VIEW,
   ERROR_REDIRECT_PATH,
 } = require("../constants/errorConstants");
 
@@ -38,14 +37,15 @@ module.exports = async (err, req, res, next) => {
   };
 
   if (req?.log?.error) {
-    req.log.error(logEntry);
+    req.log.error(logEntry); // fixme, logs arent logging?
+    console.log(logEntry);
   } else {
     console.error(logEntry);
   }
 
   const errorContext = getErrorContext(code || statusCode);
 
-  if (!isDev) {
+  if (!isDev && !req?.isAuthenticated) {
     res.customRedirect(
       `${ERROR_REDIRECT_PATH}?code=${errorContext.statusCode}`
     );
@@ -64,5 +64,6 @@ module.exports = async (err, req, res, next) => {
   });
 
   const errorPageContext = await getBaseContext(req?.isAuthenticated, context);
-  res.status(errorContext.statusCode).render(ERROR_VIEW, errorPageContext);
+  res.status(errorContext.statusCode);
+  res.renderGenericMessage(errorPageContext);
 };

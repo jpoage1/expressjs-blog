@@ -6,7 +6,7 @@ const MAIL_NEWSLETTER = process.env.MAIL_NEWSLETTER;
 const MAIL_SUBJECT = "New Newsletter Subscription";
 const MAIL_FROM = `Newsletter <no-reply@${MAIL_DOMAIN}>`;
 const MAIL_TEXT_TEMPLATE = (email) =>
-  `Please add this email to the newsletter list: ${MAIL_NEWSLETTER}`;
+  `Please add this email to the newsletter list: ${MAIL_NEWSLETTER}`; // fixme
 
 async function sendNewsletterSubscriptionMail({ email }) {
   const mailData = {

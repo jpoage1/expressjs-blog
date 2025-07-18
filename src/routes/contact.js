@@ -61,12 +61,6 @@ function isReasonableLength(str, maxLen) {
   );
 }
 
-// Middleware to capture request start time
-router.use((req, res, next) => {
-  req._startTime = Date.now();
-  next();
-});
-
 router.post("/contact", formLimiter, async (req, res, next) => {
   try {
     const { name, email, message, subject, hcaptchaToken, clientData } =
@@ -220,8 +214,10 @@ router.get("/contact/thankyou", async (req, res) => {
 
   await logSecurityEvent(securityData, "thankyou_access");
 
-  res.renderWithBaseContext("pages/thankyou.handlebars", {
+  res.renderGenericMessage({
     title: "Thank You",
+    message:
+      "Your message has been sent successfully. We will get back to you shortly.",
   });
 });
 

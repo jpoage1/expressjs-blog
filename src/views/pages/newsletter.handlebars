@@ -1,9 +1,13 @@
+{{!-- pages/newsletter.handlebars --}}
+
 {{#section "styles"}}
 <link rel="stylesheet" href="{{baseUrl}}/static/css/newsletter.css" />
 {{/section}}
+
 {{#section "scripts"}}
 <script src="https://hcaptcha.com/1/api.js" async defer></script>
 {{/section}}
+
 <section>
     <h1>{{title}}</h1>
     <form action="{{formAction}}" method="{{formMethod}}" class="newsletter-form">

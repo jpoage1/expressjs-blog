@@ -3,6 +3,8 @@ const matter = require("gray-matter");
 const path = require("path");
 const fs = require("fs").promises;
 
+const createExcerpt = require("./createExcerpt");
+
 async function getAllPosts(baseDir, options = {}) {
   const { includeUnpublished = false } = options;
 
@@ -29,7 +31,7 @@ async function getAllPosts(baseDir, options = {}) {
             const fileContent = await fs.readFile(filePath, "utf8");
             const { data, content } = matter(fileContent);
 
-            const excerpt = content.replace(/\n+/g, " ").slice(0, 200) + "...";
+            const excerpt = createExcerpt(content, 200);
 
             // Filter unpublished posts in production unless explicitly included
             if (

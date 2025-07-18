@@ -15,5 +15,12 @@ module.exports = async function baseContextMiddleware(req, res, next) {
     res.render(template, Object.assign({}, baseContext, overrides));
   };
 
+  res.renderGenericMessage = (overrides = {}) => {
+    res.render(
+      "pages/generic-message",
+      Object.assign({}, baseContext, overrides)
+    );
+  };
+
   next();
 };

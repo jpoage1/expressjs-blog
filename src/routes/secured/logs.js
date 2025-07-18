@@ -196,7 +196,6 @@ router.post("/logs/analytics", (req, res) => {
 
         const totalPages = Math.ceil(total / limit);
 
-        console.log(logs);
         res.json({
           logs,
           pagination: {

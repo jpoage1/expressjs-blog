@@ -1,6 +1,7 @@
 // src/middleware/redirect.js
 
 const { baseUrl } = require("../utils/baseUrl");
+const { qualifyLink } = require("../utils/qualifyLinks");
 
 // Configuration - adjust these as needed
 const redirectConfig = {
@@ -27,9 +28,6 @@ function buildRedirectUrl(req, targetPath) {
 function handleRedirect(req, res, targetPath, status = 302) {
   const redirectUrl = buildRedirectUrl(req, targetPath);
 
-  // Log the redirect for debugging
-  console.log(`[REDIRECT] ${req.originalUrl} -> ${redirectUrl}`);
-
   // Check if this is a request that expects JSON (API calls)
   if (req.accepts("json") && !req.accepts("html")) {
     return res.status(301).json({
@@ -47,11 +45,10 @@ function handleRedirect(req, res, targetPath, status = 302) {
     originalUrl: req.originalUrl,
   });
 }
-
 // Middleware function to check for redirects
 function redirectMiddleware(req, res, next) {
   res.customRedirect = (targetPath, status) =>
-    handleRedirect(req, res, targetPath, status);
+    handleRedirect(req, res, qualifyLink(targetPath), status);
   const targetPath = redirectConfig[req.path];
 
   if (targetPath) {

@@ -4,6 +4,7 @@ const fs = require("fs").promises;
 const { getAllPosts } = require("../utils/postFileUtils");
 const {
   STATIC_SITEMAP_PATH,
+  PAGES_PATH,
   POSTS_PATH,
   DEFAULT_CHANGEFREQ,
   DEFAULT_PRIORITY,
@@ -11,9 +12,12 @@ const {
   BLOG_POST_PRIORITY,
 } = require("../constants/sitemapConstants");
 
+const matter = require("gray-matter");
+
 class SitemapService {
   constructor() {
     this.staticSitemapPath = path.resolve(__dirname, STATIC_SITEMAP_PATH);
+    this.pagesPath = path.join(__dirname, PAGES_PATH);
     this.postsPath = path.join(__dirname, POSTS_PATH);
   }
 
@@ -23,6 +27,37 @@ class SitemapService {
       return JSON.parse(data);
     } catch {
       console.warn("Could not load static sitemap.json, using empty array");
+      return [];
+    }
+  }
+
+  async getStaticPages() {
+    try {
+      const filenames = await fs.readdir(this.pagesPath);
+      const pages = [];
+
+      for (const file of filenames) {
+        const fullPath = path.join(this.pagesPath, file);
+        const stat = await fs.stat(fullPath);
+        if (stat.isDirectory()) continue;
+
+        const raw = await fs.readFile(fullPath, "utf8");
+        const { data: frontmatter } = matter(raw);
+
+        if (!frontmatter.published) continue;
+
+        pages.push({
+          loc: `/${frontmatter.slug || file.replace(/\.(md|mdx|handlebars)$/, "")}`,
+          title: frontmatter.title || "",
+          lastmod: frontmatter.updated || frontmatter.date || null,
+          changefreq: "monthly",
+          priority: 0.7,
+        });
+      }
+
+      return pages;
+    } catch (err) {
+      console.warn("Failed to load static pages:", err);
       return [];
     }
   }
@@ -60,13 +95,30 @@ class SitemapService {
     }
     return false;
   }
+  async _loadStaticLayout() {
+    try {
+      const data = await fs.readFile(this.staticSitemapPath, "utf-8");
+      return JSON.parse(data);
+    } catch {
+      console.warn("Could not load static sitemap.json, using empty array");
+      return [];
+    }
+  }
 
   async getCompleteSitemap() {
-    const [staticPages, blogUrls] = await Promise.all([
+    const [staticPagesJsonTree, staticPages, blogUrls] = await Promise.all([
+      this._loadStaticLayout(),
       this.getStaticPages(),
       this.getBlogPostUrls(),
     ]);
 
+    const pageItems = staticPages.map((page) => ({
+      loc: page.loc,
+      title: page.title,
+      lastmod: page.lastmod,
+      changefreq: page.changefreq,
+      priority: page.priority,
+    }));
     const blogPosts = blogUrls.map((url) => ({
       loc: url.loc,
       title: url.loc.split("/").pop().replace(/-/g, " "),
@@ -74,9 +126,11 @@ class SitemapService {
       changefreq: url.changefreq,
       priority: url.priority,
     }));
-    this.injectPlaceholder(staticPages, "blog-posts", blogPosts);
-    // return [...staticPages, blogSection];
-    return staticPages;
+
+    this.injectPlaceholder(staticPagesJsonTree, "pages", pageItems);
+    this.injectPlaceholder(staticPagesJsonTree, "blog-posts", blogPosts);
+
+    return staticPagesJsonTree;
   }
 
   async getAllUrls() {

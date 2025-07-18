@@ -1,9 +1,14 @@
+{{!-- pages/page.handlebars --}}
+
 {{#section "styles"}}
 <link rel="stylesheet" href="{{baseUrl}}/static/css/page.css" />
 {{/section}}
-<div class="markdown-content">
-  {{{content}}}
-</div>
+
+
 {{#section "scripts"}}
 <script src="{{baseUrl}}/static/js/sticky-toc.js"></script>
 {{/section}}
+
+<div class="markdown-content">
+  {{{content}}}
+</div>
