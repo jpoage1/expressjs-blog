@@ -1,5 +1,6 @@
 const express = require("express");
-const { getAllTags, getPostsByTag } = require("../services/tagsService");
+const { getPostsByTag } = require("../services/tagsService");
+const { getAllTags } = require("../services/sitemapService");
 const HttpError = require("../utils/HttpError");
 
 const router = express.Router();
@@ -13,20 +14,26 @@ router.get("/tags", async (req, res, next) => {
     next(err);
   }
 });
+function normalizeTag(tag) {
+  return tag
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, " ");
+}
 
 router.get("/tags/:tag", async (req, res, next) => {
   const tag = req.params.tag;
+  const normalizedTag = normalizeTag(tag);
 
   // Replace with your data source logic to fetch posts by tag
   const posts = await getPostsByTag(tag);
 
-  console.log(posts);
   if (!posts || posts.length === 0) {
     return next(new HttpError("No posts found for this tag.", 404));
   }
 
   const context = {
-    tag,
+    tag: normalizedTag,
     posts,
   };
 

@@ -238,7 +238,7 @@ run_postreceive_tests() {
   combine_css || return 1
 
   echo "Starting application for tests..."
-  nohup yarn start >>"$logfile" 2>&1 &
+  nohup node src/app.js >>"$logfile" 2>&1 &
   echo $! >"$pidfile"
 
   # set +x

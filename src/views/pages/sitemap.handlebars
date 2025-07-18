@@ -9,7 +9,11 @@
 <li {{#if children}}class="sitemap-group" {{/if}}>
     {{#if children}}
     <span class="sitemap-section-title">
+        {{#if loc}}
+        <a href="{{loc}}">{{#if title}}{{title}}{{else}}{{label}}{{/if}}</a>
+        {{else}}
         {{#if title}}{{title}}{{else}}{{label}}{{/if}}
+        {{/if}}
     </span>
     <ul>
         {{#each children}}

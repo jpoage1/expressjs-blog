@@ -7,29 +7,43 @@ remote="$1"
 #export GIT_SSH_COMMAND="ssh -vvv"
 
 set -euo pipefail
-# set -x
+set -x
 
 
 export TEST_SCHEMA="http"
+export TEST_DOMAIN="127.0.0.1"
+export TEST_PORT=4123
 
-# Path to store last tested commit hash
-TEST_CACHE_FILE=".last_tested_commit"
+node src/app.js >/dev/null 2>&1 &
+  APP_PID=$!
 
-# Get current commit hash
-CURRENT_COMMIT=$(git rev-parse HEAD)
+sleep 2
 
-if [ -f "$TEST_CACHE_FILE" ] && grep -q "$CURRENT_COMMIT" "$TEST_CACHE_FILE"; then
-  echo "Tests already passed for commit $CURRENT_COMMIT. Skipping tests."
-else
-  npm run test:prepush
+npm run test:prepush
+TEST_RESULT=$?
 
-  if [ $? -ne 0 ]; then
-    echo "Tests failed. Push aborted."
-    exit 1
+  # Clean up the app process
+  if kill -0 $APP_PID 2>/dev/null; then
+    echo "Stopping app (PID: $APP_PID)..."
+    kill $APP_PID
+    # Give it time to shut down gracefully
+    sleep 1
+    # Force kill if still running
+    if kill -0 $APP_PID 2>/dev/null; then
+      kill -9 $APP_PID 2>/dev/null || true
+    fi
   fi
+  
+  # Wait for process to fully terminate
+  wait $APP_PID 2>/dev/null || true
+  
+
+if [ $TEST_RESULT -ne 0 ]; then
+  echo "Tests failed. Push aborted."
+  exit 1
 fi
 
 cd content
 git push "$remote" main
 cd ..
-# set +x
+set +x

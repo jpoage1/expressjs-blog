@@ -1,7 +1,20 @@
 // src/services/sitemapService.js
 const path = require("path");
+const matter = require("gray-matter");
 const fs = require("fs").promises;
 const { getAllPosts } = require("../utils/postFileUtils");
+const hash = require("../utils/hash");
+
+const glob = require("fast-glob");
+const { qualifySitemapLinks } = require("../utils/qualifyLinks");
+
+const CONTENT_ROOT = path.resolve(__dirname, "../../content");
+const pattern = `${CONTENT_ROOT}/**/*.md`;
+
+function slugifyTag(tag) {
+  return tag.toLowerCase().replace(/\s+/g, "-");
+}
+
 const {
   STATIC_SITEMAP_PATH,
   PAGES_PATH,
@@ -11,8 +24,6 @@ const {
   BLOG_POST_CHANGEFREQ,
   BLOG_POST_PRIORITY,
 } = require("../constants/sitemapConstants");
-
-const matter = require("gray-matter");
 
 class SitemapService {
   constructor() {
@@ -47,6 +58,7 @@ class SitemapService {
         if (!frontmatter.published) continue;
 
         pages.push({
+          id: hash(frontmatter),
           loc: `/${frontmatter.slug || file.replace(/\.(md|mdx|handlebars)$/, "")}`,
           title: frontmatter.title || "",
           lastmod: frontmatter.updated || frontmatter.date || null,
@@ -62,16 +74,51 @@ class SitemapService {
     }
   }
 
-  async getBlogPostUrls() {
+  async getAllTags() {
+    const tagMap = new Map();
+    const files = await glob(pattern);
+
+    for (const file of files) {
+      try {
+        const raw = await fs.readFile(file, "utf8");
+        const { data } = matter(raw);
+
+        if (!data.published || !Array.isArray(data.tags)) continue;
+
+        for (const rawTag of data.tags) {
+          const tag = rawTag.trim();
+          const slug = slugifyTag(tag);
+          const current = tagMap.get(slug) || {
+            name: tag,
+            loc: `/tags/${slug}`,
+            slug,
+            count: 0,
+          };
+          current.count += 1;
+          tagMap.set(slug, current);
+        }
+      } catch (_) {
+        continue;
+      }
+    }
+
+    return Array.from(tagMap.values()).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+  }
+
+  async getBlogPosts() {
     const allPosts = await getAllPosts(this.postsPath);
 
     return allPosts.map((post) => ({
+      id: hash(post.frontmatter),
       loc: `/blog/${post.year}/${post.month}/${post.slug}`,
       lastmod: post.date
         ? new Date(post.date).toISOString().split("T")[0]
         : null,
       changefreq: BLOG_POST_CHANGEFREQ,
       priority: BLOG_POST_PRIORITY,
+      tags: post.tags,
     }));
   }
 
@@ -106,31 +153,44 @@ class SitemapService {
   }
 
   async getCompleteSitemap() {
-    const [staticPagesJsonTree, staticPages, blogUrls] = await Promise.all([
-      this._loadStaticLayout(),
-      this.getStaticPages(),
-      this.getBlogPostUrls(),
-    ]);
+    const [staticPagesJsonTree, staticPages, blogPosts, tags] =
+      await Promise.all([
+        this._loadStaticLayout(),
+        this.getStaticPages(),
+        this.getBlogPosts(),
+        this.getAllTags(),
+      ]);
 
     const pageItems = staticPages.map((page) => ({
+      id: page.id,
       loc: page.loc,
       title: page.title,
       lastmod: page.lastmod,
       changefreq: page.changefreq,
       priority: page.priority,
+      tags: page.tags,
     }));
-    const blogPosts = blogUrls.map((url) => ({
-      loc: url.loc,
-      title: url.loc.split("/").pop().replace(/-/g, " "),
-      lastmod: url.lastmod,
-      changefreq: url.changefreq,
-      priority: url.priority,
+    const postItems = blogPosts.map((post) => ({
+      id: post.id,
+      loc: post.loc,
+      title: post.loc.split("/").pop().replace(/-/g, " "),
+      lastmod: post.lastmod,
+      changefreq: post.changefreq,
+      priority: post.priority,
+      tags: post.tags,
+    }));
+    const tagItems = tags.map((tag) => ({
+      title: tag.name,
+      loc: tag.loc,
+      slug: tag.slug,
+      count: tag.count,
     }));
 
     this.injectPlaceholder(staticPagesJsonTree, "pages", pageItems);
-    this.injectPlaceholder(staticPagesJsonTree, "blog-posts", blogPosts);
+    this.injectPlaceholder(staticPagesJsonTree, "blog-posts", postItems);
+    this.injectPlaceholder(staticPagesJsonTree, "tags", tagItems);
 
-    return staticPagesJsonTree;
+    return qualifySitemapLinks(staticPagesJsonTree);
   }
 
   async getAllUrls() {
@@ -142,6 +202,7 @@ class SitemapService {
     for (const entry of entries) {
       if (entry.loc) {
         out.push({
+          id: entry.id,
           loc: entry.loc,
           lastmod: entry.lastmod,
           changefreq: entry.changefreq || DEFAULT_CHANGEFREQ,
@@ -155,5 +216,4 @@ class SitemapService {
     return out;
   }
 }
-
 module.exports = new SitemapService();

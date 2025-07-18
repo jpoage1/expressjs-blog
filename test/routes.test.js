@@ -5,9 +5,10 @@ const http = require("http");
 
 let port = process.env.TEST_PORT;
 let schema = process.env.TEST_SCHEMA;
+let domain = process.env.se;
 require("dotenv").config();
 
-// const domain = process.env.SERVER_DOMAIN;
+domain = domain || process.env.TEST_DOMAIN || process.env.SERVER_DOMAIN;
 port = port || process.env.TEST_PORT || process.env.SERVER_PORT;
 schema = schema || process.env.TEST_SCHEMA || process.env.SERVER_SCHEMA;
 const server_address = process.env.SERVER_ADDRESS;
@@ -119,8 +120,8 @@ describe(`API route status tests with dependencies at ${baseUrl}`, () => {
     for (const route of routes) {
       // Skip the root route and any routes without a proper loc
       if (route.loc && route.loc !== "/" && route.loc !== "#") {
-        const url = baseUrl + route.loc;
-        // console.log(`Testing route: ${route.loc}`);
+        const url = route.loc;
+        // console.log(`Testing route: ${url}`);
 
         try {
           const res = await fetch(url, {
@@ -134,6 +135,7 @@ describe(`API route status tests with dependencies at ${baseUrl}`, () => {
             `Route GET ${route.loc} should return 200`
           ).to.equal(200);
         } catch (error) {
+          console.error(route);
           console.error(`Error testing route ${route.loc}:`, error.message);
           throw error;
         }
