@@ -4,6 +4,7 @@ const path = require("path");
 const fs = require("fs").promises;
 
 const createExcerpt = require("./createExcerpt");
+const hash = require("./hash");
 
 async function getAllPosts(baseDir, options = {}) {
   const { includeUnpublished = false } = options;
@@ -45,6 +46,7 @@ async function getAllPosts(baseDir, options = {}) {
             const url = `/blog/${yearDir.name}/${monthDir.name}/${slug}`;
 
             return {
+              id: hash(data),
               url,
               slug,
               title: data.title || slug.replace(/-/g, " "),
