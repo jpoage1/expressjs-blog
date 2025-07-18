@@ -21,4 +21,20 @@ function qualifyNavLinks(links) {
   });
 }
 
-module.exports = { qualifyNavLinks, qualifyLink };
+function qualifySitemapLinks(links) {
+  return links.map((item) => {
+    const qualified = { ...item };
+
+    if (typeof qualified.loc === "string") {
+      qualified.loc = qualifyLink(qualified.loc);
+    }
+
+    if (Array.isArray(qualified.children)) {
+      qualified.children = qualifySitemapLinks(qualified.children);
+    }
+
+    return qualified;
+  });
+}
+
+module.exports = { qualifyNavLinks, qualifySitemapLinks, qualifyLink };

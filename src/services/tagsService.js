@@ -7,54 +7,32 @@ const createExcerpt = require("../utils/createExcerpt");
 const CONTENT_ROOT = path.resolve(__dirname, "../../content");
 const pattern = `${CONTENT_ROOT}/**/*.md`;
 
-function slugifyTag(tag) {
-  return tag.toLowerCase().replace(/\s+/g, "-");
-}
+const buildTagRegex = (tag) =>
+  new RegExp(`^${tag.replace(/[-\s]/g, "[-\\s]")}$`, "i");
 
-async function getAllTags() {
-  const tagMap = new Map();
-  const files = await glob(pattern);
+const hash = require("../utils/hash");
+const sitemapService = require("../services/sitemapService");
 
-  for (const file of files) {
-    try {
-      const raw = await fs.readFile(file, "utf8");
-      const { data } = matter(raw);
-
-      if (!data.published || !Array.isArray(data.tags)) continue;
-
-      for (const rawTag of data.tags) {
-        const tag = rawTag.trim();
-        const slug = slugifyTag(tag);
-        const current = tagMap.get(slug) || { name: tag, slug, count: 0 };
-        current.count += 1;
-        tagMap.set(slug, current);
-      }
-    } catch (_) {
-      continue;
-    }
-  }
-
-  return Array.from(tagMap.values()).sort((a, b) =>
-    a.name.localeCompare(b.name)
-  );
-}
 async function getPostsByTag(tag) {
+  const allUrls = await sitemapService.getAllUrls();
   const files = await glob(pattern);
-  const tagRegex = new RegExp(`^${tag.replace(/[-\s]/g, "[-\\s]")}$`, "i");
+  const tagRegex = buildTagRegex(tag);
 
   const matchedPosts = [];
 
   for (const filePath of files) {
     const raw = await fs.readFile(filePath, "utf-8");
     const { data: frontmatter, content } = matter(raw);
+    const fileHash = hash(frontmatter);
 
     if (frontmatter.published !== true) continue;
     if (!Array.isArray(frontmatter.tags)) continue;
     if (!frontmatter.tags.some((t) => tagRegex.test(t))) continue;
 
+    const urlMatches = allUrls.find((url) => url.id == fileHash);
     matchedPosts.push({
       title: frontmatter.title || "Untitled",
-      slug: frontmatter.slug || path.basename(filePath, ".md"),
+      loc: urlMatches.loc,
       date: frontmatter.date || null,
       excerpt: createExcerpt(content, 200),
     });
@@ -63,6 +41,6 @@ async function getPostsByTag(tag) {
   return matchedPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 module.exports = {
-  getAllTags,
   getPostsByTag,
+  buildTagRegex,
 };

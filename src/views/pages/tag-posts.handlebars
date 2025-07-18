@@ -10,7 +10,7 @@
 <ul class="tag-post-list">
     {{#each posts}}
     <li class="tag-post-item">
-        <a href="/posts/{{this.id}}" class="tag-post-link">{{this.title}}</a>
+        <a href="{{this.loc}}" class="tag-post-link">{{this.title}}</a>
         <p class="tag-post-excerpt">{{this.excerpt}}</p>
     </li>
     {{/each}}
