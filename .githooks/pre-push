@@ -9,11 +9,6 @@ remote="$1"
 set -euo pipefail
 set -x
 
-
-export TEST_SCHEMA="http"
-export TEST_DOMAIN="127.0.0.1"
-export TEST_PORT=4123
-
 node src/app.js >/dev/null 2>&1 &
   APP_PID=$!
 
