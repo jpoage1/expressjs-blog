@@ -75,7 +75,7 @@ router.get("/", (req, res) => {
 });
 
 router.use((req, res, next) => {
-  req.log(req.url);
+  req.log.warn(req.url);
   next(new HttpError("Page not found", 404));
 });
 

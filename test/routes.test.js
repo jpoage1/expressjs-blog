@@ -2,17 +2,17 @@
 const fetch = require("node-fetch");
 const { expect } = require("chai");
 const http = require("http");
+const https = require("https");
 
-let port = process.env.TEST_PORT;
-let schema = process.env.TEST_SCHEMA;
-let domain = process.env.se;
+const fs = require("fs");
+
 require("dotenv").config();
 
-domain = domain || process.env.TEST_DOMAIN || process.env.SERVER_DOMAIN;
-port = port || process.env.TEST_PORT || process.env.SERVER_PORT;
-schema = schema || process.env.TEST_SCHEMA || process.env.SERVER_SCHEMA;
+const domain = process.env.SERVER_DOMAIN;
+const port = process.env.SERVER_PORT;
+const schema = process.env.SERVER_SCHEMA;
 const server_address = process.env.SERVER_ADDRESS;
-const baseUrl = `${schema}://${server_address}:${port}`;
+const baseUrl = `${schema}://${domain}`;
 
 // Create a proper HTTP agent
 const httpAgent = new http.Agent({
@@ -20,6 +20,24 @@ const httpAgent = new http.Agent({
   maxSockets: 10,
   timeout: 10000,
 });
+
+const useHttps = schema === "https";
+
+const agent = useHttps
+  ? new https.Agent({
+      keepAlive: true,
+      maxSockets: 10,
+      timeout: 10000,
+      // ca: fs.readFileSync(process.env.SSL_CA_PATH),
+      // cert: fs.readFileSync(process.env.SSL_CERT_PATH),
+      // key: fs.readFileSync(process.env.SSL_KEY_PATH),
+      rejectUnauthorized: true, // or false if using self-signed certs during dev
+    })
+  : new http.Agent({
+      keepAlive: true,
+      maxSockets: 10,
+      timeout: 10000,
+    });
 
 describe(`API route status tests with dependencies at ${baseUrl}`, () => {
   let serverOnline = false;
@@ -34,12 +52,12 @@ describe(`API route status tests with dependencies at ${baseUrl}`, () => {
 
   it("should confirm server is online via /health", async () => {
     const res = await fetch(baseUrl + "/health", {
-      agent: httpAgent,
+      agent,
       timeout: 5000,
       method: "HEAD",
       redirect: "manual",
     });
-    // console.log("Healthcheck body: ", res.text());
+    console.log("Healthcheck body: ", await res.text());
     expect(res.ok).to.be.true;
     serverOnline = true;
   });
@@ -51,7 +69,7 @@ describe(`API route status tests with dependencies at ${baseUrl}`, () => {
 
     try {
       const res = await fetch(baseUrl + "/sitemap.json", {
-        agent: httpAgent,
+        agent,
         timeout: 10000,
       });
 
@@ -110,38 +128,43 @@ describe(`API route status tests with dependencies at ${baseUrl}`, () => {
     }
   });
 
-  it("should return 200 for all routes, except / route which should return 301", async function () {
-    this.timeout(30000); // 30 second timeout for entire test
+  it(
+    "should return 200 for all routes, except " +
+      baseUrl +
+      " route which should return 301",
+    async function () {
+      this.timeout(30000); // 30 second timeout for entire test
 
-    if (!serverOnline || routes.length === 0) {
-      this.skip();
-    }
+      if (!serverOnline || routes.length === 0) {
+        this.skip();
+      }
 
-    for (const route of routes) {
-      // Skip the root route and any routes without a proper loc
-      if (route.loc && route.loc !== "/" && route.loc !== "#") {
-        const url = route.loc;
-        // console.log(`Testing route: ${url}`);
+      for (const route of routes) {
+        // Skip the root route and any routes without a proper loc
+        if (route.loc && route.loc !== baseUrl + "/" && route.loc !== "#") {
+          const url = route.loc;
+          // console.log(`Testing route: ${url}`);
 
-        try {
-          const res = await fetch(url, {
-            method: "GET",
-            agent: httpAgent,
-            timeout: 10000,
-          });
+          try {
+            const res = await fetch(url, {
+              method: "GET",
+              agent,
+              timeout: 10000,
+            });
 
-          expect(
-            res.status,
-            `Route GET ${route.loc} should return 200`
-          ).to.equal(200);
-        } catch (error) {
-          console.error(route);
-          console.error(`Error testing route ${route.loc}:`, error.message);
-          throw error;
+            expect(
+              res.status,
+              `Route GET ${route.loc} should return 200`
+            ).to.equal(200);
+          } catch (error) {
+            console.error(route);
+            console.error(`Error testing route ${route.loc}:`, error.message);
+            throw error;
+          }
         }
       }
     }
-  });
+  );
 
   // Optional: Test the root route separately if you expect it to return 301
   it("should return 301 for / route", async function () {
@@ -151,7 +174,7 @@ describe(`API route status tests with dependencies at ${baseUrl}`, () => {
 
     try {
       const res = await fetch(baseUrl + "/", {
-        agent: httpAgent,
+        agent,
         timeout: 10000,
         redirect: "manual", // Don't follow redirects automatically
       });
