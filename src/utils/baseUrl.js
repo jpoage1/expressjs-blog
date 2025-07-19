@@ -10,7 +10,8 @@ function getBaseUrl({ schema = null, host = null, port = null } = {}) {
     .replace(/^https?:\/\//, "")
     .replace(/\/$/, "");
 
-  return `${finalProtocol}://${finalDomain}${finalPort != 80 ? `:${finalPort}` : ""}`;
+  // return `${finalProtocol}://${finalDomain}${finalPort != 80 ? `:${finalPort}` : ""}`;
+  return `${finalProtocol}://${finalDomain}`;
 }
 const baseUrl = getBaseUrl();
 
