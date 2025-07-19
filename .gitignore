@@ -77,3 +77,5 @@ target/
 data/*
 !data/.gitkeep
 .last_tested_commit
+
+certs/*

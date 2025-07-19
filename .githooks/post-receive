@@ -19,8 +19,11 @@ get_log_file_path() {
 
 copy_env_file() {
   local branch="$1"
+  local env_file
+  env_file="$(get_deploy_env_file "$branch")"
+  source "$env_file"
   # Copy the .env file for the test environment
-  cp "$(get_deploy_env_file "$branch")" "$tmpdir/.env" || {
+  cp "$env_file" "$tmpdir/.env" || {
     echo "Error: Failed to copy .env file for test environment."
     return 1
   }
@@ -225,11 +228,7 @@ run_postreceive_tests() {
   copy_env_file "$branch" || return 1
 
   initialize_submodules "$tmpdir" || return 1
-
-  export TEST_PORT=4123
-  export TEST_SCHEMA=http
-  export NODE_ENV=testing
-
+  
   # echo "Skipping tests"
   # return 0
 
@@ -238,6 +237,7 @@ run_postreceive_tests() {
   combine_css || return 1
 
   echo "Starting application for tests..."
+  systemctl --user stop express-blog@"$branch".service
   nohup node src/app.js >>"$logfile" 2>&1 &
   echo $! >"$pidfile"
 
@@ -249,7 +249,6 @@ run_postreceive_tests() {
   run_tests "$branch" "$pidfile" "$logfile" || return 1
 
   kill "$(cat "$pidfile")" 2>/dev/null || true
-  unset TEST_PORT TEST_SCHEMA NODE_ENV
 
   echo "Tests passed for branch '$branch' in temporary environment."
   return 0
@@ -274,7 +273,7 @@ update_submodules() {
 wait_for_service() {
   local logfile="$1"
   # Wait for the application to become responsive
-  if ! _wait_for_service "http://127.0.0.1:$TEST_PORT"; then
+  if ! _wait_for_service "$SERVER_SCHEMA://$SERVER_DOMAIN"; then
     echo "Application did not start or respond for tests. Check logs in $logfile:"
     cat "$logfile" # Display logs on failure
     return 1

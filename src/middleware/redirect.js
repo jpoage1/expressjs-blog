@@ -10,36 +10,21 @@ const redirectConfig = {
   // '/old-path': '/new-path',
 };
 
-// Helper function to build full URL
-function buildRedirectUrl(req, targetPath) {
-  const protocol = req.get("x-forwarded-proto") || req.protocol;
-  const host = req.get("host");
-
-  // If targetPath is already a full URL, return it as-is
-  if (targetPath.startsWith("http")) {
-    return targetPath;
-  }
-
-  // Build full URL
-  return `${protocol}://${host}${targetPath}`;
-}
-
 // Generic redirect handler
 function handleRedirect(req, res, targetPath, status = 302) {
-  const redirectUrl = buildRedirectUrl(req, targetPath);
+  const redirectUrl = qualifyLink(targetPath);
 
   // Check if this is a request that expects JSON (API calls)
   if (req.accepts("json") && !req.accepts("html")) {
-    return res.status(301).json({
+    return res.status(status).json({
       redirect: true,
       url: redirectUrl,
     });
   }
 
-  res.set("Location", redirectUrl);
-
   // For browsers, render the redirect page
   res.status(301);
+  res.set("Location", redirectUrl);
   res.renderWithBaseContext("pages/redirect", {
     redirectUrl: redirectUrl,
     originalUrl: req.originalUrl,
@@ -48,9 +33,9 @@ function handleRedirect(req, res, targetPath, status = 302) {
 // Middleware function to check for redirects
 function redirectMiddleware(req, res, next) {
   res.customRedirect = (targetPath, status) =>
-    handleRedirect(req, res, qualifyLink(targetPath), status);
-  const targetPath = redirectConfig[req.path];
+    handleRedirect(req, res, targetPath, status);
 
+  const targetPath = redirectConfig[req.path];
   if (targetPath) {
     return handleRedirect(req, res, targetPath, 301);
   }
