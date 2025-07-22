@@ -1,0 +1,19 @@
+{{!-- partials/docsMenu.handlebars --}}
+<nav class="docs-menu">
+  <ul class="docs-path-list">
+    {{#each paths}}
+    <li class="docs-path-item">
+      <details {{#if isActive}}open{{/if}}>
+        <summary class="docs-path-label">{{this.name}}</summary>
+        <ul class="docs-module-list">
+          {{#each this.modules}}
+          <li class="docs-module-item {{#if isActive}}active{{/if}}">
+            <a href="{{baseUrl}}/docs/{{../name}}/{{this.name}}">{{this.displayName}}</a>
+          </li>
+          {{/each}}
+        </ul>
+      </details>
+    </li>
+    {{/each}}
+  </ul>
+</nav>

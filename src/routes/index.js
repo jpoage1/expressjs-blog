@@ -15,6 +15,7 @@ const contact = require("./contact");
 const sitemap = require("./sitemap");
 const post = require("./post");
 const pages = require("./pages");
+const docs = require("./docs");
 const rssFeed = require("./rssFeed");
 const { qualifyLink } = require("../utils/qualifyLinks");
 const HttpError = require("../utils/HttpError");
@@ -67,6 +68,7 @@ router.use(sitemap);
 router.use(pages);
 router.use(rssFeed);
 router.use(tags);
+router.use("/docs", docs);
 
 router.get("/blog/:year/:month/:name", post);
 

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="alternate" type="application/rss+xml" title="Jason Poage's Blog RSS Feed"
+    href="{{baseUrl}}/rss-feed.xml" />
+  <link href="{{baseUrl}}/static/css/styles.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="{{baseUrl}}/static/js/track.js">
+  </script>
+  {{{_sections.styles}}}
+  <title>{{title}}</title>
+  <link rel="icon" href="{{baseUrl}}/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{baseUrl}}/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="{{baseUrl}}/favicons/favicon-64x64.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="{{baseUrl}}/favicons/favicon-192x192.png">
+  {{{_sections.headers}}}
+
+</head>
+
+<body class="pattern-dots">
+  {{> headers}}
+  <div class="layout">
+    {{#if showSidebar}}
+    <aside class="sidebar">
+      <nav>
+        {{> docsMenu }}
+      </nav>
+    </aside>
+    {{/if}}
+    <main class="container">
+      {{{body}}}
+    </main>
+  </div>
+  {{#if showFooter}}
+  <footer>
+    {{> footer}}
+  </footer>
+  {{/if}}
+  {{{_sections.scripts}}}
+</body>
+
+</html>
