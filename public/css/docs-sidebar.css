@@ -115,19 +115,15 @@
 }
 /* Responsive design */
 @media (max-width: 900px) {
-
   .layout .sidebar {
     width: 100%;
   }
-  
 }
 
 @media (max-width: 768px) {
-
   .layout .sidebar {
     width: 100%;
   }
-  
 }
 
 

@@ -26,6 +26,13 @@ function registerHelpers(hbs) {
     const dd = String(d.getDate()).padStart(2, "0");
     return `${yyyy}-${mm}-${dd}`;
   });
+  hbs.handlebars.registerHelper("isObject", function (value) {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
+  });
+
+  hbs.handlebars.registerHelper("isArray", function (value) {
+    return Array.isArray(value);
+  });
 }
 
 module.exports = { registerHelpers };
