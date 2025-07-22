@@ -8,6 +8,7 @@ const router = express.Router();
 const docsContext = require("../utils/docsContext");
 const HttpError = require("../utils/HttpError");
 const { baseUrl } = require("../utils/baseUrl");
+const { qualifyLink } = require("../utils/qualifyLinks");
 
 const docsDir = path.join(__dirname, "../../content/docs");
 let docsCache = {}; // { [path]: { modules: {}, crossCuttingSummary: {} } }
@@ -76,8 +77,8 @@ router.get("/:path", async (req, res) => {
 
   res.render("docs/path", {
     ...context,
-
-    path: docPath,
+    docsHome: qualifyLink("/docs"),
+    pathName: docPath,
     crossCuttingSummary: doc.crossCuttingSummary,
     modules: modulesWithLinks,
   });
@@ -100,7 +101,9 @@ router.get("/:path/:module", async (req, res, next) => {
 
   res.render("docs/module", {
     ...context,
-    path: docPath,
+    docsHome: qualifyLink("/docs"),
+    pathUrl: qualifyLink("/docs/" + docPath),
+    pathName: docPath,
     module,
     moduleDoc,
   });
