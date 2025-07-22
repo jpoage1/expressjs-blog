@@ -7,6 +7,7 @@ const yaml = require("js-yaml");
 const router = express.Router();
 const docsContext = require("../utils/docsContext");
 const HttpError = require("../utils/HttpError");
+const { baseUrl } = require("../utils/baseUrl");
 
 const docsDir = path.join(__dirname, "../../content/docs");
 let docsCache = {}; // { [path]: { modules: {}, crossCuttingSummary: {} } }
@@ -46,7 +47,7 @@ router.get("/summary", async (req, res) => {
 
   const context = await docsContext(req.isAuthenticated, {
     layout: "docs",
-    docPath: "/docs/summary",
+    docPath: baseUrl + "/docs/summary",
     docModule: null,
   });
 
@@ -63,7 +64,7 @@ router.get("/:path", async (req, res) => {
 
   const context = await docsContext(req.isAuthenticated, {
     layout: "docs",
-    docPath: "/docs" + docPath,
+    docPath: baseUrl + "/docs" + docPath,
     docModule: null,
   });
 
