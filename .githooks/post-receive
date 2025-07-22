@@ -173,7 +173,7 @@ conservative_deploy_expressjs_blog() {
 
     systemctl --user restart express-blog@"$branch".service
 
-    set +x
+    # set +x
 }
 
 deploy_expressjs_blog() {
@@ -300,7 +300,9 @@ combine_css() {
   }
 }
 
-# set -x
+ssh-add -l
+
+set -x
 # Main script execution loop
 while read -r oldrev newrev ref; do
   tmpdir=$(mktemp -d)
@@ -315,4 +317,4 @@ while read -r oldrev newrev ref; do
     exit 1
   fi
 done
-# set +x
+set +x
