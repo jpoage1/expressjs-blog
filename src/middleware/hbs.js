@@ -1,6 +1,8 @@
 // src/middleware/hbs.js
 const path = require("path");
 const exphbs = require("express-handlebars");
+const Handlebars = require("handlebars");
+
 const { registerHelpers } = require("../utils/hbsHelpers");
 const {
   VIEW_ENGINE,
@@ -10,6 +12,26 @@ const {
   EXTENSION,
   RUNTIME_OPTIONS,
 } = require("../constants/hbsConstants");
+const renderObject = (obj) => {
+  if (typeof obj !== "object" || obj === null) {
+    return new Handlebars.SafeString(`<span>${String(obj)}</span>`);
+  }
+
+  if (Array.isArray(obj)) {
+    const items = obj
+      .map((item) => `<li>${Handlebars.escapeExpression(String(item))}</li>`)
+      .join("");
+    return new Handlebars.SafeString(`<ul>${items}</ul>`);
+  }
+
+  const entries = Object.entries(obj)
+    .map(([key, value]) => {
+      const renderedValue = renderObject(value);
+      return `<div class="doc-entry"><strong>${Handlebars.escapeExpression(key)}:</strong> ${renderedValue}</div>`;
+    })
+    .join("");
+  return new Handlebars.SafeString(`<div class="doc-object">${entries}</div>`);
+};
 
 const hbsMiddleware = (req, res, next) => {
   if (!req.app.get("view engine")) {
@@ -27,6 +49,7 @@ const hbsMiddleware = (req, res, next) => {
         json(context) {
           return JSON.stringify(context, null, 2);
         },
+        renderObject,
       },
       extname: EXTENSION,
       runtimeOptions: RUNTIME_OPTIONS,

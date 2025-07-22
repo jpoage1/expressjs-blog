@@ -61,7 +61,7 @@ module.exports = async function getDocsContext(
     originCountry: process.env.COUNTRY,
     navLinks: qualifiedNavLinks,
     baseUrl,
-    docsMenu,
+    paths: docsMenu,
     isAuthenticated,
     showFooter: true,
     showSidebar: true,
