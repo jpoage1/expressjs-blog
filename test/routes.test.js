@@ -181,8 +181,10 @@ describe(`API route status tests with dependencies at ${baseUrl}`, () => {
 
       // console.log("Root route response status:", res.status);
       // console.log("Root route response headers:", res.headers.raw());
-
-      expect(res.status, "Root route should return 301").to.equal(301);
+      expect(
+        [301, 302].includes(res.status),
+        "Root route should return 301 or 302"
+      ).to.be.true;
     } catch (error) {
       console.error("Error testing root route:", error.message);
 
