@@ -1,0 +1,133 @@
+body {
+    font-family: monospace, monospace;
+    background: #f9f9f9;
+    color: #222;
+    margin: 1rem;
+}
+
+h1,
+h2,
+h3 {
+    margin-top: 1.5rem;
+}
+
+pre {
+    background: #eee;
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+th,
+td {
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    background: #ddd;
+}
+
+.section {
+    margin-bottom: 2rem;
+}
+
+.key {
+    font-weight: bold;
+}
+
+.list {
+    margin: 0.25rem 0 1rem 1.5rem;
+}
+
+/* General sidebar container */
+.sidebar {
+  width: 250px;
+  background-color: #f8f9fa;
+  border-right: 1px solid #e0e0e0;
+  padding: 1em;
+  font-size: 0.95rem;
+  font-family: Arial, sans-serif;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+/* Reset list styles */
+.sidebar nav ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+/* Top-level path entry */
+.docs-path-item {
+  margin-bottom: 1rem;
+}
+
+/* Path summary label (e.g. path name) */
+.docs-path-label {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #2c3e50;
+  cursor: pointer;
+  padding: 0.2rem 0;
+  display: block;
+}
+
+/* Module links under a path */
+.docs-module-list {
+  margin-top: 0.3rem;
+  padding-left: 1rem;
+}
+
+.docs-module-item a {
+  color: #2c3e50;
+  text-decoration: none;
+  display: block;
+  padding: 0.2rem 0;
+  transition: color 0.2s ease-in-out;
+  font-weight: 400;
+}
+
+.docs-module-item a:hover {
+  color: #1a73e8;
+  text-decoration: underline;
+}
+
+.docs-module-item.active a {
+  font-weight: 600;
+  color: #1a73e8;
+  text-decoration: underline;
+}
+
+/* Expandable <details> arrow alignment */
+.docs-path-item details > summary {
+  list-style: none;
+}
+
+.docs-path-item details[open] > summary::marker,
+.docs-path-item summary::marker {
+  display: none;
+}
+.doc-object {
+  padding-left: 1rem;
+  margin-bottom: 1rem;
+  border-left: 2px solid #ccc;
+}
+
+.doc-entry {
+  margin: 0.5em 0;
+}
+
+.doc-entry strong {
+  display: inline-block;
+  min-width: 160px;
+  color: #2c3e50;
+}

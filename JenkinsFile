@@ -1,0 +1,116 @@
+pipeline {
+    agent any
+
+    environment {
+        DEPLOY_BASE = "/srv/jasonpoage.com"
+        GIT_REPO = 'git@git.jasonpoage.com:jason/expressjs-blog.git'
+    }
+
+    options {
+        timestamps()
+        ansiColor('xterm')
+    }
+
+    parameters {
+        string(name: 'DEPLOY_BRANCH', defaultValue: 'main', description: 'Branch to deploy')
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Prepare Environment') {
+            steps {
+                script {
+                    env.ENV_FILE = "${DEPLOY_BASE}/${params.DEPLOY_BRANCH}.env"
+                    env.DEPLOY_PATH = "${DEPLOY_BASE}/expressjs-blog-${params.DEPLOY_BRANCH}"
+                    env.LOG_FILE = "${DEPLOY_BASE}/logs/jenkins-${params.DEPLOY_BRANCH}-${env.BUILD_ID}.log"
+                }
+                sh """
+                    cp "$ENV_FILE" .env
+                """
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    if git diff --name-only HEAD~1 | grep -qE "(package.json|yarn.lock)"; then
+                        echo "Dependency files changed. Running yarn..."
+                        yarn
+                    else
+                        echo "Skipping yarn install."
+                    fi
+                '''
+            }
+        }
+
+        stage('Initialize Submodules') {
+            steps {
+                sh '''
+                    git submodule update --init --recursive --force
+                '''
+            }
+        }
+
+        stage('Build CSS') {
+            steps {
+                sh '''
+                    yarn --production=false combine:css
+                '''
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh '''
+                    npm run test:postreceive
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    if (params.DEPLOY_BRANCH == 'testing') {
+                        sh """
+                            rm -rf "$DEPLOY_PATH" || true
+                            mv "$WORKSPACE" "$DEPLOY_PATH"
+                            ln -f "$ENV_FILE" "$DEPLOY_PATH/.env"
+                        """
+                    } else {
+                        sh """
+                            mkdir -p "$DEPLOY_PATH"
+                            git fetch origin
+                            git reset --hard origin/${params.DEPLOY_BRANCH}
+                            git submodule update --init --recursive --force
+                            ln -f "$ENV_FILE" "$DEPLOY_PATH/.env"
+                            yarn combine:css
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Restart Service') {
+            steps {
+                sh """
+                    systemctl --user restart express-blog@${params.DEPLOY_BRANCH}.service
+                """
+            }
+        }
+    }
+
+    post {
+        failure {
+            sh 'echo "Deployment failed for branch ${params.DEPLOY_BRANCH}"'
+        }
+        success {
+            sh 'echo "Deployment succeeded for branch ${params.DEPLOY_BRANCH}"'
+        }
+    }
+}
