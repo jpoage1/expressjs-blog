@@ -1,21 +1,31 @@
-{{!-- views/docs/path.hbs --}}
-<h1>Documentation: {{path}}</h1>
+<h1><a href="{{docsHome}}">Documentation:</a> {{pathName}}</h1>
 
 {{#if crossCuttingSummary}}
 <section>
     <h2>Cross Cutting Summary</h2>
+
+    {{#if crossCuttingSummary.themes}}
+    {{#if crossCuttingSummary.themes.length}}
     <h3>Themes</h3>
     <ul>
         {{#each crossCuttingSummary.themes}}
         <li>{{this}}</li>
         {{/each}}
     </ul>
+    {{/if}}
+    {{/if}}
+
+    {{#if crossCuttingSummary.systemRecommendations}}
+    {{#if crossCuttingSummary.systemRecommendations.length}}
     <h3>System Recommendations</h3>
     <ul>
         {{#each crossCuttingSummary.systemRecommendations}}
         <li>{{this}}</li>
         {{/each}}
     </ul>
+    {{/if}}
+    {{/if}}
+
 </section>
 {{/if}}
 
