@@ -31,7 +31,43 @@ async function loadDocFile(filePath) {
     return null;
   }
 }
+function filterSecurityAndStabilityKeys(docResult) {
+  if (!docResult || !docResult.modules) {
+    return docResult;
+  }
 
+  const filteredModules = {};
+
+  for (const [key, value] of Object.entries(docResult.modules)) {
+    // Skip modules whose keys start with 'securityAndStability:'
+    if (key.startsWith("securityAndStability:")) {
+      continue;
+    }
+
+    // For other modules, remove the securityAndStability property if it exists
+    if (value && typeof value === "object") {
+      const { securityAndStability, ...moduleWithoutSecurity } = value;
+      filteredModules[key] = moduleWithoutSecurity;
+    } else {
+      filteredModules[key] = value;
+    }
+  }
+
+  return {
+    ...docResult,
+    modules: filteredModules,
+  };
+}
+
+// Helper function to filter security from a single module
+function filterModuleSecurityKeys(moduleDoc) {
+  if (!moduleDoc || typeof moduleDoc !== "object") {
+    return moduleDoc;
+  }
+
+  const { securityAndStability, ...moduleWithoutSecurity } = moduleDoc;
+  return moduleWithoutSecurity;
+}
 // /docs/summary - aggregate crossCuttingSummary from all cached docs
 router.get("/summary", async (req, res) => {
   const summaries = [];
@@ -105,7 +141,7 @@ router.get("/:path/:module", async (req, res, next) => {
     pathUrl: qualifyLink("/docs/" + docPath),
     pathName: docPath,
     module,
-    moduleDoc,
+    moduleDoc: filterModuleSecurityKeys(moduleDoc),
   });
 });
 
