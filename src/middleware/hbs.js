@@ -24,6 +24,9 @@ const hbsMiddleware = (req, res, next) => {
           this._sections[name] += options.fn(this);
           return null;
         },
+        json(context) {
+          return JSON.stringify(context, null, 2);
+        },
       },
       extname: EXTENSION,
       runtimeOptions: RUNTIME_OPTIONS,

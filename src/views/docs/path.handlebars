@@ -1,0 +1,34 @@
+{{!-- views/docs/path.hbs --}}
+{{#section "styles"}}
+<link rel="stylesheet" href="{{baseUrl}}/static/css/docs.css" />
+{{/section}}
+{{#section "scripts"}}
+<script src="{{baseUrl}}/static/js/docs.js"></script>
+{{/section}}
+
+<h1>Documentation: {{path}}</h1>
+
+{{#if crossCuttingSummary}}
+<section>
+    <h2>Cross Cutting Summary</h2>
+    <h3>Themes</h3>
+    <ul>
+        {{#each crossCuttingSummary.themes}}
+        <li>{{this}}</li>
+        {{/each}}
+    </ul>
+    <h3>System Recommendations</h3>
+    <ul>
+        {{#each crossCuttingSummary.systemRecommendations}}
+        <li>{{this}}</li>
+        {{/each}}
+    </ul>
+</section>
+{{/if}}
+
+<h2>Modules</h2>
+<ul>
+    {{#each modules}}
+    <li><a href="{{url}}">{{name}}</a></li>
+    {{/each}}
+</ul>

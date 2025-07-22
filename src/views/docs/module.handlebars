@@ -1,0 +1,12 @@
+{{!-- views/docs/module.hbs --}}
+{{#section "styles"}}
+<link rel="stylesheet" href="{{baseUrl}}/static/css/docs.css" />
+{{/section}}
+{{#section "scripts"}}
+<script src="{{baseUrl}}"></script>
+{{/section}}
+<h1>Documentation: {{path}} / {{module}}</h1>
+
+<pre>{{json moduleDoc}}</pre>
+
+{{!-- json helper needed to pretty print object --}}
