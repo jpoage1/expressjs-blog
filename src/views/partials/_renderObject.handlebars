@@ -1,0 +1,36 @@
+{{!-- views/partials/_renderObject.hbs --}}
+
+{{#if (isObject this)}}
+<div class="doc-object">
+    {{#each this}}
+    <div class="doc-entry">
+        <strong>{{@key}}:</strong>
+        {{#if (isObject this)}}
+        {{> _renderObject this}}
+        {{else if (isArray this)}}
+        {{> _renderObject this}}
+        {{else}}
+        <span>{{this}}</span>
+        {{/if}}
+    </div>
+    {{/each}}
+</div>
+
+{{else if (isArray this)}}
+<ul>
+    {{#each this}}
+    <li>
+        {{#if (isObject this)}}
+        {{> _renderObject this}}
+        {{else if (isArray this)}}
+        {{> _renderObject this}}
+        {{else}}
+        <span>{{this}}</span>
+        {{/if}}
+    </li>
+    {{/each}}
+</ul>
+
+{{else}}
+<span>{{this}}</span>
+{{/if}}

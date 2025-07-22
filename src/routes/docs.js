@@ -100,6 +100,8 @@ router.get("/:path/:module", async (req, res, next) => {
 
   res.render("docs/module", {
     ...context,
+    path: docPath,
+    module,
     moduleDoc,
   });
 });
@@ -114,13 +116,13 @@ router.get("/", async (req, res) => {
 
     const context = await docsContext(req.isAuthenticated, {
       layout: "docs",
-      docPath: null,
+      docPath: "/docs",
       docModule: null,
     });
 
     res.render("docs/index", {
       ...context,
-      docsPaths: yamlFiles,
+      docsPaths: yamlFiles.map((name) => `${req.baseUrl || ""}/${name}`),
     });
   } catch (err) {
     req.log.error(err.stack);
