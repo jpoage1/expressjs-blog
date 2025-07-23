@@ -4,6 +4,7 @@ const matter = require("gray-matter");
 const fs = require("fs").promises;
 const { getAllPosts } = require("../utils/postFileUtils");
 const hash = require("../utils/hash");
+const yaml = require("js-yaml");
 
 const glob = require("fast-glob");
 const { qualifySitemapLinks } = require("../utils/qualifyLinks");
@@ -122,6 +123,47 @@ class SitemapService {
     }));
   }
 
+  async getDocsEntries(filePath) {
+    const docsDir = path.resolve(__dirname, "../../content/docs");
+    const files = await fs.readdir(docsDir);
+    const entries = [];
+
+    for (const file of files) {
+      if (!file.endsWith(".yaml")) continue;
+
+      const moduleType = file.replace(/\.yaml$/, "");
+      const filePath = path.join(docsDir, file);
+      const raw = await fs.readFile(filePath, "utf8");
+      const parsed = yaml.load(raw);
+
+      // Parent entry: /docs/:moduleType
+      const parentEntry = {
+        loc: `/docs/${moduleType}`,
+        label: moduleType, // Use 'label' to match your JSON structure
+        changefreq: "monthly",
+        priority: 0.7,
+        children: [],
+      };
+
+      // For each module inside modules, create child entries
+      const modules = parsed || {};
+      for (const [moduleKey, moduleData] of Object.entries(modules)) {
+        parentEntry.children.push({
+          loc: `/docs/${moduleType}/${moduleKey}`,
+          label: (moduleData && moduleData.title) || moduleKey, // Use 'label' to match structure
+          changefreq: "monthly",
+          priority: 0.5,
+        });
+      }
+
+      entries.push(parentEntry);
+      console.log(
+        `Added docs entry: ${parentEntry.loc} with ${parentEntry.children.length} children`
+      );
+    }
+
+    return entries;
+  }
   injectPlaceholder(tree, key, items) {
     for (const node of tree) {
       if (Array.isArray(node.children)) {
@@ -130,7 +172,10 @@ class SitemapService {
         );
 
         if (index !== -1) {
-          const placeholder = node.children[index];
+          console.log(
+            `Found placeholder #inject:${key}, injecting ${items.length} items`
+          );
+          // Replace the placeholder with the actual items
           node.children.splice(index, 1, ...items);
           return true;
         }
@@ -142,6 +187,7 @@ class SitemapService {
     }
     return false;
   }
+
   async _loadStaticLayout() {
     try {
       const data = await fs.readFile(this.staticSitemapPath, "utf-8");
@@ -185,10 +231,12 @@ class SitemapService {
       slug: tag.slug,
       count: tag.count,
     }));
+    const docsEntries = await this.getDocsEntries();
 
     this.injectPlaceholder(staticPagesJsonTree, "pages", pageItems);
     this.injectPlaceholder(staticPagesJsonTree, "blog-posts", postItems);
     this.injectPlaceholder(staticPagesJsonTree, "tags", tagItems);
+    this.injectPlaceholder(staticPagesJsonTree, "docs", docsEntries);
 
     return qualifySitemapLinks(staticPagesJsonTree);
   }

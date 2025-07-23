@@ -12,15 +12,16 @@ const { qualifyLink } = require("../utils/qualifyLinks");
 
 const docsDir = path.join(__dirname, "../../content/docs");
 let docsCache = {}; // { [path]: { modules: {}, crossCuttingSummary: {} } }
-
 async function loadDocFile(filePath) {
   if (docsCache[filePath]) return docsCache[filePath];
   try {
     const fullPath = path.join(docsDir, filePath + ".yaml");
     const fileContent = await fs.readFile(fullPath, "utf-8");
     const parsed = yaml.load(fileContent);
-    const crossCuttingSummary = parsed.crossCuttingSummary || null;
-    delete parsed.crossCuttingSummary;
+    const crossCuttingSummary = parsed["Cross Cutting Summary"] || null;
+    console.log(
+      `Cross cutting summary: ${JSON.stringify(crossCuttingSummary, 0, 2)}`
+    );
     docsCache[filePath] = {
       modules: parsed,
       crossCuttingSummary,
@@ -31,33 +32,34 @@ async function loadDocFile(filePath) {
     return null;
   }
 }
-function filterSecurityAndStabilityKeys(docResult) {
-  if (!docResult || !docResult.modules) {
-    return docResult;
-  }
 
-  const filteredModules = {};
+// function filterSecurityAndStabilityKeys(docResult) {
+//   if (!docResult || !docResult.modules) {
+//     return docResult;
+//   }
 
-  for (const [key, value] of Object.entries(docResult.modules)) {
-    // Skip modules whose keys start with 'securityAndStability:'
-    if (key.startsWith("securityAndStability:")) {
-      continue;
-    }
+//   const filteredModules = {};
 
-    // For other modules, remove the securityAndStability property if it exists
-    if (value && typeof value === "object") {
-      const { securityAndStability, ...moduleWithoutSecurity } = value;
-      filteredModules[key] = moduleWithoutSecurity;
-    } else {
-      filteredModules[key] = value;
-    }
-  }
+//   for (const [key, value] of Object.entries(docResult.modules)) {
+//     // Skip modules whose keys start with 'securityAndStability:'
+//     if (key.startsWith("securityAndStability:")) {
+//       continue;
+//     }
 
-  return {
-    ...docResult,
-    modules: filteredModules,
-  };
-}
+//     // For other modules, remove the securityAndStability property if it exists
+//     if (value && typeof value === "object") {
+//       const { securityAndStability, ...moduleWithoutSecurity } = value;
+//       filteredModules[key] = moduleWithoutSecurity;
+//     } else {
+//       filteredModules[key] = value;
+//     }
+//   }
+
+//   return {
+//     ...docResult,
+//     modules: filteredModules,
+//   };
+// }
 
 // Helper function to filter security from a single module
 function filterModuleSecurityKeys(moduleDoc) {
@@ -69,7 +71,7 @@ function filterModuleSecurityKeys(moduleDoc) {
   return moduleWithoutSecurity;
 }
 // /docs/summary - aggregate crossCuttingSummary from all cached docs
-router.get("/summary", async (req, res) => {
+router.get("/summary", async (req, res, next) => {
   const summaries = [];
   const files = await fs.readdir(docsDir);
   const yamlFiles = files
@@ -95,8 +97,8 @@ router.get("/summary", async (req, res) => {
 });
 
 // /docs/:path - show all modules in a YAML file
-router.get("/:path", async (req, res) => {
-  const { path: docPath } = req.params;
+router.get("/:moduleType", async (req, res, next) => {
+  const { moduleType: docPath } = req.params;
   const doc = await loadDocFile(docPath);
 
   const context = await docsContext(req.isAuthenticated, {
@@ -121,8 +123,8 @@ router.get("/:path", async (req, res) => {
 });
 
 // /docs/:path/:module - show single module from YAML file
-router.get("/:path/:module", async (req, res, next) => {
-  const { path: docPath, module } = req.params;
+router.get("/:moduleType/:module", async (req, res, next) => {
+  const { moduleType: docPath, module } = req.params;
   const doc = await loadDocFile(docPath);
   if (!doc) return next(new HttpError("Documentation not found", 404));
   const moduleDoc = doc.modules[module];
@@ -146,7 +148,7 @@ router.get("/:path/:module", async (req, res, next) => {
 });
 
 // /docs - list all doc files
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
     const files = await fs.readdir(docsDir);
     const yamlFiles = files

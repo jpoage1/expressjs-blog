@@ -33,6 +33,17 @@ function registerHelpers(hbs) {
   hbs.handlebars.registerHelper("isArray", function (value) {
     return Array.isArray(value);
   });
+  hbs.handlebars.registerHelper(
+    "extractCrossCuttingSummary",
+    function (context) {
+      for (const key in context) {
+        if (key.replace(/\s+/g, "").toLowerCase() === "crosscuttingsummary") {
+          return context[key];
+        }
+      }
+      return null;
+    }
+  );
 }
 
 module.exports = { registerHelpers };
