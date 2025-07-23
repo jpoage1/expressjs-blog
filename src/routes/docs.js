@@ -10,6 +10,8 @@ const HttpError = require("../utils/HttpError");
 const { baseUrl } = require("../utils/baseUrl");
 const { qualifyLink } = require("../utils/qualifyLinks");
 
+const { winstonLogger, manualLogger } = require("../utils/logging");
+
 const docsDir = path.join(__dirname, "../../content/docs");
 let docsCache = {}; // { [path]: { modules: {}, crossCuttingSummary: {} } }
 async function loadDocFile(filePath) {
@@ -19,47 +21,16 @@ async function loadDocFile(filePath) {
     const fileContent = await fs.readFile(fullPath, "utf-8");
     const parsed = yaml.load(fileContent);
     const crossCuttingSummary = parsed["Cross Cutting Summary"] || null;
-    console.log(
-      `Cross cutting summary: ${JSON.stringify(crossCuttingSummary, 0, 2)}`
-    );
     docsCache[filePath] = {
       modules: parsed,
       crossCuttingSummary,
     };
     return docsCache[filePath];
   } catch (e) {
-    console.error(e.stack);
+    manualLogger.error(e.stack);
     return null;
   }
 }
-
-// function filterSecurityAndStabilityKeys(docResult) {
-//   if (!docResult || !docResult.modules) {
-//     return docResult;
-//   }
-
-//   const filteredModules = {};
-
-//   for (const [key, value] of Object.entries(docResult.modules)) {
-//     // Skip modules whose keys start with 'securityAndStability:'
-//     if (key.startsWith("securityAndStability:")) {
-//       continue;
-//     }
-
-//     // For other modules, remove the securityAndStability property if it exists
-//     if (value && typeof value === "object") {
-//       const { securityAndStability, ...moduleWithoutSecurity } = value;
-//       filteredModules[key] = moduleWithoutSecurity;
-//     } else {
-//       filteredModules[key] = value;
-//     }
-//   }
-
-//   return {
-//     ...docResult,
-//     modules: filteredModules,
-//   };
-// }
 
 // Helper function to filter security from a single module
 function filterModuleSecurityKeys(moduleDoc) {

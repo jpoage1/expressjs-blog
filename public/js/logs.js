@@ -165,8 +165,6 @@ class LogsViewer {
       this.hasMore = data.pagination.hasMore;
       this.totalPages = data.pagination.totalPages;
 
-      console.log(data.logs);
-
       if (data.logs.length === 0 && !append) {
         this.tbody.innerHTML = '<tr><td colspan="1">No logs found</td></tr>';
         this.updatePaginationInfo(0, 0, 0);

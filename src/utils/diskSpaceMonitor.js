@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const { promisify } = require("util");
 const statvfs = promisify(require("statvfs"));
+const { winstonLogger } = require("./logging");
 
 class DiskSpaceMonitor {
   constructor(logDir, options = {}) {
@@ -173,14 +174,14 @@ class DiskSpaceMonitor {
     this.lastCleanupTime = new Date().toISOString();
     this.diskSpaceStatus.autoCleanupPerformed = true;
 
-    console.log(
+    winstonLogger.warn(
       `Cleanup completed: ${deletedFiles} files/directories deleted, ${freedSpace.toFixed(2)} GB freed`
     );
     return { deletedFiles, freedSpace };
   }
 
   async performEmergencyCleanup() {
-    console.log("Performing emergency cleanup...");
+    winstonLogger.warn("Performing emergency cleanup...");
 
     // More aggressive cleanup - keep only last 24 hours of logs
     const cutoffDate = new Date();

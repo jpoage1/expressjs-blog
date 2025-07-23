@@ -11,6 +11,7 @@ const {
   DEFAULT_LOG_LEVEL,
   ERROR_REDIRECT_PATH,
 } = require("../constants/errorConstants");
+const { winstonLogger } = require("../utils/logging");
 
 module.exports = async (err, req, res, next) => {
   const statusCode = err.statusCode ?? DEFAULT_STATUS_CODE;
@@ -39,9 +40,9 @@ module.exports = async (err, req, res, next) => {
 
   if (req?.log?.error) {
     req.log.error(logEntry); // fixme, logs arent logging?
-    console.log(logEntry);
+    winstonLogger.error(logEntry);
   } else {
-    console.error(logEntry);
+    winstonLogger.error(logEntry);
   }
 
   const errorContext = getErrorContext(code || statusCode);
