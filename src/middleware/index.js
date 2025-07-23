@@ -37,37 +37,63 @@ function setupApp() {
   app.disable("x-powered-by");
   app.set("trust proxy", TRUST_PROXY);
 
-  // General parsers for non-excluded routes
+  // Body parsing with different limits for excluded vs normal paths
   app.use((req, res, next) => {
-    if (EXCLUDED_PATHS.includes(req.path)) return next();
-    express.json({ limit: DATA_LIMIT_BYTES })(req, res, (err) => {
-      if (err) return next(err);
-      express.urlencoded({ extended: false, limit: DATA_LIMIT_BYTES })(
-        req,
-        res,
-        next
-      );
-    });
-  });
+    const isExcludedPath = EXCLUDED_PATHS.includes(req.path);
+    const limit = isExcludedPath ? RAW_BODY_LIMIT_BYTES : DATA_LIMIT_BYTES;
 
-  // Raw parser + manual truncation for excluded routes
-  const rawBodyParser = express.raw({
-    type: RAW_BODY_TYPE,
-    limit: RAW_BODY_LIMIT_BYTES,
-  });
-  app.use((req, res, next) => {
-    if (!EXCLUDED_PATHS.includes(req.path)) return next();
-    rawBodyParser(req, res, (err) => {
-      if (err) return next(err);
-      try {
-        const raw = req.body.toString(FALLBACK_ENCODING);
-        const truncated = raw.slice(0, DATA_LIMIT_BYTES);
-        req.body = JSON.parse(truncated);
-      } catch (e) {
-        req.body = FALLBACK_BODY; // Fallback on parse failure
-      }
+    console.log(`Processing ${req.method} ${req.path}`);
+    console.log(`Content-Type: ${req.get("content-type")}`);
+    console.log(`Is excluded path: ${isExcludedPath}, using limit: ${limit}`);
+
+    const contentType = req.get("content-type") || "";
+
+    if (contentType.includes("application/json")) {
+      // Parse JSON with appropriate limit
+      express.json({ limit })(req, res, (err) => {
+        if (err) {
+          console.log("JSON parsing error:", err.message);
+          return next(err);
+        }
+        console.log("Parsed JSON body:", req.body);
+        next();
+      });
+    } else if (contentType.includes("application/x-www-form-urlencoded")) {
+      // Parse form data with appropriate limit
+      express.urlencoded({ extended: false, limit })(req, res, (err) => {
+        if (err) {
+          console.log("Form parsing error:", err.message);
+          return next(err);
+        }
+        console.log("Parsed form body:", req.body);
+        next();
+      });
+    } else if (contentType.includes("multipart/form-data")) {
+      // For multipart, we'd need multer or similar, but pass through for now
+      console.log("Multipart form detected - may need additional handling");
       next();
-    });
+    } else {
+      // Try form parsing first (most common for HTML forms), then JSON
+      express.urlencoded({ extended: false, limit })(req, res, (formErr) => {
+        if (formErr) {
+          console.log("Form parsing failed, trying JSON:", formErr.message);
+          express.json({ limit })(req, res, (jsonErr) => {
+            if (jsonErr) {
+              console.log("Both parsers failed:", {
+                formErr: formErr.message,
+                jsonErr: jsonErr.message,
+              });
+              return next(jsonErr);
+            }
+            console.log("Parsed JSON body (fallback):", req.body);
+            next();
+          });
+        } else {
+          console.log("Parsed form body (default):", req.body);
+          next();
+        }
+      });
+    }
   });
 
   app.use(hbs);
@@ -88,14 +114,13 @@ function setupApp() {
     app.use(applyProductionSecurity);
   }
 
-  // app.use(express.json({ limit: "4kb" }));
-  // app.use(bodyParser.urlencoded({ extended: false, limit: "4kb" }));
   app.use(compression());
   app.use(validateRequestIntegrity);
   app.use(formatHtml);
   app.use(redirectMiddleware);
   app.use(routes);
   app.use(errorHandler);
+
   return app;
 }
 
