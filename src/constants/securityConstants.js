@@ -1,6 +1,6 @@
 // config/securityConstants.js
 
-module.exports = {
+module.exports = ({ nonce }) => ({
   LOCALHOST_HOSTNAMES: ["127.0.0.1", "localhost"],
   HEALTHCHECK_METHOD: "HEAD",
   HEALTHCHECK_PATH: "/health",
@@ -9,8 +9,13 @@ module.exports = {
   HSTS_MAX_AGE: 63072000,
   CSP_DIRECTIVES: {
     defaultSrc: ["'self'"],
-    scriptSrc: ["'self'", "https://hcaptcha.com"],
-    styleSrc: ["'self'", "https:"],
+    scriptSrc: ["'self'", "https://hcaptcha.com", "https://cdn.jsdelivr.net"],
+    styleSrc: [
+      "'self'",
+      "https:",
+      "'sha256-huhqpKwGcFswbXjh5F/DueoxnLh3Yh/pg/lNbo+tnLE='",
+      `'${nonce}'`,
+    ],
     imgSrc: [
       "'self'",
       "data:",
@@ -21,4 +26,4 @@ module.exports = {
     objectSrc: ["'none'"],
     upgradeInsecureRequests: [],
   },
-};
+});

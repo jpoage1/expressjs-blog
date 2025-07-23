@@ -10,6 +10,7 @@ const csrfToken = require("../middleware/csrfToken");
 const errorPage = require("./errorPage");
 const admin = require("./admin");
 const tags = require("./tags");
+const presentation = require("./presentation");
 
 const contact = require("./contact");
 const sitemap = require("./sitemap");
@@ -48,11 +49,11 @@ router.use(
     extensions: false,
     fallthrough: false,
     setHeaders: (res) => {
-      // Since GPT's like to remove comments
-      // let's hard code this in here as a reminder to change the cache timing later
-      if (stable) {
+      if (process.env.NODE_ENV == "production") {
+        // Doesn't expire
         res.set("Cache-Control", "public, max-age=31536000, immutable");
       } else {
+        // Live long enough for the page to load
         res.set("Cache-Control", "public, max-age=30, must-revalidate");
       }
     },
@@ -68,6 +69,7 @@ router.use(sitemap);
 router.use(pages);
 router.use(rssFeed);
 router.use(tags);
+router.use("/presentation", presentation);
 router.use("/docs", docs);
 
 router.get("/blog/:year/:month/:name", post);
