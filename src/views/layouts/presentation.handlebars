@@ -13,7 +13,7 @@
   {{{_sections.styles}}}
   <script type="text/javascript" src="{{baseUrl}}/static/js/track.js"></script>
   <title>{{title}}</title>
-  {{> favicon-headers}}
+  {{> favicon_headers }}
   {{{_sections.headers}}}
 
 </head>
@@ -24,11 +24,9 @@
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/plugin/highlight/highlight.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/plugin/notes/notes.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/dist/reveal.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.2/simple-lightbox.min.js"></script>
-
-
-
-  <script nonce="{{nonce}}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.2/simple-lightbox.min.js"
+    nonce="{{{nonce}}}"></script>
+  <script nonce="{{{nonce}}}">
     Reveal.initialize({
       controls: true,
       progress: true,
@@ -56,6 +54,9 @@
       close: true,
       showCounter: false
     });
+    document.getElementById('returnButton').onclick = function () {
+      window.location.href = "{{returnUrl}}";
+    };
   </script>
 </body>
 

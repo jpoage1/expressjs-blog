@@ -37,24 +37,27 @@ function generateNonce() {
   return crypto.randomBytes(16).toString("base64");
 }
 
-const securityPolicy = (req, res, next) => {
-  const nonce = generateNonce();
-  res.locals.nonce = nonce; // if templates need it
+const securityPolicy =
+  (overrides = {}) =>
+  (req, res, next) => {
+    const nonce = generateNonce();
+    res.locals.nonce = nonce;
 
-  helmet.contentSecurityPolicy({
-    directives: {
+    const mergedDirectives = {
       ...CSP_DIRECTIVES,
-      defaultSrc: ["'self'", baseUrl],
+      ...overrides,
       scriptSrc: [
-        "'self'",
+        ...(overrides.scriptSrc || CSP_DIRECTIVES.scriptSrc),
         `'nonce-${nonce}'`,
-        "https://hcaptcha.com",
-        "https://cdn.jsdelivr.net",
       ],
-    },
-  })(req, res, next);
-};
+    };
 
+    return helmet.contentSecurityPolicy({ directives: mergedDirectives })(
+      req,
+      res,
+      next
+    );
+  };
 const applyProductionSecurity = [
   disablePoweredBy,
   hpp(),
@@ -62,7 +65,7 @@ const applyProductionSecurity = [
   // rateLimit middleware can be added here
   blockLocalhostAccess,
   helmet.hsts({ maxAge: HSTS_MAX_AGE }),
-  securityPolicy,
+  securityPolicy(),
 ];
 
-module.exports = applyProductionSecurity;
+module.exports = { applyProductionSecurity, securityPolicy };
