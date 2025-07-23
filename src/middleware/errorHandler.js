@@ -34,6 +34,7 @@ module.exports = async (err, req, res, next) => {
     query: req.query,
     body: req.body,
     ip: req.ip || req.connection?.remoteAddress,
+    metadata: err.metadata,
   };
 
   if (req?.log?.error) {
@@ -61,6 +62,15 @@ module.exports = async (err, req, res, next) => {
     message,
     stack,
     errorContext,
+
+    level: DEFAULT_LOG_LEVEL,
+
+    method: req.method,
+    headers: req.headers,
+    query: req.query,
+    body: req.body,
+    ip: req.ip || req.connection?.remoteAddress,
+    metadata: err.metadata,
   });
 
   const errorPageContext = await getBaseContext(req?.isAuthenticated, context);

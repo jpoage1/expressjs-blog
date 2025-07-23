@@ -54,35 +54,35 @@ const {
   analyzeThreatLevel,
   logSecurityEvent,
 } = require("../utils/securityForensics");
+const { validateAndSanitizeEmail } = require("../utils/emailValidator");
 
 function isReasonableLength(str, maxLen) {
   return (
     typeof str === "string" && str.trim().length > 0 && str.length <= maxLen
   );
 }
-
 router.post("/contact", formLimiter, async (req, res, next) => {
   try {
-    const { name, email, message, subject, hcaptchaToken, clientData } =
-      req.body;
+    const { name, email, message, subject, clientData } = req.body;
+    const hcaptchaToken =
+      req.body.hcaptchaToken || req.body["g-recaptcha-response"];
 
     const emailResult = validateAndSanitizeEmail(email);
 
     if (
       !emailResult.valid ||
       !isReasonableLength(name, 100) ||
-      !isValidEmail(email) ||
       !isReasonableLength(subject, 150) ||
       !isReasonableLength(message, 2000)
     ) {
       const invalidData = captureSecurityData(req, {
         formData: { name, email, subject, message },
-        failureReason: "invalid_input",
+        failureReason: emailResult.message || "invalid_input",
         processingStep: "validation",
       });
 
       await logSecurityEvent(invalidData, "validation_failure");
-      return next(new HttpError("Invalid input", 400));
+      return next(new HttpError("Invalid input", 400, invalidData));
     }
     // Capture security data
     const securityData = captureSecurityData(req, {

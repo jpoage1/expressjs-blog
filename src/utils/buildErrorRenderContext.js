@@ -1,22 +1,27 @@
+const util = require("util");
 const { isProd } = require("./env");
 
-function buildErrorRenderContext({
-  req,
-  requestId,
-  timestamp,
-  code,
-  statusCode,
-  message,
-  stack,
-  errorContext,
-}) {
+function buildErrorRenderContext(context = {}) {
+  const {
+    requestId,
+    timestamp,
+    code,
+    statusCode,
+    message,
+    stack,
+    errorContext = {},
+  } = context;
+
+  const { req, ...newContext } = context;
+
   return {
     title: errorContext.title,
     message: isProd ? errorContext.message : message,
     content: isProd
       ? ""
-      : JSON.stringify(
+      : util.inspect(
           {
+            ...newContext,
             timestamp,
             requestId,
             method: req.method,
@@ -24,13 +29,12 @@ function buildErrorRenderContext({
             code,
             statusCode,
             headers: req.headers,
-            query: req.query,
+            query: Object.assign({}, req.query),
             body: req.body,
             ip: req.ip || req.connection?.remoteAddress,
             stack,
           },
-          null,
-          2
+          { depth: 4, colors: false }
         ),
   };
 }

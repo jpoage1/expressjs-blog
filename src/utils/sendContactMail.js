@@ -1,9 +1,12 @@
 const transporter = require("./transporter");
+const path = require("path");
+const fs = require("fs").promises;
 const { validateAndSanitizeEmail } = require("../utils/emailValidator");
 
 const MAIL_DOMAIN = process.env.MAIL_DOMAIN;
 const MAIL_USER = process.env.MAIL_USER;
 const DEFAULT_SUBJECT = "New Contact Form Submission";
+const EMAIL_LOG_PATH = path.join(__dirname, "../../data/emails.json");
 
 function sanitizeInput(input) {
   return String(input)
@@ -13,7 +16,7 @@ function sanitizeInput(input) {
 
 const HttpError = require("./HttpError");
 
-function sendContactMail({ name, email, subject, message }) {
+async function sendContactMail({ name, email, subject, message }) {
   const cleanName = sanitizeInput(name);
   const cleanSubject = sanitizeInput(subject || DEFAULT_SUBJECT);
   const cleanMessage = sanitizeInput(message);
@@ -33,6 +36,21 @@ function sendContactMail({ name, email, subject, message }) {
     subject: cleanSubject,
     text: cleanMessage,
   };
+  const emailLogEntry = {
+    timestamp: new Date().toISOString(),
+    name: cleanName,
+    email: sanitizedEmail,
+    subject: cleanSubject,
+    message: cleanMessage,
+  };
+  try {
+    const data = await fs.readFile(EMAIL_LOG_PATH, "utf-8");
+    const logs = JSON.parse(data);
+    logs.push(emailLogEntry);
+    await fs.writeFile(EMAIL_LOG_PATH, JSON.stringify(logs, null, 2));
+  } catch (err) {
+    console.error("Failed to log email to file:", err);
+  }
 
   return transporter.sendMail(mailData);
 }
