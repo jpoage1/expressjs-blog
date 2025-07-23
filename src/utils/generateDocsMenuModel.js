@@ -24,7 +24,7 @@ function generateDocsMenuModel(
       isActive: path === currentPath,
       modules: filteredModules.map(([modKey, modData]) => ({
         name: modKey,
-        displayName: formatModuleName(modKey),
+        displayName: modKey,
         isActive: path === currentPath && modKey === currentModule,
       })),
     };

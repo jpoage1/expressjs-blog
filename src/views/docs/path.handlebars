@@ -1,33 +1,32 @@
 <h1><a href="{{docsHome}}">Documentation:</a> {{pathName}}</h1>
-
-{{#if crossCuttingSummary}}
+{{#with (extractCrossCuttingSummary this) as |crossCuttingSummary|}}
 <section>
     <h2>Cross Cutting Summary</h2>
 
-    {{#if crossCuttingSummary.themes}}
-    {{#if crossCuttingSummary.themes.length}}
-    <h3>Themes</h3>
+    {{#each crossCuttingSummary}}
+    <h3>{{@key}}</h3>
+
+    {{#if (isArray this)}}
+    {{#if this.length}}
     <ul>
-        {{#each crossCuttingSummary.themes}}
+        {{#each this}}
         <li>{{this}}</li>
         {{/each}}
     </ul>
     {{/if}}
-    {{/if}}
-
-    {{#if crossCuttingSummary.systemRecommendations}}
-    {{#if crossCuttingSummary.systemRecommendations.length}}
-    <h3>System Recommendations</h3>
+    {{else if (isObject this)}}
     <ul>
-        {{#each crossCuttingSummary.systemRecommendations}}
-        <li>{{this}}</li>
+        {{#each this}}
+        <li>{{@key}}: {{this}}</li>
         {{/each}}
     </ul>
+    {{else}}
+    <p>{{this}}</p>
     {{/if}}
-    {{/if}}
-
+    {{/each}}
 </section>
-{{/if}}
+{{/with}}
+
 
 <h2>Modules</h2>
 <ul>
