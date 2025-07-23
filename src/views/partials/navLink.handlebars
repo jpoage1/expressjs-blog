@@ -1,0 +1,9 @@
+{{#if method}}
+<form action="{{href}}" method="{{method}}" class="inline">
+    <button type="submit" class="dropdown-link-button">{{label}}</button>
+</form>
+{{else}}
+<a href="{{href}}" {{#if target}}target="{{target}}" {{/if}} {{#if rel}}rel="{{rel}}" {{/if}}>
+    {{label}}
+</a>
+{{/if}}
