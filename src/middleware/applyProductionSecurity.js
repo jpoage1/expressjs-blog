@@ -31,6 +31,29 @@ const blockLocalhostAccess = (req, res, next) => {
   }
   next();
 };
+const crypto = require("crypto");
+
+function generateNonce() {
+  return crypto.randomBytes(16).toString("base64");
+}
+
+const securityPolicy = (req, res, next) => {
+  const nonce = generateNonce();
+  res.locals.nonce = nonce; // if templates need it
+
+  helmet.contentSecurityPolicy({
+    directives: {
+      ...CSP_DIRECTIVES,
+      defaultSrc: ["'self'", baseUrl],
+      scriptSrc: [
+        "'self'",
+        `'nonce-${nonce}'`,
+        "https://hcaptcha.com",
+        "https://cdn.jsdelivr.net",
+      ],
+    },
+  })(req, res, next);
+};
 
 const applyProductionSecurity = [
   disablePoweredBy,
@@ -39,9 +62,7 @@ const applyProductionSecurity = [
   // rateLimit middleware can be added here
   blockLocalhostAccess,
   helmet.hsts({ maxAge: HSTS_MAX_AGE }),
-  helmet.contentSecurityPolicy({
-    directives: { ...CSP_DIRECTIVES, defaultSrc: ["'self'", baseUrl] },
-  }),
+  securityPolicy,
 ];
 
 module.exports = applyProductionSecurity;
