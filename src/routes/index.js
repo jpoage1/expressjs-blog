@@ -69,7 +69,7 @@ router.use(sitemap);
 router.use(pages);
 router.use(rssFeed);
 router.use(tags);
-router.use("/presentation", presentation);
+router.use("/projects/website-presentation", presentation);
 router.use("/docs", docs);
 
 router.get("/blog/:year/:month/:name", post);
