@@ -8,6 +8,7 @@ const yaml = require("js-yaml");
 
 const glob = require("fast-glob");
 const { qualifySitemapLinks } = require("../utils/qualifyLinks");
+const { winstonLogger } = require("../utils/logging");
 
 const CONTENT_ROOT = path.resolve(__dirname, "../../content");
 const pattern = `${CONTENT_ROOT}/**/*.md`;
@@ -157,7 +158,7 @@ class SitemapService {
       }
 
       entries.push(parentEntry);
-      console.log(
+      winstonLogger.debug(
         `Added docs entry: ${parentEntry.loc} with ${parentEntry.children.length} children`
       );
     }
@@ -172,7 +173,7 @@ class SitemapService {
         );
 
         if (index !== -1) {
-          console.log(
+          winstonLogger.debug(
             `Found placeholder #inject:${key}, injecting ${items.length} items`
           );
           // Replace the placeholder with the actual items

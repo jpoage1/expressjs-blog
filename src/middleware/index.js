@@ -13,6 +13,7 @@ const baseContext = require("./baseContext");
 const hbs = require("./hbs");
 const authCheck = require("./authCheck");
 const { redirectMiddleware } = require("./redirect");
+const { winstonLogger } = require("../utils/logging");
 
 const {
   TRUST_PROXY,
@@ -42,54 +43,55 @@ function setupApp() {
     const isExcludedPath = EXCLUDED_PATHS.includes(req.path);
     const limit = isExcludedPath ? RAW_BODY_LIMIT_BYTES : DATA_LIMIT_BYTES;
 
-    console.log(`Processing ${req.method} ${req.path}`);
-    console.log(`Content-Type: ${req.get("content-type")}`);
-    console.log(`Is excluded path: ${isExcludedPath}, using limit: ${limit}`);
-
     const contentType = req.get("content-type") || "";
 
     if (contentType.includes("application/json")) {
       // Parse JSON with appropriate limit
       express.json({ limit })(req, res, (err) => {
         if (err) {
-          console.log("JSON parsing error:", err.message);
+          winstonLogger.error("JSON parsing error:", err.message);
           return next(err);
         }
-        console.log("Parsed JSON body:", req.body);
+        winstonLogger.debug("Parsed JSON body:", req.body);
         next();
       });
     } else if (contentType.includes("application/x-www-form-urlencoded")) {
       // Parse form data with appropriate limit
       express.urlencoded({ extended: false, limit })(req, res, (err) => {
         if (err) {
-          console.log("Form parsing error:", err.message);
+          winstonLogger.error("Form parsing error:", err.message);
           return next(err);
         }
-        console.log("Parsed form body:", req.body);
+        winstonLogger.debug("Parsed form body:", req.body);
         next();
       });
     } else if (contentType.includes("multipart/form-data")) {
       // For multipart, we'd need multer or similar, but pass through for now
-      console.log("Multipart form detected - may need additional handling");
+      winstonLogger.debug(
+        "Multipart form detected - may need additional handling"
+      );
       next();
     } else {
       // Try form parsing first (most common for HTML forms), then JSON
       express.urlencoded({ extended: false, limit })(req, res, (formErr) => {
         if (formErr) {
-          console.log("Form parsing failed, trying JSON:", formErr.message);
+          winstonLogger.warn(
+            "Form parsing failed, trying JSON:",
+            formErr.message
+          );
           express.json({ limit })(req, res, (jsonErr) => {
             if (jsonErr) {
-              console.log("Both parsers failed:", {
+              winstonLogger.error("Both parsers failed:", {
                 formErr: formErr.message,
                 jsonErr: jsonErr.message,
               });
               return next(jsonErr);
             }
-            console.log("Parsed JSON body (fallback):", req.body);
+            winstonLogger.warn("Parsed JSON body (fallback):", req.body);
             next();
           });
         } else {
-          console.log("Parsed form body (default):", req.body);
+          winstonLogger.debug("Parsed form body (default):", req.body);
           next();
         }
       });

@@ -50,6 +50,7 @@ async function sendContactMail({ name, email, subject, message }) {
     await fs.writeFile(EMAIL_LOG_PATH, JSON.stringify(logs, null, 2));
   } catch (err) {
     console.error("Failed to log email to file:", err);
+    throw err;
   }
 
   return transporter.sendMail(mailData);
