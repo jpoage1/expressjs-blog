@@ -310,7 +310,9 @@ while read -r oldrev newrev ref; do
   echo "--- Processing push for branch: $branch (from $oldrev to $newrev) ---"
   if run_postreceive_tests "$branch" "$tmpdir"; then
     echo "Tests passed for $branch. Proceeding with deployment."
-    deploy_expressjs_blog "$branch" "$tmpdir"
+    deploy_expressjs_blog "$branch" "$tmpdir" "$oldrev" "$newrev"
+
+    # deploy_expressjs_blog "$branch" "$tmpdir"
     echo "Deployment of $branch complete."
   else
     echo "Post-receive tests failed for $branch. Deployment aborted."
