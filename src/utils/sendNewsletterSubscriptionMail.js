@@ -1,4 +1,5 @@
 const transporter = require("./transporter");
+const { winstonLogger } = require("./logging");
 
 const MAIL_DOMAIN = process.env.MAIL_DOMAIN;
 const MAIL_NEWSLETTER = process.env.MAIL_NEWSLETTER;
@@ -19,7 +20,7 @@ async function sendNewsletterSubscriptionMail({ email }) {
   try {
     return await transporter.sendMail(mailData);
   } catch (error) {
-    console.error(error);
+    winstonLogger.error(error);
   }
 }
 

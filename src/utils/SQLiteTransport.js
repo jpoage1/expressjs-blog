@@ -1,6 +1,7 @@
 const Transport = require("winston-transport");
 const Database = require("better-sqlite3");
 const path = require("path");
+const { winstonLogger } = require("./logging");
 
 class SQLiteTransport extends Transport {
   constructor(opts) {
@@ -106,7 +107,7 @@ class SQLiteTransport extends Transport {
     try {
       insertLogTxn();
     } catch (error) {
-      console.error("SQLite logging error:", error);
+      winstonLogger.error("SQLite logging error:", error);
     }
 
     callback();

@@ -53,7 +53,7 @@ class DiskSpaceMonitor {
         usedGB: usedBytes / 1024 ** 3,
       };
     } catch (error) {
-      console.error("Error getting disk space:", error);
+      winstonLogger.error("Error getting disk space:", error);
       return null;
     }
   }
@@ -76,7 +76,7 @@ class DiskSpaceMonitor {
           }
         }
       } catch (error) {
-        console.error(`Error calculating size for ${currentDir}:`, error);
+        winstonLogger.error(`Error calculating size for ${currentDir}:`, error);
       }
     };
 

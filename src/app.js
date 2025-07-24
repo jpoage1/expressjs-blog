@@ -8,7 +8,6 @@ const { winstonLogger } = require("./utils/logging");
 const { startTokenCleanup } = require("./utils/tokenCleanup");
 
 const SERVER_PORT = process.env.TEST_PORT || process.env.SERVER_PORT || 3400;
-const CWD_LOG = `CWD: ${process.cwd()}`;
 const SERVER_LISTEN_LOG = (port) =>
   `Server listening on http://localhost:${port}`;
 const NODE_ENV_LOG = `NODE_ENV: ${process.env.NODE_ENV}`;
