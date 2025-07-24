@@ -216,12 +216,25 @@ const winstonLogger = createLogger({
           let stack = meta.stack || "";
           if (stack) delete meta.stack;
 
-          let metaString = "";
-          if (Object.keys(meta).length > 0) {
-            metaString = JSON.stringify(meta, null, 2);
+          // Safely stringify message
+          let outputMsg;
+          if (typeof message === "string") {
+            outputMsg = message;
+          } else {
+            try {
+              outputMsg = JSON.stringify(message, null, 2);
+            } catch {
+              outputMsg = util.inspect(message, { depth: null, colors: false });
+            }
           }
 
-          return `[${timestamp}] [${level}] ${message}\n${stack}\n${metaString}`;
+          // Handle meta
+          let metaString = "";
+          if (Object.keys(meta).length > 0) {
+            metaString = util.inspect(meta, { depth: null, colors: false });
+          }
+
+          return `[${timestamp}] [${level}] ${outputMsg}\n${stack}\n${metaString}`;
         })
       ),
     }),

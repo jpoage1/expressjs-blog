@@ -1,8 +1,6 @@
 const { winstonLogger } = require("./logging");
 
 module.exports = (level) => (req, res, next) => {
-  const start = process.hrtime();
-
   res.on("finish", () => {
     const { method, url, headers, query, body, ip, connection } = req;
     const { statusCode } = res;
