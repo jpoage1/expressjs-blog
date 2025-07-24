@@ -61,6 +61,26 @@ router.use(
     },
   })
 );
+
+router.use(
+  "/media",
+  express.static("content/images", {
+    dotfiles: "deny",
+    index: false,
+    extensions: false,
+    fallthrough: false,
+    setHeaders: (res) => {
+      if (process.env.NODE_ENV == "production") {
+        // Cache for 1 day, allow revalidation
+        res.set("Cache-Control", "public, max-age=86400, must-revalidate");
+      } else {
+        // Minimal caching for dev
+        res.set("Cache-Control", "public, max-age=30, must-revalidate");
+      }
+    },
+  })
+);
+
 router.use("/favicons", express.static(faviconsPath));
 router.use(favicon(faviconFile));
 

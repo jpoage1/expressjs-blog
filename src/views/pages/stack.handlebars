@@ -7,10 +7,11 @@
     {{#each tech}}
     <article class="stack-item">
         <a href="{{url}}" target="_blank" rel="noopener noreferrer">
-            <picture>
-                <source srcset="{{svg}}" type="image/svg+xml">
-                <img src="{{png}}" alt="{{name}} logo" width="300" height="200">
-            </picture>
+            {{#if svg}}
+            <img src="{{svg}}" alt="{{name}} logo" width="300" height="200">
+            {{else if png}}
+            <img src="{{png}}" alt="{{name}} logo" width="300" height="200">
+            {{/if}}
         </a>
         <h2>{{name}}</h2>
         <p>{{description}}</p>
