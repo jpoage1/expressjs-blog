@@ -1,183 +1,44 @@
-#!/bin/bash
-set -euo pipefail # -e: exit on error, -u: exit on unset var, -o pipefail: catch errors in pipes
+#!/bin/sh
+# Push content subrepo before pushing main repo
+remote="$1"
+#export GIT_TRACE=1
+#export GIT_TRACE_PACKET=1
+#export GIT_TRACE_PERFORMANCE=1
+#export GIT_SSH_COMMAND="ssh -vvv"
 
-TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+set -euo pipefail
+set -x
 
-get_deploy_env_file() {
-  branch="$1"
-  echo "/srv/jasonpoage.com/${branch}.env"
-}
+node src/app.js >/dev/null 2>&1 &
+  APP_PID=$!
 
-get_log_file_path() {
-  echo "/srv/jasonpoage.com/logs/pre-receive-${TIMESTAMP}.log"
-}
+sleep 2
 
-copy_env_file() {
-  local branch="$1"
-  local env_file
-  env_file="$(get_deploy_env_file "$branch")"
-  source "$env_file"
-  # Copy the .env file for the test environment
-  cp "$env_file" "$tmpdir/.env" || {
-    echo "Error: Failed to copy .env file for test environment."
-    return 1
-  }
-}
+npm run test:prepush
+TEST_RESULT=$?
 
-clone_branch() {
-  local branch="$1"
-  local newrev="$2"
-  local tmpdir="$3"
-  # Clone the new revision for testing
-  git clone "$GIT_DIR" "$tmpdir" || {
-    echo "Error: Failed to clone repository for tests to $tmpdir"
-    return 1
-  }
-  cd "$tmpdir"
-  git checkout "$newrev" || {
-    echo "Error: Failed to checkout revision $newrev"
-    return 1
-  }
-}
-
-# Function to wait for a service to become available
-_wait_for_service() {
-  local url="$1"
-  local timeout=30 # seconds
-  local start_time
-  start_time=$(date +%s)
-  echo "Waiting for service at $url to become available (timeout: ${timeout}s)..."
-  while :; do
-    if curl --silent --fail "$url" >/dev/null; then
-      echo "Service at $url is up!"
-      return 0
-    fi
-    current_time=$(date +%s)
-    if ((current_time - start_time >= timeout)); then
-      echo "Error: Service at $url did not become available within ${timeout}s."
-      return 1
-    fi
+  # Clean up the app process
+  if kill -0 $APP_PID 2>/dev/null; then
+    echo "Stopping app (PID: $APP_PID)..."
+    kill $APP_PID
+    # Give it time to shut down gracefully
     sleep 1
-  done
-}
-
-run_prereceive_tests() {
-  local branch="$1"
-  local newrev="$2"
-  local tmpdir pidfile logfile
-  tmpdir="$3"
-  pidfile="$tmpdir/test.pid"
-  logfile=$(get_log_file_path)
-  
-  # Trap to ensure cleanup even if script exits unexpectedly
-  trap "kill \"$(cat "$pidfile" 2>/dev/null)\" 2>/dev/null || true; rm -f \"$pidfile\"" EXIT
-
-  echo "Running pre-receive tests for branch '$branch' (revision $newrev) in temporary environment."
-
-  clone_branch "$branch" "$newrev" "$tmpdir" || return 1
-
-  cd "$tmpdir" || {
-    echo "Error: Could not change directory to $tmpdir"
-    return 1
-  }
-
-  copy_env_file "$branch" || return 1
-
-  initialize_submodules "$tmpdir" || return 1
-
-  echo "Running build scripts..."
-  yarn
-  combine_css || return 1
-
-  echo "Starting application for tests..."
-  # Stop any existing test service to avoid conflicts
-  systemctl --user stop express-blog@"$branch".service 2>/dev/null || true
-  nohup node src/app.js >>"$logfile" 2>&1 &
-  echo $! >"$pidfile"
-
-  wait_for_service "$logfile"
-
-  echo "Running tests..."
-  run_tests "$branch" "$pidfile" "$logfile" || return 1
-
-  kill "$(cat "$pidfile")" 2>/dev/null || true
-
-  echo "Pre-receive tests passed for branch '$branch' (revision $newrev)."
-  return 0
-}
-initialize_submodules() {
-  local worktree="$1"
-
-  echo "Manually extracting submodules from quarantined tree..."
-
-  git --git-dir="$GIT_DIR" ls-tree -r "$newrev" |
-    awk '$2 == "commit" {print $3, $4}' |
-    while read -r sub_sha sub_path; do
-      submodule_path="$worktree/$sub_path"
-      mkdir -p "$submodule_path"
-
-      # Use the submodule object hash from superproject tree
-      git --git-dir="$GIT_DIR" archive "$sub_sha" | tar -x -C "$submodule_path" || {
-        echo "Error: Failed to extract submodule $sub_path at $sub_sha"
-        return 1
-      }
-    done
-}
-
-wait_for_service() {
-  local logfile="$1"
-  # Wait for the application to become responsive
-  if ! _wait_for_service "$SERVER_SCHEMA://$SERVER_DOMAIN"; then
-    echo "Application did not start or respond for tests. Check logs in $logfile:"
-    cat "$logfile" # Display logs on failure
-    return 1
+    # Force kill if still running
+    if kill -0 $APP_PID 2>/dev/null; then
+      kill -9 $APP_PID 2>/dev/null || true
+    fi
   fi
-}
-
-run_tests() {
-  branch="$1"
-  pidfile="$2"
-  logfile="$3"
-  echo "Running npm tests..."
-  if ! npm run test:postreceive; then
-    kill "$(cat "$pidfile")" 2>/dev/null || true
-    echo "Tests failed for branch '$branch'. Application logs from $logfile:"
-    cat "$logfile"
-    return 1
-  fi
-}
-
-combine_css() {
-  yarn --production=false combine:css || {
-    echo "Error: yarn combine:css failed."
-    return 1
-  }
-}
-
-# Pre-receive hook: Test incoming changes before accepting them
-while read -r oldrev newrev ref; do
-  tmpdir=$(mktemp -d)
-  branch="${ref#refs/heads/}"
   
-  echo "--- Pre-receive validation for branch: $branch (from $oldrev to $newrev) ---"
+  # Wait for process to fully terminate
+  wait $APP_PID 2>/dev/null || true
   
-  # Only test branches we care about
-  case "$branch" in
-    "testing"|"staging"|"main")
-      if run_prereceive_tests "$branch" "$newrev" "$tmpdir"; then
-        echo "Pre-receive tests passed for $branch. Push will be accepted."
-        rm -rf "$tmpdir"
-      else
-        echo "Pre-receive tests failed for $branch. Push rejected."
-        rm -rf "$tmpdir"
-        exit 1
-      fi
-      ;;
-    *)
-      echo "Branch '$branch' not configured for testing. Push accepted."
-      rm -rf "$tmpdir"
-      ;;
-  esac
-done
 
-echo "All pre-receive checks passed. Push accepted."
+if [ $TEST_RESULT -ne 0 ]; then
+  echo "Tests failed. Push aborted."
+  exit 1
+fi
+
+cd content
+git push "$remote" main
+cd ..
+set +x

@@ -1,0 +1,31 @@
+#!/bin/bash
+set -e
+
+verify_main_not_ahead() {
+  local new_main_rev="$1"
+  local testing_rev
+  testing_rev=$(git rev-parse refs/heads/testing)
+
+  # Allow if main and testing are the same commit
+  if [[ "$new_main_rev" == "$testing_rev" ]]; then
+    return 0
+  fi
+
+  # Reject if main would be ahead of testing
+  # (i.e., if testing is an ancestor of the new main commit)
+  if git merge-base --is-ancestor "$testing_rev" "$new_main_rev"; then
+    echo "ERROR: 'main' would be ahead of 'testing'."
+    echo "All changes must be tested before merging to 'main'."
+    echo "Push to 'testing' first and verify before pushing to 'main'."
+    exit 1
+  fi
+}
+run_hook() {
+  while read -r oldrev newrev refname; do
+    branch="${refname#refs/heads/}"
+    if [[ "$branch" == "main" ]]; then
+      verify_main_not_ahead "$newrev"
+    fi
+  done
+}
+#run_hook()
