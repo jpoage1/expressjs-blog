@@ -3,25 +3,21 @@ require("dotenv").config();
 
 const net = require("net");
 const setupMiddleware = require("./middleware");
-const { winstonLogger } = require("./utils/logging");
+const {
+  winstonLogger,
+  handleUncaughtException,
+  handleUnhandledRejection,
+} = require("./utils/logging");
 
 const { startTokenCleanup } = require("./utils/tokenCleanup");
+const { cleanupOldSessions } = require("./utils/logManager");
 
 const SERVER_PORT = process.env.TEST_PORT || process.env.SERVER_PORT || 3400;
 const SERVER_LISTEN_LOG = (port) =>
   `Server listening on http://localhost:${port}`;
 const NODE_ENV_LOG = `NODE_ENV: ${process.env.NODE_ENV}`;
-const UNCUGHT_EXCEPTION_MSG = "Uncaught Exception:";
-const UNHANDLED_REJECTION_MSG = "Unhandled Rejection:";
 
-function handleUncaughtException(err) {
-  winstonLogger.error(UNCUGHT_EXCEPTION_MSG, err.stack || err);
-}
-
-function handleUnhandledRejection(reason) {
-  winstonLogger.error(UNHANDLED_REJECTION_MSG, reason?.stack || reason);
-}
-
+cleanupOldSessions();
 startTokenCleanup();
 
 const app = setupMiddleware();

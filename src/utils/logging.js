@@ -18,6 +18,8 @@ const customLevels = {
     debug: "blue",
   },
 };
+const UNCUGHT_EXCEPTION_MSG = "Uncaught Exception:";
+const UNHANDLED_REJECTION_MSG = "Unhandled Rejection:";
 
 const fs = require("fs");
 const path = require("path");
@@ -242,26 +244,13 @@ const winstonLogger = createLogger({
   ],
 });
 
-// Clean up old session directories (optional)
-function cleanupOldSessions() {
-  const sessionsDir = path.join(logDir, "sessions");
-  if (fs.existsSync(sessionsDir)) {
-    const sessions = fs.readdirSync(sessionsDir);
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - 30); // Keep 30 days of sessions
-
-    sessions.forEach((sessionFolder) => {
-      const sessionPath = path.join(sessionsDir, sessionFolder);
-      const stats = fs.statSync(sessionPath);
-      if (stats.isDirectory() && stats.mtime < cutoffDate) {
-        fs.rmSync(sessionPath, { recursive: true, force: true });
-      }
-    });
-  }
+function handleUncaughtException(err) {
+  winstonLogger.error(UNCUGHT_EXCEPTION_MSG, err.stack || err);
 }
 
-// Run cleanup on startup
-cleanupOldSessions();
+function handleUnhandledRejection(reason) {
+  winstonLogger.error(UNHANDLED_REJECTION_MSG, reason?.stack || reason);
+}
 
 if (
   process.env.NODE_ENV !== "production" &&
@@ -273,4 +262,6 @@ if (
 module.exports = {
   manualLogger,
   winstonLogger,
+  handleUncaughtException,
+  handleUnhandledRejection,
 };
