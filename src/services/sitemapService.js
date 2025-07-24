@@ -11,6 +11,8 @@ const { qualifySitemapLinks } = require("../utils/qualifyLinks");
 const { winstonLogger } = require("../utils/logging");
 
 const CONTENT_ROOT = path.resolve(__dirname, "../../content");
+const NAVLINKS_PATH = path.resolve(__dirname, "../../content/navLinks.json");
+
 const pattern = `${CONTENT_ROOT}/**/*.md`;
 
 function slugifyTag(tag) {
@@ -165,6 +167,77 @@ class SitemapService {
 
     return entries;
   }
+  async getNavLinksPages(existingUrls = null) {
+    try {
+      const raw = await fs.readFile(NAVLINKS_PATH, "utf8");
+      const navLinks = JSON.parse(raw);
+
+      // If existingUrls not provided, get them (fallback for backward compatibility)
+      let existingSet;
+      if (existingUrls) {
+        existingSet = new Set(
+          existingUrls.map((url) => url.replace(/^https?:\/\/[^\/]+/, ""))
+        );
+      } else {
+        const existing = await this.getAllUrls({ excludeNavLinks: true });
+        existingSet = new Set(
+          existing.map((e) => e.loc.replace(/^https?:\/\/[^\/]+/, ""))
+        );
+      }
+
+      const transform = (items) => {
+        const result = [];
+
+        for (const item of items) {
+          // Skip external links (not starting with "/")
+          const isInternal = item.href && item.href.startsWith("/");
+          const isMissing = isInternal && !existingSet.has(item.href);
+
+          const node = {};
+
+          // If this item has a missing internal href, add it as a leaf
+          if (isMissing) {
+            node.loc = item.href;
+            node.title = item.label || "";
+            node.changefreq = "monthly";
+            node.priority = 0.6;
+            node.id = hash(item.href);
+          }
+
+          // Process submenu if it exists
+          if (item.submenu && Array.isArray(item.submenu)) {
+            const children = transform(item.submenu);
+            if (children.length > 0) {
+              // If we have children, we need to include this node in the hierarchy
+              if (!node.loc) {
+                // This is a parent node with no direct URL but has children
+                node.label = item.label || "";
+              }
+              node.children = children;
+            }
+          }
+
+          // Only include nodes that either have a loc (missing page) or have children
+          if (node.loc || (node.children && node.children.length > 0)) {
+            result.push(node);
+          }
+        }
+
+        return result;
+      };
+
+      const extraPages = transform(navLinks);
+
+      winstonLogger.debug(
+        `Generated ${extraPages.length} extra nav link entries`
+      );
+      return extraPages;
+    } catch (err) {
+      winstonLogger.warn("Failed to read navLinks.json:", err);
+      return [];
+    }
+  }
+
   injectPlaceholder(tree, key, items) {
     for (const node of tree) {
       if (Array.isArray(node.children)) {
@@ -198,8 +271,7 @@ class SitemapService {
       return [];
     }
   }
-
-  async getCompleteSitemap() {
+  async getCompleteSitemap({ excludeNavLinks = false } = {}) {
     const [staticPagesJsonTree, staticPages, blogPosts, tags] =
       await Promise.all([
         this._loadStaticLayout(),
@@ -217,6 +289,7 @@ class SitemapService {
       priority: page.priority,
       tags: page.tags,
     }));
+
     const postItems = blogPosts.map((post) => ({
       id: post.id,
       loc: post.loc,
@@ -226,24 +299,39 @@ class SitemapService {
       priority: post.priority,
       tags: post.tags,
     }));
+
     const tagItems = tags.map((tag) => ({
       title: tag.name,
       loc: tag.loc,
       slug: tag.slug,
       count: tag.count,
     }));
+
     const docsEntries = await this.getDocsEntries();
 
+    // Inject all the main content first
     this.injectPlaceholder(staticPagesJsonTree, "pages", pageItems);
     this.injectPlaceholder(staticPagesJsonTree, "blog-posts", postItems);
     this.injectPlaceholder(staticPagesJsonTree, "tags", tagItems);
     this.injectPlaceholder(staticPagesJsonTree, "docs", docsEntries);
 
+    // Now get all existing URLs from the current state
+    let extraNavPages = [];
+    if (!excludeNavLinks) {
+      const currentUrls = this.flatten(staticPagesJsonTree).map(
+        (item) => item.loc
+      );
+      extraNavPages = await this.getNavLinksPages(currentUrls);
+    }
+
+    // Inject the extra nav pages last
+    this.injectPlaceholder(staticPagesJsonTree, "extra-pages", extraNavPages);
+
     return qualifySitemapLinks(staticPagesJsonTree);
   }
 
-  async getAllUrls() {
-    const sitemap = await this.getCompleteSitemap();
+  async getAllUrls({ excludeNavLinks = false } = {}) {
+    const sitemap = await this.getCompleteSitemap({ excludeNavLinks });
     return this.flatten(sitemap);
   }
 

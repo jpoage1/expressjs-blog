@@ -1,4 +1,3 @@
-/* Enhanced TOC Styles */
 .toc {
   background: #f8f9fa;
   border: 1px solid #e9ecef;
@@ -26,7 +25,7 @@
   overflow-y: auto;
 }
 
-/* Custom Scrollbar - Subtle and Non-intrusive */
+/* Scrollbar */
 .toc::-webkit-scrollbar {
   width: 6px;
 }

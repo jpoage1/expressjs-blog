@@ -126,14 +126,6 @@ input.honeypot {
   pointer-events: none !important;
 }
 
-/* 
-.char-counter {
-  text-align: right;
-  font-size: 0.9em;
-  color: #666;
-  margin-top: 5px;
-} */
-
 .char-counter {
   text-align: right;
   font-size: 0.9em;
