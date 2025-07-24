@@ -4,6 +4,8 @@ const Database = require("better-sqlite3");
 const path = require("path");
 const fs = require("fs");
 
+const { winstonLogger } = require("../../utils/logging");
+
 const allowedLevels = ["warn", "error", "info", "debug", "functions", "notice"];
 
 const logsDbPath = path.resolve(__dirname, "../../../data/logs.sqlite3");
@@ -122,13 +124,13 @@ router.post("/logs", (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Query error:", error);
+    winstonLogger.error("Query error:", error);
     res.status(500).json({ error: "Failed to query logs" });
   }
 });
 router.post("/logs/analytics", (req, res) => {
-  const event = req.query.event || "*";
-  const date = req.query.date || "*";
+  // const event = req.query.event || "*";
+  // const date = req.query.date || "*";
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 50;
   const offset = (page - 1) * limit;
@@ -160,7 +162,7 @@ router.post("/logs/analytics", (req, res) => {
 
     analyticsDb.get(countQuery, params, (err, totalResult) => {
       if (err) {
-        console.error("Count query error:", err);
+        winstonLogger.error("Count query error:", err);
         return res.status(500).json({ error: "Failed to query logs" });
       }
 
@@ -190,7 +192,7 @@ router.post("/logs/analytics", (req, res) => {
 
       analyticsDb.all(logsQuery, queryParams, (err, logs) => {
         if (err) {
-          console.error("Logs query error:", err);
+          winstonLogger.error("Logs query error:", err);
           return res.status(500).json({ error: "Failed to query logs" });
         }
 
@@ -209,7 +211,7 @@ router.post("/logs/analytics", (req, res) => {
       });
     });
   } catch (error) {
-    console.error("Query error:", error);
+    winstonLogger.error("Query error:", error);
     res.status(500).json({ error: "Failed to query logs" });
   }
 });
