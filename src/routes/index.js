@@ -23,6 +23,7 @@ const HttpError = require("../utils/HttpError");
 
 const securedMiddleware = require("../middleware/secured");
 const securedRoutes = require("./secured");
+const stack = require("./stack");
 
 const favicon = require("serve-favicon");
 const faviconsPath = path.join(__dirname, "..", "..", "public", "favicons");
@@ -37,10 +38,11 @@ router.use("/admin", securedMiddleware, securedRoutes);
 router.get("/error", errorPage); // Landing page after error is logged
 
 router.use(admin);
+router.use(stack);
 
 router.post("/track", analytics);
 router.post("/analytics", analytics);
-const stable = false;
+
 router.use(
   "/static",
   express.static("public", {

@@ -1,0 +1,19 @@
+{{#section "styles"}}
+<link rel="stylesheet" href="/static/css/stack.css">
+{{/section}}
+
+<h1>Technology Stack</h1>
+<section class="stack-grid">
+    {{#each tech}}
+    <article class="stack-item">
+        <a href="{{url}}" target="_blank" rel="noopener noreferrer">
+            <picture>
+                <source srcset="{{svg}}" type="image/svg+xml">
+                <img src="{{png}}" alt="{{name}} logo">
+            </picture>
+        </a>
+        <h2>{{name}}</h2>
+        <p>{{description}}</p>
+    </article>
+    {{/each}}
+</section>

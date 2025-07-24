@@ -1,0 +1,30 @@
+.stack-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.stack-item {
+  width: 150px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.stack-item img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto 0.5rem;
+}
+
+.stack-item h3 {
+  margin: 0.5rem 0 0.2rem;
+  font-size: 1rem;
+}
+
+.stack-item p {
+  font-size: 0.8rem;
+  color: #555;
+}
