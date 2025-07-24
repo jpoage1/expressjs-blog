@@ -24,23 +24,6 @@
     background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
     border-radius: 12px 12px 0 0;
 }
-/* 
-.page-content h1 {
-    font-size: 3.2rem;
-    color: #1a202c; 
-    margin-bottom: 1rem;
-    line-height: 1.2;
-    text-align: center;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    padding-bottom: 1.5rem;
-    border-bottom: 3px solid #e2e8f0;
-    margin-bottom: 2.5rem;
-} */
 
 /* --- Section Headings (h1) --- */
 .page-content h1 {
@@ -92,7 +75,7 @@
     margin-bottom: 2rem;
 }
 
-/* Apply box styling ONLY to direct children LI of ul (top-level list items) */
+/* Apply box styling ONLY to direct children LI of ul */
 .page-content ul > li {
     margin-bottom: 1.5rem;
     padding: 1.5rem 1.5rem 1.5rem 3rem; /* Spacing inside the box */
@@ -125,13 +108,13 @@
 }
 
 /* --- Nested List Styling --- */
-/* Targets any ul that is inside another ul (e.g., the System Concepts list) */
+/* Targets any ul that is inside another ul */
 .page-content ul ul {
     list-style: disc; /* Use default disc bullets for nested lists */
     margin-top: 1rem; /* Space above the nested list */
     margin-bottom: 0.5rem;
     margin-left: 2rem; /* Indent the nested list */
-    padding-left: 0; /* Keep custom bullet formatting easier if you change list-style */
+    padding-left: 0;
 }
 
 /* Styles for items within nested lists */
@@ -144,7 +127,7 @@
     font-size: 1rem; /* Slightly smaller font for nested items */
     color: #2d3748; /* Adjust color for nested items */
     line-height: 1.5; /* Adjust line height for nested items */
-    position: static; /* Remove absolute positioning if not needed for custom bullets */
+    position: static;
 }
 
 /* Remove ::before for nested list items if default bullets are used */
@@ -153,7 +136,7 @@
 }
 
 
-/* --- Horizontal Rule (Separator) --- */
+/* --- Horizontal Rule --- */
 .page-content hr {
     border: none;
     height: 1px;
@@ -175,7 +158,7 @@
     font-size: 1.2rem;
 }
 
-/* --- Strong (Bold) Text --- */
+/* --- Strong Text --- */
 .page-content strong {
     font-weight: 700;
     color: #4a5568; /* Ensures bold text is readable and consistent */
@@ -210,10 +193,6 @@
     width: 100%;
 }
 
-/* --- Social Media Links Special Styling (Buttons) --- */
-/* This rule needs to be applied carefully. It's currently styling ALL <a> tags
-   inside ul li, which might include links within your tool descriptions.
-   If these are only for specific social media links, consider a more specific class. */
 .page-content ul li a {
     display: inline-flex;
     align-items: center;
@@ -245,11 +224,7 @@
         margin: 0 1rem;
         border-radius: 8px;
     }
-/*     
-    .page-content h1 {
-        font-size: 2.5rem;
-    } */
-    
+
     .page-content h1 {
         font-size: 1.6rem;
         margin-top: 2.5rem;
@@ -262,12 +237,6 @@
         margin: 0 0.5rem;
         border-radius: 6px;
     }
-/*     
-    .page-content h1 {
-        font-size: 2rem;
-        padding-bottom: 1rem;
-        margin-bottom: 1.5rem;
-    } */
     
     .page-content h1 {
         font-size: 1.4rem;
@@ -306,16 +275,12 @@
     .page-content {
         padding: 1rem 0.8rem;
     }
-/*     
-    .page-content h1 {
-        font-size: 1.8rem;
-    } */
     
     .page-content h1 {
         font-size: 1.3rem;
     }
     
-    .page-content ul li a { /* This special link styling might need a class */
+    .page-content ul li a {
         display: block;
         margin-bottom: 0.5rem;
         text-align: center;

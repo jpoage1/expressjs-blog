@@ -1,5 +1,3 @@
-
-/* Sidebar styling to match existing aesthetic */
 .layout .sidebar {
   width: 250px;
   background-color: #f8f9fa;
@@ -18,12 +16,12 @@
   margin: 0;
 }
 
-/* Documentation path items - like year blocks */
+/* Documentation path items */
 .layout .docs-path-item {
   margin-bottom: 1.5rem;
 }
 
-/* Path labels - styled like menu-year */
+/* Path labels */
 .layout .docs-path-label {
   font-weight: 700;
   font-size: 1.2rem;

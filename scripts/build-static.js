@@ -5,7 +5,7 @@ const matter = require("gray-matter");
 const { marked } = require("marked");
 const handlebars = require("handlebars");
 
-const postsDir = path.join(__dirname, "posts");
+const postsDir = path.join(__dirname, "static", "posts");
 const outputDir = path.join(__dirname, "static");
 
 // Load and compile templates
