@@ -1,6 +1,5 @@
 // src/middleware/errorHandler
 const crypto = require("crypto");
-const getBaseContext = require("../utils/baseContext");
 const { getErrorContext } = require("../utils/errorContext");
 const { buildErrorRenderContext } = require("../utils/buildErrorRenderContext");
 const { isDev } = require("../utils/env");
@@ -74,7 +73,10 @@ module.exports = async (err, req, res, next) => {
     metadata: err.metadata,
   });
 
-  const errorPageContext = await getBaseContext(req?.isAuthenticated, context);
+  const errorPageContext = await req.getBaseContext(
+    req?.isAuthenticated,
+    context
+  );
   res.status(errorContext.statusCode);
   res.renderGenericMessage(errorPageContext);
 };

@@ -9,7 +9,7 @@ const logEvent = require("./analytics.js");
 const { applyProductionSecurity } = require("./applyProductionSecurity");
 const validateRequestIntegrity = require("./validateRequestIntegrity");
 const errorHandler = require("./errorHandler");
-const baseContext = require("./baseContext");
+const { attachBaseContextGetter, buildBaseContext } = require("./baseContext");
 const hbs = require("./hbs");
 const authCheck = require("./authCheck");
 const { redirectMiddleware } = require("./redirect");
@@ -106,7 +106,7 @@ function setupApp() {
   app.use(authCheck);
 
   // Setup handlebars
-  app.use(baseContext);
+  app.use(attachBaseContextGetter, buildBaseContext);
 
   // Setup production environment
   if (
