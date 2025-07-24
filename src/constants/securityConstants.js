@@ -29,8 +29,6 @@ module.exports = {
       "data:",
       "https://licensebuttons.net",
       "https://cdn.jsdelivr.net",
-      "https://licensebuttons.net",
-      "https://cdn.jsdelivr.net",
     ],
     frameSrc: ["'self'", "https://newassets.hcaptcha.com"],
     objectSrc: ["'none'"],

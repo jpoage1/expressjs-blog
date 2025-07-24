@@ -1,7 +1,7 @@
 {{!-- pages/contact.handlebars --}}
 
 {{#section "styles"}}
-<link rel="stylesheet" href="{{baseUrl}}/static/css/contact.css" />
+<link rel="stylesheet" href="{{baseUrl}}/static/css/contact.css">
 {{/section}}
 
 {{#section "scripts"}}
@@ -12,21 +12,21 @@
 <section>
   <h1>{{title}}</h1>
   <form action="{{formAction}}" method="{{formMethod}}" id="contactForm">
-    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
     {{!-- Honeypot field for bot detection --}}
-    <input type="text" name="website" class="honeypot" tabindex="-1" autocomplete="off" />
+    <input type="text" name="website" class="honeypot" tabindex="-1" autocomplete="off">
     <div class="form-group">
       <label class="required" for="name">Name</label>
-      <input id="name" name="name" placeholder="Your name" required autocomplete="name" />
+      <input id="name" name="name" placeholder="Your name" required autocomplete="name">
     </div>
     <div class="form-group">
       <label class="required" for="email">Email</label>
       <input id="email" name="email" type="email" placeholder="me@example.com" required
-        pattern="[a-zA-Z0-9-_\.]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*" autocomplete="email" />
+        pattern="[a-zA-Z0-9-_\.]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*" autocomplete="email">
     </div>
     <div class="form-group">
       <label class="required" for="subject">Subject</label>
-      <input id="subject" name="subject" placeholder="e.g. Collaboration Request, Bug Report, Feedback" required />
+      <input id="subject" name="subject" placeholder="e.g. Collaboration Request, Bug Report, Feedback" required>
     </div>
     <div class="form-group message-group">
       <label class="required" for="message">Message</label>
