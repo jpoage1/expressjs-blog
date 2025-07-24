@@ -18,6 +18,9 @@ const customLevels = {
     debug: "blue",
   },
 };
+const LOG_LEVEL = process.env.LOG_LEVEL?.toLowerCase() || "info";
+const LOG_LEVELS = customLevels.levels;
+
 const UNCUGHT_EXCEPTION_MSG = "Uncaught Exception:";
 const UNHANDLED_REJECTION_MSG = "Unhandled Rejection:";
 
@@ -65,6 +68,10 @@ if (!fs.existsSync(functionsLogDir)) {
 }
 
 const originalConsole = { ...console };
+
+function shouldLog(level) {
+  return LOG_LEVELS[level.toLowerCase()] <= LOG_LEVELS[LOG_LEVEL];
+}
 
 // Create write streams
 const logStreams = {
@@ -128,6 +135,8 @@ const functionLog = (functionName, ...args) => {
 
 // Generic log writer with session logging
 function writeLog(level, stream, consoleFn, ...args) {
+  if (!shouldLog(level)) return;
+
   const timestamp = new Date().toISOString();
   const message = args.join(" ");
   const logLine = `[${timestamp}] [${level}] ${message}\n`;
@@ -210,7 +219,7 @@ const winstonLogger = createLogger({
     buildTransport("security", "security"),
     sessionTransport, // Add session transport to winston
     new transports.Console({
-      level: "debug",
+      level: LOG_LEVEL,
       format: format.combine(
         format.colorize(),
         format.timestamp(),
