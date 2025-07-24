@@ -7,7 +7,7 @@ const { qualifyNavLinks } = require("./qualifyLinks");
 const { baseUrl } = require("./baseUrl");
 const generateDocsMenuModel = require("./generateDocsMenuModel");
 const navLinks = require(path.join(__dirname, "../../content/navLinks.json"));
-const filterSecureLinks = require("../utils/filterSecureLinks");
+const processMenuLinks = require("../utils/processMenuLinks");
 
 const getSiteTitle = (owner) => `${owner}'s Software Blog`;
 
@@ -40,7 +40,7 @@ module.exports = async function getDocsContext(
   isAuthenticated,
   overrides = {}
 ) {
-  const filteredNavLinks = filterSecureLinks(navLinks, isAuthenticated);
+  const filteredNavLinks = processMenuLinks(navLinks, isAuthenticated);
   const qualifiedNavLinks = qualifyNavLinks(filteredNavLinks);
   const siteOwner = process.env.SITE_OWNER;
 

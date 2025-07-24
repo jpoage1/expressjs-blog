@@ -9,7 +9,7 @@ const logEvent = require("./analytics.js");
 const { applyProductionSecurity } = require("./applyProductionSecurity");
 const validateRequestIntegrity = require("./validateRequestIntegrity");
 const errorHandler = require("./errorHandler");
-const baseContext = require("./baseContext");
+const { attachBaseContextGetter, buildBaseContext } = require("./baseContext");
 const hbs = require("./hbs");
 const authCheck = require("./authCheck");
 const { redirectMiddleware } = require("./redirect");
@@ -52,7 +52,7 @@ function setupApp() {
           winstonLogger.error("JSON parsing error:", err.message);
           return next(err);
         }
-        winstonLogger.debug("Parsed JSON body:", req.body);
+        // winstonLogger.debug("Parsed JSON body:", req.body);
         next();
       });
     } else if (contentType.includes("application/x-www-form-urlencoded")) {
@@ -62,7 +62,7 @@ function setupApp() {
           winstonLogger.error("Form parsing error:", err.message);
           return next(err);
         }
-        winstonLogger.debug("Parsed form body:", req.body);
+        // winstonLogger.debug("Parsed form body:", req.body);
         next();
       });
     } else if (contentType.includes("multipart/form-data")) {
@@ -87,11 +87,11 @@ function setupApp() {
               });
               return next(jsonErr);
             }
-            winstonLogger.warn("Parsed JSON body (fallback):", req.body);
+            // winstonLogger.warn("Parsed JSON body (fallback):", req.body);
             next();
           });
         } else {
-          winstonLogger.debug("Parsed form body (default):", req.body);
+          // winstonLogger.debug("Parsed form body (default):", req.body);
           next();
         }
       });
@@ -106,7 +106,7 @@ function setupApp() {
   app.use(authCheck);
 
   // Setup handlebars
-  app.use(baseContext);
+  app.use(attachBaseContextGetter, buildBaseContext);
 
   // Setup production environment
   if (
