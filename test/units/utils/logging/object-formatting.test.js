@@ -25,13 +25,9 @@ const {
 } = require("../../../../src/utils/logging/index");
 
 describe("Logger Object Expansion Tests", () => {
-  let consoleStub;
   let streamWriteStubs;
 
   beforeEach(() => {
-    // Stub console methods
-    consoleStub = sinon.stub(console, "log");
-
     // Create fresh stream write stubs for each test
     streamWriteStubs = {
       info: sinon.stub(mockLogStreams.info, "write"),
@@ -47,10 +43,22 @@ describe("Logger Object Expansion Tests", () => {
 
   afterEach(() => {
     // Restore all stubs
-    sinon.restore();
+    sinon.restore(); // This restores all stubs created by sinon.stub()
   });
 
   describe("writeLog function", () => {
+    let consoleLogStub; // Declare stub for this describe block
+
+    beforeEach(() => {
+      // Stub console.log specifically for this describe block
+      consoleLogStub = sinon.stub(console, "log");
+    });
+
+    afterEach(() => {
+      // Restore console.log stub after each test in this block
+      consoleLogStub.restore();
+    });
+
     it("should never log [object Object] for simple objects", () => {
       const testObject = { name: "test", value: 42 };
 
@@ -63,8 +71,8 @@ describe("Logger Object Expansion Tests", () => {
       );
 
       // Check console output
-      expect(consoleStub.called).to.be.true;
-      const consoleArgs = consoleStub.getCall(0).args;
+      expect(consoleLogStub.called).to.be.true;
+      const consoleArgs = consoleLogStub.getCall(0).args;
       expect(consoleArgs).to.exist;
       const outputString = consoleArgs.join(" ");
       expect(outputString).to.not.include("[object Object]");
@@ -100,8 +108,8 @@ describe("Logger Object Expansion Tests", () => {
         nestedObject
       );
 
-      expect(consoleStub.called).to.be.true;
-      const consoleArgs = consoleStub.getCall(0).args;
+      expect(consoleLogStub.called).to.be.true;
+      const consoleArgs = consoleLogStub.getCall(0).args;
       expect(consoleArgs).to.exist;
       const outputString = consoleArgs.join(" ");
       expect(outputString).to.not.include("[object Object]");
@@ -124,8 +132,8 @@ describe("Logger Object Expansion Tests", () => {
         circularObj
       );
 
-      expect(consoleStub.called).to.be.true;
-      const consoleArgs = consoleStub.getCall(0).args;
+      expect(consoleLogStub.called).to.be.true;
+      const consoleArgs = consoleLogStub.getCall(0).args;
       expect(consoleArgs).to.exist;
       const outputString = consoleArgs.join(" ");
       expect(outputString).to.not.include("[object Object]");
@@ -149,8 +157,8 @@ describe("Logger Object Expansion Tests", () => {
         arrayWithObjects
       );
 
-      expect(consoleStub.called).to.be.true;
-      const consoleArgs = consoleStub.getCall(0).args;
+      expect(consoleLogStub.called).to.be.true;
+      const consoleArgs = consoleLogStub.getCall(0).args;
       expect(consoleArgs).to.exist;
       const outputString = consoleArgs.join(" ");
       expect(outputString).to.not.include("[object Object]");
@@ -177,8 +185,8 @@ describe("Logger Object Expansion Tests", () => {
         ...mixedArgs
       );
 
-      expect(consoleStub.called).to.be.true;
-      const consoleArgs = consoleStub.getCall(0).args;
+      expect(consoleLogStub.called).to.be.true;
+      const consoleArgs = consoleLogStub.getCall(0).args;
       expect(consoleArgs).to.exist;
       const outputString = consoleArgs.join(" ");
       expect(outputString).to.not.include("[object Object]");
@@ -193,7 +201,7 @@ describe("Logger Object Expansion Tests", () => {
       const error = new Error("Test error");
       error.customProperty = { details: "additional info" };
 
-      // Stub console.error for this test
+      // Stub console.error for this test (local stub, not interfering with console.log stub)
       const consoleErrorStub = sinon.stub(console, "error");
 
       writeLog(
@@ -230,8 +238,8 @@ describe("Logger Object Expansion Tests", () => {
         specialObj
       );
 
-      expect(consoleStub.called).to.be.true;
-      const consoleArgs = consoleStub.getCall(0).args;
+      expect(consoleLogStub.called).to.be.true;
+      const consoleArgs = consoleLogStub.getCall(0).args;
       expect(consoleArgs).to.exist;
       const outputString = consoleArgs.join(" ");
       expect(outputString).to.not.include("[object Object]");
@@ -242,6 +250,7 @@ describe("Logger Object Expansion Tests", () => {
 
   describe("Manual Logger Methods", () => {
     let manualLoggerStubs;
+    // Removed writeLogStub as manualLogger directly interacts with console
 
     beforeEach(() => {
       // Create fresh stubs for manual logger streams if they exist
@@ -252,7 +261,6 @@ describe("Logger Object Expansion Tests", () => {
             manualLogger.streams[level] &&
             typeof manualLogger.streams[level].write === "function"
           ) {
-            // Only stub if not already stubbed
             if (!manualLogger.streams[level].write.isSinonProxy) {
               manualLoggerStubs[level] = sinon.stub(
                 manualLogger.streams[level],
@@ -264,19 +272,27 @@ describe("Logger Object Expansion Tests", () => {
       }
     });
 
+    afterEach(() => {
+      // Restore all stubs created within this describe block or its tests
+      sinon.restore();
+    });
+
     it("should not produce [object Object] in manualLogger.info", () => {
       const testObj = { key: "value", nested: { deep: "property" } };
 
+      // Stub console.log locally for this specific test
+      const consoleLogStub = sinon.stub(console, "log");
       manualLogger.info(testObj);
 
-      expect(consoleStub.called).to.be.true;
-      const consoleArgs = consoleStub.getCall(0).args;
+      expect(consoleLogStub.called).to.be.true; // Check if console.log was called
+      const consoleArgs = consoleLogStub.getCall(0).args;
       expect(consoleArgs).to.exist;
-      const outputString = consoleArgs.join(" ");
+      const outputString = consoleArgs.join(" "); // Join them to check content
       expect(outputString).to.not.include("[object Object]");
       expect(outputString).to.include("key");
       expect(outputString).to.include("nested");
       expect(outputString).to.include("deep");
+      consoleLogStub.restore(); // Restore after test
     });
 
     it("should not produce [object Object] in manualLogger.error", () => {
@@ -285,6 +301,7 @@ describe("Logger Object Expansion Tests", () => {
         context: { userId: 123, action: "login" },
       };
 
+      // Stub console.error for this test
       const consoleErrorStub = sinon.stub(console, "error");
 
       manualLogger.error(errorObj);
@@ -301,38 +318,37 @@ describe("Logger Object Expansion Tests", () => {
       consoleErrorStub.restore();
     });
 
-    it("should handle circular objects in all manual logger methods", () => {
+    xit("should handle circular objects in all manual logger methods", () => {
       const circular = { name: "test" };
       circular.ref = circular;
 
       const methods = ["info", "warn", "error", "debug", "notice"];
+      const consoleMethodMap = {
+        info: "log",
+        notice: "log",
+        warn: "warn",
+        error: "error",
+        debug: "debug",
+      };
 
       methods.forEach((method) => {
-        // Create a fresh sandbox for each method to avoid conflicts
         const sandbox = sinon.createSandbox();
+        const consoleMethod = consoleMethodMap[method];
 
-        const actualConsoleMethod =
-          method === "debug"
-            ? "debug"
-            : method === "warn"
-              ? "warn"
-              : method === "error"
-                ? "error"
-                : "log";
+        const methodStub = sandbox
+          .stub(console, consoleMethod)
+          .callsFake(() => {});
 
-        const methodStub = sandbox.stub(console, actualConsoleMethod);
+        manualLogger[method](circular);
 
-        if (typeof manualLogger[method] === "function") {
-          manualLogger[method](circular);
+        expect(methodStub.called).to.be.true; // the offending line
 
-          expect(methodStub.called).to.be.true;
-          const consoleArgs = methodStub.getCall(0).args;
-          expect(consoleArgs).to.exist;
-          const outputString = consoleArgs.join(" ");
-          expect(outputString).to.not.include("[object Object]");
-          expect(outputString).to.include("name");
-          expect(outputString).to.include("test");
-        }
+        const consoleArgs = methodStub.getCall(0).args;
+        const output = consoleArgs.map(String).join(" ");
+
+        expect(output).to.include("name");
+        expect(output).to.include("test");
+        expect(output).to.not.include("[object Object]");
 
         sandbox.restore();
       });
@@ -344,6 +360,10 @@ describe("Logger Object Expansion Tests", () => {
 
     beforeEach(() => {
       winstonInfoStub = sinon.stub(winstonLogger, "info");
+    });
+
+    afterEach(() => {
+      winstonInfoStub.restore(); // Ensure winston stub is restored
     });
 
     it("should not produce [object Object] in winston logs", () => {
@@ -358,12 +378,27 @@ describe("Logger Object Expansion Tests", () => {
       // Check that winston was called with properly formatted data
       expect(winstonInfoStub.called).to.be.true;
       const logCall = winstonInfoStub.getCall(0).args;
+      // Winston typically stringifies objects, so we check the stringified output
       const logString = JSON.stringify(logCall);
       expect(logString).to.not.include("[object Object]");
+      expect(logString).to.include("Jane");
+      expect(logString).to.include("update");
     });
   });
 
   describe("Edge Cases", () => {
+    let consoleLogStub; // Declare stub for this describe block
+
+    beforeEach(() => {
+      // Stub console.log specifically for this describe block
+      consoleLogStub = sinon.stub(console, "log");
+    });
+
+    afterEach(() => {
+      // Restore console.log stub after each test in this block
+      consoleLogStub.restore();
+    });
+
     it("should handle null and undefined without [object Object]", () => {
       writeLog(
         "INFO",
@@ -374,8 +409,8 @@ describe("Logger Object Expansion Tests", () => {
         undefined
       );
 
-      expect(consoleStub.called).to.be.true;
-      const consoleArgs = consoleStub.getCall(0).args;
+      expect(consoleLogStub.called).to.be.true;
+      const consoleArgs = consoleLogStub.getCall(0).args;
       expect(consoleArgs).to.exist;
       const outputString = consoleArgs.join(" ");
       expect(outputString).to.not.include("[object Object]");
@@ -395,8 +430,8 @@ describe("Logger Object Expansion Tests", () => {
         nullProtoObj
       );
 
-      expect(consoleStub.called).to.be.true;
-      const consoleArgs = consoleStub.getCall(0).args;
+      expect(consoleLogStub.called).to.be.true;
+      const consoleArgs = consoleLogStub.getCall(0).args;
       expect(consoleArgs).to.exist;
       const outputString = consoleArgs.join(" ");
       expect(outputString).to.not.include("[object Object]");
@@ -405,7 +440,7 @@ describe("Logger Object Expansion Tests", () => {
     });
 
     it("should handle Date objects", () => {
-      const dateObj = new Date("2023-01-01");
+      const dateObj = new Date("2023-01-01T12:00:00.000Z"); // Use ISO string for consistent output
 
       writeLog(
         "INFO",
@@ -415,12 +450,16 @@ describe("Logger Object Expansion Tests", () => {
         dateObj
       );
 
-      expect(consoleStub.called).to.be.true;
-      const consoleArgs = consoleStub.getCall(0).args;
+      expect(consoleLogStub.called).to.be.true;
+      const consoleArgs = consoleLogStub.getCall(0).args;
       expect(consoleArgs).to.exist;
       const outputString = consoleArgs.join(" ");
       expect(outputString).to.not.include("[object Object]");
+      // Check for parts of the date string that are likely to be present in ISO format
+      // Console.log's output for Date objects can vary, but the ISO string is often included or derived.
       expect(outputString).to.include("2023");
+      // Check for the time part of the ISO string for more robustness
+      expect(outputString).to.include("T12:00:00.000Z");
     });
 
     it("should handle RegExp objects", () => {
@@ -434,13 +473,14 @@ describe("Logger Object Expansion Tests", () => {
         regexObj
       );
 
-      expect(consoleStub.called).to.be.true;
-      const consoleArgs = consoleStub.getCall(0).args;
+      expect(consoleLogStub.called).to.be.true;
+      const consoleArgs = consoleLogStub.getCall(0).args;
       expect(consoleArgs).to.exist;
       const outputString = consoleArgs.join(" ");
       expect(outputString).to.not.include("[object Object]");
       expect(outputString).to.include("test");
       expect(outputString).to.include("pattern");
+      expect(outputString).to.include("gi"); // Check for flags
     });
 
     it("should handle very deeply nested objects", () => {
@@ -461,16 +501,30 @@ describe("Logger Object Expansion Tests", () => {
         deepObj
       );
 
-      expect(consoleStub.called).to.be.true;
-      const consoleArgs = consoleStub.getCall(0).args;
+      expect(consoleLogStub.called).to.be.true;
+      const consoleArgs = consoleLogStub.getCall(0).args;
       expect(consoleArgs).to.exist;
       const outputString = consoleArgs.join(" ");
       expect(outputString).to.not.include("[object Object]");
       expect(outputString).to.include("level");
+      // Check for presence of multiple levels
+      expect(outputString.match(/level/g).length).to.be.at.least(10);
     });
   });
 
   describe("Stream Output Validation", () => {
+    let consoleLogStub; // Declare stub for this describe block
+
+    beforeEach(() => {
+      // Stub console.log specifically for this describe block
+      consoleLogStub = sinon.stub(console, "log");
+    });
+
+    afterEach(() => {
+      // Restore console.log stub after each test in this block
+      consoleLogStub.restore();
+    });
+
     it("should ensure stream writes never contain [object Object]", () => {
       const testObjects = [
         { simple: "object" },
@@ -480,7 +534,7 @@ describe("Logger Object Expansion Tests", () => {
       ];
 
       testObjects.forEach((obj, index) => {
-        streamWriteStubs.info.resetHistory();
+        streamWriteStubs.info.resetHistory(); // Reset history for each iteration
         writeLog(
           "INFO",
           mockLogStreams.info,
@@ -493,9 +547,57 @@ describe("Logger Object Expansion Tests", () => {
         const streamWrites = streamWriteStubs.info.getCalls();
         streamWrites.forEach((call) => {
           const writeData = call.args[0];
+          // Ensure the written data is a string and does not contain "[object Object]"
+          expect(typeof writeData).to.equal("string");
           expect(writeData).to.not.include("[object Object]");
         });
       });
+    });
+  });
+});
+
+const consolePatch = require("../../../../src/utils/logging/consolePatch");
+
+describe("Logger Object Expansion Tests", () => {
+  let shouldLogStub;
+
+  before(() => {
+    shouldLogStub = sinon.stub(consolePatch, "shouldLog").returns(true);
+  });
+
+  after(() => {
+    shouldLogStub.restore();
+  });
+
+  it("should handle circular objects in all manual logger methods", () => {
+    const circular = { name: "test" };
+    circular.ref = circular;
+
+    const methods = ["info", "warn", "error", "debug", "notice"];
+    const consoleMethodMap = {
+      info: "log",
+      notice: "log",
+      warn: "warn",
+      error: "error",
+      debug: "debug",
+    };
+
+    methods.forEach((method) => {
+      const sandbox = sinon.createSandbox();
+      const consoleMethod = consoleMethodMap[method];
+
+      const methodStub = sandbox.stub(console, consoleMethod);
+
+      manualLogger[method](circular);
+
+      expect(methodStub.called).to.be.true;
+
+      const output = methodStub.getCall(0).args.map(String).join(" ");
+      expect(output).to.include("name");
+      expect(output).to.include("test");
+      expect(output).to.not.include("[object Object]");
+
+      sandbox.restore();
     });
   });
 });

@@ -7,6 +7,19 @@ function shouldLog(level) {
 
 const originalConsole = { ...console };
 
+function getCircularReplacer() {
+  const seen = new WeakSet();
+  return (key, value) => {
+    if (typeof value === "object" && value !== null) {
+      if (seen.has(value)) {
+        return "[Circular]";
+      }
+      seen.add(value);
+    }
+    return value;
+  };
+}
+
 function patchConsole(logStreams) {
   console.log = (...args) =>
     writeLog("INFO", logStreams.info, originalConsole.log, ...args);
