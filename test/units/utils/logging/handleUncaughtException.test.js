@@ -1,4 +1,4 @@
-// test/handleUncaughtException.test.js
+// test/units/utils/logging/handleUncaughtException.test.js
 const { expect } = require("chai");
 const sinon = require("sinon");
 const proxyquire = require("proxyquire").noCallThru();

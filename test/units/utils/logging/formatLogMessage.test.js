@@ -1,4 +1,4 @@
-// test/formatLogMessage.test.js
+// test/units/utils/logging/formatLogMessage.test.js
 const { expect } = require("chai");
 const { formatLogMessage } = require("../../../../src/utils/logging");
 

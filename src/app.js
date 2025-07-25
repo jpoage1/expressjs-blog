@@ -4,10 +4,10 @@ require("dotenv").config();
 const net = require("net");
 const setupMiddleware = require("./middleware");
 const {
-  winstonLogger,
   handleUncaughtException,
   handleUnhandledRejection,
-} = require("./utils/logging");
+} = require("./utils/logging/handlers");
+const { winstonLogger } = require("./utils/logging");
 
 const { startTokenCleanup } = require("./utils/tokenCleanup");
 const { cleanupOldSessions } = require("./utils/logManager");
@@ -19,6 +19,8 @@ const NODE_ENV_LOG = `NODE_ENV: ${process.env.NODE_ENV}`;
 
 cleanupOldSessions();
 startTokenCleanup();
+
+// const winstonLogger = createWinstonLogger();
 
 const app = setupMiddleware();
 

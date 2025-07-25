@@ -1,4 +1,4 @@
-// test/sendNewsletterSubscriptionMail.test.js
+// test/units/utils/sendNewsletterSubscriptionMail.test.js
 const sinon = require("sinon");
 const transporter = require("../../../src/utils/transporter");
 const { winstonLogger } = require("../../../src/utils/logging");

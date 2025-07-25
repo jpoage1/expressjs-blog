@@ -49,14 +49,34 @@ const sqliteTransport = new SQLiteTransport();
 const manualLogger = {
   streams: logStreams,
   function: (...args) => functionLog(functionsLogDir, ...args),
-  info: (...args) => writeLog("INFO", logStreams.info, console.log, ...args),
+  info: (...args) =>
+    writeLog("INFO", logStreams.info, console.log, sessionTransport, ...args),
   notice: (...args) =>
-    writeLog("NOTICE", logStreams.notice, console.log, ...args),
-  warn: (...args) => writeLog("WARN", logStreams.warn, console.warn, ...args),
+    writeLog(
+      "NOTICE",
+      logStreams.notice,
+      console.log,
+      sessionTransport,
+      ...args
+    ),
+  warn: (...args) =>
+    writeLog("WARN", logStreams.warn, console.warn, sessionTransport, ...args),
   error: (...args) =>
-    writeLog("ERROR", logStreams.error, console.error, ...args),
+    writeLog(
+      "ERROR",
+      logStreams.error,
+      console.error,
+      sessionTransport,
+      ...args
+    ),
   debug: (...args) =>
-    writeLog("DEBUG", logStreams.debug, console.debug, ...args),
+    writeLog(
+      "DEBUG",
+      logStreams.debug,
+      console.debug,
+      sessionTransport,
+      ...args
+    ),
   sessionInfo: () => ({
     sessionId: sessionTimestamp,
     sessionDir,
@@ -89,21 +109,14 @@ const winstonLogger = createLogger({
           let stack = meta.stack || "";
           if (stack) delete meta.stack;
 
-          let outputMsg;
-          if (typeof message === "string") {
-            outputMsg = message;
-          } else {
-            try {
-              outputMsg = JSON.stringify(message, null, 2);
-            } catch {
-              outputMsg = util.inspect(message, { depth: null, colors: false });
-            }
-          }
+          const safeInspect = (input) =>
+            typeof input === "string"
+              ? input
+              : util.inspect(input, { depth: null, colors: false });
 
-          let metaString = "";
-          if (Object.keys(meta).length > 0) {
-            metaString = util.inspect(meta, { depth: null, colors: false });
-          }
+          const outputMsg = safeInspect(message);
+          const metaString =
+            Object.keys(meta).length > 0 ? safeInspect(meta) : "";
 
           return `[${timestamp}] [${level}] ${outputMsg}\n${stack}\n${metaString}`;
         })
@@ -118,7 +131,7 @@ module.exports = {
   winstonLogger,
   initializeLogDirectories,
   createLogStreams,
-  createSessionTransport,
+  sessionTransport,
   patchConsole,
   shouldLog,
   writeLog,

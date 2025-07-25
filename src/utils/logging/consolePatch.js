@@ -1,3 +1,4 @@
+// src/utils/logging/consolePatch.js
 const { LOG_LEVEL, LOG_LEVELS } = require("./config");
 
 function shouldLog(level) {
@@ -19,16 +20,28 @@ function patchConsole(logStreams) {
     writeLog("DEBUG", logStreams.debug, originalConsole.debug, ...args);
 }
 
-function writeLog(level, stream, consoleFn, ...args) {
+function writeLog(level, stream, consoleFn, sessionTransport, ...args) {
   if (!shouldLog(level)) return;
 
   const timestamp = new Date().toISOString();
-  const message = args.join(" ");
+
+  const safeArgs = args.map((arg) => {
+    if (typeof arg === "object") {
+      try {
+        return JSON.stringify(arg, getCircularReplacer(), 2);
+      } catch {
+        return require("util").inspect(arg, { depth: null, colors: false });
+      }
+    }
+    return String(arg);
+  });
+
+  const message = safeArgs.join(" ");
   const logLine = `[${timestamp}] [${level}] ${message}\n`;
 
   stream.write(logLine);
   sessionTransport.write({ level: level.toLowerCase(), message, timestamp });
-  consoleFn(`[${timestamp}] [${level}]`, ...args);
+  consoleFn(`[${timestamp}] [${level}]`, ...safeArgs);
 }
 
 module.exports = {

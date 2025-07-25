@@ -1,4 +1,4 @@
-// test/formatFunctionName.test.js
+// test/units/utils/logging/formatFunctionName.test.js
 const { expect } = require("chai");
 const path = require("path");
 const { formatFunctionName } = require("../../../../src/utils/logging");

@@ -1,4 +1,4 @@
-// test/initializeLogDirectories.test.js
+// test/units/utils/logging/initializeLogDirectories.test.js
 const { expect } = require("chai");
 const fs = require("fs");
 const path = require("path");
