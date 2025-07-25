@@ -7,11 +7,11 @@ const { initializeLogDirectories } = require("../../../../src/utils/logging");
 
 describe("initializeLogDirectories", () => {
   const customLogFiles = {
-    info: "logs/info/info.log",
-    error: "logs/error/error.log",
-    warn: "logs/warn/warn.log",
-    notice: "logs/notice/notice.log",
-    debug: "logs/debug/debug.log",
+    info: "../test/logs/info/info.log",
+    error: "../test/logs/error/error.log",
+    warn: "../test/logs/warn/warn.log",
+    notice: "../test/logs/notice/notice.log",
+    debug: "../test/logs/debug/debug.log",
   };
 
   afterEach(() => mockFs.restore());
@@ -34,7 +34,7 @@ describe("initializeLogDirectories", () => {
         acc[path.dirname(file)] = {};
         return acc;
       },
-      { "logs/functions": {} }
+      { "../test/logs/functions": {} }
     );
 
     mockFs(dirs);

@@ -1,7 +1,7 @@
 // test/handleUncaughtException.test.js
 const { expect } = require("chai");
 const sinon = require("sinon");
-const proxyquire = require("proxyquire").noCallThru(); // prevents loading actual file if stubbed
+const proxyquire = require("proxyquire").noCallThru();
 
 describe("handleUncaughtException", () => {
   it("logs error using winstonLogger", () => {

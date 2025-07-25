@@ -22,8 +22,8 @@ const customLevels = {
 const LOG_LEVEL = process.env.LOG_LEVEL?.toLowerCase() || "info";
 const LOG_LEVELS = customLevels.levels;
 
-const logDir = path.join(__dirname, "..", "..", "logs");
-const projectRoot = path.join(__dirname, "..", "..");
+const projectRoot = path.join(__dirname, "..", "..", "..");
+const logDir = path.join(projectRoot, "logs");
 
 const sessionTimestamp = new Date().toISOString().replace(/[:.]/g, "-");
 const sessionDir = path.join(logDir, "sessions", sessionTimestamp);

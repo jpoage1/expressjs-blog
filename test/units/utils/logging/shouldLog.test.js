@@ -1,6 +1,5 @@
 // test/shouldLog.test.js
 const { expect } = require("chai");
-const path = require("path");
 
 describe("shouldLog", () => {
   const originalLogLevel = process.env.LOG_LEVEL;
