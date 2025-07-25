@@ -80,3 +80,4 @@ data/*
 .last_tested_commit
 
 certs/*
+test/logs/*
