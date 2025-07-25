@@ -24,8 +24,6 @@ router.use(newsletter, csrfToken);
 
 construction.register("/changelog", "Changelog");
 construction.register("/archive", "Archive");
-// construction.register("/tags", "Tags");
-// construction.register("/contact", "Contact Me");
 
 markdown.register("/tools", "tools", "tools");
 markdown.register("/about/me", "about-me");

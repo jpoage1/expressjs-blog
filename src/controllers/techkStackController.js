@@ -1,10 +1,9 @@
-// routes/stack.js
-const express = require("express");
-const router = express.Router();
+// controllers/techStackController.js
+
 const HttpError = require("../utils/HttpError"); // Adjust path as needed
 const techStack = require("../../content/techStack.json"); // JSON file from previous message
 const { baseUrl } = require("../utils/baseUrl");
-router.get("/stack", (req, res, next) => {
+module.exports = (req, res, next) => {
   try {
     const techWithBase = techStack.map((item) => ({
       ...item,
@@ -19,6 +18,4 @@ router.get("/stack", (req, res, next) => {
       new HttpError("Failed to load tech stack", 500, { originalError: err })
     );
   }
-});
-
-module.exports = router;
+};

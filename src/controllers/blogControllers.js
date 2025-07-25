@@ -3,10 +3,11 @@ const { marked } = require("marked");
 const fs = require("fs").promises;
 const path = require("path");
 const matter = require("gray-matter");
+const { getAllPosts } = require("../utils/postFileUtils");
 
 const HttpError = require("../utils/HttpError");
 
-module.exports = async (req, res, next) => {
+exports.blogPost = async (req, res, next) => {
   const { year, month, name } = req.params;
 
   // Validate year: 4 digits only
@@ -53,4 +54,36 @@ module.exports = async (req, res, next) => {
   } catch (err) {
     next(new HttpError("The requested blog post could not be found.", 404));
   }
+};
+
+exports.blogIndex = async (req, res) => {
+  const postsDir = path.join(__dirname, "../../content/posts");
+  const allPosts = await getAllPosts(postsDir, {
+    includeUnpublished: req.query.drafts === "true",
+  });
+
+  const publishedPosts = allPosts.filter(
+    (post) =>
+      post.published ||
+      process.env.NODE_ENV === "production" ||
+      process.env.NODE_ENV === "testing"
+  );
+  // Sort posts descending by date
+  publishedPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  // Prepare context compatible with the blog-index.hbs layout
+  // Add `templateContent` as excerpt or limited content if needed here
+  // For now, use a simple excerpt from markdown or placeholder
+  const posts = publishedPosts.map((post) => ({
+    url: post.url,
+    data: {
+      title: post.title,
+      date: post.date,
+      tags: post.tags,
+      published: post.published, // add this
+    },
+    templateContent: post.excerpt || "",
+  }));
+
+  res.renderWithBaseContext("pages/blog_index", { collections: { posts } });
 };

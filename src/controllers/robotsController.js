@@ -1,7 +1,4 @@
-const express = require("express");
-const router = express.Router();
-
-router.get("/robots.txt", (req, res) => {
+module.exports = (req, res) => {
   const robotsTxt = `
 User-agent: *
 Disallow:
@@ -11,6 +8,4 @@ Sitemap: ${req.protocol}://${req.get("host")}/sitemap.xml
 
   res.type("text/plain");
   res.send(robotsTxt);
-});
-
-module.exports = router;
+};

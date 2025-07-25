@@ -3,27 +3,25 @@ const express = require("express");
 const router = express.Router();
 const path = require("path");
 
-const analytics = require("./analytics");
-const robots = require("./robots");
-const blog_index = require("./blog_index");
+const analytics = require("../controllers/analyticsControllers");
+const robots = require("../controllers/robotsController");
 const csrfToken = require("../middleware/csrfToken");
-const errorPage = require("./errorPage");
+const errorPage = require("../controllers/errorPageController");
 const admin = require("./admin");
 const tags = require("./tags");
 const presentation = require("./presentation");
 
 const contact = require("./contact");
 const sitemap = require("./sitemap");
-const post = require("./post");
+const { blogPost, blogIndex } = require("../controllers/blogControllers");
 const pages = require("./pages");
 const docs = require("./docs");
-const rssFeed = require("./rssFeed");
-const { qualifyLink } = require("../utils/qualifyLinks");
+const rssFeedController = require("../controllers/rssFeedController");
 const HttpError = require("../utils/HttpError");
 
 const securedMiddleware = require("../middleware/secured");
 const securedRoutes = require("./secured");
-const stack = require("./stack");
+const stack = require("../controllers/techkStackController");
 
 const favicon = require("serve-favicon");
 const faviconsPath = path.join(__dirname, "..", "..", "public", "favicons");
@@ -38,7 +36,6 @@ router.use("/admin", securedMiddleware, securedRoutes);
 router.get("/error", errorPage); // Landing page after error is logged
 
 router.use(admin);
-router.use(stack);
 
 router.post("/track", analytics);
 router.post("/analytics", analytics);
@@ -84,17 +81,20 @@ router.use(
 router.use("/favicons", express.static(faviconsPath));
 router.use(favicon(faviconFile));
 
-router.use(blog_index);
-router.use(robots);
 router.use(contact, csrfToken);
 router.use(sitemap);
 router.use(pages);
-router.use(rssFeed);
 router.use(tags);
 router.use("/projects/website-presentation", presentation);
 router.use("/docs", docs);
 
-router.get("/blog/:year/:month/:name", post);
+router.get("/blog/:year/:month/:name", blogPost);
+router.get("/blog", blogIndex);
+
+router.get("/stack", stack);
+
+router.get("/robots.txt", robots);
+router.get("/rss-feed.xml", rssFeedController);
 
 router.get("/", (req, res) => {
   res.customRedirect("/blog", 301);
