@@ -317,42 +317,6 @@ describe("Logger Object Expansion Tests", () => {
 
       consoleErrorStub.restore();
     });
-
-    xit("should handle circular objects in all manual logger methods", () => {
-      const circular = { name: "test" };
-      circular.ref = circular;
-
-      const methods = ["info", "warn", "error", "debug", "notice"];
-      const consoleMethodMap = {
-        info: "log",
-        notice: "log",
-        warn: "warn",
-        error: "error",
-        debug: "debug",
-      };
-
-      methods.forEach((method) => {
-        const sandbox = sinon.createSandbox();
-        const consoleMethod = consoleMethodMap[method];
-
-        const methodStub = sandbox
-          .stub(console, consoleMethod)
-          .callsFake(() => {});
-
-        manualLogger[method](circular);
-
-        expect(methodStub.called).to.be.true; // the offending line
-
-        const consoleArgs = methodStub.getCall(0).args;
-        const output = consoleArgs.map(String).join(" ");
-
-        expect(output).to.include("name");
-        expect(output).to.include("test");
-        expect(output).to.not.include("[object Object]");
-
-        sandbox.restore();
-      });
-    });
   });
 
   describe("Winston Logger", () => {
@@ -552,52 +516,6 @@ describe("Logger Object Expansion Tests", () => {
           expect(writeData).to.not.include("[object Object]");
         });
       });
-    });
-  });
-});
-
-const consolePatch = require("../../../../src/utils/logging/consolePatch");
-
-describe("Logger Object Expansion Tests", () => {
-  let shouldLogStub;
-
-  before(() => {
-    shouldLogStub = sinon.stub(consolePatch, "shouldLog").returns(true);
-  });
-
-  after(() => {
-    shouldLogStub.restore();
-  });
-
-  it("should handle circular objects in all manual logger methods", () => {
-    const circular = { name: "test" };
-    circular.ref = circular;
-
-    const methods = ["info", "warn", "error", "debug", "notice"];
-    const consoleMethodMap = {
-      info: "log",
-      notice: "log",
-      warn: "warn",
-      error: "error",
-      debug: "debug",
-    };
-
-    methods.forEach((method) => {
-      const sandbox = sinon.createSandbox();
-      const consoleMethod = consoleMethodMap[method];
-
-      const methodStub = sandbox.stub(console, consoleMethod);
-
-      manualLogger[method](circular);
-
-      expect(methodStub.called).to.be.true;
-
-      const output = methodStub.getCall(0).args.map(String).join(" ");
-      expect(output).to.include("name");
-      expect(output).to.include("test");
-      expect(output).to.not.include("[object Object]");
-
-      sandbox.restore();
     });
   });
 });

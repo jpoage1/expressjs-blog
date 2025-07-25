@@ -45,6 +45,7 @@ function initializeLogDirectories(files = logFiles) {
 const logStreams = createLogStreams(logFiles);
 const sessionTransport = createSessionTransport(sessionDir);
 const sqliteTransport = new SQLiteTransport();
+patchConsole(logStreams, sessionTransport);
 
 const manualLogger = {
   streams: logStreams,

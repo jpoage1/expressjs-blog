@@ -1,4 +1,6 @@
 // src/utils/logging/consolePatch.js
+const util = require("util");
+
 const { LOG_LEVEL, LOG_LEVELS } = require("./config");
 
 function shouldLog(level) {
@@ -7,6 +9,57 @@ function shouldLog(level) {
 
 const originalConsole = { ...console };
 
+function patchConsole(logStreams, sessionTransport) {
+  console.log = (...args) =>
+    writeLog(
+      "INFO",
+      logStreams.info,
+      originalConsole.log,
+      sessionTransport,
+      ...args
+    );
+  console.error = (...args) =>
+    writeLog(
+      "ERROR",
+      logStreams.error,
+      originalConsole.error,
+      sessionTransport,
+      ...args
+    );
+  console.warn = (...args) =>
+    writeLog(
+      "WARN",
+      logStreams.warn,
+      originalConsole.warn,
+      sessionTransport,
+      ...args
+    );
+  console.info = (...args) =>
+    writeLog(
+      "INFO",
+      logStreams.info,
+      originalConsole.info,
+      sessionTransport,
+      ...args
+    );
+  console.debug = (...args) =>
+    writeLog(
+      "DEBUG",
+      logStreams.debug,
+      originalConsole.debug,
+      sessionTransport,
+      ...args
+    );
+  return originalConsole;
+}
+
+function unpatchConsole() {
+  console.log = originalConsole.log;
+  console.error = originalConsole.error;
+  console.warn = originalConsole.warn;
+  console.info = originalConsole.info;
+  console.debug = originalConsole.debug;
+}
 function getCircularReplacer() {
   const seen = new WeakSet();
   return (key, value) => {
@@ -19,38 +72,47 @@ function getCircularReplacer() {
     return value;
   };
 }
+function formatArg(arg) {
+  if (arg instanceof Error) {
+    return JSON.stringify(
+      {
+        name: arg.name,
+        message: arg.message,
+        stack: arg.stack,
+      },
+      null,
+      2
+    );
+  }
 
-function patchConsole(logStreams) {
-  console.log = (...args) =>
-    writeLog("INFO", logStreams.info, originalConsole.log, ...args);
-  console.error = (...args) =>
-    writeLog("ERROR", logStreams.error, originalConsole.error, ...args);
-  console.warn = (...args) =>
-    writeLog("WARN", logStreams.warn, originalConsole.warn, ...args);
-  console.info = (...args) =>
-    writeLog("INFO", logStreams.info, originalConsole.info, ...args);
-  console.debug = (...args) =>
-    writeLog("DEBUG", logStreams.debug, originalConsole.debug, ...args);
+  if (arg instanceof RegExp) {
+    return arg.toString();
+  }
+
+  if (typeof arg === "object" && arg !== null) {
+    try {
+      return JSON.stringify(arg, getCircularReplacer(), 2);
+    } catch {
+      return util.inspect(arg, { depth: null, colors: false });
+    }
+  }
+
+  return String(arg);
+}
+
+function formatLog(level, ...args) {
+  const timestamp = new Date().toISOString();
+  const safeArgs = args.map(formatArg);
+  const message = safeArgs.join(" ");
+  const logLine = `[${timestamp}] [${level}] ${message}\n`;
+
+  return { timestamp, safeArgs, message, logLine };
 }
 
 function writeLog(level, stream, consoleFn, sessionTransport, ...args) {
   if (!shouldLog(level)) return;
 
-  const timestamp = new Date().toISOString();
-
-  const safeArgs = args.map((arg) => {
-    if (typeof arg === "object") {
-      try {
-        return JSON.stringify(arg, getCircularReplacer(), 2);
-      } catch {
-        return require("util").inspect(arg, { depth: null, colors: false });
-      }
-    }
-    return String(arg);
-  });
-
-  const message = safeArgs.join(" ");
-  const logLine = `[${timestamp}] [${level}] ${message}\n`;
+  const { timestamp, safeArgs, message, logLine } = formatLog(level, ...args);
 
   stream.write(logLine);
   sessionTransport.write({ level: level.toLowerCase(), message, timestamp });
@@ -59,6 +121,8 @@ function writeLog(level, stream, consoleFn, sessionTransport, ...args) {
 
 module.exports = {
   patchConsole,
+  unpatchConsole,
   shouldLog,
   writeLog,
+  formatLog,
 };
