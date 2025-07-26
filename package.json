@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "combine:css": "node scripts/combine-css.js",
     "test": "NODE_PATH=./src mocha test/units/**/*.mjs",
@@ -23,7 +23,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "better-sqlite3": "^12.2.0",
     "body-parser": "^2.2.0",
@@ -62,6 +61,7 @@
   "devDependencies": {
     "@faker-js/faker": "^9.8.0",
     "chai": "^5.2.1",
+    "fast-check": "^4.2.0",
     "mocha": "^11.7.1",
     "mock-fs": "^5.5.0",
     "node-fetch": "^2.7.0",

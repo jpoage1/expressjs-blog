@@ -12,14 +12,35 @@ function validateAndSanitizeEmail(rawEmail) {
     return { valid: false, message: MESSAGES.REQUIRED };
   }
 
-  const email = validator.normalizeEmail(rawEmail.trim().toLowerCase());
+  const trimmed = rawEmail.trim().toLowerCase();
 
-  if (!email || !validator.isEmail(email)) {
+  if (trimmed.length > MAX_EMAIL_LENGTH) {
+    return { valid: false, message: MESSAGES.TOO_LONG };
+  }
+
+  const atCount = (trimmed.match(/@/g) || []).length;
+  if (atCount !== 1) {
     return { valid: false, message: MESSAGES.INVALID };
   }
 
-  if (email.length > MAX_EMAIL_LENGTH) {
-    return { valid: false, message: MESSAGES.TOO_LONG };
+  const [localPart] = trimmed.split("@");
+
+  if (
+    localPart.includes("..") ||
+    localPart.startsWith(".") ||
+    localPart.endsWith(".")
+  ) {
+    return { valid: false, message: MESSAGES.INVALID };
+  }
+
+  const email = validator.normalizeEmail(trimmed);
+
+  if (!email) {
+    return { valid: false, message: MESSAGES.INVALID };
+  }
+
+  if (!validator.isEmail(email)) {
+    return { valid: false, message: MESSAGES.INVALID };
   }
 
   if (email.includes("..") || email.startsWith(".") || email.endsWith(".")) {
