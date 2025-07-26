@@ -13,9 +13,8 @@ exports.handleTokenRedirect = (req, res, next) => {
   if (!token) return next();
 
   if (!validateToken(token)) {
-    const error = new HttpError("Invalid or expired token", 401, { token });
-    req.log.warn({ err: error, token }, "Token validation failed");
-    return next();
+    const error = new SecurityEvent("INVALID_TOKEN", { token });
+    return next(error);
   }
 
   const scheme = req.protocol;

@@ -1,7 +1,7 @@
 const db = require("../utils/sqlite3");
 
 // Route: JavaScript-enabled tracking
-module.exports = (req, res) => {
+module.exports = (context) => (req, res) => {
   const {
     url = "",
     referrer = "",
@@ -15,21 +15,18 @@ module.exports = (req, res) => {
   const directIp = req.connection.remoteAddress;
   const timestamp = Date.now();
 
-  db.run(
-    `INSERT INTO analytics (timestamp, url, referrer, user_agent, viewport, load_time, event, forwardedIp, directIp, js_enabled)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      timestamp,
-      url,
-      referrer,
-      userAgent,
-      viewport,
-      loadTime,
-      event,
-      forwardedIp,
-      directIp,
-      1,
-    ]
-  );
+  req.log.analytics({
+    context,
+    timestamp,
+    url,
+    referrer,
+    userAgent,
+    viewport,
+    loadTime,
+    event,
+    forwardedIp,
+    directIp,
+    js_enabled: true,
+  });
   res.sendStatus(204);
 };

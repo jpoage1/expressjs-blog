@@ -38,9 +38,9 @@ module.exports = async (req, res, next) => {
   if (SAFE_IPS.includes(clientIp)) {
     req.isAuthenticated = true; // Mark as authenticated (bypassed)
     if (req.log) {
-      req.log.info(`Bypassing authentication for safe IP: ${clientIp}`);
+      req.log.security(`Bypassing authentication for safe IP: ${clientIp}`);
     } else {
-      console.info(`Bypassing authentication for safe IP: ${clientIp}`);
+      console.security(`Bypassing authentication for safe IP: ${clientIp}`);
     }
     return next(); // Proceed to the next middleware/route handler
   }

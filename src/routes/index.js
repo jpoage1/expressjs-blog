@@ -3,7 +3,6 @@ const express = require("express");
 const router = express.Router();
 const path = require("path");
 
-const analytics = require("../controllers/analyticsControllers");
 const robots = require("../controllers/robotsController");
 const csrfToken = require("../middleware/csrfToken");
 const errorPage = require("../controllers/errorPageController");
@@ -19,8 +18,6 @@ const docs = require("./docs");
 const rssFeedController = require("../controllers/rssFeedController");
 const HttpError = require("../utils/HttpError");
 
-const securedMiddleware = require("../middleware/secured");
-const securedRoutes = require("./secured");
 const stack = require("../controllers/techkStackController");
 
 const favicon = require("serve-favicon");
@@ -31,14 +28,9 @@ router.head("/health", (req, res) => {
   res.sendStatus(200);
 });
 
-router.use("/admin", securedMiddleware, securedRoutes);
-
 router.get("/error", errorPage); // Landing page after error is logged
 
 router.use(admin);
-
-router.post("/track", analytics);
-router.post("/analytics", analytics);
 
 router.use(
   "/static",

@@ -1,3 +1,4 @@
+// src/utils/logging/config.js
 const path = require("path");
 
 const customLevels = {
@@ -5,17 +6,21 @@ const customLevels = {
     error: 0,
     warn: 1,
     security: 2,
+    event: 2,
     notice: 3,
     info: 4,
     debug: 5,
+    analytics: 6, // use a unique value
   },
   colors: {
     error: "red",
     warn: "yellow",
     security: "magenta",
+    event: "cyan",
     notice: "cyan",
     info: "green",
     debug: "blue",
+    analytics: "gray", // or another distinct color
   },
 };
 
@@ -34,7 +39,10 @@ const logFiles = {
   notice: path.join(logDir, "notice", "notice.log"),
   error: path.join(logDir, "error", "error.log"),
   warn: path.join(logDir, "warn", "warn.log"),
+  event: path.join(logDir, "event", "event.log"),
+  security: path.join(logDir, "security", "security.log"),
   debug: path.join(logDir, "debug", "debug.log"),
+  analytics: path.join(logDir, "debug", "analytics.log"),
 };
 
 module.exports = {

@@ -6,8 +6,9 @@
   "type": "commonjs",
   "scripts": {
     "combine:css": "node scripts/combine-css.js",
-    "test": "NODE_PATH=./src mocha test/units/**/*.mjs",
+    "test": "mocha test/**/*.unit.test.js test/**/*.property.test.js",
     "start": "nodemon ./src/app.js --trace-exit",
+    "debug": "nodemon --inspect-brk  ./src/app.js --trace-exit",
     "maildev": "maildev",
     "main": "pm2 start ecosystem.config.js --only expressjs-blog-main",
     "testing": "pm2 start ecosystem.config.js --only expressjs-blog-testing",

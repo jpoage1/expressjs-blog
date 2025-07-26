@@ -2,7 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const { expect } = require("chai");
-const { createLogStreams } = require("../../../../src/utils/logging");
+const { createLogStreams } = require("../../../src/utils/logging");
 
 describe("createLogStreams", () => {
   const testDir = path.join(__dirname, "..", "..", "..", "..", "test", "logs");

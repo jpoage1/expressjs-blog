@@ -11,7 +11,7 @@ const {
   sessionDir,
   logFiles,
   LOG_LEVELS,
-} = require("../../../../src/utils/logging/config");
+} = require("../../../src/utils/logging/config");
 
 describe("config.js", () => {
   it("projectRoot contains package.json", () => {

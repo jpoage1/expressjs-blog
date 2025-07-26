@@ -14,40 +14,40 @@ function patchConsole(logStreams, sessionTransport) {
     writeLog(
       "INFO",
       logStreams.info,
-      originalConsole.log,
       sessionTransport,
+      originalConsole.log,
       ...args
     );
   console.error = (...args) =>
     writeLog(
       "ERROR",
       logStreams.error,
-      originalConsole.error,
       sessionTransport,
+      originalConsole.error,
       ...args
     );
   console.warn = (...args) =>
     writeLog(
       "WARN",
       logStreams.warn,
-      originalConsole.warn,
       sessionTransport,
+      originalConsole.warn,
       ...args
     );
   console.info = (...args) =>
     writeLog(
       "INFO",
       logStreams.info,
-      originalConsole.info,
       sessionTransport,
+      originalConsole.info,
       ...args
     );
   console.debug = (...args) =>
     writeLog(
       "DEBUG",
       logStreams.debug,
-      originalConsole.debug,
       sessionTransport,
+      originalConsole.debug,
       ...args
     );
   return originalConsole;
@@ -109,14 +109,22 @@ function formatLog(level, ...args) {
   return { timestamp, safeArgs, message, logLine };
 }
 
-function writeLog(level, stream, consoleFn, sessionTransport, ...args) {
+function writeLog(level, stream, sessionTransport, consoleFn, ...args) {
   if (!shouldLog(level)) return;
 
   const { timestamp, safeArgs, message, logLine } = formatLog(level, ...args);
 
   stream.write(logLine);
-  sessionTransport.write({ level: level.toLowerCase(), message, timestamp });
-  consoleFn(`[${timestamp}] [${level}]`, ...safeArgs);
+  if (!sessionTransport) {
+    originalConsole.warn(
+      `sessionTransport for log level '${level} is undefined`
+    );
+  } else {
+    sessionTransport.write({ level: level.toLowerCase(), message, timestamp });
+  }
+  if (consoleFn) {
+    consoleFn(`[${timestamp}] [${level}]`, ...safeArgs);
+  }
 }
 
 module.exports = {

@@ -187,7 +187,7 @@ async function logSecurityEvent(data, eventType = "contact_submission") {
     };
 
     // Log security event at custom 'security' level
-    winstonLogger.log("security", logEntry);
+    winstonLogger.security(logEntry);
 
     // Separate high-threat log file
     if (data.threatAnalysis?.level === "high") {

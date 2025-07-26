@@ -13,6 +13,8 @@ function createLogStreams(files) {
     error: fs.createWriteStream(files.error, { flags: "a" }),
     warn: fs.createWriteStream(files.warn, { flags: "a" }),
     debug: fs.createWriteStream(files.debug, { flags: "a" }),
+    security: fs.createWriteStream(files.security, { flags: "a" }),
+    event: fs.createWriteStream(files.event, { flags: "a" }),
   };
 }
 
@@ -43,10 +45,9 @@ function buildTransport(level, filename) {
     level,
     format: format.combine(
       format.timestamp(),
-      format.printf(
-        ({ timestamp, level, message }) =>
-          `[${timestamp}] [${level.toUpperCase()}] ${message}`
-      )
+      format.printf(({ timestamp, level, message }) => {
+        return `[${timestamp}] [${level.toUpperCase()}] ${message}`;
+      })
     ),
   });
 }

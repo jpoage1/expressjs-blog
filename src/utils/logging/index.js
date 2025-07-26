@@ -51,33 +51,45 @@ const manualLogger = {
   streams: logStreams,
   function: (...args) => functionLog(functionsLogDir, ...args),
   info: (...args) =>
-    writeLog("INFO", logStreams.info, console.log, sessionTransport, ...args),
+    writeLog("INFO", logStreams.info, sessionTransport, console.log, ...args),
+  event: (...args) =>
+    writeLog("EVENT", logStreams.event, sessionTransport, console.log, ...args),
   notice: (...args) =>
     writeLog(
       "NOTICE",
       logStreams.notice,
-      console.log,
       sessionTransport,
+      console.log,
       ...args
     ),
   warn: (...args) =>
-    writeLog("WARN", logStreams.warn, console.warn, sessionTransport, ...args),
+    writeLog("WARN", logStreams.warn, sessionTransport, console.warn, ...args),
+  security: (...args) =>
+    writeLog(
+      "SECURITY",
+      logStreams.security,
+      sessionTransport,
+      console.warn,
+      ...args
+    ),
   error: (...args) =>
     writeLog(
       "ERROR",
       logStreams.error,
-      console.error,
       sessionTransport,
+      console.error,
       ...args
     ),
   debug: (...args) =>
     writeLog(
       "DEBUG",
       logStreams.debug,
-      console.debug,
       sessionTransport,
+      console.debug,
       ...args
     ),
+  analytics: (...args) =>
+    writeLog("ANALYTICS", logStreams.analytics, sessionTransport, ...args),
   sessionInfo: () => ({
     sessionId: sessionTimestamp,
     sessionDir,
@@ -95,6 +107,7 @@ const winstonLogger = createLogger({
   ),
   transports: [
     buildTransport("info", "info"),
+    buildTransport("event", "event"),
     buildTransport("error", "error"),
     buildTransport("warn", "warn"),
     buildTransport("debug", "debug"),
