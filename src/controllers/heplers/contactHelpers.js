@@ -118,7 +118,7 @@ async function logUnhandledError(req, err) {
   await logSecurityEvent(errorData, "contact_error");
 }
 
-module.expors = {
+module.exports = {
   isValidInput,
   handleInvalidInput,
   buildSecurityData,
