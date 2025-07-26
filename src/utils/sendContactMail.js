@@ -10,10 +10,28 @@ const {
   DEFAULT_SUBJECT,
   EMAIL_LOG_PATH,
 } = require("../config/emailConfig");
+
+// Fixed sanitizeInput function
 function sanitizeInput(input) {
-  return String(input)
-    .replace(/[\r\n<>]/g, "")
-    .trim();
+  // Handle null, undefined, and non-string inputs safely
+  if (input === undefined) {
+    return "undefined";
+  }
+  if (input == null) {
+    return "null";
+  }
+  // if (input == "null") {
+  //   return "";
+  // }
+
+  try {
+    return String(input)
+      .replace(/[\r\n<>]/g, "")
+      .trim();
+  } catch (error) {
+    // If String() conversion fails, return empty string
+    return "";
+  }
 }
 
 const HttpError = require("./HttpError");
