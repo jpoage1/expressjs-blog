@@ -1,14 +1,15 @@
+// src/utils/sendContactMail.js
 const transporter = require("./transporter");
 const path = require("path");
 const fs = require("fs").promises;
 const { validateAndSanitizeEmail } = require("../utils/emailValidator");
 const { winstonLogger } = require("../utils/logging");
-
-const MAIL_DOMAIN = process.env.MAIL_DOMAIN;
-const MAIL_USER = process.env.MAIL_USER;
-const DEFAULT_SUBJECT = "New Contact Form Submission";
-const EMAIL_LOG_PATH = path.join(__dirname, "../../data/emails.json");
-
+const {
+  MAIL_DOMAIN,
+  MAIL_USER,
+  DEFAULT_SUBJECT,
+  EMAIL_LOG_PATH,
+} = require("../config/emailConfig");
 function sanitizeInput(input) {
   return String(input)
     .replace(/[\r\n<>]/g, "")
@@ -28,7 +29,7 @@ async function sendContactMail({ name, email, subject, message }) {
     message: errorMessage,
   } = validateAndSanitizeEmail(email);
 
-  if (!valid) throw new HttpError(errorMessage || ERRORS.INVALID_EMAIL, 400);
+  if (!valid) throw new HttpError(errorMessage, 400);
 
   const mailData = {
     from: `"Contact Form" <no-reply@${MAIL_DOMAIN}>`,
@@ -57,4 +58,5 @@ async function sendContactMail({ name, email, subject, message }) {
   return transporter.sendMail(mailData);
 }
 
-module.exports = sendContactMail;
+module.exports.sendContactMail = sendContactMail;
+module.exports.sanitizeInput = sanitizeInput;

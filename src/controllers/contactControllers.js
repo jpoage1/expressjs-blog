@@ -1,5 +1,5 @@
 // src/routes/contact.js
-const sendContactMail = require("../utils/sendContactMail");
+const { sendContactMail } = require("../utils/sendContactMail");
 
 const verifyHCaptcha = require("../utils/verifyHCaptcha");
 const { qualifyLink } = require("../utils/qualifyLinks");
