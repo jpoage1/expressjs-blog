@@ -21,7 +21,7 @@ describe("config.js", () => {
   });
 
   it("projectRoot matches resolved 3-levels-up path", () => {
-    const expected = path.resolve(__dirname, "../../../../");
+    const expected = path.resolve(__dirname, "../../../");
     expect(projectRoot).to.equal(expected);
   });
 
@@ -68,10 +68,7 @@ describe("config.js", () => {
     const original = process.env.LOG_LEVEL;
     delete process.env.LOG_LEVEL;
 
-    const { LOG_LEVEL } = proxyquire(
-      "../../../../src/utils/logging/config",
-      {}
-    );
+    const { LOG_LEVEL } = proxyquire("../../../src/utils/logging/config", {});
     expect(LOG_LEVEL).to.equal("info");
 
     if (original !== undefined) process.env.LOG_LEVEL = original;

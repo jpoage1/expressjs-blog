@@ -1,6 +1,6 @@
 // test/units/utils/logging/formatLogMessage.test.js
 const { expect } = require("chai");
-const { formatLogMessage } = require("../../../../src/utils/logging");
+const { formatLogMessage } = require("../../../src/utils/logging");
 
 describe("formatLogMessage", () => {
   it("formats message with timestamp and args", () => {

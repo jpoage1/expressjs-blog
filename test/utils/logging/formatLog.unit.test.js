@@ -1,4 +1,4 @@
-const { formatLog } = require("../../../../src/utils/logging/consolePatch");
+const { formatLog } = require("../../../src/utils/logging/consolePatch");
 const { expect } = require("chai");
 
 describe("Logger Format Function Tests", () => {
@@ -6,7 +6,16 @@ describe("Logger Format Function Tests", () => {
     const circular = { name: "test" };
     circular.ref = circular;
 
-    const methods = ["INFO", "WARN", "ERROR", "DEBUG", "NOTICE"];
+    const methods = [
+      "INFO",
+      "EVENT",
+      "WARN",
+      "SECURITY",
+      "ERROR",
+      "DEBUG",
+      "NOTICE",
+      "ANALYTICS",
+    ];
 
     methods.forEach((level) => {
       const { timestamp, safeArgs, message, logLine } = formatLog(

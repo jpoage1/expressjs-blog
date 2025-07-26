@@ -6,7 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "combine:css": "node scripts/combine-css.js",
-    "test": "mocha test/**/*.unit.test.js test/**/*.property.test.js",
+    "test": "mocha \"test/**/*.unit.test.js\" \"test/**/*.property.test.js\"",
     "start": "nodemon ./src/app.js --trace-exit",
     "debug": "nodemon --inspect-brk  ./src/app.js --trace-exit",
     "maildev": "maildev",

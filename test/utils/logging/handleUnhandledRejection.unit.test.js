@@ -9,7 +9,7 @@ describe("handleUnhandledRejection", () => {
     const reason = new Error("rejection");
 
     const handlers = proxyquire(
-      path.resolve(__dirname, "../../../../src/utils/logging/handlers"),
+      path.resolve(__dirname, "../../../src/utils/logging/handlers"),
       {
         "../logging": { winstonLogger: { error: errorStub } },
       }

@@ -5,12 +5,12 @@ const customLevels = {
   levels: {
     error: 0,
     warn: 1,
-    security: 2,
+    security: 3,
     event: 2,
-    notice: 3,
-    info: 4,
-    debug: 5,
-    analytics: 6, // use a unique value
+    notice: 4,
+    info: 5,
+    debug: 6,
+    analytics: 7, // use a unique value
   },
   colors: {
     error: "red",

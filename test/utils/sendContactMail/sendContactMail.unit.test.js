@@ -6,7 +6,7 @@ const path = require("path");
 const chaiAsPromised =
   require("chai-as-promised").default || require("chai-as-promised");
 
-const HttpError = require("../../../../src/utils/HttpError");
+const HttpError = require("../../../src/utils/HttpError");
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -46,15 +46,11 @@ describe("sendContactMail", () => {
 
   beforeEach(() => {
     // Clear module cache
-    delete require.cache[
-      require.resolve("../../../../src/utils/sendContactMail")
-    ];
-    delete require.cache[
-      require.resolve("../../../../src/utils/emailValidator")
-    ];
-    delete require.cache[require.resolve("../../../../src/utils/transporter")];
-    delete require.cache[require.resolve("../../../../src/utils/logging")];
-    delete require.cache[require.resolve("../../../../src/config/emailConfig")];
+    delete require.cache[require.resolve("../../../src/utils/sendContactMail")];
+    delete require.cache[require.resolve("../../../src/utils/emailValidator")];
+    delete require.cache[require.resolve("../../../src/utils/transporter")];
+    delete require.cache[require.resolve("../../../src/utils/logging")];
+    delete require.cache[require.resolve("../../../src/config/emailConfig")];
 
     // Create stubs
     validateAndSanitizeEmailStub = sinon.stub().returns({
@@ -70,20 +66,20 @@ describe("sendContactMail", () => {
       error: sinon.stub(),
     };
 
-    require.cache[require.resolve("../../../../src/config/emailConfig")] = {
+    require.cache[require.resolve("../../../src/config/emailConfig")] = {
       exports: mockEmailConfig,
     };
 
     // Mock modules in require cache
-    require.cache[require.resolve("../../../../src/utils/emailValidator")] = {
+    require.cache[require.resolve("../../../src/utils/emailValidator")] = {
       exports: { validateAndSanitizeEmail: validateAndSanitizeEmailStub },
     };
 
-    require.cache[require.resolve("../../../../src/utils/transporter")] = {
+    require.cache[require.resolve("../../../src/utils/transporter")] = {
       exports: transporterStub,
     };
 
-    require.cache[require.resolve("../../../../src/utils/logging")] = {
+    require.cache[require.resolve("../../../src/utils/logging")] = {
       exports: { winstonLogger: loggerStub },
     };
 
@@ -96,7 +92,7 @@ describe("sendContactMail", () => {
     fsWriteStub = sinon.stub(fs, "writeFile");
 
     // Require the module after mocking
-    const module = require("../../../../src/utils/sendContactMail");
+    const module = require("../../../src/utils/sendContactMail");
     sendContactMail = module.sendContactMail;
   });
 

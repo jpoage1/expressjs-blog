@@ -11,6 +11,9 @@ const mockLogStreams = {
   warn: new Writable({ write() {} }),
   debug: new Writable({ write() {} }),
   notice: new Writable({ write() {} }),
+  security: new Writable({ write() {} }),
+  analytics: new Writable({ write() {} }),
+  event: new Writable({ write() {} }),
 };
 
 const mockSessionTransport = {
@@ -18,11 +21,11 @@ const mockSessionTransport = {
 };
 
 // Import the modules under test
-const { writeLog } = require("../../../../src/utils/logging/consolePatch");
+const { writeLog } = require("../../../src/utils/logging/consolePatch");
 const {
   manualLogger,
   winstonLogger,
-} = require("../../../../src/utils/logging/index");
+} = require("../../../src/utils/logging/index");
 
 describe("Logger Object Expansion Tests", () => {
   let streamWriteStubs;
@@ -33,6 +36,9 @@ describe("Logger Object Expansion Tests", () => {
       info: sinon.stub(mockLogStreams.info, "write"),
       error: sinon.stub(mockLogStreams.error, "write"),
       warn: sinon.stub(mockLogStreams.warn, "write"),
+      security: sinon.stub(mockLogStreams.security, "write"),
+      event: sinon.stub(mockLogStreams.event, "write"),
+      analytics: sinon.stub(mockLogStreams.analytics, "write"),
       debug: sinon.stub(mockLogStreams.debug, "write"),
       notice: sinon.stub(mockLogStreams.notice, "write"),
     };
@@ -65,8 +71,8 @@ describe("Logger Object Expansion Tests", () => {
       writeLog(
         "INFO",
         mockLogStreams.info,
-        console.log,
         mockSessionTransport,
+        console.log,
         testObject
       );
 
@@ -103,8 +109,8 @@ describe("Logger Object Expansion Tests", () => {
       writeLog(
         "INFO",
         mockLogStreams.info,
-        console.log,
         mockSessionTransport,
+        console.log,
         nestedObject
       );
 
@@ -127,8 +133,8 @@ describe("Logger Object Expansion Tests", () => {
       writeLog(
         "INFO",
         mockLogStreams.info,
-        console.log,
         mockSessionTransport,
+        console.log,
         circularObj
       );
 
@@ -152,8 +158,8 @@ describe("Logger Object Expansion Tests", () => {
       writeLog(
         "INFO",
         mockLogStreams.info,
-        console.log,
         mockSessionTransport,
+        console.log,
         arrayWithObjects
       );
 
@@ -180,8 +186,8 @@ describe("Logger Object Expansion Tests", () => {
       writeLog(
         "INFO",
         mockLogStreams.info,
-        console.log,
         mockSessionTransport,
+        console.log,
         ...mixedArgs
       );
 
@@ -207,8 +213,8 @@ describe("Logger Object Expansion Tests", () => {
       writeLog(
         "ERROR",
         mockLogStreams.error,
-        console.error,
         mockSessionTransport,
+        console.error,
         error
       );
 
@@ -233,8 +239,8 @@ describe("Logger Object Expansion Tests", () => {
       writeLog(
         "INFO",
         mockLogStreams.info,
-        console.log,
         mockSessionTransport,
+        console.log,
         specialObj
       );
 
@@ -367,8 +373,8 @@ describe("Logger Object Expansion Tests", () => {
       writeLog(
         "INFO",
         mockLogStreams.info,
-        console.log,
         mockSessionTransport,
+        console.log,
         null,
         undefined
       );
@@ -389,8 +395,8 @@ describe("Logger Object Expansion Tests", () => {
       writeLog(
         "INFO",
         mockLogStreams.info,
-        console.log,
         mockSessionTransport,
+        console.log,
         nullProtoObj
       );
 
@@ -409,8 +415,8 @@ describe("Logger Object Expansion Tests", () => {
       writeLog(
         "INFO",
         mockLogStreams.info,
-        console.log,
         mockSessionTransport,
+        console.log,
         dateObj
       );
 
@@ -432,8 +438,8 @@ describe("Logger Object Expansion Tests", () => {
       writeLog(
         "INFO",
         mockLogStreams.info,
-        console.log,
         mockSessionTransport,
+        console.log,
         regexObj
       );
 
@@ -460,8 +466,8 @@ describe("Logger Object Expansion Tests", () => {
       writeLog(
         "INFO",
         mockLogStreams.info,
-        console.log,
         mockSessionTransport,
+        console.log,
         deepObj
       );
 
@@ -502,8 +508,8 @@ describe("Logger Object Expansion Tests", () => {
         writeLog(
           "INFO",
           mockLogStreams.info,
-          console.log,
           mockSessionTransport,
+          console.log,
           obj
         );
 

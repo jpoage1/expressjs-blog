@@ -41,7 +41,7 @@ describe("sendContactMail", () => {
       }
     };
 
-    const mod = proxyquire("../../../../src/utils/sendContactMail", {
+    const mod = proxyquire("../../../src/utils/sendContactMail", {
       "./transporter": transporterStub,
       fs: { promises: fsStub },
       path: require("path"),

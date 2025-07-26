@@ -1,6 +1,6 @@
 const { expect } = require("chai");
 const fc = require("fast-check");
-const { sanitizeInput } = require("../../../../src/utils/sendContactMail");
+const { sanitizeInput } = require("../../../src/utils/sendContactMail");
 
 describe("sanitizeInput", () => {
   it("should remove all newline, carriage return, and angle brackets", () => {

@@ -144,7 +144,6 @@ module.exports = {
   manualLogger,
   winstonLogger,
   initializeLogDirectories,
-  createLogStreams,
   sessionTransport,
   patchConsole,
   shouldLog,

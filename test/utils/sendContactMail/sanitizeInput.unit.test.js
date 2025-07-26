@@ -1,6 +1,6 @@
 const { expect } = require("chai");
 
-const { sanitizeInput } = require("../../../../src/utils/sendContactMail");
+const { sanitizeInput } = require("../../../src/utils/sendContactMail");
 
 describe("sanitizeInput", () => {
   it("removes carriage returns", () => {

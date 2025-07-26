@@ -14,7 +14,7 @@ describe("handleUncaughtException", () => {
     };
 
     const { handleUncaughtException } = proxyquire(
-      "../../../../src/utils/logging/handlers",
+      "../../../src/utils/logging/handlers",
       {
         "./index": fakeLogger,
       }

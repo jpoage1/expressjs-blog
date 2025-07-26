@@ -11,7 +11,7 @@ const {
   sessionDir,
   logFiles,
   LOG_LEVELS,
-} = require("../../../../src/utils/logging/config");
+} = require("../../../src/utils/logging/config");
 
 describe("config.js", () => {
   it("projectRoot contains package.json", () => {
@@ -21,7 +21,7 @@ describe("config.js", () => {
   });
 
   it("projectRoot matches resolved 3-levels-up path", () => {
-    const expected = path.resolve(__dirname, "../../../../");
+    const expected = path.resolve(__dirname, "../../../");
     expect(projectRoot).to.equal(expected);
   });
 
@@ -57,10 +57,12 @@ describe("config.js", () => {
     expect(LOG_LEVELS).to.deep.equal({
       error: 0,
       warn: 1,
-      security: 2,
-      notice: 3,
-      info: 4,
-      debug: 5,
+      event: 2,
+      security: 3,
+      notice: 4,
+      info: 5,
+      debug: 6,
+      analytics: 7,
     });
   });
 
@@ -68,10 +70,7 @@ describe("config.js", () => {
     const original = process.env.LOG_LEVEL;
     delete process.env.LOG_LEVEL;
 
-    const { LOG_LEVEL } = proxyquire(
-      "../../../../src/utils/logging/config",
-      {}
-    );
+    const { LOG_LEVEL } = proxyquire("../../../src/utils/logging/config", {});
     expect(LOG_LEVEL).to.equal("info");
 
     if (original !== undefined) process.env.LOG_LEVEL = original;

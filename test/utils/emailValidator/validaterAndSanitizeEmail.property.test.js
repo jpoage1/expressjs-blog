@@ -7,7 +7,7 @@ const {
   validateAndSanitizeEmail,
   MESSAGES,
   MAX_EMAIL_LENGTH,
-} = require("../../../../src/utils/emailValidator");
+} = require("../../../src/utils/emailValidator");
 
 describe("validateAndSanitizeEmail - fast-check property-based tests", () => {
   it("should not throw for arbitrary strings", () => {

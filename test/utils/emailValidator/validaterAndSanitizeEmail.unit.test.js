@@ -7,7 +7,7 @@ const {
   validateAndSanitizeEmail,
   MESSAGES,
   MAX_EMAIL_LENGTH,
-} = require("../../../../src/utils/emailValidator");
+} = require("../../../src/utils/emailValidator");
 
 describe("validateAndSanitizeEmail", () => {
   afterEach(() => {

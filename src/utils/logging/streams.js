@@ -15,6 +15,7 @@ function createLogStreams(files) {
     debug: fs.createWriteStream(files.debug, { flags: "a" }),
     security: fs.createWriteStream(files.security, { flags: "a" }),
     event: fs.createWriteStream(files.event, { flags: "a" }),
+    analytics: fs.createWriteStream(files.analytics, { flags: "a" }),
   };
 }
 

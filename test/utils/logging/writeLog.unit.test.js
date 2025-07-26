@@ -1,7 +1,7 @@
 // test/units/utils/logging/writeLog.test.js
 const { expect } = require("chai");
 const sinon = require("sinon");
-const { writeLog } = require("../../../../src/utils/logging/consolePatch");
+const { writeLog } = require("../../../src/utils/logging/consolePatch");
 
 describe("writeLog - Object Expansion Tests", () => {
   let stream;
@@ -26,7 +26,7 @@ describe("writeLog - Object Expansion Tests", () => {
     it("expands simple objects instead of showing [object Object]", () => {
       const testObject = { name: "test", value: 42 };
 
-      writeLog("INFO", stream, consoleFn, sessionTransport, testObject);
+      writeLog("INFO", stream, sessionTransport, consoleFn, testObject);
 
       const expectedTimestamp = fixedDate.toISOString();
 
@@ -71,7 +71,7 @@ describe("writeLog - Object Expansion Tests", () => {
         },
       };
 
-      writeLog("INFO", stream, consoleFn, sessionTransport, nestedObject);
+      writeLog("INFO", stream, sessionTransport, consoleFn, nestedObject);
 
       // Check all outputs expand the nested structure
       expect(stream.write.called).to.be.true;
@@ -102,7 +102,7 @@ describe("writeLog - Object Expansion Tests", () => {
         { id: 2, name: "second", nested: { value: "test" } },
       ];
 
-      writeLog("INFO", stream, consoleFn, sessionTransport, arrayWithObjects);
+      writeLog("INFO", stream, sessionTransport, consoleFn, arrayWithObjects);
 
       expect(stream.write.called).to.be.true;
       const streamOutput = stream.write.getCall(0).args[0];
@@ -130,7 +130,7 @@ describe("writeLog - Object Expansion Tests", () => {
         { deeply: { nested: { object: "here" } } },
       ];
 
-      writeLog("INFO", stream, consoleFn, sessionTransport, ...mixedArgs);
+      writeLog("INFO", stream, sessionTransport, consoleFn, ...mixedArgs);
 
       expect(stream.write.called).to.be.true;
       const streamOutput = stream.write.getCall(0).args[0];
@@ -154,7 +154,7 @@ describe("writeLog - Object Expansion Tests", () => {
       const error = new Error("Test error");
       error.customProperty = { details: "additional info" };
 
-      writeLog("ERROR", stream, consoleFn, sessionTransport, error);
+      writeLog("ERROR", stream, sessionTransport, consoleFn, error);
 
       expect(stream.write.called).to.be.true;
       const streamOutput = stream.write.getCall(0).args[0];
@@ -177,7 +177,7 @@ describe("writeLog - Object Expansion Tests", () => {
         anotherProp: { nested: "data" },
       };
 
-      writeLog("INFO", stream, consoleFn, sessionTransport, specialObj);
+      writeLog("INFO", stream, sessionTransport, consoleFn, specialObj);
 
       expect(stream.write.called).to.be.true;
       const streamOutput = stream.write.getCall(0).args[0];
@@ -196,7 +196,7 @@ describe("writeLog - Object Expansion Tests", () => {
 
   describe("edge cases", () => {
     it("handles null and undefined without [object Object]", () => {
-      writeLog("INFO", stream, consoleFn, sessionTransport, null, undefined);
+      writeLog("INFO", stream, sessionTransport, consoleFn, null, undefined);
 
       expect(stream.write.called).to.be.true;
       const streamOutput = stream.write.getCall(0).args[0];
@@ -214,7 +214,7 @@ describe("writeLog - Object Expansion Tests", () => {
     it("handles Date objects", () => {
       const dateObj = new Date("2023-01-01");
 
-      writeLog("INFO", stream, consoleFn, sessionTransport, dateObj);
+      writeLog("INFO", stream, sessionTransport, consoleFn, dateObj);
 
       expect(stream.write.called).to.be.true;
       const streamOutput = stream.write.getCall(0).args[0];
@@ -231,7 +231,7 @@ describe("writeLog - Object Expansion Tests", () => {
     it("handles RegExp objects", () => {
       const regexObj = /test.*pattern/gi;
 
-      writeLog("INFO", stream, consoleFn, sessionTransport, regexObj);
+      writeLog("INFO", stream, sessionTransport, consoleFn, regexObj);
 
       expect(stream.write.called).to.be.true;
       const streamOutput = stream.write.getCall(0).args[0];
@@ -245,7 +245,7 @@ describe("writeLog - Object Expansion Tests", () => {
       nullProtoObj.key = "value";
       nullProtoObj.nested = { prop: "data" };
 
-      writeLog("INFO", stream, consoleFn, sessionTransport, nullProtoObj);
+      writeLog("INFO", stream, sessionTransport, consoleFn, nullProtoObj);
 
       expect(stream.write.called).to.be.true;
       const streamOutput = stream.write.getCall(0).args[0];
@@ -266,7 +266,7 @@ describe("writeLog - Object Expansion Tests", () => {
         current = current.next;
       }
 
-      writeLog("INFO", stream, consoleFn, sessionTransport, deepObj);
+      writeLog("INFO", stream, sessionTransport, consoleFn, deepObj);
 
       expect(stream.write.called).to.be.true;
       const streamOutput = stream.write.getCall(0).args[0];
@@ -287,7 +287,7 @@ describe("writeLog - Object Expansion Tests", () => {
           array: [{ item: "test" }],
         };
 
-        writeLog(level, stream, consoleFn, sessionTransport, testObj);
+        writeLog(level, stream, sessionTransport, consoleFn, testObj);
 
         // Only check if the function was called for levels that should log
         if (stream.write.called) {
@@ -315,7 +315,7 @@ describe("writeLog - Object Expansion Tests", () => {
       const obj2 = { second: "object", array: [{ item: "test" }] };
       const obj3 = { third: { deeply: { nested: "value" } } };
 
-      writeLog("INFO", stream, consoleFn, sessionTransport, obj1, obj2, obj3);
+      writeLog("INFO", stream, sessionTransport, consoleFn, obj1, obj2, obj3);
 
       expect(stream.write.called).to.be.true;
       const streamOutput = stream.write.getCall(0).args[0];

@@ -3,15 +3,18 @@ const { expect } = require("chai");
 const fs = require("fs");
 const path = require("path");
 const mockFs = require("mock-fs");
-const { initializeLogDirectories } = require("../../../../src/utils/logging");
+const { initializeLogDirectories } = require("../../../src/utils/logging");
 
 describe("initializeLogDirectories", () => {
   const customLogFiles = {
     info: "../test/logs/info/info.log",
     error: "../test/logs/error/error.log",
+    security: "../test/logs/security/security.log",
     warn: "../test/logs/warn/warn.log",
+    event: "../test/logs/event/event.log",
     notice: "../test/logs/notice/notice.log",
     debug: "../test/logs/debug/debug.log",
+    analytics: "../test/logs/analytics/analytics.log",
   };
 
   afterEach(() => mockFs.restore());
