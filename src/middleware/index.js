@@ -20,7 +20,8 @@ const securedMiddleware = require("./secured");
 const securedRoutes = require("../routes/secured");
 const adaptiveBodyParser = require("./adaptiveBodyParser");
 const analytics = require("../controllers/analyticsControllers");
-const structuredLogger = require("../utils/structuredLogger");
+const httpLogger = require("../utils/structuredLogger");
+const cacheUtils = require("./cacheUtils");
 
 function setupApp() {
   const app = express();
@@ -32,7 +33,7 @@ function setupApp() {
   app.use(hbs);
 
   // Setup logging
-  app.use(structuredLogger, loggingMiddleware);
+  app.use(httpLogger, loggingMiddleware);
 
   app.use(authCheck);
 
@@ -51,6 +52,7 @@ function setupApp() {
   app.use(validateRequestIntegrity);
   app.use(formatHtml);
   app.use(redirectMiddleware);
+  app.use(cacheUtils);
   app.post("/track", logEvent("analytics"), analytics);
   app.post("/analytics", logEvent("analytics"), analytics);
   app.use("/admin", logEvent("admin"), securedMiddleware, securedRoutes);

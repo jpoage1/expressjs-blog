@@ -7,6 +7,20 @@ function determineLogLevel(statusCode) {
   return null;
 }
 
+// Flatten nested objects into key-value pairs for metadata
+const flatten = (obj, prefix = "") => {
+  if (!obj || typeof obj !== "object") return {};
+  const res = {};
+  for (const [k, v] of Object.entries(obj)) {
+    const key = prefix ? `${prefix}.${k}` : k;
+    if (v !== null && typeof v === "object") {
+      Object.assign(res, flatten(v, key));
+    } else {
+      res[key] = String(v);
+    }
+  }
+  return res;
+};
 module.exports = (req, res, next) => {
   res.on("finish", () => {
     const { method, url, headers, query, body, ip, connection } = req;
@@ -14,21 +28,6 @@ module.exports = (req, res, next) => {
 
     let logLevel = determineLogLevel(statusCode);
     if (logLevel) {
-      // Flatten nested objects into key-value pairs for metadata
-      const flatten = (obj, prefix = "") => {
-        if (!obj || typeof obj !== "object") return {};
-        const res = {};
-        for (const [k, v] of Object.entries(obj)) {
-          const key = prefix ? `${prefix}.${k}` : k;
-          if (v !== null && typeof v === "object") {
-            Object.assign(res, flatten(v, key));
-          } else {
-            res[key] = String(v);
-          }
-        }
-        return res;
-      };
-
       const meta = {
         statusCode: String(statusCode),
         directIp: String(connection.remoteAddress),

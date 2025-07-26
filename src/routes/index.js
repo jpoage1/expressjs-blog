@@ -28,6 +28,8 @@ router.head("/health", (req, res) => {
   res.sendStatus(200);
 });
 
+router.get("/error/:code", errorPage); // Landing page after error is logged
+
 router.get("/error", errorPage); // Landing page after error is logged
 
 router.use(admin);

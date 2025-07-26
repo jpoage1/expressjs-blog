@@ -47,9 +47,7 @@ module.exports = async (err, req, res, next) => {
   const errorContext = getErrorContext(code || statusCode);
 
   if (!isDev && !req?.isAuthenticated) {
-    res.customRedirect(
-      `${ERROR_REDIRECT_PATH}?code=${errorContext.statusCode}`
-    );
+    res.customRedirect(`${ERROR_REDIRECT_PATH}/${errorContext.statusCode}`);
     return;
   }
 

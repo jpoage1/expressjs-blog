@@ -2,6 +2,9 @@
 const { marked } = require("marked");
 const fs = require("fs").promises;
 const path = require("path");
+const fsSync = require("fs");
+const crypto = require("crypto");
+
 const matter = require("gray-matter");
 const { getAllPosts } = require("../utils/postFileUtils");
 
@@ -34,7 +37,28 @@ exports.blogPost = async (req, res, next) => {
   );
 
   try {
+    const stat = fsSync.statSync(mdPath);
     const fileContent = await fs.readFile(mdPath, "utf8");
+
+    // Generate ETag from content hash
+    const hash = crypto.createHash("sha256").update(fileContent).digest("hex");
+    const lastModified = stat.mtime.toUTCString();
+
+    res.setHeader("ETag", hash);
+    res.setHeader("Last-Modified", lastModified);
+
+    // Check conditional request headers
+    if (
+      req.headers["if-none-match"] === hash ||
+      req.headers["if-modified-since"] === lastModified
+    ) {
+      res.statusCode = 304;
+      return res.end();
+    }
+    if (req.checkCacheHeaders({ etag: hash, lastModified })) {
+      return;
+    }
+
     const { data: frontmatter, content } = matter(fileContent);
     if (
       !frontmatter.published &&
@@ -70,6 +94,18 @@ exports.blogIndex = async (req, res) => {
   );
   // Sort posts descending by date
   publishedPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  const etagInput = publishedPosts.map((p) => p.id).join(",");
+  const etag = `"${hash(etagInput)}"`;
+
+  const lastModified =
+    publishedPosts.length > 0
+      ? new Date(
+          Math.max(...publishedPosts.map((p) => new Date(p.date).getTime()))
+        ).toUTCString()
+      : new Date().toUTCString();
+
+  if (req.checkCacheHeaders({ etag, lastModified })) return;
 
   // Prepare context compatible with the blog-index.hbs layout
   // Add `templateContent` as excerpt or limited content if needed here
