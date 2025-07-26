@@ -15,19 +15,12 @@ const { redirectMiddleware } = require("./redirect");
 
 const { TRUST_PROXY } = require("../constants/middlewareConstants");
 
-const {
-  loggingMiddleware,
-  morganInfo,
-  morganWarn,
-  morganError,
-  morganEvent,
-  morganAnalytics,
-  morganSecurity,
-} = require("./logging");
+const { loggingMiddleware } = require("./logging");
 const securedMiddleware = require("./secured");
 const securedRoutes = require("../routes/secured");
 const adaptiveBodyParser = require("./adaptiveBodyParser");
 const analytics = require("../controllers/analyticsControllers");
+const structuredLogger = require("../utils/structuredLogger");
 
 function setupApp() {
   const app = express();
@@ -39,15 +32,7 @@ function setupApp() {
   app.use(hbs);
 
   // Setup logging
-  app.use(
-    morganInfo,
-    morganWarn,
-    morganError,
-    morganEvent,
-    morganAnalytics,
-    morganSecurity,
-    loggingMiddleware
-  );
+  app.use(structuredLogger, loggingMiddleware);
 
   app.use(authCheck);
 

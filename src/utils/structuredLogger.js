@@ -1,15 +1,19 @@
 const { winstonLogger } = require("./logging");
+function determineLogLevel(statusCode) {
+  if (statusCode < 400) return "event";
+  if (statusCode === 401 || statusCode === 403) return "security";
+  if (statusCode >= 400 && statusCode < 500) return "warn";
+  if (statusCode >= 500) return "error";
+  return null;
+}
 
-module.exports = (level) => (req, res, next) => {
+module.exports = (req, res, next) => {
   res.on("finish", () => {
     const { method, url, headers, query, body, ip, connection } = req;
     const { statusCode } = res;
 
-    if (
-      (level === "info" && statusCode < 400) ||
-      (level === "warn" && statusCode >= 400 && statusCode < 500) ||
-      (level === "error" && statusCode >= 500)
-    ) {
+    let logLevel = determineLogLevel(statusCode);
+    if (logLevel) {
       // Flatten nested objects into key-value pairs for metadata
       const flatten = (obj, prefix = "") => {
         if (!obj || typeof obj !== "object") return {};
@@ -35,8 +39,7 @@ module.exports = (level) => (req, res, next) => {
         ...flatten(body, "body"),
       };
 
-      winstonLogger.log({
-        level,
+      winstonLogger[logLevel]({
         message: `${method} ${url}`,
         ...meta,
       });
