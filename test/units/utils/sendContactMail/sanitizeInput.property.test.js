@@ -67,7 +67,7 @@ describe("sanitizeInput", () => {
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;'\":,./?`~ \t", // Excludes \r, \n, <, >
         }),
         (input) => {
-          if (/[<>\r\n]/.test(input)) fc.pre(false);
+          if (/[<>\r\n]/.test(input)) fc.pre(false); // Reject inputs with excluded chars
           const result = sanitizeInput(input);
           // For inputs that *only* contain allowed characters,
           // the result should simply be the trimmed version of the input.
