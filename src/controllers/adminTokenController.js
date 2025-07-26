@@ -1,5 +1,5 @@
 const { validateToken, cleanupTokens } = require("../utils/adminToken");
-const HttpError = require("../utils/HttpError");
+const SecurityEvent = require("../utils/SecurityEvent");
 
 exports.cleanupTokensMiddleware = (req, res, next) => {
   if (Math.random() < 0.1) {
@@ -8,9 +8,11 @@ exports.cleanupTokensMiddleware = (req, res, next) => {
   next();
 };
 
+// this is redirecting to authelia, despite being a "safe ip"
+
 exports.handleTokenRedirect = (req, res, next) => {
   const { token } = req.params;
-  if (!token) return next();
+  if (req.isAuthenticated || !token) return next();
 
   if (!validateToken(token)) {
     const error = new SecurityEvent("INVALID_TOKEN", { token });
@@ -28,4 +30,5 @@ exports.handleTokenRedirect = (req, res, next) => {
   const adminLoginUrl = `${process.env.AUTH_LOGIN}${redirectTo}`;
   res.set("Content-Type", "text/html");
   res.customRedirect(adminLoginUrl, 301);
+  console.log("test");
 };

@@ -5,6 +5,91 @@ const HttpError = require("./HttpError");
 const { winstonLogger } = require("./logging");
 const { captureSecurityData } = require("./securityForensics");
 
+const EVENT_TYPES = {
+  // Validation Events
+  VALIDATION_FAILURE: {
+    message: "Input validation failed",
+    statusCode: 400,
+    level: "warning",
+    category: "validation",
+  },
+  INVALID_INPUT: {
+    message: "Invalid input provided",
+    statusCode: 400,
+    level: "warning",
+    category: "validation",
+  },
+
+  // Authentication Events
+  INVALID_TOKEN: {
+    message: "Invalid or expired token",
+    statusCode: 401,
+    level: "warning",
+    category: "auth",
+  },
+  AUTH_FAILURE: {
+    message: "Authentication failed",
+    statusCode: 401,
+    level: "warning",
+    category: "auth",
+  },
+
+  // CAPTCHA Events
+  MISSING_CAPTCHA: {
+    message: "CAPTCHA token missing from submission",
+    statusCode: 400,
+    level: "info",
+    category: "captcha",
+  },
+  CAPTCHA_FAILED: {
+    message: "CAPTCHA verification failed",
+    statusCode: 403,
+    level: "warning",
+    category: "captcha",
+  },
+
+  // Threat Events
+  THREAT_BLOCKED: {
+    message: "Submission blocked due to high threat level",
+    statusCode: 403,
+    level: "critical",
+    category: "threat",
+  },
+  SUSPICIOUS_ACTIVITY: {
+    message: "Suspicious activity detected",
+    statusCode: 403,
+    level: "warning",
+    category: "threat",
+  },
+
+  // Success Events
+  CONTACT_SUCCESS: {
+    message: "Contact form submitted successfully",
+    statusCode: 200,
+    level: "info",
+    category: "success",
+  },
+  PAGE_ACCESS: {
+    message: "Page accessed",
+    statusCode: 200,
+    level: "info",
+    category: "access",
+  },
+
+  // Error Events
+  CONTACT_ERROR: {
+    message: "Error processing contact form",
+    statusCode: 500,
+    level: "error",
+    category: "error",
+  },
+  SYSTEM_ERROR: {
+    message: "System error occurred",
+    statusCode: 500,
+    level: "error",
+    category: "error",
+  },
+};
 class SecurityEvent extends HttpError {
   constructor(eventType, metadata = {}, options = {}) {
     // Handle both string event types and direct metadata for backwards compatibility
