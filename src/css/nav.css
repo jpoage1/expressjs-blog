@@ -56,6 +56,11 @@ nav.site-nav .dropdown-content {
   background-color: white;
   min-width: 160px;
   box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+
+  flex-direction: column;   
+  white-space: nowrap; 
+  left: 0;
+  top: 100%;
 }
 
 nav.site-nav .dropdown-content a {
@@ -72,9 +77,6 @@ nav.site-nav .dropdown-content form button:hover {
   background-color: #34495e; /* Match the main nav hover color */
 }
 
-nav.site-nav .dropdown:hover .dropdown-content {
-  display: block;
-}
 
 header#site-header .menu-toggle {
   display: none;
@@ -107,4 +109,27 @@ nav.site-nav .dropdown-content form {
   left: 1rem;
   top: 1rem;
   bottom: 1rem;
+}
+
+
+
+
+nav.site-nav .dropdown-content .dropdown-content {
+  top: 0;
+  left: 100%; /* shift nested submenu to the right */
+  margin-left: 0.2rem; /* small gap */
+  min-width: 160px;  
+  z-index: 12;
+}
+nav.site-nav .dropdown-content .dropdown:hover > .dropdown-content {
+  display: block;
+}
+
+nav.site-nav > .dropdown:hover > .dropdown-content {
+  display: block;
+}
+
+/* Only show direct submenu of nested dropdowns */
+nav.site-nav .dropdown-content > .dropdown:hover > .dropdown-content {
+  display: block;
 }

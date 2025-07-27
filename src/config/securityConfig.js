@@ -1,4 +1,4 @@
-// config/securityConstants.js
+// config/securityConfig.js
 
 const { baseUrl } = require("../utils/baseUrl");
 
@@ -16,14 +16,9 @@ module.exports = {
       "https://hcaptcha.com",
       "https://cdn.jsdelivr.net",
       "https://cdnjs.cloudflare.com",
-      // "'sha256-dMV9we3strWiwZYu55JT4zbPbIhmVvBssnieDrKQMKw='",
-      // "'sha256-dMV9we3strWiwZYu55JT4zbPbIhmVvBssnieDrKQMKw='",
+      "https://jigsaw.w3.org",
     ],
-    styleSrc: [
-      "'self'",
-      "https:",
-      // "'sha256-huhqpKwGcFswbXjh5F/DueoxnLh3Yh/pg/lNbo+tnLE='",
-    ],
+    styleSrc: ["'self'", "https:"],
     imgSrc: [
       "'self'",
       "data:",

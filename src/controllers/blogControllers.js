@@ -96,7 +96,7 @@ exports.blogIndex = async (req, res) => {
   publishedPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
   const etagInput = publishedPosts.map((p) => p.id).join(",");
-  const etag = `"${hash(etagInput)}"`;
+  const etag = `"${crypto.createHash("sha256").update(etagInput).digest("hex")}"`;
 
   const lastModified =
     publishedPosts.length > 0

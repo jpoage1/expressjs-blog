@@ -1,0 +1,16 @@
+{{#if submenu}}
+<div class="dropdown">
+    {{#if href}}
+    {{> navLink href=href label=label class="dropbtn"}}
+    {{else}}
+    <a class="dropbtn">{{label}}</a>
+    {{/if}}
+    <div class="dropdown-content">
+        {{#each submenu}}
+        {{> navItem this}}
+        {{/each}}
+    </div>
+</div>
+{{else}}
+{{> navLink href=href label=label method=method target=target rel=rel}}
+{{/if}}

@@ -4,7 +4,7 @@ const router = express.Router();
 const { renderPresentation } = require("../controllers/presentationController");
 const resolveReturnUrl = require("../middleware/resolveReturnUrl");
 const { securityPolicy } = require("../middleware/applyProductionSecurity");
-const { CSP_DIRECTIVES } = require("../constants/securityConstants");
+const { CSP_DIRECTIVES } = require("../config/securityConfig");
 
 router.get(
   "/",

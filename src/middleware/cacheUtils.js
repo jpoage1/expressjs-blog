@@ -25,4 +25,9 @@ function cacheMiddleware(req, res, next) {
   next();
 }
 
-module.exports = cacheMiddleware;
+module.exports = (req, res, next) => {
+  req.checkCacheHeaders = (options) => {
+    return false;
+  };
+  next();
+}; // temporarily disable caching until i refactor the front end from backend

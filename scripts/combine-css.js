@@ -11,7 +11,7 @@ const mainCssEntry = path.join(__dirname, "..", "src", "css", "styles.css");
 // Define the output path and filename for the combined CSS
 const outputDir = path.join(__dirname, "..", "public", "css");
 const outputFilename = "styles.css";
-const outputPath = path.join(outputDir, "..", outputFilename);
+const outputPath = path.join(outputDir, outputFilename);
 
 async function combineCssImports() {
   console.log(`Starting CSS bundling from: ${mainCssEntry}`);

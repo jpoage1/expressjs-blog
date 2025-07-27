@@ -11,7 +11,7 @@ const {
   FORBIDDEN_STATUS_CODE,
   HSTS_MAX_AGE,
   CSP_DIRECTIVES,
-} = require("../constants/securityConstants");
+} = require("../config/securityConfig");
 
 const disablePoweredBy = (req, res, next) => {
   req.app.disable("x-powered-by");
