@@ -60,13 +60,16 @@ exports.renderDocsIndex = async (req, res, next) => {
       docPath: "/docs",
       docModule: null,
     });
-
-    res.render("docs/index", {
-      ...context,
-      docsPaths: yamlFiles.map((name) => `${req.baseUrl || ""}/${name}`),
-    });
+    try {
+      res.render("docs/index", {
+        ...context,
+        docsPaths: yamlFiles.map((name) => `${req.baseUrl || ""}/${name}`),
+      });
+    } catch (err) {
+      return next(new HttpError("Failed to render page", 424, err.stack));
+    }
   } catch (err) {
-    next(new HttpError("Failed to read docs directory", 500, err.stack));
+    return next(new HttpError("Failed to read docs directory", 500, err.stack));
   }
 };
 
@@ -90,13 +93,16 @@ exports.renderDocsSummary = async (req, res, next) => {
       docPath: baseUrl + "/docs/summary",
       docModule: null,
     });
-
-    res.render("docs/summary", {
-      ...context,
-      summaries,
-    });
+    try {
+      res.render("docs/summary", {
+        ...context,
+        summaries,
+      });
+    } catch (err) {
+      return next("Failed to render page", 424, err.stack);
+    }
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -118,14 +124,17 @@ exports.renderDocsByType = async (req, res, next) => {
     name: key,
     url: `${baseUrl}/docs/${docPath}/${key}`,
   }));
-
-  res.render("docs/path", {
-    ...context,
-    docsHome: qualifyLink("/docs"),
-    pathName: docPath,
-    crossCuttingSummary: doc.crossCuttingSummary,
-    modules: modulesWithLinks,
-  });
+  try {
+    res.render("docs/path", {
+      ...context,
+      docsHome: qualifyLink("/docs"),
+      pathName: docPath,
+      crossCuttingSummary: doc.crossCuttingSummary,
+      modules: modulesWithLinks,
+    });
+  } catch (e) {
+    return next(new HttpError("Failed to render page", 424, err.stack));
+  }
 };
 
 exports.renderDocsModule = async (req, res, next) => {
@@ -147,12 +156,16 @@ exports.renderDocsModule = async (req, res, next) => {
     docModule: module,
   });
 
-  res.render("docs/module", {
-    ...context,
-    docsHome: qualifyLink("/docs"),
-    pathUrl: qualifyLink("/docs/" + docPath),
-    pathName: docPath,
-    module,
-    moduleDoc: filterModuleSecurityKeys(moduleDoc),
-  });
+  try {
+    res.render("docs/module", {
+      ...context,
+      docsHome: qualifyLink("/docs"),
+      pathUrl: qualifyLink("/docs/" + docPath),
+      pathName: docPath,
+      module,
+      moduleDoc: filterModuleSecurityKeys(moduleDoc),
+    });
+  } catch (err) {
+    return next(new HttpError("Failed to render page", 424, err.stack));
+  }
 };

@@ -76,5 +76,10 @@ module.exports = async (err, req, res, next) => {
     context
   );
   res.status(errorContext.statusCode);
-  res.renderGenericMessage(errorPageContext);
+  try {
+    res.renderGenericMessage(errorPageContext);
+  } catch (e) {
+    winstonLogger.error(e, { context });
+    res.send("Critical error.");
+  }
 };

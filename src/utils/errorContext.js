@@ -13,6 +13,10 @@ const codeMap = {
     title: "Server Error",
     message: "An unexpected error occurred. Please try again later.",
   },
+  424: {
+    title: "Server Error",
+    message: "An unexpected error occurred. Please try again later.",
+  },
 };
 
 const nameMap = {

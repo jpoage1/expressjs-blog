@@ -1,4 +1,6 @@
-class HttpError extends Error {
+const HttpError = require("./HttpError");
+
+class RenderError extends HttpError {
   constructor(message, statusCode = 500, metadata = {}) {
     super(message);
     this.name = "HttpError";
@@ -7,5 +9,4 @@ class HttpError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 }
-
-module.exports = HttpError;
+module.exports = RenderError;

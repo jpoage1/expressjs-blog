@@ -49,6 +49,25 @@ const hbsMiddleware = (req, res, next) => {
         json(context) {
           return JSON.stringify(context, null, 2);
         },
+        // helperMissing(context, options) {
+        //   var options = arguments[arguments.length - 1];
+        //   var args = Array.prototype.slice.call(
+        //     arguments,
+        //     0,
+        //     arguments.length - 1
+        //   );
+        //   return new Handlebars.SafeString(
+        //     "Missing: " + options.name + "(" + args + ")"
+        //   );
+        // },
+        // blockHelperMissing(context, options) {
+        //   return (
+        //     "Helper '" +
+        //     options.name +
+        //     "' not found. Printing block: " +
+        //     options.fn(context)
+        //   );
+        // },
         // renderObject,
       },
       extname: EXTENSION,

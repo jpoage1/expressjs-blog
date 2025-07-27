@@ -46,8 +46,6 @@ module.exports = async function getDocsContext(
 
   const allYamlDocs = await loadAllYamlDocs();
   const currentPath = overrides.docPath || null;
-  console.debug(`overrides: ${JSON.stringify(overrides)}`);
-  console.debug(`current Path: ${currentPath}`);
   const currentModule = overrides.docModule || null;
   const docsMenu = generateDocsMenuModel(
     allYamlDocs,
