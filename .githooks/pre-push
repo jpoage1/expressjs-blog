@@ -42,6 +42,6 @@ else
 fi
 
 cd content
-git push "$remote" main
+git push "$remote" main --force
 cd ..
 set +x
