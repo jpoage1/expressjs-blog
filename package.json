@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
+    "push:all": "scripts/push-all.sh",
     "combine:css": "node scripts/combine-css.js",
     "test": "mocha \"test/**/*.unit.test.js\" \"test/**/*.property.test.js\"",
     "start": "nodemon ./src/app.js --trace-exit",
