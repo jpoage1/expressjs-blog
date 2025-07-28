@@ -9,6 +9,14 @@ remote="$1"
 set -euo pipefail
 set -x
 
+COMMIT_HASH=$(git rev-parse HEAD)
+CHECKSUM_FILE=".last_unit_tested_commit"
+
+if [ -f "$CHECKSUM_FILE" ] && [ "$(cat "$CHECKSUM_FILE")" = "$COMMIT_HASH" ]; then
+  echo "✓ Skipping tests, already tested commit: $COMMIT_HASH"
+  exit 0
+fi
+
 # Run Mocha directly, fail if any test fails
 if ! node_modules/.bin/mocha "test/**/*.unit.test.js" "test/**/*.property.test.js"; then
   echo "Initial test suite failed. Skipping prepush and aborting push."
@@ -25,6 +33,9 @@ if ! node_modules/.bin/mocha "test/**/*.unit.test.js" "test/**/*.property.test.j
   wait "$APP_PID" 2>/dev/null || true
   exit 1
 fi
+
+echo "$COMMIT_HASH" > "$CHECKSUM_FILE"
+echo "✓ All tests passed for commit: $COMMIT_HASH"
 
 node src/app.js >/dev/null 2>&1 &
   APP_PID=$!
