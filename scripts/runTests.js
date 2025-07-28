@@ -2,6 +2,25 @@ const Mocha = require("mocha");
 const { execSync } = require("child_process");
 const fs = require("fs");
 
+const CACHE_FILE = ".last_tested_commit";
+
+function getCurrentCommitHash() {
+  return execSync("git rev-parse HEAD").toString().trim();
+}
+
+function getLastTestedCommit() {
+  try {
+    return fs.readFileSync(CACHE_FILE, "utf-8").trim();
+  } catch (e) {
+    if (e.code === "ENOENT") return null;
+    throw e;
+  }
+}
+
+function cacheTestedCommit(commitHash) {
+  fs.writeFileSync(CACHE_FILE, commitHash + "\n");
+}
+
 async function runTestFile(filePath, description) {
   console.log(`Running ${description}...`);
 
@@ -25,8 +44,10 @@ async function runTestFile(filePath, description) {
 
 async function runTests() {
   try {
-    const commitHash = execSync("git rev-parse HEAD").toString().trim();
-    if (fs.readFileSync(".last_tested_commit", "utf-8").trim() === commitHash) {
+    const commitHash = getCurrentCommitHash();
+    const lastCommit = getLastTestedCommit();
+
+    if (lastCommit === commitHash) {
       process.exit(0);
     }
 
@@ -35,7 +56,7 @@ async function runTests() {
 
     await runTestFile("./test/routes.test.js", "route tests");
     console.log("✓ All tests passed!");
-    fs.writeFileSync(".last_tested_commit", commitHash + "\n");
+    cacheTestedCommit(commitHash);
   } catch (error) {
     console.error("Test execution failed:", error.message);
     process.exit(1);
