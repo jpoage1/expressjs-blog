@@ -6,6 +6,11 @@ remote="$1"
 #export GIT_TRACE_PERFORMANCE=1
 #export GIT_SSH_COMMAND="ssh -vvv"
 
+source "$(pwd)/.env"
+if [ "$SKIP_TESTS" = "true" ]; then
+  exit 0
+fi
+
 set -eu
 set -x
 

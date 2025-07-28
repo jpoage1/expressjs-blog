@@ -1,3 +1,3 @@
 [submodule "content"]
 path = content
-url = jason@git.jasonpoage.com:/srv/jasonpoage.com/expressjs-blog-posts.git
+url = ssh://git@git.jasonpoage.com:29418/jason/express-blog-posts.git

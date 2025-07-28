@@ -2,24 +2,46 @@ pipeline {
     agent any
 
     environment {
-        GIT_REPO = 'ssh://git@git.jasonpoage.com/jason/express-blog.git'
+        GIT_REPO = 'ssh://git@git.jasonpoage.com:29418/jason/express-blog.git'
         DEPLOY_BASE = '/srv/jasonpoage.com'
-        LOG_DIR = "${DEPLOY_BASE}/logs"
+        LOG_DIR = "${DEPLOY_BASE}/deployments/logs"
         TIMESTAMP = sh(script: "date +%Y%m%d-%H%M%S", returnStdout: true).trim()
     }
 
     options {
         timestamps()
-        ansiColor('xterm')
     }
 
+
     parameters {
-        string(name: 'DEPLOY_BRANCH', defaultValue: 'main', description: 'Branch to deploy (testing, staging, main, production only)')
-        string(name: 'OLD_REV', defaultValue: '', description: 'Old git revision (optional)')
-        string(name: 'NEW_REV', defaultValue: '', description: 'New git revision (optional)')
+        string(name: 'DEPLOY_BRANCH', defaultValue: 'testing', description: 'Branch to deploy (testing, staging, main, production only)')
+        booleanParam(name: 'SKIP_TESTS', defaultValue: true, description: 'Skip all testing')
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                checkout([$class: 'GitSCM',
+                    branches: [[name: "*/${params.DEPLOY_BRANCH}"]],
+                    userRemoteConfigs: [[
+                        url: env.GIT_REPO,
+                        credentialsId: '08a57452-477d-4aa6-86c6-242553660b3f'
+                    ]]
+                ])
+                script {
+                    env.OLD_REV = sh(script: 'git rev-parse HEAD~1', returnStdout: true).trim()
+                    env.NEW_REV = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                }
+            }
+        }
+
+        stage('Use Revs') {
+            steps {
+                echo "Old revision: ${env.OLD_REV}"
+                echo "New revision: ${env.NEW_REV}"
+                // further steps
+            }
+        }
 
         stage('Validate Branch') {
             steps {
@@ -46,21 +68,22 @@ pipeline {
         stage('Copy and Source .env') {
             steps {
                 script {
-                    env.ENV_FILE = "${DEPLOY_BASE}/${params.DEPLOY_BRANCH}.env"
+                    env.ENV_FILE = "${DEPLOY_BASE}/env/${params.DEPLOY_BRANCH}.env"
                     env.LOG_FILE = "${LOG_DIR}/receive-${env.TIMESTAMP}.log"
 
                     sh """
-                        cp '${ENV_FILE}' '${TMPDIR}/.env'
+                        ln -s '${ENV_FILE}' '${TMPDIR}/.env'
                     """
 
                     def envVars = sh(
-                        script: "set -a && source '${TMPDIR}/.env' && env | grep -E '^(SERVER_SCHEMA|SERVER_DOMAIN)='",
+                        script: "set -a && . '${TMPDIR}/.env' && env | grep -E '^(SERVER_SCHEMA|SERVER_DOMAIN)='",
                         returnStdout: true
                     ).trim().split("\n")
 
+                    def parsedEnv = [:]
                     envVars.each {
                         def (key, value) = it.tokenize('=')
-                        env[key] = value
+                        parsedEnv[key] = value
                     }
                 }
             }
@@ -69,7 +92,8 @@ pipeline {
         stage('Initialize Submodules') {
             steps {
                 sh """
-                    git --git-dir='${TMPDIR}/.git' --work-tree='${TMPDIR}' submodule update --init --recursive
+                    cd '${TMPDIR}'
+                    git submodule update --init --recursive
                 """
             }
         }
@@ -78,20 +102,22 @@ pipeline {
             steps {
                 script {
                     def skipInstall = false
-                    if (params.OLD_REV && params.NEW_REV && params.OLD_REV != "0000000000000000000000000000000000000000") {
+                    if (env.OLD_REV && env.NEW_REV && env.OLD_REV != "0000000000000000000000000000000000000000") {
                         def changed = sh(
-                            script: "git --git-dir='${TMPDIR}/.git' diff-tree --name-only -r ${params.OLD_REV}..${params.NEW_REV}",
+                            script: "git --git-dir='${TMPDIR}/.git' diff-tree --name-only -r ${env.OLD_REV}..${env.NEW_REV}",
                             returnStdout: true
                         )
                         if (!changed.contains('package.json') && !changed.contains('yarn.lock')) {
                             skipInstall = true
                         }
+
+                        skipInstall = false
                     }
 
                     if (!skipInstall) {
                         sh """
                             cd '${TMPDIR}'
-                            yarn
+                            yarn --cache-folder /var/cache/jenkins/yarn
                         """
                     } else {
                         echo "No dependency changes detected. Skipping yarn install."
@@ -112,13 +138,15 @@ pipeline {
         stage('Start Application for Test') {
             steps {
                 script {
-                    env.PIDFILE = "${TMPDIR}/test.pid"
-                    sh """
-                        systemctl --user stop express-blog@${params.DEPLOY_BRANCH}.service || true
-                        cd '${TMPDIR}'
-                        nohup node src/app.js >> '${LOG_FILE}' 2>&1 &
-                        echo \$! > '${PIDFILE}'
-                    """
+                    if ( !params.SKIP_TESTS ) {
+                        env.PIDFILE = "${TMPDIR}/test.pid"
+                        sh """
+                            sudo systemctl stop express-blog@${params.DEPLOY_BRANCH}.service || true
+                            cd '${TMPDIR}'
+                            nohup node src/app.js >> '${LOG_FILE}' 2>&1 &
+                            echo \$! > '${PIDFILE}'
+                        """
+                    }
                 }
             }
         }
@@ -126,21 +154,23 @@ pipeline {
         stage('Wait for Service Readiness') {
             steps {
                 script {
-                    def timeout = 30
-                    def elapsed = 0
-                    def success = false
-                    while (elapsed < timeout) {
-                        def result = sh(script: "curl --silent --fail '${env.SERVER_SCHEMA}://${env.SERVER_DOMAIN}' > /dev/null || true", returnStatus: true)
-                        if (result == 0) {
-                            success = true
-                            break
+                    if ( !params.SKIP_TESTS ) {
+                        def timeout = 30
+                        def elapsed = 0
+                        def success = false
+                        while (elapsed < timeout) {
+                            def result = sh(script: "curl --silent --fail '${env.SERVER_SCHEMA}://${env.SERVER_DOMAIN}' > /dev/null || true", returnStatus: true)
+                            if (result == 0) {
+                                success = true
+                                break
+                            }
+                            sleep 1
+                            elapsed += 1
                         }
-                        sleep 1
-                        elapsed += 1
-                    }
-                    if (!success) {
-                        sh "cat '${LOG_FILE}'"
-                        error "Service did not become available within ${timeout}s."
+                        if (!success) {
+                            sh "cat '${LOG_FILE}'"
+                            error "Service did not become available within ${timeout}s."
+                        }
                     }
                 }
             }
@@ -149,11 +179,13 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    def testStatus = sh(script: "cd '${TMPDIR}' && npm run test:postreceive", returnStatus: true)
-                    if (testStatus != 0) {
-                        sh "kill \$(cat '${PIDFILE}') || true"
-                        sh "cat '${LOG_FILE}'"
-                        error "Tests failed for branch ${params.DEPLOY_BRANCH}"
+                    if ( !params.SKIP_TESTS ) {
+                        def testStatus = sh(script: "cd '${TMPDIR}' && npm run test:postreceive", returnStatus: true)
+                        if (testStatus != 0) {
+                            sh "kill \$(cat '${PIDFILE}') || true"
+                            sh "cat '${LOG_FILE}'"
+                            error "Tests failed for branch ${params.DEPLOY_BRANCH}"
+                        }
                     }
                 }
             }
@@ -161,20 +193,23 @@ pipeline {
 
         stage('Stop Test App') {
             steps {
-                sh "kill \$(cat '${PIDFILE}') || true"
+                script {
+                    if ( !params.SKIP_TESTS ) {
+                        sh "kill \$(cat '${PIDFILE}') || true"
+                    }
+                }
             }
         }
 
         stage('Deploy') {
             steps {
                 script {
-                    def DEPLOY_PATH = "${DEPLOY_BASE}/expressjs-blog-${params.DEPLOY_BRANCH}"
+                    def DEPLOY_PATH = "${DEPLOY_BASE}/deployments/blog-${params.DEPLOY_BRANCH}"
                     if (params.DEPLOY_BRANCH == 'testing') {
                         sh """
                             rm -rf '${DEPLOY_PATH}' || true
                             mv '${TMPDIR}' '${DEPLOY_PATH}'
-                            git config -f ${DEPLOY_BASE}/expressjs-blog.git/modules/content/config core.worktree '${DEPLOY_BASE}/expressjs-blog-testing/content'
-                            ln -f '${ENV_FILE}' '${DEPLOY_PATH}/.env'
+                            ln -sf '${ENV_FILE}' '${DEPLOY_PATH}/.env'
                         """
                     } else {
                         def dirExists = sh(script: "[ -d '${DEPLOY_PATH}' ] && echo 1 || echo 0", returnStdout: true).trim()
@@ -187,22 +222,23 @@ pipeline {
                             git fetch origin
                             git reset --hard 'origin/${params.DEPLOY_BRANCH}'
                             git submodule update --init --recursive --force
-                            ln -f '${ENV_FILE}' '${DEPLOY_PATH}/.env'
+                            ln -sf '${ENV_FILE}' '${DEPLOY_PATH}/.env'
                         """
 
                         def skipInstall = false
-                        if (params.OLD_REV && params.NEW_REV && params.OLD_REV != "0000000000000000000000000000000000000000") {
+                        if (env.OLD_REV && env.NEW_REV && env.OLD_REV != "0000000000000000000000000000000000000000") {
                             def changed = sh(
-                                script: "git --git-dir='${DEPLOY_PATH}/.git' diff-tree --name-only -r ${params.OLD_REV}..${params.NEW_REV}",
+                                script: "git --git-dir='${DEPLOY_PATH}/.git' diff-tree --name-only -r ${env.OLD_REV}..${env.NEW_REV}",
                                 returnStdout: true
                             )
                             if (!changed.contains('package.json') && !changed.contains('yarn.lock')) {
                                 skipInstall = true
                             }
                         }
+                        skipInstall = false
 
                         if (!skipInstall) {
-                            sh "cd '${DEPLOY_PATH}' && yarn"
+                            sh "cd '${DEPLOY_PATH}' && yarn --cache-folder /var/cache/jenkins/yarn"
                         } else {
                             echo "No dependency changes detected. Skipping yarn install."
                         }
@@ -213,9 +249,16 @@ pipeline {
             }
         }
 
-        stage('Restart Service') {
+       stage('Restart Service') {
             steps {
-                sh "systemctl --user restart express-blog@${params.DEPLOY_BRANCH}.service"
+                script {
+                    if (params.DEPLOY_BRANCH == 'main' || params.DEPLOY_BRANCH == 'production') {
+                        sh "sudo systemctl restart express-blog@${params.DEPLOY_BRANCH}.service"
+                    } else {
+                        sh "sudo systemctl stop express-blog@${params.DEPLOY_BRANCH}.service || true"
+                        sh "sudo systemctl start express-blog@${params.DEPLOY_BRANCH}.service"
+                    }
+                }
             }
         }
     }
