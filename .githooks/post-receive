@@ -1,7 +1,25 @@
 #!/bin/bash
-set -euo pipefail # -e: exit on error, -u: exit on unset var, -o pipefail: catch errors in pipes
+
+# Only run for specific branches
+read_branches() {
+  while IFS=' ' read -r _ _ remote_ref _; do
+    case "$remote_ref" in
+      refs/heads/testing|refs/heads/staging|refs/heads/main|refs/heads/production)
+        return 0
+        ;;
+    esac
+  done
+  return 1
+}
+
+if ! read_branches; then
+  echo "Skipping deployment: not pushing testing, staging, main, or production."
+  exit 0
+fi
 
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+
+set -euo pipefail # -e: exit on error, -u: exit on unset var, -o pipefail: catch errors in pipes
 
 get_deploy_env_file() {
   branch="$1"
