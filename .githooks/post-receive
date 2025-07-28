@@ -1,22 +1,5 @@
 #!/bin/bash
 
-# Only run for specific branches
-read_branches() {
-  while IFS=' ' read -r _ _ remote_ref _; do
-    case "$remote_ref" in
-      refs/heads/testing|refs/heads/staging|refs/heads/main|refs/heads/production)
-        return 0
-        ;;
-    esac
-  done
-  return 1
-}
-
-if ! read_branches; then
-  echo "Skipping deployment: not pushing testing, staging, main, or production."
-  exit 0
-fi
-
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
 set -euo pipefail # -e: exit on error, -u: exit on unset var, -o pipefail: catch errors in pipes
@@ -318,23 +301,42 @@ combine_css() {
   }
 }
 
-ssh-add -l
 
-set -x
-# Main script execution loop
-while read -r oldrev newrev ref; do
-  tmpdir=$(mktemp -d)
-  branch="${ref#refs/heads/}"
-  echo "--- Processing push for branch: $branch (from $oldrev to $newrev) ---"
-  if run_postreceive_tests "$branch" "$tmpdir"; then
-    echo "Tests passed for $branch. Proceeding with deployment."
-    deploy_expressjs_blog "$branch" "$tmpdir" "$oldrev" "$newrev"
+# Only run for specific branches
+read_branches() {
+  while IFS=' ' read -r _ _ remote_ref _; do
+    case "$remote_ref" in
+      refs/heads/testing|refs/heads/staging|refs/heads/main|refs/heads/production)
+        return 0
+        ;;
+    esac
+  done
+  return 1
+}
 
-    # deploy_expressjs_blog "$branch" "$tmpdir"
-    echo "Deployment of $branch complete."
-  else
-    echo "Post-receive tests failed for $branch. Deployment aborted."
-    exit 1
+main() {
+  # Only deploy production, staging, testing, or main
+  if ! read_branches; then
+    echo "Skipping deployment: not pushing testing, staging, main, or production."
+    exit 0
   fi
-done
-set +x
+
+  set -x
+  # Main script execution loop
+  while read -r oldrev newrev ref; do
+    tmpdir=$(mktemp -d)
+    branch="${ref#refs/heads/}"
+    echo "--- Processing push for branch: $branch (from $oldrev to $newrev) ---"
+    if run_postreceive_tests "$branch" "$tmpdir"; then
+      echo "Tests passed for $branch. Proceeding with deployment."
+      deploy_expressjs_blog "$branch" "$tmpdir" "$oldrev" "$newrev"
+
+      # deploy_expressjs_blog "$branch" "$tmpdir"
+      echo "Deployment of $branch complete."
+    else
+      echo "Post-receive tests failed for $branch. Deployment aborted."
+      exit 1
+    fi
+  done
+  set +x
+}
