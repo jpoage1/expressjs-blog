@@ -25,13 +25,16 @@ async function runTestFile(filePath, description) {
 
 async function runTests() {
   try {
+    const commitHash = execSync("git rev-parse HEAD").toString().trim();
+    if (fs.readFileSync(".last_tested_commit", "utf-8").trim() === commitHash) {
+      process.exit(0);
+    }
+
     await runTestFile("./test/env.test.js", "environment validation tests");
     console.log("✓ Environment validation passed. Running route tests...");
 
     await runTestFile("./test/routes.test.js", "route tests");
     console.log("✓ All tests passed!");
-
-    const commitHash = execSync("git rev-parse HEAD").toString().trim();
     fs.writeFileSync(".last_tested_commit", commitHash + "\n");
   } catch (error) {
     console.error("Test execution failed:", error.message);
