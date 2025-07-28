@@ -21,18 +21,15 @@ read_branches() {
   return 1
 }
 
-
 if ! read_branches; then
   echo "Skipping tests: not pushing testing, staging, main, or production."
-  exit 0
-fi
+else
+  COMMIT_HASH=$(git rev-parse HEAD)
 
-COMMIT_HASH=$(git rev-parse HEAD)
-pwd
-
-if ! "./scripts/pre-push-tests.sh" "$COMMIT_HASH"; then
-  echo "Tests failed. Aborting push."
-  exit 1
+  if ! "./scripts/pre-push-tests.sh" "$COMMIT_HASH"; then
+    echo "Tests failed. Aborting push."
+    exit 1
+  fi
 fi
 
 cd content
