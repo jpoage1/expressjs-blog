@@ -14,11 +14,21 @@ pipeline {
 
 
     parameters {
-        string(name: 'DEPLOY_BRANCH', defaultValue: 'testing', description: 'Branch to deploy (testing, staging, main, production only)')
-        booleanParam(name: 'SKIP_TESTS', defaultValue: true, description: 'Skip all testing')
+        string(name: 'branch', defaultValue: 'refs/heads/testing', description: 'Branch ref from webhook')
     }
 
     stages {
+        stage('Init Branch') {
+            steps {
+                script {
+                    if (params.branch?.startsWith("refs/heads/")) {
+                        env.DEPLOY_BRANCH = params.branch.replaceFirst(/^refs\/heads\//, '')
+                    } else {
+                        error "Invalid branch ref: '${params.branch}'"
+                    }
+                }
+            }
+        }
         stage('Checkout') {
             steps {
                 checkout([$class: 'GitSCM',
@@ -251,16 +261,10 @@ pipeline {
 
        stage('Restart Service') {
             steps {
-                script {
-                    if (params.DEPLOY_BRANCH == 'main' || params.DEPLOY_BRANCH == 'production') {
-                        sh "sudo systemctl restart express-blog@${params.DEPLOY_BRANCH}.service"
-                    } else {
-                        sh "sudo systemctl stop express-blog@${params.DEPLOY_BRANCH}.service || true"
-                        sh "sudo systemctl start express-blog@${params.DEPLOY_BRANCH}.service"
-                    }
-                }
+                sh "sudo systemctl restart express-blog@${env.DEPLOY_BRANCH}.service"
             }
         }
+
     }
 
     post {
