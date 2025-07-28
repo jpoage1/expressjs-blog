@@ -78,6 +78,7 @@ target/
 data/*
 !data/.gitkeep
 .last_tested_commit
+.last_unit_tested_commit
 
 certs/*
 test/logs/*
