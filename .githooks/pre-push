@@ -21,6 +21,14 @@ read_branches() {
   return 1
 }
 
+check_submodule_remotes() {
+  git submodule foreach --quiet "
+    if ! git remote get-url \"$remote\" > /dev/null 2>&1; then
+      echo \"Error: submodule '\$name' missing remote '$remote'.\"
+      exit 1
+    fi
+  "
+}
 
 if ! read_branches; then
   echo "Skipping tests: not pushing testing, staging, main, or production."
