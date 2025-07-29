@@ -42,8 +42,9 @@ pipeline {
                     env.SERVER_LOG_FILE = "${env.LOG_DIR}/server/server-${env.TIMESTAMP}.log"
                     env.TEST_LOGS_FILE = "${env.LOG_DIR}/test-results/test-"
                     env.BUILD_DIR = "${env.WORKSPACE}/build"
+                    env.PIDFILE = "${BUILD_DIR}/test.pid"
                     env.ENV_FILE = "${env.DEPLOY_BASE}/env/${env.DEPLOY_BRANCH}.env"
-                    env.SERVICE_NAME = "systemctl stop express-blog@${env.DEPLOY_BRANCH}.service"
+                    env.SERVICE_NAME = "express-blog@${env.DEPLOY_BRANCH}.service"
                     env.DEPLOY_PATH = "${env.DEPLOY_BASE}/deployments/blog-${env.DEPLOY_BRANCH}"
 
 
@@ -60,6 +61,8 @@ pipeline {
                     echo "params.newrev: '${params.newrev}'"
                     echo "Old revision: ${env.OLD_REV}"
                     echo "New revision: ${env.NEW_REV}"
+                    sh "mkdir -p '${env.LOG_DIR}/server' '{env.LOG_DIR}/test-results'"
+
                 }
             }
         }
@@ -70,7 +73,7 @@ pipeline {
                     branches: [[name: "*/${env.DEPLOY_BRANCH}"]],
                     userRemoteConfigs: [[
                         url: env.GIT_REPO,
-                        credentialsId: '08a57452-477d-4aa6-86c6-242553660b3f'
+                        credentialsId: env.CREDENTIALS_ID
                     ]]
                 ])
             }
@@ -91,9 +94,7 @@ pipeline {
         stage('Clone to Build Dir') {
             steps {
                 script {
-                    sh """
-                        git clone --branch '${env.DEPLOY_BRANCH}' '${GIT_REPO}' '${BUILD_DIR}'
-                    """
+                    sh "git clone --branch '${env.DEPLOY_BRANCH}' '${env.GIT_REPO}' '${env.BUILD_DIR}'"
                 }
             }
         }
@@ -101,14 +102,10 @@ pipeline {
         stage('Copy and Source .env') {
             steps {
                 script {
-                    env.ENV_FILE = "${DEPLOY_BASE}/env/${env.DEPLOY_BRANCH}.env"
-
-                    sh """
-                        ln -s '${ENV_FILE}' '${BUILD_DIR}/.env'
-                    """
+                    sh "ln -s '${ENV_FILE}' '${env.BUILD_DIR}/.env'"
 
                     def envVars = sh(
-                        script: "set -a && . '${BUILD_DIR}/.env' && env | grep -E '^(SERVER_SCHEMA|SERVER_DOMAIN)='",
+                        script: "set -a && . '${env.BUILD_DIR}/.env' && env | grep -E '^(SERVER_SCHEMA|SERVER_DOMAIN)='",
                         returnStdout: true
                     ).trim().split("\n")
 
@@ -117,36 +114,21 @@ pipeline {
                         def (key, value) = it.tokenize('=')
                         parsedEnv[key] = value
                     }
+                    env.SERVER_SCHEMA = parsedEnv['SERVER_SCHEMA']
+                    env.SERVER_DOMAIN = parsedEnv['SERVER_DOMAIN']
                 }
             }
         }
 
-        stage('Initialize Submodules') {
+        stage('Build') {
             steps {
-                sh """
-                    cd '${BUILD_DIR}'
-                    git submodule update --init --recursive
-                """
-            }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                script {
+                dir("${BUILD_DIR}") {
                     sh """
-                        cd '${BUILD_DIR}'
+                        git submodule update --init --recursive
                         yarn
+                        yarn combine:css
                     """
                 }
-            }
-        }
-
-        stage('Build CSS') {
-            steps {
-                sh """
-                    cd '${BUILD_DIR}'
-                    yarn combine:css
-                """
             }
         }
 
@@ -154,13 +136,13 @@ pipeline {
             steps {
                 script {
                     if ( !params.SKIP_TESTS ) {
-                        env.PIDFILE = "${BUILD_DIR}/test.pid"
-                        sh """
-                            sudo systemctl stop express-blog@${env.DEPLOY_BRANCH}.service || true
-                            cd '${BUILD_DIR}'
-                            nohup node src/app.js >> '${SERVER_LOG_FILE}' 2>&1 &
-                            echo \$! > '${PIDFILE}'
-                        """
+                        dir(BUILD_DIR) {
+                            sh """
+                                sudo systemctl stop ${env.SERVICE_NAME} || true
+                                nohup node src/app.js >> '${env.SERVER_LOG_FILE}' 2>&1 &
+                                echo \$! > '${env.PIDFILE}'
+                            """
+                        }
                     }
                 }
             }
@@ -174,7 +156,7 @@ pipeline {
                         def elapsed = 0
                         def success = false
                         while (elapsed < timeout) {
-                            def result = sh(script: "curl --max-time 2 --silent --fail '${env.SERVER_SCHEMA}://${env.SERVER_DOMAIN}/health -I' > /dev/null || true", returnStatus: true)
+                            def result = sh(script: "curl --max-time 2 --silent --fail '\${SERVER_SCHEMA}://\${SERVER_DOMAIN}/health -I' > /dev/null || true", returnStatus: true)
                             if (result == 0) {
                                 success = true
                                 break
@@ -183,7 +165,7 @@ pipeline {
                             elapsed += 1
                         }
                         if (!success) {
-                            sh "cat '${SERVER_LOG_FILE}'"
+                            sh "cat '${env.SERVER_LOG_FILE}'"
                             error "Service did not become available within ${timeout}s."
                         }
                     }
@@ -195,11 +177,13 @@ pipeline {
             steps {
                 script {
                     if ( !params.SKIP_TESTS ) {
-                        def testStatus = sh(script: "cd '${BUILD_DIR}' && npm run test:postreceive", returnStatus: true)
-                        archiveArtifacts artifacts: TEST_LOG_FILE, onlyIfSuccessful: false
+                        def testStatus = sh(script: "cd '${env.BUILD_DIR}' && npm run test:postreceive", returnStatus: true)
+                        archiveArtifacts artifacts: "${env.TEST_LOGS_FILE}*", onlyIfSuccessful: false
                         if (testStatus != 0) {
-                            sh "kill \$(cat '${PIDFILE}') || true"
-                            sh "cat '${SERVER_LOG_FILE}'"
+                            sh """
+                                kill \$(cat '${env.PIDFILE}') || true
+                                cat '${env.SERVER_LOG_FILE}'
+                            """
                             error "Tests failed for branch ${env.DEPLOY_BRANCH}"
                         }
                     }
@@ -211,7 +195,7 @@ pipeline {
             steps {
                 script {
                     if ( !params.SKIP_TESTS ) {
-                        sh "kill \$(cat '${PIDFILE}') || true"
+                        sh "kill \$(cat '${env.PIDFILE}') || true"
                     }
                 }
             }
@@ -222,50 +206,47 @@ pipeline {
                 script {
                     if (env.DEPLOY_BRANCH == 'testing') {
                         sh """
-                            rm -rf '${DEPLOY_PATH}' || true
-                            mkdir -p '${DEPLOY_PATH}'
-                            rsync -a --delete '${env.WORKSPACE}/build/' '${DEPLOY_PATH}/'
-                            ln -sf '${ENV_FILE}' '${DEPLOY_PATH}/.env'
+                            rm -rf '${env.DEPLOY_PATH}' || true
+                            mkdir -p '${env.DEPLOY_PATH}'
+                            rsync -a --delete '${env.BUILD_DIR}/' '${env.DEPLOY_PATH}/'
                         """
                     } else {
                         def dirExists = sh(script: "[ -d '${DEPLOY_PATH}' ] && echo 1 || echo 0", returnStdout: true).trim()
                         if (dirExists == "0") {
-                            sh "git clone --branch '${env.DEPLOY_BRANCH}' '${GIT_REPO}' '${DEPLOY_PATH}'"
+                            sh "git clone --branch '${env.DEPLOY_BRANCH}' '${env.GIT_REPO}' '${env.DEPLOY_PATH}'"
                         }
-
-                        sh "cd '${DEPLOY_PATH}'"
-                        retry(2) {
-                            sh "git fetch origin"
-                        }
-                        sh """
-                            git reset --hard 'origin/${env.DEPLOY_BRANCH}'
-                            git submodule update --init --recursive --force
-                            ln -sf '${ENV_FILE}' '${DEPLOY_PATH}/.env'
-                        """
-
-                        def skipInstall = false
-                        if (env.OLD_REV && env.NEW_REV && env.OLD_REV != "0000000000000000000000000000000000000000") {
-                            def changed = sh(
-                                script: "git --git-dir='${DEPLOY_PATH}/.git' diff-tree --name-only -r ${env.OLD_REV}..${env.NEW_REV}",
-                                returnStdout: true
-                            )
-                            if (!changed.contains('package.json') && !changed.contains('yarn.lock')) {
-                                skipInstall = true
+                        dir(DEPLOY_PATH) {
+                            retry(2) {
+                                sh "git fetch origin"
                             }
-                        }
-                        skipInstall = false
-
-                        if (!skipInstall) {
                             sh """
-                                cd '${DEPLOY_PATH}'
-                                yarn set version from sources
-                                yarn
+                                git reset --hard 'origin/${env.DEPLOY_BRANCH}'
+                                git submodule update --init --recursive --force
                             """
-                        } else {
-                            echo "No dependency changes detected. Skipping yarn install."
-                        }
 
-                        sh "cd '${DEPLOY_PATH}' && yarn combine:css"
+                            def skipInstall = false
+                            if (env.OLD_REV && env.NEW_REV && env.OLD_REV != "0000000000000000000000000000000000000000") {
+                                def changed = sh(
+                                    script: "git --git-dir='${DEPLOY_PATH}/.git' diff-tree --name-only -r ${env.OLD_REV}..${env.NEW_REV}",
+                                    returnStdout: true
+                                )
+                                if (!changed.contains('package.json') && !changed.contains('yarn.lock')) {
+                                    skipInstall = true
+                                }
+                            }
+                            skipInstall = false
+
+                            if (!skipInstall) {
+                                sh """
+                                    yarn set version from sources
+                                    yarn
+                                """
+                            } else {
+                                echo "No dependency changes detected. Skipping yarn install."
+                            }
+
+                            sh "yarn combine:css"
+                        }
                     }
                 }
             }
@@ -274,12 +255,33 @@ pipeline {
        stage('Restart Service') {
             steps {
                 script {
-                    sh "sudo systemctl restart express-blog@${env.DEPLOY_BRANCH}.service"
+                    sh "sudo systemctl restart ${env.SERVICE_NAME}"
+                }
+            }
+        }
+        stage('Verify Service') {
+            steps {
+                script {
+                    def timeout = 30
+                    def elapsed = 0
+                    def success = false
+                    while (elapsed < timeout) {
+                        def result = sh(script: "curl --max-time 2 --silent --fail '\${env.SERVER_SCHEMA}://\${env.SERVER_DOMAIN}/health -I' > /dev/null || true", returnStatus: true)
+                        if (result == 0) {
+                            success = true
+                            break
+                        }
+                        sleep 1
+                        elapsed += 1
+                    }
+                    if (!success) {
+                        sh "cat '${env.SERVER_LOG_FILE}'"
+                        error "Service did not become available within ${timeout}s."
+                    }
                 }
             }
         }
     }
-
     post {
         success {
             echo "Deployment of ${env.DEPLOY_BRANCH} completed successfully."
@@ -288,7 +290,7 @@ pipeline {
             echo "Deployment of ${env.DEPLOY_BRANCH} failed."
         }
         cleanup {
-            sh "rm -rf '${BUILD_DIR}' || true"
+            sh "rm -rf '${env.BUILD_DIR}' || true"
         }
     }
 }
