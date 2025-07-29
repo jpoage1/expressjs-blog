@@ -61,8 +61,7 @@ pipeline {
                     echo "params.newrev: '${params.newrev}'"
                     echo "Old revision: ${env.OLD_REV}"
                     echo "New revision: ${env.NEW_REV}"
-                    sh "mkdir -p '${env.LOG_DIR}/server' '{env.LOG_DIR}/test-results'"
-
+                    sh "mkdir -p '${env.LOG_DIR}/server' '${env.LOG_DIR}/test-results'"
                 }
             }
         }
