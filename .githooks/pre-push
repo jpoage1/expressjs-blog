@@ -15,26 +15,34 @@ read_branches() {
   matched=false
   seen_refs=false
 
-  echo "$hook_input" | while IFS=' ' read -r _ _ remote_ref _; do
+  # Use here-string instead of pipeline to preserve variable scope
+  while IFS=' ' read -r _ _ remote_ref _; do
     seen_refs=true
     case "$remote_ref" in
       refs/heads/testing|refs/heads/staging|refs/heads/main|refs/heads/production)
         echo "Matched deployable branch: ${remote_ref#refs/heads/}"
-        exit 0
+        matched=true
+        # Continue reading all refs; do not exit here to process all
         ;;
       *)
         echo "Non-deployable branch: ${remote_ref#refs/heads/}"
         ;;
     esac
-  done
+  done <<EOF
+$hook_input
+EOF
 
   if ! $seen_refs; then
     echo "No refs were pushed. Nothing to process."
     return 2
   fi
 
-  echo "No deployable branches matched."
-  return 1
+  if $matched; then
+    return 0
+  else
+    echo "No deployable branches matched."
+    return 1
+  fi
 }
 
 check_submodule_remotes() {
@@ -45,6 +53,8 @@ check_submodule_remotes() {
     fi
   "
 }
+
+hook_input=$(cat)
 
 read_branches_result=2
 read_branches || read_branches_result=$?
