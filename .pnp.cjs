@@ -51,7 +51,7 @@ const RAW_RUNTIME_STATE =
           ["js-beautify", "npm:1.15.4"],\
           ["marked", "npm:15.0.11"],\
           ["mocha", "npm:11.7.1"],\
-          ["mock-fs", "npm:5.5.0"],\
+          ["mock-fs", "npm:4.13.0"],\
           ["morgan", "npm:1.10.0"],\
           ["node-disk-info", "npm:1.3.0"],\
           ["node-fetch", "virtual:8e0a8f128776701faaebe7b201c5fc4a913f6d92a7fb4ce8d119211b8f9b1bdf28acba8bab57899eed398942941fff50583fd7c886bd5f3fa0632c78fcbad2e3#npm:2.7.0"],\
@@ -72,6 +72,7 @@ const RAW_RUNTIME_STATE =
           ["validator", "npm:13.15.15"],\
           ["winston", "npm:3.17.0"],\
           ["winston-daily-rotate-file", "virtual:8e0a8f128776701faaebe7b201c5fc4a913f6d92a7fb4ce8d119211b8f9b1bdf28acba8bab57899eed398942941fff50583fd7c886bd5f3fa0632c78fcbad2e3#npm:5.0.0"],\
+          ["winston-transport", "npm:4.9.0"],\
           ["xss", "npm:1.0.15"],\
           ["xss-clean", "npm:0.1.4"]\
         ],\
@@ -2556,7 +2557,7 @@ const RAW_RUNTIME_STATE =
           ["js-beautify", "npm:1.15.4"],\
           ["marked", "npm:15.0.11"],\
           ["mocha", "npm:11.7.1"],\
-          ["mock-fs", "npm:5.5.0"],\
+          ["mock-fs", "npm:4.13.0"],\
           ["morgan", "npm:1.10.0"],\
           ["node-disk-info", "npm:1.3.0"],\
           ["node-fetch", "virtual:8e0a8f128776701faaebe7b201c5fc4a913f6d92a7fb4ce8d119211b8f9b1bdf28acba8bab57899eed398942941fff50583fd7c886bd5f3fa0632c78fcbad2e3#npm:2.7.0"],\
@@ -2577,6 +2578,7 @@ const RAW_RUNTIME_STATE =
           ["validator", "npm:13.15.15"],\
           ["winston", "npm:3.17.0"],\
           ["winston-daily-rotate-file", "virtual:8e0a8f128776701faaebe7b201c5fc4a913f6d92a7fb4ce8d119211b8f9b1bdf28acba8bab57899eed398942941fff50583fd7c886bd5f3fa0632c78fcbad2e3#npm:5.0.0"],\
+          ["winston-transport", "npm:4.9.0"],\
           ["xss", "npm:1.0.15"],\
           ["xss-clean", "npm:0.1.4"]\
         ],\
@@ -4563,10 +4565,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["mock-fs", [\
-      ["npm:5.5.0", {\
-        "packageLocation": "../../../../home/me/.yarn/berry/cache/mock-fs-npm-5.5.0-27a1e1067e-10c0.zip/node_modules/mock-fs/",\
+      ["npm:4.13.0", {\
+        "packageLocation": "../../../../home/me/.yarn/berry/cache/mock-fs-npm-4.13.0-480cec1336-10c0.zip/node_modules/mock-fs/",\
         "packageDependencies": [\
-          ["mock-fs", "npm:5.5.0"]\
+          ["mock-fs", "npm:4.13.0"]\
         ],\
         "linkType": "HARD"\
       }]\

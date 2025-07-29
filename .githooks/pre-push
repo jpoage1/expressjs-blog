@@ -56,8 +56,14 @@ check_submodule_remotes() {
 
 hook_input=$(cat)
 
-read_branches_result=2
-read_branches || read_branches_result=$?
+if [ "$ENFORCE_TESTING" = true ]; then
+  read_branches_result=0
+  echo "Enforcing testing"
+else
+  read_branches_result=2
+  read_branches || read_branches_result=$?
+fi
+
 
 case "$read_branches_result" in
   0)

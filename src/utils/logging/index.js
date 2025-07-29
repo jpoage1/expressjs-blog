@@ -13,10 +13,10 @@ const { functionLog } = require("./functionLogger");
 const {
   customLevels,
   LOG_LEVEL,
-  logDir,
   sessionTimestamp,
   sessionDir,
   logFiles,
+  logDir,
 } = require("./config");
 
 const {
@@ -27,21 +27,60 @@ const {
 
 winston.addColors(customLevels.colors);
 
-function initializeLogDirectories(files = logFiles) {
-  Object.values(files).forEach((filePath) => {
+// function initializeLogDirectories(baseDir = logDir, files = logFiles) {
+//   Object.values(files).forEach((file) => {
+//     const filePath = path.isAbsolute(file) ? file : path.join(baseDir, file);
+//     const dir = path.dirname(filePath);
+
+//     if (!fs.existsSync(dir)) {
+//       try {
+//         fs.mkdirSync(dir, { recursive: true });
+//       } catch (error) {
+//         console.error(`Failed to create directory ${dir}:`, error);
+//         throw error;
+//       }
+//     }
+//   });
+
+//   const functionsLogDir = path.join(logDir, "functions");
+//   if (!fs.existsSync(functionsLogDir)) {
+//     try {
+//       fs.mkdirSync(functionsLogDir, { recursive: true });
+//     } catch (error) {
+//       console.error(
+//         `Failed to create functions directory ${functionsLogDir}:`,
+//         error
+//       );
+//       throw error;
+//     }
+//   }
+//   return functionsLogDir;
+// }
+function initializeLogDirectories(baseDir = logDir, files = logFiles) {
+  // Ensure baseDir exists first
+  if (!fs.existsSync(baseDir)) {
+    fs.mkdirSync(baseDir, { recursive: true });
+  }
+
+  // Create directories for each log file
+  Object.values(files).forEach((file) => {
+    const filePath = path.isAbsolute(file) ? file : path.join(baseDir, file);
     const dir = path.dirname(filePath);
+
+    // Remove the problematic console.error debug statements
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
   });
 
-  const functionsLogDir = path.join(logDir, "functions");
+  // Create the functions log directory
+  const functionsLogDir = path.join(baseDir, "functions");
   if (!fs.existsSync(functionsLogDir)) {
     fs.mkdirSync(functionsLogDir, { recursive: true });
   }
+
   return functionsLogDir;
 }
-
 const logStreams = createLogStreams(logFiles);
 const sessionTransport = createSessionTransport(sessionDir);
 const sqliteTransport = new SQLiteTransport();
