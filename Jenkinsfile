@@ -14,66 +14,26 @@ pipeline {
 
 
     parameters {
-        string(name: 'branch', defaultValue: 'refs/heads/testing', description: 'Branch ref from webhook')
-        string(name: 'before', defaultValue: '', description: 'old ref')
-        string(name: 'after', defaultValue: '', description: 'new ref')
+        string(name: 'DEPLOY_BRANCH', defaultValue: 'testing', description: 'Branch to deploy (testing, staging, main, production only)')
+        booleanParam(name: 'SKIP_TESTS', defaultValue: true, description: 'Skip all testing')
     }
 
     stages {
-        stage('Init Branch') {
-            steps {
-                script {
-                    echo "==== DEBUG: Branch Param ===="
-                    echo "params.branch: '${params.branch}'"
-                    echo "params.before: '${params.before}'"
-                    echo "params.after: '${params.after}'"
-                    if (params.branch?.startsWith("refs/heads/")) {
-                        env.DEPLOY_BRANCH = params.branch.replaceFirst(/^refs\/heads\//, '')
-                    } else {
-                        error "Invalid branch ref: '${params.branch}'"
-                    }
-                }
-
-                script {
-                    echo "==== DEBUG: Branch Param ===="
-                    echo "params.branch: '${params.branch}'"
-                    echo "params.before: '${params.before}'"
-                    echo "params.after: '${params.after}'"
-
-                    def resolvedBranch = params.branch?.trim()
-                    echo "Resolved branch: '${resolvedBranch}'"
-
-                    if (resolvedBranch?.startsWith("refs/heads/")) {
-                        def deployBranch = resolvedBranch.replaceFirst(/^refs\/heads\//, '')
-                        echo "Deploy branch (stripped): '${deployBranch}'"
-                    } else {
-                        echo "Branch is not a valid refs/heads/* ref: '${resolvedBranch}'"
-                    }
-                }
-            }
-        }
         stage('Checkout') {
             steps {
                 checkout([$class: 'GitSCM',
-                    branches: [[name: "${env.DEPLOY_BRANCH}"]],
+                    branches: [[name: "*/${params.DEPLOY_BRANCH}"]],
                     userRemoteConfigs: [[
                         url: env.GIT_REPO,
                         credentialsId: '08a57452-477d-4aa6-86c6-242553660b3f'
                     ]]
                 ])
                 script {
-                    if (params.before?.trim() && params.after?.trim()) {
-                        env.OLD_REV = params.before
-                        env.NEW_REV = params.after
-                    } else {
-                        env.OLD_REV = sh(script: 'git rev-parse HEAD~1', returnStdout: true).trim()
-                        env.NEW_REV = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
-                    }
+                    env.OLD_REV = sh(script: 'git rev-parse HEAD~1', returnStdout: true).trim()
+                    env.NEW_REV = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
                 }
-
             }
         }
-
 
         stage('Use Revs') {
             steps {
@@ -291,10 +251,16 @@ pipeline {
 
        stage('Restart Service') {
             steps {
-                sh "sudo systemctl restart express-blog@${env.DEPLOY_BRANCH}.service"
+                script {
+                    if (params.DEPLOY_BRANCH == 'main' || params.DEPLOY_BRANCH == 'production') {
+                        sh "sudo systemctl restart express-blog@${params.DEPLOY_BRANCH}.service"
+                    } else {
+                        sh "sudo systemctl stop express-blog@${params.DEPLOY_BRANCH}.service || true"
+                        sh "sudo systemctl start express-blog@${params.DEPLOY_BRANCH}.service"
+                    }
+                }
             }
         }
-
     }
 
     post {
