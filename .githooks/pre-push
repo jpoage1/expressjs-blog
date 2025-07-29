@@ -1,12 +1,9 @@
 #!/bin/sh
 # Push content subrepo before pushing main repo
-remote="$1"
-#export GIT_TRACE=1
-#export GIT_TRACE_PACKET=1
-#export GIT_TRACE_PERFORMANCE=1
-#export GIT_SSH_COMMAND="ssh -vvv"
 
-source "$(pwd)/.env"
+remote="$1"
+
+. "$(pwd)/.env"
 if [ "$SKIP_TESTS" = "true" ]; then
   exit 0
 fi
@@ -14,16 +11,38 @@ fi
 set -eu
 set -x
 
-# Only run for specific branches
 read_branches() {
+  matched=false
+  seen_refs=false
+
+  # Use here-string instead of pipeline to preserve variable scope
   while IFS=' ' read -r _ _ remote_ref _; do
+    seen_refs=true
     case "$remote_ref" in
       refs/heads/testing|refs/heads/staging|refs/heads/main|refs/heads/production)
-        return 0
+        echo "Matched deployable branch: ${remote_ref#refs/heads/}"
+        matched=true
+        # Continue reading all refs; do not exit here to process all
+        ;;
+      *)
+        echo "Non-deployable branch: ${remote_ref#refs/heads/}"
         ;;
     esac
-  done
-  return 1
+  done <<EOF
+$hook_input
+EOF
+
+  if ! $seen_refs; then
+    echo "No refs were pushed. Nothing to process."
+    return 2
+  fi
+
+  if $matched; then
+    return 0
+  else
+    echo "No deployable branches matched."
+    return 1
+  fi
 }
 
 check_submodule_remotes() {
@@ -35,16 +54,32 @@ check_submodule_remotes() {
   "
 }
 
-if ! read_branches; then
-  echo "Skipping tests: not pushing testing, staging, main, or production."
-else
-  COMMIT_HASH=$(git rev-parse HEAD)
+hook_input=$(cat)
 
-  if ! "./scripts/pre-push-tests.sh" "$COMMIT_HASH"; then
-    echo "Tests failed. Aborting push."
-    exit 1
-  fi
+if [ "$ENFORCE_TESTING" = true ]; then
+  read_branches_result=0
+  echo "Enforcing testing"
+else
+  read_branches_result=2
+  read_branches || read_branches_result=$?
 fi
+
+
+case "$read_branches_result" in
+  0)
+    COMMIT_HASH=$(git rev-parse HEAD)
+    if ! ./scripts/pre-push-tests.sh "$COMMIT_HASH"; then
+      echo "Tests failed. Aborting push."
+      exit 1
+    fi
+    ;;
+  1)
+    echo "Skipping tests: no deployable branches pushed."
+    ;;
+  2)
+    echo "No refs detected. Possibly a dry push or no changes."
+    ;;
+esac
 
 cd content
 git push "$remote" main --force

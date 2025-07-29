@@ -1,5 +1,5 @@
 // test/routes.test.js
-const fetch = require("node-fetch");
+const fetch = require("node-fetch").default;
 const { expect } = require("chai");
 const http = require("http");
 const https = require("https");

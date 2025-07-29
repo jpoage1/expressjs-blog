@@ -285,8 +285,8 @@ run_tests() {
   branch="$1"
   pidfile="$2"
   logfile="$3"
-  echo "Running npm tests..."
-  if ! npm run test:postreceive; then
+  echo "Running yarn tests..."
+  if ! yarn test:postreceive; then
     kill "$(cat "$pidfile")" 2>/dev/null || true
     echo "Tests failed for branch '$branch'. Application logs from $logfile:"
     cat "$logfile"

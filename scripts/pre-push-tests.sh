@@ -11,20 +11,8 @@ if [ -f "$CHECKSUM_FILE" ] && [ "$(cat "$CHECKSUM_FILE")" = "$COMMIT_HASH" ]; th
   exit 0
 fi
 
-# Run Mocha directly, fail if any test fails
-if ! node_modules/.bin/mocha "test/**/*.unit.test.js" "test/**/*.property.test.js"; then
+if ! yarn test; then
   echo "Initial test suite failed. Skipping prepush and aborting push."
-
-  if kill -0 "$APP_PID" 2>/dev/null; then
-    echo "Stopping app (PID: $APP_PID)..."
-    kill "$APP_PID"
-    sleep 1
-    if kill -0 "$APP_PID" 2>/dev/null; then
-      kill -9 "$APP_PID" 2>/dev/null || true
-    fi
-  fi
-
-  wait "$APP_PID" 2>/dev/null || true
   exit 1
 fi
 
@@ -36,7 +24,7 @@ node src/app.js >/dev/null 2>&1 &
 
 sleep 2
 
-npm run test:prepush
+yarn test:prepush
 TEST_RESULT=$?
 
   # Clean up the app process
