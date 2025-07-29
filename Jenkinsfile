@@ -234,7 +234,6 @@ pipeline {
                                     skipInstall = true
                                 }
                             }
-                            skipInstall = false
 
                             if (!skipInstall) {
                                 sh """
