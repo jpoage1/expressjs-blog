@@ -14,32 +14,57 @@ pipeline {
 
 
     parameters {
+        string(name: 'branch', defaultValue: 'refs/heads/testing', description: 'Branch ref from webhook')
+        string(name: 'oldrev', defaultValue: '', description: 'old rev')
+        string(name: 'newrev', defaultValue: '', description: 'new rev')
+
         string(name: 'DEPLOY_BRANCH', defaultValue: 'testing', description: 'Branch to deploy (testing, staging, main, production only)')
         booleanParam(name: 'SKIP_TESTS', defaultValue: true, description: 'Skip all testing')
     }
 
     stages {
+        stage('Init Branch') {
+            steps {
+                script {
+                    echo "==== DEBUG: Branch Param ===="
+                    echo "params.branch: '${params.branch}'"
+                    if (params.branch?.startsWith("refs/heads/")) {
+                        env.DEPLOY_BRANCH = params.branch.replaceFirst(/^refs\/heads\//, '')
+                    } else {
+                        error "Invalid branch ref: '${params.branch}'"
+                    }
+                    echo "env.DEPLOY_BRANCH: '${env.DEPLOY_BRANCH}'"
+                }
+            }
+        }
         stage('Checkout') {
             steps {
                 checkout([$class: 'GitSCM',
-                    branches: [[name: "*/${params.DEPLOY_BRANCH}"]],
+                    branches: [[name: "*/${env.DEPLOY_BRANCH}"]],
                     userRemoteConfigs: [[
                         url: env.GIT_REPO,
                         credentialsId: '08a57452-477d-4aa6-86c6-242553660b3f'
                     ]]
                 ])
-                script {
-                    env.OLD_REV = sh(script: 'git rev-parse HEAD~1', returnStdout: true).trim()
-                    env.NEW_REV = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
-                }
             }
         }
 
         stage('Use Revs') {
             steps {
+                script {
+                    if (params.oldrev?.trim() && params.newrev?.trim()) {
+                        env.OLD_REV = params.oldrev
+                        env.NEW_REV = params.newrev
+                    } else {
+                        env.OLD_REV = sh(script: 'git rev-parse HEAD~1', returnStdout: true).trim()
+                        env.NEW_REV = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                    }
+                }
+                echo "==== DEBUG: Revisions ===="
+                echo "params.oldrev: '${params.oldrev}'"
+                echo "params.newrev: '${params.newrev}'"
                 echo "Old revision: ${env.OLD_REV}"
                 echo "New revision: ${env.NEW_REV}"
-                // further steps
             }
         }
 
@@ -47,8 +72,8 @@ pipeline {
             steps {
                 script {
                     def allowed = ['testing', 'staging', 'main', 'production']
-                    if (!allowed.contains(params.DEPLOY_BRANCH)) {
-                        error "Branch '${params.DEPLOY_BRANCH}' is not allowed for deployment."
+                    if (!allowed.contains(env.DEPLOY_BRANCH)) {
+                        error "Branch '${env.DEPLOY_BRANCH}' is not allowed for deployment."
                     }
                 }
             }
@@ -59,7 +84,7 @@ pipeline {
                 script {
                     env.TMPDIR = sh(script: "mktemp -d", returnStdout: true).trim()
                     sh """
-                        git clone --branch '${params.DEPLOY_BRANCH}' '${GIT_REPO}' '${TMPDIR}'
+                        git clone --branch '${env.DEPLOY_BRANCH}' '${GIT_REPO}' '${TMPDIR}'
                     """
                 }
             }
@@ -68,7 +93,7 @@ pipeline {
         stage('Copy and Source .env') {
             steps {
                 script {
-                    env.ENV_FILE = "${DEPLOY_BASE}/env/${params.DEPLOY_BRANCH}.env"
+                    env.ENV_FILE = "${DEPLOY_BASE}/env/${env.DEPLOY_BRANCH}.env"
                     env.LOG_FILE = "${LOG_DIR}/receive-${env.TIMESTAMP}.log"
 
                     sh """
@@ -141,7 +166,7 @@ pipeline {
                     if ( !params.SKIP_TESTS ) {
                         env.PIDFILE = "${TMPDIR}/test.pid"
                         sh """
-                            sudo systemctl stop express-blog@${params.DEPLOY_BRANCH}.service || true
+                            sudo systemctl stop express-blog@${env.DEPLOY_BRANCH}.service || true
                             cd '${TMPDIR}'
                             nohup node src/app.js >> '${LOG_FILE}' 2>&1 &
                             echo \$! > '${PIDFILE}'
@@ -184,7 +209,7 @@ pipeline {
                         if (testStatus != 0) {
                             sh "kill \$(cat '${PIDFILE}') || true"
                             sh "cat '${LOG_FILE}'"
-                            error "Tests failed for branch ${params.DEPLOY_BRANCH}"
+                            error "Tests failed for branch ${env.DEPLOY_BRANCH}"
                         }
                     }
                 }
@@ -204,8 +229,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    def DEPLOY_PATH = "${DEPLOY_BASE}/deployments/blog-${params.DEPLOY_BRANCH}"
-                    if (params.DEPLOY_BRANCH == 'testing') {
+                    def DEPLOY_PATH = "${DEPLOY_BASE}/deployments/blog-${env.DEPLOY_BRANCH}"
+                    if (env.DEPLOY_BRANCH == 'testing') {
                         sh """
                             rm -rf '${DEPLOY_PATH}' || true
                             mv '${TMPDIR}' '${DEPLOY_PATH}'
@@ -214,13 +239,13 @@ pipeline {
                     } else {
                         def dirExists = sh(script: "[ -d '${DEPLOY_PATH}' ] && echo 1 || echo 0", returnStdout: true).trim()
                         if (dirExists == "0") {
-                            sh "git clone --branch '${params.DEPLOY_BRANCH}' '${GIT_REPO}' '${DEPLOY_PATH}'"
+                            sh "git clone --branch '${env.DEPLOY_BRANCH}' '${GIT_REPO}' '${DEPLOY_PATH}'"
                         }
 
                         sh """
                             cd '${DEPLOY_PATH}'
                             git fetch origin
-                            git reset --hard 'origin/${params.DEPLOY_BRANCH}'
+                            git reset --hard 'origin/${env.DEPLOY_BRANCH}'
                             git submodule update --init --recursive --force
                             ln -sf '${ENV_FILE}' '${DEPLOY_PATH}/.env'
                         """
@@ -252,11 +277,11 @@ pipeline {
        stage('Restart Service') {
             steps {
                 script {
-                    if (params.DEPLOY_BRANCH == 'main' || params.DEPLOY_BRANCH == 'production') {
-                        sh "sudo systemctl restart express-blog@${params.DEPLOY_BRANCH}.service"
+                    if (env.DEPLOY_BRANCH == 'main' || env.DEPLOY_BRANCH == 'production') {
+                        sh "sudo systemctl restart express-blog@${env.DEPLOY_BRANCH}.service"
                     } else {
-                        sh "sudo systemctl stop express-blog@${params.DEPLOY_BRANCH}.service || true"
-                        sh "sudo systemctl start express-blog@${params.DEPLOY_BRANCH}.service"
+                        sh "sudo systemctl stop express-blog@${env.DEPLOY_BRANCH}.service || true"
+                        sh "sudo systemctl start express-blog@${env.DEPLOY_BRANCH}.service"
                     }
                 }
             }
@@ -265,10 +290,10 @@ pipeline {
 
     post {
         success {
-            echo "Deployment of ${params.DEPLOY_BRANCH} completed successfully."
+            echo "Deployment of ${env.DEPLOY_BRANCH} completed successfully."
         }
         failure {
-            echo "Deployment of ${params.DEPLOY_BRANCH} failed."
+            echo "Deployment of ${env.DEPLOY_BRANCH} failed."
         }
         cleanup {
             sh "rm -rf '${TMPDIR}' || true"
