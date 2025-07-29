@@ -11,9 +11,6 @@ fi
 set -eu
 set -x
 
-hook_input=$(cat)
-echo "$hook_input"
-
 read_branches() {
   matched=false
   seen_refs=false
