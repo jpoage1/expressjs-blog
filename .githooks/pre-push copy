@@ -14,7 +14,7 @@ node src/app.js >/dev/null 2>&1 &
 
 sleep 2
 
-npm run test:prepush
+yarn test:prepush
 TEST_RESULT=$?
 
   # Clean up the app process
