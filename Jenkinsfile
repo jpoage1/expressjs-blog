@@ -2,11 +2,14 @@ pipeline {
     agent any
 
     environment {
-        GIT_REPO = 'ssh://git@git.jasonpoage.com:29418/jason/express-blog.git'
+        GIT_REPO = 'ssh://git@git.jasonpoage.vpn:29418/jason/express-blog.git'
         DEPLOY_BASE = '/srv/jasonpoage.com'
-        LOG_DIR = "${DEPLOY_BASE}/deployments/logs"
-        TIMESTAMP = sh(script: "date +%Y%m%d-%H%M%S", returnStdout: true).trim()
+        YARN_ENABLE_GLOBAL_CACHE = 'false'
+        YARN_CACHE_FOLDER = '/var/cache/jenkins/yarn'
+        CREDENTIALS_ID = '08a57452-477d-4aa6-86c6-242553660b3f'
     }
+
+
 
     options {
         timestamps()
@@ -18,25 +21,35 @@ pipeline {
         string(name: 'oldrev', defaultValue: '', description: 'old rev')
         string(name: 'newrev', defaultValue: '', description: 'new rev')
 
-        string(name: 'DEPLOY_BRANCH', defaultValue: 'testing', description: 'Branch to deploy (testing, staging, main, production only)')
         booleanParam(name: 'SKIP_TESTS', defaultValue: true, description: 'Skip all testing')
     }
-
     stages {
-        stage('Init Branch') {
+        stage('Init') {
             steps {
                 script {
-                    echo "==== DEBUG: Branch Param ===="
-                    echo "params.branch: '${params.branch}'"
                     if (params.branch?.startsWith("refs/heads/")) {
                         env.DEPLOY_BRANCH = params.branch.replaceFirst(/^refs\/heads\//, '')
                     } else {
                         error "Invalid branch ref: '${params.branch}'"
                     }
+
+                    echo "==== DEBUG: Branch Param ===="
+                    echo "params.branch: '${params.branch}'"
                     echo "env.DEPLOY_BRANCH: '${env.DEPLOY_BRANCH}'"
+
+                    env.TIMESTAMP = sh(script: "date +%Y%m%d-%H%M%S", returnStdout: true).trim()
+                    env.LOG_DIR = "${env.DEPLOY_BASE}/deployments/logs"
+                    env.SERVER_LOG_FILE = "${env.LOG_DIR}/server/server-${env.TIMESTAMP}.log"
+                    env.TEST_LOGS_FILE = "${env.LOG_DIR}/test-results/test-"
+                    env.BUILD_DIR = "${env.WORKSPACE}/build"
+                    env.ENV_FILE = "${env.DEPLOY_BASE}/env/${env.DEPLOY_BRANCH}.env"
+                    env.SERVICE_NAME = "systemctl stop express-blog@${env.DEPLOY_BRANCH}.service"
+                    env.DEPLOY_PATH = "${env.DEPLOY_BASE}/deployments/blog-${env.DEPLOY_BRANCH}"
+
                 }
             }
         }
+
         stage('Checkout') {
             steps {
                 checkout([$class: 'GitSCM',
@@ -79,12 +92,11 @@ pipeline {
             }
         }
 
-        stage('Clone to Tempdir') {
+        stage('Clone to Build Dir') {
             steps {
                 script {
-                    env.TMPDIR = sh(script: "mktemp -d", returnStdout: true).trim()
                     sh """
-                        git clone --branch '${env.DEPLOY_BRANCH}' '${GIT_REPO}' '${TMPDIR}'
+                        git clone --branch '${env.DEPLOY_BRANCH}' '${GIT_REPO}' '${BUILD_DIR}'
                     """
                 }
             }
@@ -94,14 +106,14 @@ pipeline {
             steps {
                 script {
                     env.ENV_FILE = "${DEPLOY_BASE}/env/${env.DEPLOY_BRANCH}.env"
-                    env.LOG_FILE = "${LOG_DIR}/receive-${env.TIMESTAMP}.log"
+                    env.LOG_FILE = "${LOG_DIR}/server/server-${env.TIMESTAMP}.log"
 
                     sh """
-                        ln -s '${ENV_FILE}' '${TMPDIR}/.env'
+                        ln -s '${ENV_FILE}' '${BUILD_DIR}/.env'
                     """
 
                     def envVars = sh(
-                        script: "set -a && . '${TMPDIR}/.env' && env | grep -E '^(SERVER_SCHEMA|SERVER_DOMAIN)='",
+                        script: "set -a && . '${BUILD_DIR}/.env' && env | grep -E '^(SERVER_SCHEMA|SERVER_DOMAIN)='",
                         returnStdout: true
                     ).trim().split("\n")
 
@@ -117,7 +129,7 @@ pipeline {
         stage('Initialize Submodules') {
             steps {
                 sh """
-                    cd '${TMPDIR}'
+                    cd '${BUILD_DIR}'
                     git submodule update --init --recursive
                 """
             }
@@ -126,27 +138,10 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    def skipInstall = false
-                    if (env.OLD_REV && env.NEW_REV && env.OLD_REV != "0000000000000000000000000000000000000000") {
-                        def changed = sh(
-                            script: "git --git-dir='${TMPDIR}/.git' diff-tree --name-only -r ${env.OLD_REV}..${env.NEW_REV}",
-                            returnStdout: true
-                        )
-                        if (!changed.contains('package.json') && !changed.contains('yarn.lock')) {
-                            skipInstall = true
-                        }
-
-                        skipInstall = false
-                    }
-
-                    if (!skipInstall) {
-                        sh """
-                            cd '${TMPDIR}'
-                            yarn --cache-folder /var/cache/jenkins/yarn
-                        """
-                    } else {
-                        echo "No dependency changes detected. Skipping yarn install."
-                    }
+                    sh """
+                        cd '${BUILD_DIR}'
+                        yarn
+                    """
                 }
             }
         }
@@ -154,8 +149,8 @@ pipeline {
         stage('Build CSS') {
             steps {
                 sh """
-                    cd '${TMPDIR}'
-                    yarn --production=false combine:css
+                    cd '${BUILD_DIR}'
+                    yarn combine:css
                 """
             }
         }
@@ -164,10 +159,10 @@ pipeline {
             steps {
                 script {
                     if ( !params.SKIP_TESTS ) {
-                        env.PIDFILE = "${TMPDIR}/test.pid"
+                        env.PIDFILE = "${BUILD_DIR}/test.pid"
                         sh """
                             sudo systemctl stop express-blog@${env.DEPLOY_BRANCH}.service || true
-                            cd '${TMPDIR}'
+                            cd '${BUILD_DIR}'
                             nohup node src/app.js >> '${LOG_FILE}' 2>&1 &
                             echo \$! > '${PIDFILE}'
                         """
@@ -205,7 +200,7 @@ pipeline {
             steps {
                 script {
                     if ( !params.SKIP_TESTS ) {
-                        def testStatus = sh(script: "cd '${TMPDIR}' && npm run test:postreceive", returnStatus: true)
+                        def testStatus = sh(script: "cd '${BUILD_DIR}' && npm run test:postreceive", returnStatus: true)
                         if (testStatus != 0) {
                             sh "kill \$(cat '${PIDFILE}') || true"
                             sh "cat '${LOG_FILE}'"
@@ -233,7 +228,7 @@ pipeline {
                     if (env.DEPLOY_BRANCH == 'testing') {
                         sh """
                             rm -rf '${DEPLOY_PATH}' || true
-                            mv '${TMPDIR}' '${DEPLOY_PATH}'
+                            mv '${BUILD_DIR}' '${DEPLOY_PATH}'
                             ln -sf '${ENV_FILE}' '${DEPLOY_PATH}/.env'
                         """
                     } else {
@@ -263,7 +258,7 @@ pipeline {
                         skipInstall = false
 
                         if (!skipInstall) {
-                            sh "cd '${DEPLOY_PATH}' && yarn --cache-folder /var/cache/jenkins/yarn"
+                            sh "cd '${DEPLOY_PATH}' && yarn"
                         } else {
                             echo "No dependency changes detected. Skipping yarn install."
                         }
@@ -296,7 +291,7 @@ pipeline {
             echo "Deployment of ${env.DEPLOY_BRANCH} failed."
         }
         cleanup {
-            sh "rm -rf '${TMPDIR}' || true"
+            sh "rm -rf '${BUILD_DIR}' || true"
         }
     }
 }
