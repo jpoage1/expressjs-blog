@@ -9,6 +9,7 @@
     "combine:css": "node scripts/combine-css.js",
     "test": "mocha  --reporter spec \"test/**/*.unit.test.js\" \"test/**/*.property.test.js\"",
     "start": "nodemon ./src/app.js --trace-exit",
+    "prod": "node ./src/app.js --trace-exit",
     "debug": "nodemon --inspect-brk  ./src/app.js --trace-exit",
     "maildev": "maildev",
     "main": "pm2 start ecosystem.config.js --only expressjs-blog-main",

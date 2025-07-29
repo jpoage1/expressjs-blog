@@ -139,7 +139,8 @@ pipeline {
                         dir(BUILD_DIR) {
                             sh """
                                 sudo systemctl stop ${env.SERVICE_NAME} || true
-                                nohup node src/app.js >> '${env.SERVER_LOG_FILE}' 2>&1 &
+                                corepack enable
+                                nohup yarn run prod >> '${env.SERVER_LOG_FILE}' 2>&1 &
                                 echo \$! > '${env.PIDFILE}'
                             """
                         }
