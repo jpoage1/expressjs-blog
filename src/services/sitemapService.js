@@ -6,7 +6,7 @@ const { getAllPosts } = require("../utils/postFileUtils");
 const hash = require("../utils/hash");
 const yaml = require("js-yaml");
 
-const glob = require("fast-glob");
+const glob = require("glob");
 const { qualifySitemapLinks } = require("../utils/qualifyLinks");
 const { winstonLogger } = require("../utils/logging");
 
@@ -80,7 +80,7 @@ class SitemapService {
 
   async getAllTags() {
     const tagMap = new Map();
-    const files = await glob(pattern);
+    const files = await glob.promises.glob(pattern);
 
     for (const file of files) {
       try {

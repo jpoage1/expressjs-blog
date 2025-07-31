@@ -1,7 +1,7 @@
 const fs = require("fs").promises;
 const path = require("path");
 const matter = require("gray-matter");
-const glob = require("fast-glob");
+const glob = require("glob");
 const createExcerpt = require("../utils/createExcerpt");
 
 const CONTENT_ROOT = path.resolve(__dirname, "../../content");
@@ -15,7 +15,7 @@ const sitemapService = require("../services/sitemapService");
 
 async function getPostsByTag(tag) {
   const allUrls = await sitemapService.getAllUrls();
-  const files = await glob(pattern);
+  const files = await glob.promises.glob(pattern);
   const tagRegex = buildTagRegex(tag);
 
   const matchedPosts = [];
