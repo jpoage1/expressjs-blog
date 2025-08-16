@@ -1,6 +1,6 @@
 const helmet = require("helmet");
 const hpp = require("hpp");
-const xssSanitizer = require("./utils/xssSanitizer");
+const xssSanitizer = require("../utils/xssSanitizer");
 const HttpError = require("../utils/HttpError");
 const { baseUrl } = require("../utils/baseUrl");
 const {
@@ -55,7 +55,7 @@ const securityPolicy =
     return helmet.contentSecurityPolicy({ directives: mergedDirectives })(
       req,
       res,
-      next
+      next,
     );
   };
 const applyProductionSecurity = [
