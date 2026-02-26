@@ -203,49 +203,22 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                script {
-                    if (env.DEPLOY_BRANCH == 'testing') {
-                        sh """
-                            rm -rf '${env.DEPLOY_PATH}' || true
-                            mkdir -p '${env.DEPLOY_PATH}'
-                            rsync -a --delete '${env.BUILD_DIR}/' '${env.DEPLOY_PATH}/'
-                        """
-                    } else {
-                        def dirExists = sh(script: "[ -d '${DEPLOY_PATH}' ] && echo 1 || echo 0", returnStdout: true).trim()
-                        if (dirExists == "0") {
-                            sh "git clone --branch '${env.DEPLOY_BRANCH}' '${env.GIT_REPO}' '${env.DEPLOY_PATH}'"
-                        }
-                        dir(DEPLOY_PATH) {
-                            retry(2) {
-                                sh "git fetch origin"
-                            }
-                            sh """
-                                git reset --hard 'origin/${env.DEPLOY_BRANCH}'
-                                git submodule update --init --recursive --force
-                            """
+              script {
+                    // 1. Create the new release directory
+                    def releaseDir = "${env.DEPLOY_BASE}/releases/blog-${env.DEPLOY_BRANCH}-${env.TIMESTAMP}"
+                    sh "mkdir -p ${releaseDir}"
 
-                            def skipInstall = false
-                            if (env.OLD_REV && env.NEW_REV && env.OLD_REV != "0000000000000000000000000000000000000000") {
-                                def changed = sh(
-                                    script: "git --git-dir='${DEPLOY_PATH}/.git' diff-tree --name-only -r ${env.OLD_REV}..${env.NEW_REV}",
-                                    returnStdout: true
-                                )
-                                if (!changed.contains('package.json') && !changed.contains('yarn.lock')) {
-                                    skipInstall = true
-                                }
-                            }
+                    // 2. Sync the finished build to the release directory
+                    echo "Deploying build to ${releaseDir}"
+                    sh "rsync -a --delete '${env.BUILD_DIR}/' '${releaseDir}/'"
 
-                            if (!skipInstall) {
-                                sh """
-                                    yarn set version from sources
-                                    yarn
-                                """
-                            } else {
-                                echo "No dependency changes detected. Skipping yarn install."
-                            }
+                    // 3. Atomically flip the symlink
+                    // We use 'ln -sfn' to overwrite the existing link to the new path
+                    sh "ln -sfn '${releaseDir}' '${env.DEPLOY_PATH}'"
 
-                            sh "yarn combine:css"
-                        }
+                    // 4. Cleanup old releases (Keep only last 5)
+                    dir("${env.DEPLOY_BASE}/releases") {
+                        sh "ls -1t | grep 'blog-${env.DEPLOY_BRANCH}' | tail -n +6 | xargs rm -rf || true"
                     }
                 }
             }
