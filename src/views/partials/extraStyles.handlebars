@@ -1,0 +1,7 @@
+{{!-- partials/styles.handlebars --}}
+
+{{#section "styles"}}
+  {{#each extraStyles}}
+    <link rel="stylesheet" href="{{../baseUrl}}/static/css/{{this}}">
+  {{/each}}
+{{/section}}

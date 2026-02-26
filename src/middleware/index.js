@@ -22,6 +22,7 @@ const adaptiveBodyParser = require("./adaptiveBodyParser");
 const analytics = require("../controllers/analyticsControllers");
 const httpLogger = require("../utils/structuredLogger");
 const cacheUtils = require("./cacheUtils");
+const trace = require("./trace");
 
 function setupApp() {
   const app = express();
@@ -49,6 +50,7 @@ function setupApp() {
   }
 
   app.use(compression());
+  app.use(trace);
   app.use(validateRequestIntegrity);
   app.use(formatHtml);
   app.use(redirectMiddleware);

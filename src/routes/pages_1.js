@@ -3,11 +3,9 @@ const express = require("express");
 const router = express.Router();
 const ConstructionRoutes = require("../utils/ConstructionRoutes");
 const MarkdownRoutes = require("../utils/MarkdownRoutes");
-const HtmlRoutes = require("../utils/htmlRoutes");
 const csrfToken = require("../middleware/csrfToken");
 
 const construction = new ConstructionRoutes();
-const html = new HtmlRoutes();
 const markdown = new MarkdownRoutes();
 
 if (
@@ -29,10 +27,8 @@ construction.register("/archive", "Archive");
 
 markdown.register("/tools", "tools", "tools");
 markdown.register("/about/me", "about-me");
-html.register("/games/word-guesser", "word-guesser");
 
 router.use(construction.getRouter());
-router.use(html.getRouter());
 router.use(markdown.getRouter());
 
 module.exports = router;
