@@ -17,7 +17,7 @@ pipeline {
 
 
     parameters {
-        string(name: 'branch', defaultValue: 'refs/heads/testing', description: 'Branch ref from webhook')
+        string(name: 'branch', defaultValue: 'refs/heads/main', description: 'Branch ref from webhook')
         string(name: 'oldrev', defaultValue: '', description: 'old rev')
         string(name: 'newrev', defaultValue: '', description: 'new rev')
 
@@ -235,14 +235,8 @@ pipeline {
                                 }
                             }
 
-                            if (!skipInstall) {
-                                sh """
-                                    yarn set version from sources
-                                    yarn
-                                """
-                            } else {
-                                echo "No dependency changes detected. Skipping yarn install."
-                            }
+                            sh "yarn set version from sources"
+                            sh "yarn"
 
                             sh "yarn combine:css"
                         }
