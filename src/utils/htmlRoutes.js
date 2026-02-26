@@ -58,11 +58,13 @@ class HtmlRoutes extends BaseRoute {
       meta: pageConfig.meta || {},
     };
 
+    /*
     console.log("Assets Router Path", assetsRouterPath);
     console.log("Assets URI", assetsUri);
     console.log("Assets Dir", assetsDir);
     console.log("extraScripts", extraScripts);
     console.log("extraStyles", extraStyles);
+    */
 
     this.router.use(assetsRouterPath, express.static(assetsDir));
     this.router.get(routePath, async (req, res, next) => {
