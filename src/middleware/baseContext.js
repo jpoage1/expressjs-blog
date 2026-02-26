@@ -24,7 +24,7 @@ module.exports.attachBaseContextGetter = async (req, res, next) => {
     const filteredNavLinks = processMenuLinks(
       navLinks,
       isAuthenticated,
-      req.path
+      req.path,
     );
     const qualifiedNavLinks = qualifyNavLinks(filteredNavLinks);
     const menu = await getPostsMenu(POSTS_DIR);
@@ -60,13 +60,14 @@ module.exports.buildBaseContext = async (req, res, next) => {
   res.locals.baseContext = baseContext;
 
   res.renderWithBaseContext = (template, overrides = {}) => {
-    res.render(template, Object.assign({}, baseContext, overrides));
+    const context = Object.assign({}, baseContext, overrides);
+    res.render(template, context);
   };
 
   res.renderGenericMessage = (overrides = {}) => {
     res.render(
       "pages/generic-message",
-      Object.assign({}, baseContext, overrides)
+      Object.assign({}, baseContext, overrides),
     );
   };
 

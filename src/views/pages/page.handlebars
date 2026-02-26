@@ -2,11 +2,17 @@
 
 {{#section "styles"}}
 <link rel="stylesheet" href="{{baseUrl}}/static/css/page.css">
+  {{#each extraStyles}}
+    <link rel="stylesheet" href="{{this}}">
+  {{/each}}
 {{/section}}
 
 
 {{#section "scripts"}}
 <script src="{{baseUrl}}/static/js/sticky-toc.js"></script>
+  {{#each extraScripts}}
+    <script src="{{this}}"></script>
+  {{/each}}
 {{/section}}
 
 <div class="markdown-content">
