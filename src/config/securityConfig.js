@@ -18,12 +18,17 @@ module.exports = {
       "https://cdnjs.cloudflare.com",
       "https://jigsaw.w3.org",
     ],
-    styleSrc: ["'self'", "https:"],
+    styleSrc: [
+      "'self'",
+      "https:",
+      "'sha256-IFndQX5fbz502m3YOxm0DNm7rM0AXxtuHDGmEwvNjfk='",
+    ],
     imgSrc: [
       "'self'",
       "data:",
       "https://licensebuttons.net",
       "https://cdn.jsdelivr.net",
+      "https://jigsaw.w3.org",
     ],
     frameSrc: ["'self'", "https://newassets.hcaptcha.com"],
     objectSrc: ["'none'"],
