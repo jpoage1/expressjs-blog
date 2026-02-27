@@ -11,7 +11,7 @@ pkgs.mkShell {
       # nodePackages.pm2mk
       imagemagick
     ]
-    ++ (with python313Packages; [tomli lupa]);
+    ++ (with python313Packages; [tomli lupa pip]);
   shellHook = ''
     export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
     export PUPPETEER_EXECUTABLE_PATH=${pkgs.chromium}/bin/chromium
