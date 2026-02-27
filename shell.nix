@@ -1,18 +1,17 @@
 # NodeJS PM2
 # shell.nix
-
-{ pkgs ? import <nixpkgs> {} }:
-
+{pkgs ? import <nixpkgs> {}}:
 pkgs.mkShell {
-  packages = with pkgs; [
-    which
-    nodejs_latest
-    nodePackages.pnpm
-    chromium 
-   # nodePackages.pm2mk
-   imagemagick
-  ];
-
+  packages = with pkgs;
+    [
+      which
+      nodejs_latest
+      nodePackages.pnpm
+      chromium
+      # nodePackages.pm2mk
+      imagemagick
+    ]
+    ++ (with python313Packages; [tomli lupa]);
   shellHook = ''
     export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
     export PUPPETEER_EXECUTABLE_PATH=${pkgs.chromium}/bin/chromium
