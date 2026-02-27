@@ -59,10 +59,7 @@ class SuiteTask(ABC):
             except:
                 pass
         if cwd is None:
-            try:
-                cwd = os.getcwd()
-            except:
-                pass
+            cwd = os.getcwd()
         self._cwd = cwd
 
         self._owner = owner

@@ -16,9 +16,7 @@ class StartTestApp(SuiteSubTask):
         super().__init__(*args, **kwargs)
 
     def _run(self):
-        if self._owner.args.get("skip_tests") and not self.env.meta.get(
-            "enforce_testing"
-        ):
+        if self._owner.args.get("skip_tests") and not self.get_arg("enforce_testing"):
             self.print("  [SKIP] Skipping per user request.")
             return True
 
@@ -27,7 +25,7 @@ class StartTestApp(SuiteSubTask):
         self.sh(f"sudo systemctl stop {self.env.service_name} || true")
 
         # Start background process and record PID
-        cmd = f"nohup yarn run prod >> '{self.env.meta.server_log_file}' 2>&1 & echo $! > '{self.env.pidfile}'"
+        cmd = f"nohup yarn run prod >> '{self.env.test_log}' 2>&1 & echo $! > '{self.env.pidfile}'"
         self.sh(cmd, cwd=self.env.build_dir)
         return True
 
@@ -43,9 +41,7 @@ class WaitForReadiness(SuiteSubTask):
         self.name = "Wait for Service Readiness"
 
     def _run(self):
-        if self._owner.args.get("skip_tests") and not self.env.meta.get(
-            "enforce_testing"
-        ):
+        if self._owner.args.get("skip_tests") and not self.get_arg("enforce_testing"):
             return True
 
         uri = self.env.test_endpoint_uri
@@ -63,7 +59,7 @@ class WaitForReadiness(SuiteSubTask):
             except Exception:
                 time.sleep(2)
 
-        self.sh(f"cat '{self.env.meta.server_log_file}'")
+        self.sh(f"cat '{self.env.test_log}'")
         self.fail(f"Service at {uri} failed to start within 30s.")
 
 
@@ -78,9 +74,7 @@ class RunMochaTests(SuiteSubTask):
         super().__init__(*args, **kwargs)
 
     def _run(self):
-        if self._owner.args.get("skip_tests") and not self.env.meta.get(
-            "enforce_testing"
-        ):
+        if self._owner.args.get("skip_tests") and not self.get_arg("enforce_testing"):
             return True
 
         self.print("  [RUN] npm run test:postreceive")
@@ -124,7 +118,7 @@ class TestRunner(SuiteTask):
     def _run(self):
         # 1. Check if we should even be here
         skip_param = self.args.get("skip_tests", False)
-        enforced = (self.env.meta.enforce_testing,)
+        enforced = self.get_arg("enforce_testing")
 
         if skip_param and not enforced:
             self.print("  [SKIP] Integration tests bypassed by user flag.")

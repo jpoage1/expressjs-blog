@@ -57,6 +57,7 @@ class Printer:
                         f.write(json.dumps(line))
             except Exception as e:
                 print(e.with_traceback)
+                raise e
 
     def _msg_prefix(self):
         # Format: [ID] for main tasks, [ID.Sub] for subtasks

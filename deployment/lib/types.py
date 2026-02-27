@@ -1,5 +1,4 @@
 import os
-import time
 from enum import Enum
 from pathlib import Path
 
@@ -22,8 +21,8 @@ class BuildEnv:
     service_name: str
     release_dir: Path
     test_endpoint_uri: str
-    meta: dict = dict()
     pidfile: Path = Path()
+    test_log: Path = Path()
 
     def __init__(self, timestamp_format: str | None = None):
         self.workspace: Path = Path()
@@ -31,14 +30,15 @@ class BuildEnv:
         self.deploy_branch: str = ""
         self.deploy_path: Path = Path()
         self.build_dir: Path = Path()
+        self.test_log: Path = self.build_dir / "test_log.log"
         self.service_name: str = ""
         self.release_dir: Path = Path()
-        self.server_schema: str = "http"
-        self.server_domain: str = "localhost"
+        self.server_schema = "http"
+        self.server_address = "localhost"
+        self.pidfile = Path("/tmp/hexascript_test.pid")
 
         self.root_dir = os.getcwd()
         if timestamp_format is not None:
             self.timestamp_format = timestamp_format
-        self.timestamp = time.strftime(self.timestamp_format)
         self.workspace = Path(os.getenv("WORKSPACE", self.root_dir))
         self.build_dir = self.workspace / "build"

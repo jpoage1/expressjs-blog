@@ -11,7 +11,7 @@ from core.tests import *
 
 from core.tasks import (
     GetDeploymentConfig,
-    VerifyConfigExists,
+    LoadServerConfig,
     YarnBuild,
     AtomicDeploy,
     HealthCheck,
@@ -48,7 +48,7 @@ class TaskRunner(SuiteTask):
             CheckNix,
             VerifySystemDependencies,
             GetDeploymentConfig,
-            VerifyConfigExists,
+            LoadServerConfig,
             EnsureBuildPaths,
             YarnBuild,
             TestRunner,

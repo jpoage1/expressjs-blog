@@ -21,38 +21,40 @@ class GetDeploymentConfig(SuiteTask):
     def _run(self):
         # 1. Load Lua
         lua = LuaRuntime(unpack_returned_tuples=True)
-        with open(self.get_arg("config"), "r") as f:
+        config_path = self.get_arg("config")
+
+        with open(config_path, "r") as f:
             module = lua.execute(f.read())
 
-        # 2. Call the factory
-        target_env = self.get_arg("branch").split("/")[-1]  # e.g., 'main' or 'testing'
-        print(target_env)
+        # 2. Determine environment key from branch
+        # Mapping 'main' to 'release' as per lua schema
+        branch = self.get_arg("branch").split("/")[-1]
+        target_env = "release" if branch == "main" else branch
 
-        # 3. Hydrate self.env
-        config = module.get_config(target_env)
+        if target_env not in module:
+            self.fail(f"Environment '{target_env}' not defined in {config_path}")
 
-        self.env.build_dir = Path(config.paths.build)
-        self.env.release_dir = Path(config.paths.release_dir)
-        self.env.deploy_path = Path(config.paths.deploy_link)
-        self.env.service = config.systemd.service_name
-        self.env.config_file_source = config.paths.config_file
-        self.env.meta = config.meta
+        # 3. Extract environment specific sub-table
+        cfg = module[target_env]
 
-        self.print(f"✅ Context hydrated for {config.meta.app_name}:{target_env}")
+        # 4. Hydrate self.env
+        self.env.lua_cfg = cfg  # Store the lua object for functional calls later
+        self.env.app_name = module.app_name
+        self.env.repo = module.repo
+        self.env.timestamp_format = module.timestamp_format
+
+        self.env.deploy_path = Path(cfg.deploy_link)
+        self.env.service_name = cfg.service_name
+        self.env.config_file_source = Path(cfg.config_file)
+        self.env.retention_count = cfg.count
+        self.env.deploy_branch = branch
+
+        self.print(f"✅ Context hydrated for {self.env.app_name}:{target_env}")
+        # self.env.build_dir = Path(config.paths.build)
         return True
 
 
 class LoadServerConfig(SuiteTask):
-    """Fails the pipeline if the required TOML config is missing from the host"""
-
-    _stage = Stage.BOOTSTRAP
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.name = "Verify the server's toml configuration exists"
-
-
-class VerifyConfigExists(SuiteTask):
     """Verifies TOML existence and hydrates the environment with health check URI components"""
 
     _stage = Stage.BOOTSTRAP
@@ -106,7 +108,7 @@ class YarnBuild(SuiteTask):
     """Executes dependency installation and asset compilation"""
 
     _stage = Stage.BUILD
-    _deps = [GetDeploymentConfig, VerifyConfigExists]
+    _deps = [GetDeploymentConfig, LoadServerConfig]
     skip: bool = False
 
     def __init__(self, *args, **kwargs):
@@ -114,13 +116,23 @@ class YarnBuild(SuiteTask):
         self.name = "Running Yarn build process"
 
     def _run(self):
-        build_dir = self.env.build_dir
-        self.sh(
-            f"git clone --branch {self.env.deploy_branch} {self.get_arg('repo')} {build_dir}"
+        # Use a temporary build directory with -BUILDING suffix
+        # This is finalized in AtomicDeploy
+        timestamp = time.strftime(self.env.timestamp_format)
+        self.env.release_dir = Path(self.env.lua_cfg.get_release_dir(timestamp))
+        self.env.build_dir = self.env.release_dir.with_name(
+            self.env.release_dir.name + "-BUILDING"
         )
-        self.sh("git submodule update --init --recursive", cwd=build_dir)
-        self.sh("yarn install", cwd=build_dir)
-        self.sh("yarn combine:css", cwd=build_dir)
+
+        self.print(f"  [BUILD] Target: {self.env.build_dir}")
+
+        self.sh(
+            f"git clone --branch {self.env.deploy_branch} {self.env.repo} {self.env.build_dir}"
+        )
+        self.sh("git submodule update --init --recursive", cwd=self.env.build_dir)
+        self.sh("yarn install", cwd=self.env.build_dir)
+        self.sh("yarn combine:css", cwd=self.env.build_dir)
+        return True
 
 
 class AtomicDeploy(SuiteTask):
@@ -135,11 +147,19 @@ class AtomicDeploy(SuiteTask):
         self.name = "Executing atomic symlink swap"
 
     def _run(self):
-        env = self.env
-        self.sh(f"mkdir -p {env.release_dir}")
-        self.sh(f"rsync -a --delete {env.build_dir}/ {env.release_dir}/")
-        self.sh(f"ln -sfn {env.release_dir} {env.deploy_path}")
-        self.sh(f"sudo systemctl restart {env.service_name}")
+        # 1. Finalize the directory name (remove -BUILDING)
+        self.sh(f"mv {self.env.build_dir} {self.env.release_dir}")
+
+        # 2. Atomic Symlink Swap
+        temp_link = self.env.deploy_path.with_name(self.env.deploy_path.name + "_tmp")
+        self.sh(f"ln -sfn {self.env.release_dir} {temp_link}")
+        self.sh(f"mv -Tf {temp_link} {self.env.deploy_path}")
+
+        # 3. Restart Service
+        self.sh(f"sudo systemctl restart {self.env.service_name}")
+
+        self.print(f"🚀 Deployed to {self.env.deploy_path} -> {self.env.release_dir}")
+        return True
 
 
 class HealthCheck(SuiteTask):
