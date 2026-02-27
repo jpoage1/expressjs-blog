@@ -1,4 +1,4 @@
-# .gitignore: 
+# .gitignore:
 static
 posts/*.md
 posts/*/*.md
@@ -17,6 +17,11 @@ ehthumbs.db
 
 # Node.js
 node_modules/
+.yarn
+.pnp.cjs
+.pnp.loader.mjs
+.yarn/
+.yarnrc.yml
 
 # Python
 *.pyc
@@ -82,3 +87,5 @@ data/*
 .last_successful_prepush_test
 certs/*
 test/logs/*
+
+

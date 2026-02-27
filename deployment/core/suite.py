@@ -41,6 +41,8 @@ class DeploymentSuite(SuiteTask):
         parser = argparse.ArgumentParser(description="Blog Deployment Suite")
 
         parser.add_argument("--config", required=True)
+        parser.add_argument("--hotfix", action="store_true")
+        parser.add_argument("--full-pipeline", action="store_true")
         parser.add_argument("--branch", required=True)
         parser.add_argument(
             "--root", type=str, help="The root directory of the project"

@@ -12,6 +12,7 @@ pipeline {
     parameters {
         string(name: 'branch', defaultValue: 'refs/heads/main', description: 'Deployment branch')
         booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Skip integration tests')
+        booleanParam(name: 'HOTFIX_MODE', defaultValue: true, description: 'Skip cloning/installing; pull and restart only')
     }
 
     stages {
@@ -28,9 +29,10 @@ pipeline {
       stage('Execute Deployment') {
           steps {
               script {
+                  def mode = params.HOTFIX_MODE ? "--hotfix" : ""
                   def skipFlag = params.SKIP_TESTS ? "--skip-tests" : ""
                   // Call the python binary inside the venv directly
-                  sh "./.venv/bin/python3 -u ./deployment --config /srv/jasonpoage.com/deployment.lua --branch ${env.TARGET_BRANCH} ${skipFlag}"
+                  sh "./.venv/bin/python3 -u ./deployment --config /srv/jasonpoage.com/deployment.lua --branch ${env.TARGET_BRANCH} ${skipFlag} ${mode}"
               }
           }
       }

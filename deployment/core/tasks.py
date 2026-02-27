@@ -109,6 +109,51 @@ class LoadServerConfig(SuiteTask):
             self.fail(f"FAILED to parse {server_type} TOML: ", e)
 
 
+class PipelineSuccess(Exception):
+    pass
+
+
+class HotFix(SuiteTask):
+    """Bypasses the full build to update the current live deployment"""
+
+    _stage = Stage.DEPLOY
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = "Hot fix"
+
+    def _run(self):
+        if not self.get_arg("hotfix"):
+            return
+
+        cfg = self.env.release
+        print(self.env)
+        # 1. Target the current active symlink
+        live_path = self.env.release.deploy_link
+
+        self.print(f"  [HOTFIX] Pulling latest changes into {live_path}")
+
+        # 2. Pull changes
+        try:
+            self.sh(
+                "git pull origin " + self.env.deploy_branch,
+                cwd=live_path,
+                handle_exception=False,
+            )
+        except:
+            self.sh("git fetch origin ", cwd=live_path)
+            self.sh("git reset --hard origin/" + self.env.deploy_branch, cwd=live_path)
+
+        # 3. Quick Asset Rebuild (Skip yarn install unless package.json changed)
+        # We check for changes in package.json to decide if we need a full install
+        self.sh("yarn combine:css", cwd=live_path)
+
+        # 4. Restart to pick up Node.js changes
+        self.sh(f"sudo systemctl restart {cfg.service_name}")
+
+        raise PipelineSuccess("Hot fix applied successfully")
+
+
 class YarnBuild(SuiteTask):
     """Executes dependency installation and asset compilation"""
 

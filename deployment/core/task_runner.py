@@ -12,9 +12,11 @@ from core.tests import *
 from core.tasks import (
     GetDeploymentConfig,
     LoadServerConfig,
+    HotFix,
     YarnBuild,
     AtomicDeploy,
     HealthCheck,
+    PipelineSuccess,
 )
 
 
@@ -49,6 +51,7 @@ class TaskRunner(SuiteTask):
             VerifySystemDependencies,
             GetDeploymentConfig,
             LoadServerConfig,
+            HotFix,
             EnsureBuildPaths,
             YarnBuild,
             TestRunner,
@@ -115,6 +118,9 @@ class TaskRunner(SuiteTask):
                 #     continue
                 if task.run() is False:
                     self.fail(f"Pipeline stopped at task: {task.name}")
+            except PipelineSuccess as e:
+                self.print(e)
+                break
             except ModuleNotFoundError as e:
                 self.print(f"  [ERROR] Task {task.name} failed: {e}")
                 self.fail(f"Pipeline stopped at task: {self.last_task}")

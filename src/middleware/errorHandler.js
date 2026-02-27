@@ -47,7 +47,11 @@ module.exports = async (err, req, res, next) => {
   const errorContext = getErrorContext(code || statusCode);
 
   if (!isDev && !req?.isAuthenticated) {
-    res.customRedirect(`${ERROR_REDIRECT_PATH}/${errorContext.statusCode}`);
+    try {
+      res.customRedirect(`${ERROR_REDIRECT_PATH}/${errorContext.statusCode}`);
+    } catch (e) {
+      console.error("Critical error", errorContext);
+    }
     return;
   }
 
@@ -73,7 +77,7 @@ module.exports = async (err, req, res, next) => {
 
   const errorPageContext = await req.getBaseContext(
     req?.isAuthenticated,
-    context
+    context,
   );
   res.status(errorContext.statusCode);
   try {

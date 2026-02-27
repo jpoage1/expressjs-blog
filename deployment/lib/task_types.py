@@ -151,8 +151,11 @@ class SuiteTask(ABC):
         self, cmd: str, cwd: Path | None = None, handle_exception=True, dry_run=None
     ):
         """Helper to run shell commands within the project context."""
+
+        if cwd is not None:
+            self.print(f"  [CWD] {cwd}")
+
         cwd = str(cwd or os.getcwd())
-        # self.print(f"  [CWD] {cwd}")
         self.msg(f"  [EXEC] {cmd}")
         if self.do_dry_run() and dry_run is not False:
             return

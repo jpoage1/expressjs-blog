@@ -24,6 +24,8 @@ class BuildEnv:
     pidfile: Path = Path()
     test_log: Path = Path()
     toml: dict = {}
+    release: dict = {}
+    testing: dict = {}
 
     def __init__(self, timestamp_format: str | None = None):
         self.workspace: Path = Path()
