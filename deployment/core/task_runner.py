@@ -11,7 +11,7 @@ from core.tests import *
 
 from core.tasks import (
     GetDeploymentConfig,
-    VerifyConfigExists,
+    LoadServerConfig,
     YarnBuild,
     AtomicDeploy,
     HealthCheck,

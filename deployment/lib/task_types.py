@@ -1,3 +1,4 @@
+import time
 import threading
 import os
 import sys
@@ -59,10 +60,7 @@ class SuiteTask(ABC):
             except:
                 pass
         if cwd is None:
-            try:
-                cwd = os.getcwd()
-            except:
-                pass
+            cwd = os.getcwd()
         self._cwd = cwd
 
         self._owner = owner
@@ -149,19 +147,20 @@ class SuiteTask(ABC):
 
         raise TaskError(self, critical=critical, *args, **kwargs)
 
-    def sh(self, cmd: str, cwd: Path | None = None, graceful=False, dry_run=None):
+    def sh(
+        self, cmd: str, cwd: Path | None = None, handle_exception=True, dry_run=None
+    ):
         """Helper to run shell commands within the project context."""
+        cwd = str(cwd or os.getcwd())
+        self.print(f"  [CWD] {cwd}")
         self.msg(f"  [EXEC] {cmd}")
-        if self.do_dry_run and dry_run is not False:
+        if self.do_dry_run() and dry_run is not False:
             return
 
         try:
-            # E: Instance of 'SuiteTask' has no 'paths' member
-            return subprocess.run(
-                cmd, shell=True, check=True, cwd=str(cwd or os.getcwd())
-            )
-        except Exception as e:
-            if graceful:
+            return subprocess.run(cmd, shell=True, check=True, cwd=cwd)
+        except subprocess.CalledProcessError as e:
+            if handle_exception:
                 self.fail(e)
             raise Exception(e)
 
@@ -228,6 +227,41 @@ class SuiteTask(ABC):
     def get_stage(self):
         return self._stage
 
+    def deps_loaded(self):
+        if isinstance(self, SuiteSubTask):
+            return True
+        from core.task_runner import TaskRunner
+
+        return TaskRunner.is_loaded(self._deps)
+
+    def poll_health_endpoint(self, uri, retries=15, delay=2, label="Service"):
+        """Shared polling logic for verifying service availability"""
+        self.print(f"  [POLL] Verifying {label} Health: {uri}")
+
+        if self.do_dry_run():
+            retries = 0
+
+        for _ in range(retries):
+            try:
+                # Use sh to maintain consistency in logs/dry-runs
+                # We use graceful=False but handle the boolean return in the loop
+                res = self.sh(
+                    f"curl -s -I {uri} | grep '200 OK'", handle_exception=False
+                )
+
+                if res and res.returncode == 0:
+                    self.print(f"  [OK] {label} is healthy.")
+                    return True
+                else:
+                    self.print("Got result :", res)
+            except Exception as e:
+
+                self.print(f"  [WAIT] {label} not ready... {e}")
+
+            time.sleep(delay)
+
+        return False
+
 
 class SuiteSubTask(SuiteTask):
     _owner: "TDDSuite"
@@ -245,8 +279,6 @@ class SuiteSubTask(SuiteTask):
 
         self.attach_printer(self._owner)
 
-        self.paths = self._owner.paths
-
     def msg(self, *args, **kwargs):
         """Standardized message logger."""
         SuiteSubTask.inc_count()
@@ -255,6 +287,8 @@ class SuiteSubTask(SuiteTask):
 
     @staticmethod
     def inc_count():
+
+        print(SuiteSubTask._sub_counter)
         SuiteSubTask._sub_counter[SuiteTask._global_counter] += 1
 
     @staticmethod

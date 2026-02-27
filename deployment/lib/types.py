@@ -22,13 +22,14 @@ class BuildEnv:
     release_dir: Path
     test_endpoint_uri: str
     pidfile: Path = Path()
+    test_log: Path = Path()
+    toml: dict = {}
 
     def __init__(self, timestamp_format: str | None = None):
         self.workspace: Path = Path()
         self.timestamp: str = ""
         self.deploy_branch: str = ""
         self.deploy_path: Path = Path()
-        self.build_dir: Path = Path()
         self.service_name: str = ""
         self.release_dir: Path = Path()
         self.server_schema = "http"
@@ -40,3 +41,5 @@ class BuildEnv:
             self.timestamp_format = timestamp_format
         self.workspace = Path(os.getenv("WORKSPACE", self.root_dir))
         self.build_dir = self.workspace / "build"
+
+        self.test_log: Path = self.build_dir / "test_log.log"

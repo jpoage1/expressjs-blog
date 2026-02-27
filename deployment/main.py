@@ -7,7 +7,7 @@ from core.suite import DeploymentSuite
 def main():
 
     runner = DeploymentSuite()
-    exit_code = None
+    exit_code = 0
 
     try:
         runner.run()
@@ -19,7 +19,8 @@ def main():
         exit_code = 0
     except Exception as e:
         print(f"❌ Deployment Failed at: {e.with_traceback(e.__traceback__)}")
-        raise
         exit_code = 1
     runner.dump_print_queue()
-    sys.exit(exit_code or 1)
+    if exit_code != 0:
+        print(exit_code)
+        sys.exit(exit_code or 1)

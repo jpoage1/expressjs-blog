@@ -16,24 +16,22 @@ class StartTestApp(SuiteSubTask):
         super().__init__(*args, **kwargs)
 
     def _run(self):
-        if self._owner.args.get("skip_tests") and not self.env.meta.get(
-            "enforce_testing"
-        ):
+        if self._owner.args.get("skip_tests") and not self.get_arg("enforce_testing"):
             self.print("  [SKIP] Skipping per user request.")
             return True
 
         self.print(f"  [EXEC] Starting app in {self.env.build_dir}")
         # Stop existing service if it's hogging the port
-        self.sh(f"sudo systemctl stop {self.env.service_name} || true")
+        self.sh(f"sudo systemctl stop {self.env.testing.service_name} || true")
 
         # Start background process and record PID
-        cmd = f"nohup yarn run prod >> '{self.env.meta.server_log_file}' 2>&1 & echo $! > '{self.env.pidfile}'"
+        cmd = f"nohup yarn run prod >> '{self.env.test_log}' 2>&1 & echo $! > '{self.env.pidfile}'"
         self.sh(cmd, cwd=self.env.build_dir)
         return True
 
 
 class WaitForReadiness(SuiteSubTask):
-    """Polls the health endpoint until the test server is responsive"""
+    """Polls the health endpoint of the TEST instance"""
 
     _stage = Stage.TEST
     _deps = [StartTestApp]
@@ -43,28 +41,22 @@ class WaitForReadiness(SuiteSubTask):
         self.name = "Wait for Service Readiness"
 
     def _run(self):
-        if self._owner.args.get("skip_tests") and not self.env.meta.get(
-            "enforce_testing"
+        if self._owner.args.get("skip_tests") and not self.get_arg(
+            "enforce_testing", True
         ):
             return True
 
-        uri = self.env.test_endpoint_uri
-        self.print(f"  [POLL] Waiting for {uri}...")
-        # if self.do_dry_run():
-        #     return
+        uri = self.env.toml["testing"]["network"]["health_endpoint"]
 
-        for _ in range(15):
-            # Check for 200 OK
-            try:
-                res = self.sh(f"curl -s -I {uri} | grep '200 OK'")
-                if res:
-                    self.print("  [OK] Service is UP.")
-                    return True
-            except Exception:
-                time.sleep(2)
+        status = self.poll_health_endpoint(uri, label="Test Service")
+        if self.do_dry_run():
+            return
+        if not status:
+            # If the poll fails, we cat the log as requested before failing
+            self.sh(f"cat '{self.env.test_log}'")
+            self.fail(f"Test service at {uri} failed to start.")
 
-        self.sh(f"cat '{self.env.meta.server_log_file}'")
-        self.fail(f"Service at {uri} failed to start within 30s.")
+        return True
 
 
 class RunMochaTests(SuiteSubTask):
@@ -78,9 +70,7 @@ class RunMochaTests(SuiteSubTask):
         super().__init__(*args, **kwargs)
 
     def _run(self):
-        if self._owner.args.get("skip_tests") and not self.env.meta.get(
-            "enforce_testing"
-        ):
+        if self._owner.args.get("skip_tests") and not self.get_arg("enforce_testing"):
             return True
 
         self.print("  [RUN] npm run test:postreceive")
@@ -124,7 +114,7 @@ class TestRunner(SuiteTask):
     def _run(self):
         # 1. Check if we should even be here
         skip_param = self.args.get("skip_tests", False)
-        enforced = (self.env.meta.enforce_testing,)
+        enforced = self.get_arg("enforce_testing")
 
         if skip_param and not enforced:
             self.print("  [SKIP] Integration tests bypassed by user flag.")
@@ -157,5 +147,4 @@ class TestRunner(SuiteTask):
             self.print("  [CLEAN] Ensuring test environment teardown...")
             cleanup = StopTestApp(parent=self, owner=self._owner)
             cleanup.run()
-
-        return success
+            self.env.test_success = success

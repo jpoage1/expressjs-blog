@@ -22,10 +22,10 @@ class DeploymentSuite(SuiteTask):
         self.disable_dry_run()
         self.parser = None
         self._in_nix_shell = False
-        self.paths = None
         self.engine = None
         self.env = BuildEnv()
         self.args: dict = dict()
+        self.toml: dict = dict()
 
         self._owner = self
         self._parser()

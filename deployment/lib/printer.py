@@ -39,7 +39,7 @@ class Printer:
             Printer._queue.append(payload)
 
         else:
-            print(*args, **kwargs)
+            print(*args, flush=True, **kwargs)
 
     def flush(self):
         for args, kwargs in Printer._queue:
@@ -57,6 +57,7 @@ class Printer:
                         f.write(json.dumps(line))
             except Exception as e:
                 print(e.with_traceback)
+                raise e
 
     def _msg_prefix(self):
         # Format: [ID] for main tasks, [ID.Sub] for subtasks

@@ -1,4 +1,5 @@
 import sys
+import traceback
 
 
 class SuiteError(Exception):
@@ -7,6 +8,7 @@ class SuiteError(Exception):
     ):
         super().__init__(*args, **kwargs)
         parent.dump_print_queue()
+        traceback.print_stack()
         print(*args, **kwargs)
 
         if code is not None:
@@ -26,3 +28,4 @@ class TaskError(SuiteError):
             raise RuntimeError(*args, **kwargs)
         else:
             print(*args, **kwargs)
+            traceback.print_stack()

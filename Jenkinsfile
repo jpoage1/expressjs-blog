@@ -30,7 +30,7 @@ pipeline {
               script {
                   def skipFlag = params.SKIP_TESTS ? "--skip-tests" : ""
                   // Call the python binary inside the venv directly
-                  sh "./.venv/bin/python3 ./deployment --config /srv/jasonpoage.com/deployment.lua --branch ${env.TARGET_BRANCH} ${skipFlag}"
+                  sh "./.venv/bin/python3 -u ./deployment --config /srv/jasonpoage.com/deployment.lua --branch ${env.TARGET_BRANCH} ${skipFlag}"
               }
           }
       }
