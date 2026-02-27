@@ -48,7 +48,7 @@ class TaskRunner(SuiteTask):
             CheckNix,
             VerifySystemDependencies,
             GetDeploymentConfig,
-            VerifyConfigExists,
+            LoadServerConfig,
             EnsureBuildPaths,
             YarnBuild,
             TestRunner,
