@@ -152,7 +152,7 @@ class SuiteTask(ABC):
     ):
         """Helper to run shell commands within the project context."""
         cwd = str(cwd or os.getcwd())
-        self.print(f"  [CWD] {cwd}")
+        # self.print(f"  [CWD] {cwd}")
         self.msg(f"  [EXEC] {cmd}")
         if self.do_dry_run() and dry_run is not False:
             return

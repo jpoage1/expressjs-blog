@@ -80,7 +80,6 @@ class LoadServerConfig(SuiteTask):
     def get_server_cfg(self, data, server_type):
         try:
             server = data.get(server_type)
-            print("Server", server)
 
             # 3. Hydrate self.env for HealthCheck and WaitForReadiness tasks
             config = {
@@ -89,9 +88,7 @@ class LoadServerConfig(SuiteTask):
                 "address": server.get("address"),
                 "port": str(server.get("port")),
             }
-            print("config", config)
             health_path = data.get("meta").get("health_check")
-            print("config", health_path)
 
             if server_type == "network":
                 config["loc"] = config.get("address")
