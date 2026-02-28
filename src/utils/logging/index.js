@@ -16,14 +16,16 @@ const {
   sessionTimestamp,
   sessionDir,
   logFiles,
-  logDir,
-} = require("./config");
+} = require("../../config/logging");
+const { logging } = require("../../../src/config/loader");
 
 const {
   createLogStreams,
   buildTransport,
   createSessionTransport,
 } = require("./streams");
+
+const { logDir } = logging;
 
 winston.addColors(customLevels.colors);
 
@@ -99,7 +101,7 @@ const manualLogger = {
       logStreams.notice,
       sessionTransport,
       console.log,
-      ...args
+      ...args,
     ),
   warn: (...args) =>
     writeLog("WARN", logStreams.warn, sessionTransport, console.warn, ...args),
@@ -109,7 +111,7 @@ const manualLogger = {
       logStreams.security,
       sessionTransport,
       console.warn,
-      ...args
+      ...args,
     ),
   error: (...args) =>
     writeLog(
@@ -117,7 +119,7 @@ const manualLogger = {
       logStreams.error,
       sessionTransport,
       console.error,
-      ...args
+      ...args,
     ),
   debug: (...args) =>
     writeLog(
@@ -125,7 +127,7 @@ const manualLogger = {
       logStreams.debug,
       sessionTransport,
       console.debug,
-      ...args
+      ...args,
     ),
   analytics: (...args) =>
     writeLog("ANALYTICS", logStreams.analytics, sessionTransport, ...args),
@@ -141,8 +143,8 @@ const winstonLogger = createLogger({
   format: format.combine(
     format.timestamp(),
     format.printf(
-      ({ timestamp, level, message }) => `[${timestamp}] [${level}] ${message}`
-    )
+      ({ timestamp, level, message }) => `[${timestamp}] [${level}] ${message}`,
+    ),
   ),
   transports: [
     buildTransport("info", "info"),
@@ -172,7 +174,7 @@ const winstonLogger = createLogger({
             Object.keys(meta).length > 0 ? safeInspect(meta) : "";
 
           return `[${timestamp}] [${level}] ${outputMsg}\n${stack}\n${metaString}`;
-        })
+        }),
       ),
     }),
     sqliteTransport,

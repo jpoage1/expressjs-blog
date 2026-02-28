@@ -1,0 +1,49 @@
+[meta]
+node_env = "development" # production , testing, development
+
+site_owner = "Your name"
+country = "Your country"# Optional
+
+log_level = "debug" # debug, info, warn, error
+log_dir = "/path/to/logs"
+root_dir = "/path/to/server"
+
+health_check = "/health"
+
+[public]
+schema = "https"
+domain = "example.com"
+address = "0.0.0.0"
+port = 443
+
+[network]
+schema = "http"
+domain = "localhost"
+address = "127.0.0.1"
+port = "3400"
+
+[auth]
+verify = "https://auth.example.com/api/verify"
+login = "https://auth.example.com/?rd="
+cache_ttl = 120000 # 2 minutes
+timeout_ms = 5000
+
+[mail]
+domain = "example.com"
+host = "localhost"
+port = "1025"
+
+secure = "false"
+auth = "null"
+
+user = "me@example.com"
+pass = ""
+
+newsletter = "newsletter@example.com"
+default_subject = "New Contact Form Submission"
+log_path = "/path/to/email/log.json"
+
+[hcaptcha]
+secret = ""
+key = ""
+

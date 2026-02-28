@@ -1,7 +1,7 @@
 // src/utils/logging/consolePatch.js
 const util = require("util");
 
-const { LOG_LEVEL, LOG_LEVELS } = require("./config");
+const { LOG_LEVEL, LOG_LEVELS } = require("../../config/logging");
 
 function shouldLog(level) {
   return LOG_LEVELS[level.toLowerCase()] <= LOG_LEVELS[LOG_LEVEL];
@@ -16,7 +16,7 @@ function patchConsole(logStreams, sessionTransport) {
       logStreams.info,
       sessionTransport,
       originalConsole.log,
-      ...args
+      ...args,
     );
   console.error = (...args) =>
     writeLog(
@@ -24,7 +24,7 @@ function patchConsole(logStreams, sessionTransport) {
       logStreams.error,
       sessionTransport,
       originalConsole.error,
-      ...args
+      ...args,
     );
   console.warn = (...args) =>
     writeLog(
@@ -32,7 +32,7 @@ function patchConsole(logStreams, sessionTransport) {
       logStreams.warn,
       sessionTransport,
       originalConsole.warn,
-      ...args
+      ...args,
     );
   console.info = (...args) =>
     writeLog(
@@ -40,7 +40,7 @@ function patchConsole(logStreams, sessionTransport) {
       logStreams.info,
       sessionTransport,
       originalConsole.info,
-      ...args
+      ...args,
     );
   console.debug = (...args) =>
     writeLog(
@@ -48,7 +48,7 @@ function patchConsole(logStreams, sessionTransport) {
       logStreams.debug,
       sessionTransport,
       originalConsole.debug,
-      ...args
+      ...args,
     );
   return originalConsole;
 }
@@ -81,7 +81,7 @@ function formatArg(arg) {
         stack: arg.stack,
       },
       null,
-      2
+      2,
     );
   }
 
@@ -117,7 +117,7 @@ function writeLog(level, stream, sessionTransport, consoleFn, ...args) {
   stream.write(logLine);
   if (!sessionTransport) {
     originalConsole.warn(
-      `sessionTransport for log level '${level} is undefined`
+      `sessionTransport for log level '${level} is undefined`,
     );
   } else {
     sessionTransport.write({ level: level.toLowerCase(), message, timestamp });

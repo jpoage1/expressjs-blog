@@ -2,9 +2,9 @@ const fs = require("fs");
 const path = require("path");
 const { winstonLogger } = require("./logging");
 
-const logDir = path.join(__dirname, "../../logs");
-const { meta } = require("../config/loader");
+const { meta, logging } = require("../config/loader");
 const { node_env } = meta;
+const { logDir } = logging;
 
 class LogManager {
   constructor(logDir, options = {}) {

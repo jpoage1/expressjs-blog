@@ -4,29 +4,31 @@ const fs = require("fs");
 const path = require("path");
 const proxyquire = require("proxyquire").noPreserveCache();
 
+const { meta, logging } = require("../../../src/config/loader");
 const {
-  projectRoot,
-  logDir,
   sessionTimestamp,
   sessionDir,
   logFiles,
   LOG_LEVELS,
-} = require("../../../src/utils/logging/config");
+} = require("../../../src/config/logging");
+
+const { rootDir } = meta;
+const { logDir } = logging;
 
 describe("config.js", () => {
-  it("projectRoot contains package.json", () => {
-    const pkgJsonPath = path.join(projectRoot, "package.json");
+  it("rootDir contains package.json", () => {
+    const pkgJsonPath = path.join(rootDir, "package.json");
     const exists = fs.existsSync(pkgJsonPath);
-    expect(exists).to.equal(true, `package.json not found in ${projectRoot}`);
+    expect(exists).to.equal(true, `package.json not found in ${rootDir}`);
   });
 
-  it("projectRoot matches resolved 3-levels-up path", () => {
+  it("rootDir matches resolved 3-levels-up path", () => {
     const expected = path.resolve(__dirname, "../../../");
-    expect(projectRoot).to.equal(expected);
+    expect(rootDir).to.equal(expected);
   });
 
-  it("logDir is within projectRoot and ends with 'logs'", () => {
-    expect(logDir.startsWith(projectRoot)).to.be.true;
+  it("logDir is within rootDir and ends with 'logs'", () => {
+    expect(logDir.startsWith(rootDir)).to.be.true;
     expect(path.basename(logDir)).to.equal("logs");
   });
 

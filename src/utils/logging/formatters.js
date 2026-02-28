@@ -1,8 +1,9 @@
 // formatters.js
 const path = require("path");
-const { projectRoot } = require("./config");
+const { meta } = require("../../config/loader");
+const { root_dir } = meta;
 
-function formatFunctionName(rawPath, root = projectRoot) {
+function formatFunctionName(rawPath, root = root_dir) {
   return path.relative(root, rawPath).replace(/\\/g, "/");
 }
 

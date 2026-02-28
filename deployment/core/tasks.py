@@ -31,6 +31,9 @@ class GetDeploymentConfig(SuiteTask):
         self.env.app_name = cfg.app_name
         self.env.repo = cfg.repo
         self.env.timestamp_format = cfg.timestamp_format
+        self.env.yarn_path = cfg.yarn_path
+        self.env.corepack_home = cfg.corepack_home
+        self.env.user = cfg.user
 
         self.env.deploy_branch = self.get_arg("branch").split("/")[-1]
         self.env.release = cfg.release
@@ -170,7 +173,11 @@ class YarnBuild(SuiteTask):
             f"git clone --branch {self.env.deploy_branch} {self.env.repo} {self.env.build_dir}"
         )
         self.sh("git submodule update --init --recursive", cwd=self.env.build_dir)
-        self.sh("yarn config set enableGlobalCache false", cwd=self.env.build_dir)
+        self.sh("yarn config set enableGlobalCache true", cwd=self.env.build_dir)
+        self.sh(
+            f"yarn config set globalFolder {self.env.yarn_path}", cwd=self.env.build_dir
+        )
+        self.sh("yarn config set nodeLinker pnp", cwd=self.env.build_dir)
         self.sh("yarn install", cwd=self.env.build_dir)
         self.sh("yarn combine:css", cwd=self.env.build_dir)
         return True

@@ -18,12 +18,26 @@ pipeline {
     stages {
         stage('Setup Runner') {
           steps {
-              checkout scm
-              sh """
-                  python3 -m venv .venv
-                  ./.venv/bin/pip install -r requirements.txt
-              """
-          }
+            checkout scm
+            sh """
+                # Define a fixed path for this project's venv
+                VENV_PATH="/var/lib/jenkins/venvs/${JOB_NAME}"
+
+                # Create if missing
+                if [ ! -d "\$VENV_PATH" ]; then
+                    python3 -m venv "\$VENV_PATH"
+                fi
+
+                # Only install if requirements.txt is newer than the venv's lib directory
+                if [ requirements.txt -nt "\$VENV_PATH/lib" ]; then
+                    "\$VENV_PATH/bin/pip" install -r requirements.txt
+                    touch "\$VENV_PATH/lib" # Update timestamp to mark as "synced"
+                fi
+
+                # Link it into the workspace so the rest of the script works as-is
+                ln -sfn "\$VENV_PATH" .venv
+            """
+        }
       }
 
       stage('Execute Deployment') {
@@ -32,7 +46,7 @@ pipeline {
                   def mode = params.HOTFIX_MODE ? "--hotfix" : ""
                   def skipFlag = params.SKIP_TESTS ? "--skip-tests" : ""
                   // Call the python binary inside the venv directly
-                  sh "./.venv/bin/python3 -u ./deployment --config /srv/jasonpoage.com/deployment.lua --branch ${env.TARGET_BRANCH} ${skipFlag} ${mode}"
+                  sh "./.venv/bin/python3 -u ./deployment --config /etc/express-blog/deployment.lua --branch ${env.TARGET_BRANCH} ${skipFlag} ${mode}"
               }
           }
       }

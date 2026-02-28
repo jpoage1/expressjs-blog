@@ -10,10 +10,15 @@ function hydrate(c = {}) {
 
   return {
     meta: {
-      log_level: c?.meta?.log_level || process.env.LOG_LEVEL || "info",
       node_env: c?.meta?.node_env || process.env.NODE_ENV || "development",
       site_owner: c?.meta?.site_owner || process.env.SITE_OWNER || undefined,
       country: c?.meta?.country || process.env.COUNTRY || undefined,
+      rootDir: c?.meta?.root_dir || process.env.ROOT_DIR,
+    },
+    logging: {
+      logDir: c?.logging?.log_dir || process.env.LOG_DIR,
+      logLevel: c?.logging?.log_level || process.env.LOG_LEVEL || "info",
+      logsDbPath: c?.logging?.db_path || process.env.LOGS_DB_PATH,
     },
     public: {
       schema: c?.public?.schema || process.env.SERVER_SCHEMA || schema,
@@ -83,5 +88,4 @@ function loadConfig() {
 }
 
 const config = loadConfig();
-// console.log(config);
 module.exports = config;

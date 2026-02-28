@@ -3,6 +3,7 @@ const fs = require("fs");
 const Database = require("better-sqlite3");
 const { winstonLogger } = require("../../utils/logging");
 const analyticsDb = require("../../utils/sqlite3");
+const { logging } = require("../../config/loader");
 
 const allowedLevels = [
   "warn",
@@ -15,7 +16,7 @@ const allowedLevels = [
   "functions",
   "notice",
 ];
-const logsDbPath = path.resolve(__dirname, "../../../data/logs.sqlite3");
+const { logsDbPath } = logging;
 
 if (!fs.existsSync(logsDbPath)) {
   fs.closeSync(fs.openSync(logsDbPath, "w"));

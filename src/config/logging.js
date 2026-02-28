@@ -1,7 +1,7 @@
 // src/utils/logging/config.js
 const path = require("path");
 
-const { meta } = require("../../config/loader");
+const { logging } = require("../config/loader");
 
 const customLevels = {
   levels: {
@@ -26,13 +26,9 @@ const customLevels = {
   },
 };
 
-const LOG_LEVEL =
-  (meta?.log_level?.toLowerCase() || process.env.LOG_LEVEL).toLowerCase() ||
-  "info";
 const LOG_LEVELS = customLevels.levels;
 
-const projectRoot = path.join(__dirname, "..", "..", "..");
-const logDir = path.join(projectRoot, "logs");
+const { logDir, logLevel } = logging;
 
 const sessionTimestamp = new Date().toISOString().replace(/[:.]/g, "-");
 const sessionDir = path.join(logDir, "sessions", sessionTimestamp);
@@ -51,10 +47,8 @@ const logFiles = {
 
 module.exports = {
   customLevels,
-  LOG_LEVEL,
+
   LOG_LEVELS,
-  logDir,
-  projectRoot,
   sessionTimestamp,
   sessionDir,
   logFiles,

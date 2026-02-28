@@ -4,6 +4,7 @@ const path = require("path");
 const HttpError = require("./HttpError");
 const { winstonLogger } = require("./logging");
 const { captureSecurityData } = require("./securityForensics");
+const { logging } = require("../config/loader");
 
 const EVENT_TYPES = {
   // Validation Events
@@ -225,7 +226,7 @@ class SecurityEvent extends HttpError {
     error,
     eventType = "SYSTEM_ERROR",
     additionalMetadata = {},
-    options = {}
+    options = {},
   ) {
     if (error instanceof SecurityEvent) {
       return error;
@@ -280,7 +281,7 @@ class SecurityEvent extends HttpError {
   static async blockThreat(
     req,
     threatAnalysis,
-    reason = "high_threat_detected"
+    reason = "high_threat_detected",
   ) {
     const securityData = captureSecurityData(req, {
       threatAnalysis,
@@ -298,7 +299,7 @@ class SecurityEvent extends HttpError {
   static async _logHighThreatEvent(logEntry) {
     try {
       const date = new Date().toISOString().split("T")[0];
-      const logDir = path.join(__dirname, "..", "..", "logs", "security");
+      const { logDir } = logging;
       await fs.mkdir(logDir, { recursive: true });
 
       const alertFile = path.join(logDir, `high_threat_${date}.log`);

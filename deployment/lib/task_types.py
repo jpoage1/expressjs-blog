@@ -237,7 +237,7 @@ class SuiteTask(ABC):
 
         return TaskRunner.is_loaded(self._deps)
 
-    def poll_health_endpoint(self, uri, retries=15, delay=2, label="Service"):
+    def poll_health_endpoint(self, uri, retries=3, delay=2, label="Service"):
         """Shared polling logic for verifying service availability"""
         self.print(f"  [POLL] Verifying {label} Health: {uri}")
 
@@ -260,6 +260,7 @@ class SuiteTask(ABC):
             except Exception as e:
 
                 self.print(f"  [WAIT] {label} not ready... {e}")
+                self.print(e.__dict__)
 
             time.sleep(delay)
 

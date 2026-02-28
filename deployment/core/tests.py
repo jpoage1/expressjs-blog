@@ -21,11 +21,9 @@ class StartTestApp(SuiteSubTask):
             return True
 
         self.print(f"  [EXEC] Starting app in {self.env.build_dir}")
-        # Stop existing service if it's hogging the port
-        self.sh(f"sudo systemctl stop {self.env.testing.service_name} || true")
 
-        # Start background process and record PID
-        cmd = f"nohup yarn run prod >> '{self.env.test_log}' 2>&1 & echo $! > '{self.env.pidfile}'"
+        cmd = f"sudo /usr/bin/systemctl restart {self.env.testing.service_name}"
+
         self.sh(cmd, cwd=self.env.build_dir)
         return True
 
@@ -89,8 +87,9 @@ class StopTestApp(SuiteSubTask):
         self.name = "Stop Test App"
 
     def _run(self):
-        # We try to stop even if SKIP_TESTS was true to be safe
-        self.sh(f"kill $(cat '{self.env.pidfile}') || true")
+        self.sh(f"whoami")
+        self.sh(f"id")
+        self.sh(f"sudo /usr/bin/systemctl stop {self.env.testing.service_name}")
         return True
 
 

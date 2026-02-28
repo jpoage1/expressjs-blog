@@ -21,7 +21,6 @@ node_modules/
 .pnp.cjs
 .pnp.loader.mjs
 .yarn/
-.yarnrc.yml
 
 # Python
 *.pyc
@@ -52,7 +51,8 @@ target/
 # Log files
 *.log
 
-# Environment files
+# Config / Environment files
+config.toml
 .env
 
 # Miscellaneous

@@ -4,35 +4,36 @@ const fs = require("fs");
 const path = require("path");
 const proxyquire = require("proxyquire").noPreserveCache();
 
+const { meta, rootDir } = require("../../../src/config/loader");
 const {
-  projectRoot,
-  logDir,
   sessionTimestamp,
   sessionDir,
   logFiles,
   LOG_LEVELS,
-} = require("../../../src/utils/logging/config");
+} = require("../../../src/utils/config/logging");
+
+const { logDir } = meta;
 
 describe("config.js", () => {
-  it("projectRoot contains package.json", () => {
-    const pkgJsonPath = path.join(projectRoot, "package.json");
+  it("rootDir contains package.json", () => {
+    const pkgJsonPath = path.join(rootDir, "package.json");
     const exists = fs.existsSync(pkgJsonPath);
-    expect(exists).to.equal(true, `package.json not found in ${projectRoot}`);
+    expect(exists).to.equal(true, `package.json not found in ${rootDir}`);
   });
 
-  it("projectRoot matches resolved 3-levels-up path", () => {
+  it("rootDir matches resolved 3-levels-up path", () => {
     const expected = path.resolve(__dirname, "../../../");
-    expect(projectRoot).to.equal(expected);
+    expect(rootDir).to.equal(expected);
   });
 
-  it("logDir is within projectRoot and ends with 'logs'", () => {
-    expect(logDir.startsWith(projectRoot)).to.be.true;
+  it("logDir is within rootDir and ends with 'logs'", () => {
+    expect(logDir.startsWith(rootDir)).to.be.true;
     expect(path.basename(logDir)).to.equal("logs");
   });
 
   it("sessionTimestamp matches expected ISO pattern with no colons or dots", () => {
     expect(sessionTimestamp).to.match(
-      /^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z$/
+      /^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z$/,
     );
   });
 
@@ -48,7 +49,7 @@ describe("config.js", () => {
   ["info", "notice", "error", "warn", "debug"].forEach((level) => {
     it(`logFiles.${level} points to ${level}.log in correct subdir`, () => {
       expect(logFiles[level]).to.equal(
-        path.join(logDir, level, `${level}.log`)
+        path.join(logDir, level, `${level}.log`),
       );
     });
   });

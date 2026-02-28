@@ -2,6 +2,7 @@
   "name": "express-blog",
   "version": "1.0.0",
   "description": "",
+  "packageManager": "yarn@4.9.2",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
@@ -27,6 +28,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@glint/core": "^1.5.2",
     "better-sqlite3": "^12.2.0",
     "body-parser": "^2.2.0",
     "compression": "^1.8.1",

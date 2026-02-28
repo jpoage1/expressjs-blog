@@ -5,6 +5,7 @@ const path = require("path");
 const HttpError = require("../utils/HttpError");
 
 const { winstonLogger } = require("../utils/logging");
+const { logging } = require("../config/loader");
 
 // Threat detection patterns
 const THREAT_PATTERNS = {
@@ -191,7 +192,7 @@ async function logSecurityEvent(data, eventType = "contact_submission") {
 
     // Separate high-threat log file
     if (data.threatAnalysis?.level === "high") {
-      const logDir = path.join(__dirname, "..", "..", "logs", "security");
+      const logDir = path.join(logging.logDir, "security");
       await fs.mkdir(logDir, { recursive: true });
 
       const alertFile = path.join(logDir, `high_threat_${date}.log`);

@@ -4,7 +4,8 @@ const winston = require("winston");
 const DailyRotateFile = require("winston-daily-rotate-file");
 const { format } = winston;
 
-const { logDir } = require("./config");
+const { logging } = require("../../../src/config/loader");
+const { logDir } = logging;
 
 function createLogStreams(files) {
   return {
@@ -30,8 +31,8 @@ function createSessionTransport(dir) {
       format.timestamp(),
       format.printf(
         ({ timestamp, level, message }) =>
-          `[${timestamp}] [${level.toUpperCase()}] ${message}`
-      )
+          `[${timestamp}] [${level.toUpperCase()}] ${message}`,
+      ),
     ),
   });
 }
@@ -48,7 +49,7 @@ function buildTransport(level, filename) {
       format.timestamp(),
       format.printf(({ timestamp, level, message }) => {
         return `[${timestamp}] [${level.toUpperCase()}] ${message}`;
-      })
+      }),
     ),
   });
 }

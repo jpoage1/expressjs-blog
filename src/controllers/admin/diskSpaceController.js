@@ -1,6 +1,7 @@
 const fs = require("fs").promises;
 const path = require("path");
 const { diskSpaceMonitor } = require("../../utils/logging");
+const { logging } = require("../../config/loader");
 
 exports.requireAdmin = (req, res, next) => {
   if (req.session && req.session.isAdmin) {
@@ -63,7 +64,7 @@ exports.updateDiskSpaceConfig = (req, res) => {
 
 exports.getLogDirectoryContents = async (req, res) => {
   try {
-    const logDir = path.join(__dirname, "..", "..", "logs");
+    const { logDir } = logging;
 
     const getDirectoryInfo = async (dir) => {
       const items = await fs.readdir(dir);

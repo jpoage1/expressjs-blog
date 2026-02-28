@@ -26,6 +26,9 @@ class BuildEnv:
     toml: dict = {}
     release: dict = {}
     testing: dict = {}
+    yarn_path: Path
+    corepack_home: Path
+    user: str
 
     def __init__(self, timestamp_format: str | None = None):
         self.workspace: Path = Path()
@@ -34,9 +37,12 @@ class BuildEnv:
         self.deploy_path: Path = Path()
         self.service_name: str = ""
         self.release_dir: Path = Path()
+        self.yarn_path: Path = Path()
+        self.corepack_home: Path = Path()
         self.server_schema = "http"
         self.server_address = "localhost"
-        self.pidfile = Path("/tmp/hexascript_test.pid")
+        self.pidfile = Path("/tmp/blog_test.pid")
+        self.user: str = ""
 
         self.root_dir = os.getcwd()
         if timestamp_format is not None:
