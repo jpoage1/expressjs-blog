@@ -57,20 +57,27 @@ function hydrate(c = {}) {
 function loadConfig() {
   // Use a simple flag parser (e.g., --config)
   const configIdx = process.argv.indexOf("--config");
-  const configPath = configIdx !== -1 ? process.argv[configIdx + 1] : null;
+  let configPath = configIdx !== -1 ? process.argv[configIdx + 1] : null;
 
   if (!configPath) {
     console.info("Notice: No config file provided. Use --config <path>");
     console.info("  Using defaults");
-    return hydrate();
+    configPath = "../../config.toml";
+    let toml_config = {};
+    try {
+      const raw = fs.readFileSync(path.resolve(configPath), "utf8");
+      const toml_config = parse(raw);
+    } finally {
+      return hydrate(toml_config);
+    }
   }
 
   try {
     const raw = fs.readFileSync(path.resolve(configPath), "utf8");
-    const toml_config = toml.parse(raw);
+    const toml_config = parse(raw);
     return hydrate(toml_config);
   } catch (err) {
-    console.error(`Failed to load config at ${configPath}:`, err.message);
+    console.error(`Failed to load config at ${configPath}:`, err.stack);
     process.exit(1);
   }
 }

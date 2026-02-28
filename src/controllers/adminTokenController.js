@@ -17,7 +17,8 @@ exports.handleTokenRedirect = (req, res, next) => {
 
   if (!validateToken(token)) {
     const error = new SecurityEvent("INVALID_TOKEN", { token });
-    return next(error);
+    // DO NOT send error or it will result in improper redirects
+    return next();
   }
 
   const scheme = req.protocol;

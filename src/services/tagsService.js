@@ -3,6 +3,7 @@ const path = require("path");
 const matter = require("gray-matter");
 const { glob } = require("glob");
 const createExcerpt = require("../utils/createExcerpt");
+const { winstonLogger } = require("../utils/createExcerpt");
 
 const CONTENT_ROOT = path.resolve(__dirname, "../../content");
 const pattern = `${CONTENT_ROOT}/**/*.md`;
@@ -21,8 +22,8 @@ async function getPostsByTag(tag) {
   const matchedPosts = [];
 
   for (const filePath of files) {
-    const raw = await fs.readFile(filePath, "utf-8");
     try {
+      const raw = await fs.readFile(filePath, "utf-8");
       const { data: frontmatter, content } = matter(raw);
       const fileHash = hash(frontmatter);
 
@@ -38,7 +39,8 @@ async function getPostsByTag(tag) {
         excerpt: createExcerpt(content, 200),
       });
     } catch (e) {
-      console.log("File path", filePath, e.stack);
+      // Prevent the entire route from going down due to one bad file
+      winstonLogger.error("File path", filePath, e.stack);
     }
   }
 

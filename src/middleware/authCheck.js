@@ -73,12 +73,12 @@ module.exports = async (req, res, next) => {
       isAuthenticated: req.isAuthenticated,
       timestamp: Date.now(),
     });
-  } catch {
+  } catch (e) {
     req.isAuthenticated = false;
     if (req.log) {
-      req.log.warn(LOG_MESSAGES.AUTH_SERVER_UNAVAILABLE);
+      req.log.warn(LOG_MESSAGES.AUTH_SERVER_UNAVAILABLE, e.stack);
     } else {
-      console.warn(LOG_MESSAGES.AUTH_SERVER_UNAVAILABLE);
+      console.warn(LOG_MESSAGES.AUTH_SERVER_UNAVAILABLE, e.stack);
     }
   }
 
