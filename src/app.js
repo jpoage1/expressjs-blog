@@ -1,7 +1,7 @@
 // src/app.js
 require("dotenv").config();
 
-const { network: c } = require("./config/loader");
+const { network: c, meta } = require("./config/loader");
 
 const net = require("net");
 const setupMiddleware = require("./middleware");
@@ -36,7 +36,7 @@ server.once("listening", () => {
     winstonLogger.info(
       `Server listening on ${c.schema}://${c.domain}:${c.port}`,
     );
-    winstonLogger.info(`NODE_ENV: ${c.node_env}`);
+    winstonLogger.info(`NODE_ENV: ${meta.node_env}`);
   });
 });
 
