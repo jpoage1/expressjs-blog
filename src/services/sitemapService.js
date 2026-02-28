@@ -6,7 +6,7 @@ const { getAllPosts } = require("../utils/postFileUtils");
 const hash = require("../utils/hash");
 const yaml = require("js-yaml");
 
-const glob = require("glob");
+const { glob } = require("glob");
 const { qualifySitemapLinks } = require("../utils/qualifyLinks");
 const { winstonLogger } = require("../utils/logging");
 
@@ -80,7 +80,7 @@ class SitemapService {
 
   async getAllTags() {
     const tagMap = new Map();
-    const files = await glob.promises.glob(pattern);
+    const files = await glob(pattern);
 
     for (const file of files) {
       try {
@@ -107,7 +107,7 @@ class SitemapService {
     }
 
     return Array.from(tagMap.values()).sort((a, b) =>
-      a.name.localeCompare(b.name)
+      a.name.localeCompare(b.name),
     );
   }
 
@@ -161,7 +161,7 @@ class SitemapService {
 
       entries.push(parentEntry);
       winstonLogger.debug(
-        `Added docs entry: ${parentEntry.loc} with ${parentEntry.children.length} children`
+        `Added docs entry: ${parentEntry.loc} with ${parentEntry.children.length} children`,
       );
     }
 
@@ -176,12 +176,12 @@ class SitemapService {
       let existingSet;
       if (existingUrls) {
         existingSet = new Set(
-          existingUrls.map((url) => url.replace(/^https?:\/\/[^\/]+/, ""))
+          existingUrls.map((url) => url.replace(/^https?:\/\/[^\/]+/, "")),
         );
       } else {
         const existing = await this.getAllUrls({ excludeNavLinks: true });
         existingSet = new Set(
-          existing.map((e) => e.loc.replace(/^https?:\/\/[^\/]+/, ""))
+          existing.map((e) => e.loc.replace(/^https?:\/\/[^\/]+/, "")),
         );
       }
 
@@ -229,7 +229,7 @@ class SitemapService {
       const extraPages = transform(navLinks);
 
       winstonLogger.debug(
-        `Generated ${extraPages.length} extra nav link entries`
+        `Generated ${extraPages.length} extra nav link entries`,
       );
       return extraPages;
     } catch (err) {
@@ -242,12 +242,12 @@ class SitemapService {
     for (const node of tree) {
       if (Array.isArray(node.children)) {
         const index = node.children.findIndex(
-          (child) => child.loc === `#inject:${key}`
+          (child) => child.loc === `#inject:${key}`,
         );
 
         if (index !== -1) {
           winstonLogger.debug(
-            `Found placeholder #inject:${key}, injecting ${items.length} items`
+            `Found placeholder #inject:${key}, injecting ${items.length} items`,
           );
           // Replace the placeholder with the actual items
           node.children.splice(index, 1, ...items);
@@ -319,7 +319,7 @@ class SitemapService {
     let extraNavPages = [];
     if (!excludeNavLinks) {
       const currentUrls = this.flatten(staticPagesJsonTree).map(
-        (item) => item.loc
+        (item) => item.loc,
       );
       extraNavPages = await this.getNavLinksPages(currentUrls);
     }

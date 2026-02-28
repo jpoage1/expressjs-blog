@@ -5,6 +5,8 @@ module.exports = async (req, res) => {
   const code = req.params.code || parseInt(req.query.code, 10) || 500;
   const errorContext = getErrorContext(code);
 
+  req.log.info("Referrer", req.get("Referrer"));
+
   const context = {
     title: errorContext.title,
     message: errorContext.message,

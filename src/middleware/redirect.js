@@ -2,6 +2,7 @@
 
 const { baseUrl } = require("../utils/baseUrl");
 const { qualifyLink } = require("../utils/qualifyLinks");
+const { winstonLogger } = require("../utils/logging");
 
 // Configuration - adjust these as needed
 const redirectConfig = {
@@ -13,6 +14,12 @@ const redirectConfig = {
 // Generic redirect handler
 function handleRedirect(req, res, targetPath, status = 302) {
   const redirectUrl = qualifyLink(targetPath);
+  winstonLogger.info("Redirect Initiated", {
+    from: req.originalUrl,
+    // referrer: req.referrer,
+    method: req.method,
+    ip: req.ip,
+  });
 
   // Check if this is a request that expects JSON (API calls)
   if (req.accepts("json") && !req.accepts("html")) {
