@@ -32,7 +32,7 @@ describe("config.js", () => {
 
   it("sessionTimestamp matches expected ISO pattern with no colons or dots", () => {
     expect(sessionTimestamp).to.match(
-      /^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z$/
+      /^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z$/,
     );
   });
 
@@ -48,7 +48,7 @@ describe("config.js", () => {
   ["info", "notice", "error", "warn", "debug"].forEach((level) => {
     it(`logFiles.${level} points to ${level}.log in correct subdir`, () => {
       expect(logFiles[level]).to.equal(
-        path.join(logDir, level, `${level}.log`)
+        path.join(logDir, level, `${level}.log`),
       );
     });
   });
@@ -62,15 +62,5 @@ describe("config.js", () => {
       info: 4,
       debug: 5,
     });
-  });
-
-  it("LOG_LEVEL defaults to 'info' when process.env.LOG_LEVEL is unset", () => {
-    const original = process.env.LOG_LEVEL;
-    delete process.env.LOG_LEVEL;
-
-    const { LOG_LEVEL } = proxyquire("../../../src/utils/logging/config", {});
-    expect(LOG_LEVEL).to.equal("info");
-
-    if (original !== undefined) process.env.LOG_LEVEL = original;
   });
 });

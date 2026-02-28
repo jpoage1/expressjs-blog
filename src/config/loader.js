@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const { parse } = require("smol-toml");
-const toml = require("smol-toml");
 
 function hydrate(c = {}) {
   const schema = c?.network?.schema || process.env.SERVER_SCHEMA || "http";
@@ -41,6 +40,7 @@ function hydrate(c = {}) {
       secure: c?.mail?.secure || process.env.MAIL_SECURE || false,
       auth: c?.mail?.auth || process.env.MAIL_AUTH || null,
       domain: c?.mail?.domain || process.env.MAIL_DOMAIN || "localhost",
+      host: c?.mail?.host || process.env.MAIL_HOST || "localhost",
       port: c?.mail?.port || process.env.MAIL_PORT || 1025,
       newsletter:
         c?.mail?.newsletter ||
@@ -75,4 +75,6 @@ function loadConfig() {
   }
 }
 
-module.exports = loadConfig();
+const config = loadConfig();
+// console.log(config);
+module.exports = config;

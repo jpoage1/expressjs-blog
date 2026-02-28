@@ -1,5 +1,6 @@
 // src/utils/logging/config.js
 const path = require("path");
+
 const { meta } = require("../../config/loader");
 
 const customLevels = {
@@ -25,7 +26,9 @@ const customLevels = {
   },
 };
 
-const LOG_LEVEL = meta.log_level?.toLowerCase() || "info";
+const LOG_LEVEL =
+  (meta?.log_level?.toLowerCase() || process.env.LOG_LEVEL).toLowerCase() ||
+  "info";
 const LOG_LEVELS = customLevels.levels;
 
 const projectRoot = path.join(__dirname, "..", "..", "..");
