@@ -4,12 +4,7 @@ const path = require("path");
 const fs = require("fs").promises;
 const { validateAndSanitizeEmail } = require("../utils/emailValidator");
 const { winstonLogger } = require("../utils/logging");
-const {
-  MAIL_DOMAIN,
-  MAIL_USER,
-  DEFAULT_SUBJECT,
-  EMAIL_LOG_PATH,
-} = require("../config/emailConfig");
+const { mail } = require("../config/loader");
 
 // Fixed sanitizeInput function
 function sanitizeInput(input) {
@@ -50,8 +45,8 @@ async function sendContactMail({ name, email, subject, message }) {
   if (!valid) throw new HttpError(errorMessage, 400);
 
   const mailData = {
-    from: `"Contact Form" <no-reply@${MAIL_DOMAIN}>`,
-    to: MAIL_USER,
+    from: `"Contact Form" <no-reply@${mail.domain}>`,
+    to: mail.user,
     replyTo: `"${cleanName}" <${sanitizedEmail}>`,
     subject: cleanSubject,
     text: cleanMessage,

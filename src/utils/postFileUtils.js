@@ -2,15 +2,18 @@
 const matter = require("gray-matter");
 const path = require("path");
 const fs = require("fs").promises;
+const { meta } = require("../config/loader");
 
 const createExcerpt = require("./createExcerpt");
 const hash = require("./hash");
+
+const { node_env } = meta;
 
 async function getAllPosts(baseDir, options = {}) {
   const { includeUnpublished = false } = options;
 
   const years = (await fs.readdir(baseDir, { withFileTypes: true })).filter(
-    (dirent) => dirent.isDirectory() && /^\d{4}$/.test(dirent.name)
+    (dirent) => dirent.isDirectory() && /^\d{4}$/.test(dirent.name),
   );
 
   const allPosts = [];
@@ -37,8 +40,7 @@ async function getAllPosts(baseDir, options = {}) {
             // Filter unpublished posts in production unless explicitly included
             if (
               !data.published &&
-              (process.env.NODE_ENV === "production" ||
-                process.env.NODE_ENV === "testing") &&
+              (node_env === "production" || node_env === "testing") &&
               !includeUnpublished
             ) {
               return null;
@@ -57,7 +59,7 @@ async function getAllPosts(baseDir, options = {}) {
               frontmatter: data, // Include full frontmatter for flexibility
               excerpt,
             };
-          })
+          }),
       );
 
       allPosts.push(...posts.filter(Boolean));

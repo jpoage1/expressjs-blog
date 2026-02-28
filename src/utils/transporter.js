@@ -1,18 +1,14 @@
 // src/utils/transporter.js
 const nodemailer = require("nodemailer");
+const { mail } = require("../config/loader");
+
 require("dotenv").config();
 
-let auth = null;
-if (process.env.MAIL_AUTH != "null") {
-  auth = {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  };
-}
+let { auth } = mail;
 const transporter = nodemailer.createTransport({
-  host: process.env.MAIL_HOST,
-  port: parseInt(process.env.MAIL_PORT, 10),
-  secure: process.env.MAIL_SECURE === "true",
+  host: mail.host,
+  port: parseInt(mail.port, 10),
+  secure: mail.secure === "true",
   auth,
 });
 

@@ -19,6 +19,7 @@ const rssFeedController = require("../controllers/rssFeedController");
 const HttpError = require("../utils/HttpError");
 
 const stack = require("../controllers/techkStackController");
+const { meta } = require("../config/loader");
 
 const favicon = require("serve-favicon");
 const faviconsPath = path.join(__dirname, "..", "..", "public", "favicons");
@@ -42,7 +43,7 @@ router.use(
     extensions: false,
     fallthrough: false,
     setHeaders: (res) => {
-      if (process.env.NODE_ENV == "production") {
+      if (meta.node_env == "production") {
         // Doesn't expire
         res.set("Cache-Control", "public, max-age=31536000, immutable");
       } else {
@@ -50,7 +51,7 @@ router.use(
         res.set("Cache-Control", "public, max-age=30, must-revalidate");
       }
     },
-  })
+  }),
 );
 
 router.use(
@@ -61,7 +62,7 @@ router.use(
     extensions: false,
     fallthrough: false,
     setHeaders: (res) => {
-      if (process.env.NODE_ENV == "production") {
+      if (meta.node_env == "production") {
         // Cache for 1 day, allow revalidation
         res.set("Cache-Control", "public, max-age=86400, must-revalidate");
       } else {
@@ -69,7 +70,7 @@ router.use(
         res.set("Cache-Control", "public, max-age=30, must-revalidate");
       }
     },
-  })
+  }),
 );
 
 router.use("/favicons", express.static(faviconsPath));

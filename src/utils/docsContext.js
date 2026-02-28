@@ -8,6 +8,7 @@ const { baseUrl } = require("./baseUrl");
 const generateDocsMenuModel = require("./generateDocsMenuModel");
 const navLinks = require(path.join(__dirname, "../../content/navLinks.json"));
 const processMenuLinks = require("../utils/processMenuLinks");
+const { meta } = require("../config/loader");
 
 const getSiteTitle = (owner) => `${owner}'s Software Blog`;
 
@@ -38,11 +39,11 @@ async function loadAllYamlDocs() {
  */
 module.exports = async function getDocsContext(
   isAuthenticated,
-  overrides = {}
+  overrides = {},
 ) {
   const filteredNavLinks = processMenuLinks(navLinks, isAuthenticated);
   const qualifiedNavLinks = qualifyNavLinks(filteredNavLinks);
-  const siteOwner = process.env.SITE_OWNER;
+  const siteOwner = meta.site_owner;
 
   const allYamlDocs = await loadAllYamlDocs();
   const currentPath = overrides.docPath || null;
@@ -50,13 +51,13 @@ module.exports = async function getDocsContext(
   const docsMenu = generateDocsMenuModel(
     allYamlDocs,
     currentPath,
-    currentModule
+    currentModule,
   );
 
   const context = {
     title: getSiteTitle(siteOwner),
     siteOwner,
-    originCountry: process.env.COUNTRY,
+    originCountry: meta.country,
     navLinks: qualifiedNavLinks,
     baseUrl,
     paths: docsMenu,

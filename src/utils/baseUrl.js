@@ -1,12 +1,13 @@
 // src/utils/baseUrl.js
+const { public } = require("../config/loader");
 function getBaseUrl({ schema = null, host = null, port = null } = {}) {
-  const envSchema = process.env.TEST_SCHEMA || process.env.SERVER_SCHEMA;
-  const envDomain = process.env.TEST_DOMAIN || process.env.SERVER_DOMAIN;
-  const envPort = process.env.TEST_PORT || process.env.SERVER_PORT;
+  const envSchema = public.schema;
+  const envDomain = public.domain;
+  const envPort = public.port;
 
-  const finalPort = envPort || port || 3000;
-  const finalProtocol = envSchema || schema || "https";
-  const finalDomain = (envDomain || host || "localhost")
+  const finalPort = envPort || port;
+  const finalProtocol = envSchema || schema;
+  const finalDomain = (envDomain || host)
     .replace(/^https?:\/\//, "")
     .replace(/\/$/, "");
 

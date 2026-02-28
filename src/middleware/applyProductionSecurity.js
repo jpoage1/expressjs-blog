@@ -13,6 +13,8 @@ const {
   CSP_DIRECTIVES,
 } = require("../config/securityConfig");
 
+const { meta } = require("../config/loader");
+
 const disablePoweredBy = (req, res, next) => {
   req.app.disable("x-powered-by");
   next();
@@ -23,7 +25,7 @@ const blockLocalhostAccess = (req, res, next) => {
     return next();
   }
   if (
-    process.env.NODE_ENV === "production" &&
+    meta.node_env === "production" &&
     LOCALHOST_HOSTNAMES.includes(req.hostname)
   ) {
     req.log.info(`Method: ${req.method} Path ${req.path}`);

@@ -1,5 +1,6 @@
 const { validateToken, cleanupTokens } = require("../utils/adminToken");
 const SecurityEvent = require("../utils/SecurityEvent");
+const { auth } = require("../config/loader");
 
 exports.cleanupTokensMiddleware = (req, res, next) => {
   if (Math.random() < 0.1) {
@@ -27,7 +28,7 @@ exports.handleTokenRedirect = (req, res, next) => {
     ? referrer
     : `${scheme}://${host}${referrer}`;
 
-  const adminLoginUrl = `${process.env.AUTH_LOGIN}${redirectTo}`;
+  const adminLoginUrl = `${auth.login}${redirectTo}`;
   res.set("Content-Type", "text/html");
   res.customRedirect(adminLoginUrl, 301);
   console.log("test");

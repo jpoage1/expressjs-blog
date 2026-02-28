@@ -16,8 +16,8 @@
     "testing": "pm2 start ecosystem.config.js --only expressjs-blog-testing",
     "stop-main": "node_modules/pm2/bin/pm2 delete expressjs-blog-main",
     "stop-testing": "node_modules/pm2/bin/pm2 delete expressjs-blog-testing",
-    "test:prepush": "node scripts/test-prepush.js",
-    "test:postreceive": "node scripts/test-postreceive.js",
+    "test:prepush": "node scripts/test-prepush.js --no-color",
+    "test:postreceive": "node scripts/test-postreceive.js --no-color",
     "update-submodules": "git submodule update --init --recursive --remote"
   },
   "imports": {
@@ -55,6 +55,7 @@
     "rss": "^1.2.2",
     "serve-favicon": "^2.5.1",
     "sharp": "^0.34.3",
+    "smol-toml": "^1.6.0",
     "sqlite3": "^5.1.7",
     "to-ico": "^1.1.5",
     "validator": "^13.15.15",
@@ -65,7 +66,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",
-    "chai": "^5.2.1",
+    "chai": "^6.2.2",
     "chai-as-promised": "^8.0.1",
     "fast-check": "^4.2.0",
     "mocha": "^11.7.1",

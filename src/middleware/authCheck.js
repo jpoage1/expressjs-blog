@@ -1,11 +1,8 @@
 // middleware/authCheck.js
 const fetch = require("node-fetch");
-const {
-  VERIFY_URL,
-  CACHE_TTL,
-  AUTH_TIMEOUT_MS,
-  LOG_MESSAGES,
-} = require("../constants/authConstants");
+const { auth } = require("../config/loader");
+const { verify: verify_url, cache_ttl, timeout_ms } = auth;
+const { LOG_MESSAGES } = require("../constants/authConstants");
 
 // Simple in-memory cache
 const authCache = new Map();
@@ -15,17 +12,17 @@ function getCacheKey(cookie, authHeader) {
 }
 
 function isCacheValid(entry) {
-  return entry && Date.now() - entry.timestamp < CACHE_TTL;
+  return entry && Date.now() - entry.timestamp < cache_ttl;
 }
 
 setInterval(() => {
   const now = Date.now();
   for (const [key, entry] of authCache.entries()) {
-    if (now - entry.timestamp >= CACHE_TTL) {
+    if (now - entry.timestamp >= cache_ttl) {
       authCache.delete(key);
     }
   }
-}, CACHE_TTL);
+}, cache_ttl);
 const SAFE_IPS = ["192.168.1.200", "192.168.1.50"];
 
 module.exports = async (req, res, next) => {
@@ -60,9 +57,9 @@ module.exports = async (req, res, next) => {
 
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), AUTH_TIMEOUT_MS);
+    const timeout = setTimeout(() => controller.abort(), auth.timeout_ms);
 
-    const resVerify = await fetch(VERIFY_URL, {
+    const resVerify = await fetch(verify_url, {
       headers: { cookie, authorization: authHeader },
       credentials: "include",
       signal: controller.signal,

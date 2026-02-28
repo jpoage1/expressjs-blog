@@ -23,8 +23,9 @@ const analytics = require("../controllers/analyticsControllers");
 const httpLogger = require("../utils/structuredLogger");
 const cacheUtils = require("./cacheUtils");
 const trace = require("./trace");
+const { meta } = require("../config/loader");
 
-function setupApp() {
+function setupApp(config) {
   const app = express();
 
   app.disable("x-powered-by");
@@ -42,10 +43,7 @@ function setupApp() {
   app.use(attachBaseContextGetter, buildBaseContext);
 
   // Setup production environment
-  if (
-    process.env.NODE_ENV === "production" ||
-    process.env.NODE_ENV === "testing"
-  ) {
+  if (meta.node_env === "production" || meta.node_env === "testing") {
     app.use(applyProductionSecurity);
   }
 

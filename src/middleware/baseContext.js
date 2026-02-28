@@ -10,6 +10,7 @@ const { qualifyNavLinks } = require("../utils/qualifyLinks.js");
 const { baseUrl } = require("../utils/baseUrl.js");
 const navLinks = require(path.join(__dirname, "../../content/navLinks.json"));
 const processMenuLinks = require("../utils/processMenuLinks");
+const { meta } = require("../config/loader");
 
 const getSiteTitle = (owner) => `${owner}'s Software Blog`;
 
@@ -28,13 +29,13 @@ module.exports.attachBaseContextGetter = async (req, res, next) => {
     );
     const qualifiedNavLinks = qualifyNavLinks(filteredNavLinks);
     const menu = await getPostsMenu(POSTS_DIR);
-    const siteOwner = process.env.SITE_OWNER;
+    const siteOwner = meta.site_owner;
 
     const context = {
       title: getSiteTitle(siteOwner),
       siteOwner,
-      originCountry: process.env.COUNTRY,
-      hCaptchaKey: process.env.HCAPTCHA_KEY,
+      originCountry: meta.country,
+      hCaptchaKey: meta.hcaptcha_key,
       navLinks: qualifiedNavLinks,
       years: menu,
       formatMonth,

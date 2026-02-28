@@ -4,11 +4,14 @@ const fs = require("fs").promises;
 const path = require("path");
 const fsSync = require("fs");
 const crypto = require("crypto");
+const { meta } = require("../config/loader");
 
 const matter = require("gray-matter");
 const { getAllPosts } = require("../utils/postFileUtils");
 
 const HttpError = require("../utils/HttpError");
+
+const { node_env } = meta;
 
 exports.blogPost = async (req, res, next) => {
   const { year, month, name } = req.params;
@@ -33,7 +36,7 @@ exports.blogPost = async (req, res, next) => {
     "../../content/posts",
     year,
     month,
-    `${name}.md`
+    `${name}.md`,
   );
 
   try {
@@ -62,8 +65,7 @@ exports.blogPost = async (req, res, next) => {
     const { data: frontmatter, content } = matter(fileContent);
     if (
       !frontmatter.published &&
-      (process.env.NODE_ENV === "production" ||
-        process.env.NODE_ENV === "testing")
+      (node_env === "production" || node_env === "testing")
     ) {
       throw new Error("Attempted to access an unpublished page in production");
     }
@@ -88,9 +90,7 @@ exports.blogIndex = async (req, res) => {
 
   const publishedPosts = allPosts.filter(
     (post) =>
-      post.published ||
-      process.env.NODE_ENV === "production" ||
-      process.env.NODE_ENV === "testing"
+      post.published || node_env === "production" || node_env === "testing",
   );
   // Sort posts descending by date
   publishedPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -101,7 +101,7 @@ exports.blogIndex = async (req, res) => {
   const lastModified =
     publishedPosts.length > 0
       ? new Date(
-          Math.max(...publishedPosts.map((p) => new Date(p.date).getTime()))
+          Math.max(...publishedPosts.map((p) => new Date(p.date).getTime())),
         ).toUTCString()
       : new Date().toUTCString();
 

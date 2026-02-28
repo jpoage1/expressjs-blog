@@ -5,15 +5,14 @@ const ConstructionRoutes = require("../utils/ConstructionRoutes");
 const MarkdownRoutes = require("../utils/MarkdownRoutes");
 const HtmlRoutes = require("../utils/htmlRoutes");
 const csrfToken = require("../middleware/csrfToken");
+const { meta } = require("../config/loader");
 
 const construction = new ConstructionRoutes();
 const html = new HtmlRoutes();
 const markdown = new MarkdownRoutes();
 
-if (
-  process.env.NODE_ENV === "production" ||
-  process.env.NODE_ENV === "testing"
-) {
+const { node_env } = meta;
+if (node_env === "production" || node_env === "testing") {
   // construction.register("/newsletter", "Newsletter");
   construction.register("/projects", "Projects");
 } else {

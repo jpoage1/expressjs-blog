@@ -3,12 +3,14 @@ const path = require("path");
 const { winstonLogger } = require("./logging");
 
 const logDir = path.join(__dirname, "../../logs");
+const { meta } = require("../config/loader");
+const { node_env } = meta;
 
 class LogManager {
   constructor(logDir, options = {}) {
     this.logDir = logDir;
     this.serverStart = Date.now();
-    this.isDevelopment = process.env.NODE_ENV !== "production";
+    this.isDevelopment = meta.node_env !== "production";
 
     // Configurable thresholds
     this.config = {
@@ -38,7 +40,7 @@ class LogManager {
     this.metricsFile = path.join(logDir, ".cleanup-metrics");
 
     winstonLogger.info(
-      `LogManager initialized for ${this.isDevelopment ? "development" : "production"}`
+      `LogManager initialized for ${this.isDevelopment ? "development" : "production"}`,
     );
     winstonLogger.info(`Config:`, this.currentConfig);
   }
@@ -140,7 +142,7 @@ class LogManager {
         } catch (error) {
           winstonLogger.warn(
             `Error processing session ${sessionFolder}:`,
-            error.message
+            error.message,
           );
           return null;
         }
@@ -153,12 +155,12 @@ class LogManager {
   emergencyCleanup() {
     const sessions = this.getSessionsWithMetadata();
     const keepCount = Math.floor(
-      sessions.length * this.currentConfig.emergencyCleanupRatio
+      sessions.length * this.currentConfig.emergencyCleanupRatio,
     );
     const sessionsToDelete = sessions.slice(keepCount);
 
     winstonLogger.info(
-      `Keeping ${keepCount} newest sessions, deleting ${sessionsToDelete.length}`
+      `Keeping ${keepCount} newest sessions, deleting ${sessionsToDelete.length}`,
     );
 
     let deletedCount = 0;
@@ -223,7 +225,7 @@ class LogManager {
             ? `age (${session.ageHours.toFixed(1)}h)`
             : "count limit";
           winstonLogger.info(
-            `  Deleted ${session.folder} - ${reason} - ${session.sizeMB.toFixed(2)}MB`
+            `  Deleted ${session.folder} - ${reason} - ${session.sizeMB.toFixed(2)}MB`,
           );
         }
       }
@@ -281,7 +283,7 @@ class LogManager {
         const stat = fs.statSync(itemPath);
         if (stat.isDirectory()) {
           fs.readdirSync(itemPath).forEach((item) =>
-            calculateSize(path.join(itemPath, item))
+            calculateSize(path.join(itemPath, item)),
           );
         } else {
           totalSize += stat.size;
@@ -314,26 +316,26 @@ class LogManager {
     const metrics = this.getMetrics();
     winstonLogger.info(`\n=== Log Manager Status ===`);
     winstonLogger.info(
-      `Environment: ${this.isDevelopment ? "development" : "production"}`
+      `Environment: ${this.isDevelopment ? "development" : "production"}`,
     );
     winstonLogger.info(
-      `Sessions: ${metrics.sessionCount} (max: ${this.currentConfig.maxSessionCount})`
+      `Sessions: ${metrics.sessionCount} (max: ${this.currentConfig.maxSessionCount})`,
     );
     winstonLogger.info(
-      `Total size: ${metrics.totalSizeMB.toFixed(2)}MB (max: ${this.currentConfig.maxTotalSizeMB}MB)`
+      `Total size: ${metrics.totalSizeMB.toFixed(2)}MB (max: ${this.currentConfig.maxTotalSizeMB}MB)`,
     );
     winstonLogger.info(
-      `Retention: ${this.currentConfig.sessionRetentionHours}h`
+      `Retention: ${this.currentConfig.sessionRetentionHours}h`,
     );
 
     if (metrics.sessions.length > 0) {
       const oldest = metrics.sessions[metrics.sessions.length - 1];
       const newest = metrics.sessions[0];
       winstonLogger.info(
-        `Oldest session: ${oldest.ageHours.toFixed(1)}h old (${oldest.sizeMB.toFixed(2)}MB)`
+        `Oldest session: ${oldest.ageHours.toFixed(1)}h old (${oldest.sizeMB.toFixed(2)}MB)`,
       );
       winstonLogger.info(
-        `Newest session: ${newest.ageHours.toFixed(1)}h old (${newest.sizeMB.toFixed(2)}MB)`
+        `Newest session: ${newest.ageHours.toFixed(1)}h old (${newest.sizeMB.toFixed(2)}MB)`,
       );
     }
 

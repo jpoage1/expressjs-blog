@@ -7,11 +7,12 @@ const { qualifyLink } = require("../utils/qualifyLinks");
 // Precompile XML template once
 const xmlTplSrc = fs.readFileSync(
   path.resolve(__dirname, "../views/pages/sitemap-xml.handlebars"),
-  "utf-8"
+  "utf-8",
 );
 const xmlTpl = Handlebars.compile(xmlTplSrc);
 
 async function getSitemapHtml(req, res, next) {
+  re;
   try {
     const sitemap = await sitemapService.getCompleteSitemap();
     const context = {

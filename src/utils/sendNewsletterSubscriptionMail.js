@@ -1,15 +1,16 @@
 // src/utils/sendNewsletterSubscriptionMail.js
 const transporter = require("./transporter");
 const { winstonLogger } = require("./logging");
+const { mail } = require("../config/loader");
 
 const MAIL_SUBJECT = "New Newsletter Subscription";
 
 function getMailFrom() {
-  return `Newsletter <no-reply@${process.env.MAIL_DOMAIN}>`;
+  return `Newsletter <no-reply@${mail.domain}>`;
 }
 
 function getMailText() {
-  return `Please add this email to the newsletter list: ${process.env.MAIL_NEWSLETTER}`;
+  return `Please add this email to the newsletter list: ${mail.newsletter}`;
 }
 
 async function sendNewsletterSubscriptionMail({ email }) {
