@@ -127,11 +127,8 @@ class HotFix(SuiteTask):
             return
 
         cfg = self.env.release
-        print(self.env)
         # 1. Target the current active symlink
         live_path = self.env.release.deploy_link
-
-        self.print(f"  [HOTFIX] Pulling latest changes into {live_path}")
 
         # 2. Pull changes
         try:
@@ -168,7 +165,6 @@ class YarnBuild(SuiteTask):
     def _run(self):
         timestamp = time.strftime(self.env.timestamp_format)
         self.env.release_dir = f"{Path(self.env.testing.deploy_link)}-{timestamp}"
-        self.print(f"  [BUILD] Target: {self.env.build_dir}")
 
         self.sh(
             f"git clone --branch {self.env.deploy_branch} {self.env.repo} {self.env.build_dir}"
@@ -203,8 +199,6 @@ class AtomicDeploy(SuiteTask):
         timestamp = time.strftime(self.env.timestamp_format)
         final_release_dir = Path(cfg.get_release_dir(timestamp))
 
-        self.print(f"  [MOVE] Finalizing build to: {final_release_dir}")
-
         # 1. Finalize the directory (Rename from -BUILDING to versioned path)
         self.sh(f"mv {self.env.build_dir} {final_release_dir}")
 
@@ -213,10 +207,6 @@ class AtomicDeploy(SuiteTask):
             deploy_link = Path(cfg.deploy_link)
             # Create a temporary symlink name in the same parent directory
             temp_link = deploy_link.with_name(deploy_link.name + "_tmp")
-
-            self.print(
-                f"  [LINK] Swapping symlink: {deploy_link} -> {final_release_dir}"
-            )
 
             # Create temporary symlink pointing to the new version
             self.sh(f"ln -sfn {final_release_dir} {temp_link}")

@@ -73,9 +73,8 @@ class RunMochaTests(SuiteSubTask):
         if self._owner.args.get("skip_tests") and not self.get_arg("enforce_testing"):
             return True
 
-        self.print("  [RUN] npm run test:postreceive")
         # Using sh_thread to ensure real-time log streaming for Jenkins
-        self.sh_thread("npm run test:postreceive", cwd=self.env.build_dir)
+        self.sh_thread("yarn test:postreceive", cwd=self.env.build_dir)
         return True
 
 
@@ -91,7 +90,6 @@ class StopTestApp(SuiteSubTask):
 
     def _run(self):
         # We try to stop even if SKIP_TESTS was true to be safe
-        self.print(f"  [KILL] Terminating process in {self.env.pidfile}")
         self.sh(f"kill $(cat '{self.env.pidfile}') || true")
         return True
 
