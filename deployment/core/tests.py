@@ -1,4 +1,5 @@
 import time
+import shlex
 
 from lib.task_types import SuiteTask, SuiteSubTask
 from lib.types import Stage
@@ -22,9 +23,14 @@ class StartTestApp(SuiteSubTask):
 
         self.print(f"  [EXEC] Starting app in {self.env.build_dir}")
 
-        cmd = f"sudo /usr/bin/systemctl restart {self.env.testing.service_name}"
-
-        self.sh(cmd, cwd=self.env.build_dir)
+        cmd = f"nohup yarn run prod --config {self.env.testing.config_file} >> '{self.env.test_log}' 2>&1 & echo $! > '{self.env.pidfile}'"
+        # This doesn't work because systemd doesnt know where it is yet
+        # cmd=f"sudo systemctl restart {self.env.testing.service_name}",
+        self.sh(
+            cmd,
+            cwd=self.env.build_dir,
+            # shlex=True,
+        )
         return True
 
 
@@ -51,7 +57,7 @@ class WaitForReadiness(SuiteSubTask):
             return
         if not status:
             # If the poll fails, we cat the log as requested before failing
-            self.sh(f"cat '{self.env.test_log}'")
+            self.sh(f"cat '{self.env.test_log}'", disabled=True)
             self.fail(f"Test service at {uri} failed to start.")
 
         return True
@@ -89,7 +95,11 @@ class StopTestApp(SuiteSubTask):
     def _run(self):
         self.sh(f"whoami")
         self.sh(f"id")
-        self.sh(f"sudo /usr/bin/systemctl stop {self.env.testing.service_name}")
+        self.sh(f"kill $(cat '{self.env.pidfile}') || true", shlex=False)
+        # self.sh(
+        #     f"sudo systemctl stop {self.env.testing.service_name}",
+        #     shlex=False,
+        # )
         return True
 
 

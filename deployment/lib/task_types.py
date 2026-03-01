@@ -6,6 +6,7 @@ import subprocess
 from pathlib import Path
 from abc import ABC, abstractmethod
 from typing import List, TYPE_CHECKING
+from shlex import split as shlex_split
 
 from lib.printer import Printer
 from lib.errors import TaskError
@@ -148,12 +149,26 @@ class SuiteTask(ABC):
         raise TaskError(self, critical=critical, *args, **kwargs)
 
     def sh(
-        self, cmd: str, cwd: Path | None = None, handle_exception=True, dry_run=None
+        self,
+        cmd: str,
+        cwd: Path | None = None,
+        handle_exception=True,
+        dry_run=None,
+        check=True,
+        shell=True,
+        shlex=False,
+        disabled=False,
     ):
         """Helper to run shell commands within the project context."""
+        if shlex:
+            cmd = shlex_split(cmd)
+            shell = False
 
         if cwd is not None:
             self.print(f"  [CWD] {cwd}")
+        if disabled:
+            self.msg(f"[DISABLED]  [EXEC] {cmd}")
+            return
 
         cwd = str(cwd or os.getcwd())
         self.msg(f"  [EXEC] {cmd}")
@@ -161,7 +176,7 @@ class SuiteTask(ABC):
             return
 
         try:
-            return subprocess.run(cmd, shell=True, check=True, cwd=cwd)
+            return subprocess.run(cmd, shell=shell, check=check, cwd=cwd)
         except subprocess.CalledProcessError as e:
             if handle_exception:
                 self.fail(e)

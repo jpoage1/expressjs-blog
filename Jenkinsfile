@@ -53,10 +53,10 @@ pipeline {
     }
 
     post {
-        always {
+        //always {
             // Clean up the build directory in the workspace to prevent the "already exists" error
-            sh "rm -rf build/"
-        }
+            //sh "rm -rf build/"
+        //}
         success {
             echo "Deployment of ${env.TARGET_BRANCH} successful."
         }

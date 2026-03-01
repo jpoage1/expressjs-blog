@@ -1,8 +1,6 @@
 import os
-import subprocess
 import time
 import tomllib
-import socket
 from lupa import LuaRuntime
 from pathlib import Path
 from lib.task_types import SuiteTask
@@ -149,10 +147,54 @@ class HotFix(SuiteTask):
         self.sh("yarn combine:css", cwd=live_path)
 
         # 4. Restart to pick up Node.js changes
-        self.sh(f"sudo systemctl restart {cfg.service_name}")
+        self.sh(f"sudo systemctl restart {cfg.service_name}", shlex=True)
 
         raise PipelineSuccess("Hot fix applied successfully")
 
+
+class YarnBuild(SuiteTask):
+    """Executes dependency installation and asset compilation"""
+
+    _stage = Stage.BUILD
+    _deps = [GetDeploymentConfig, LoadServerConfig]
+    skip: bool = False
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = "Running Yarn build process"
+
+    def _run(self):
+        timestamp = time.strftime(self.env.timestamp_format)
+        self.env.release_dir = f"{Path(self.env.testing.deploy_link)}-{timestamp}"
+
+        build_git_path = os.path.join(self.env.build_dir, ".git")
+
+        if os.path.exists(build_git_path):
+            try:
+                self.sh(
+                    f"git pull origin {self.env.deploy_branch}",
+                    cwd=self.env.build_dir,
+                    handle_exception=False,
+                )
+            except:
+                self.sh("git fetch origin", cwd=self.env.build_dir)
+                self.sh(
+                    f"git reset --hard origin/{self.env.deploy_branch}",
+                    cwd=self.env.build_dir,
+                )
+        else:
+            self.sh(
+                f"git clone --branch {self.env.deploy_branch} {self.env.repo} {self.env.build_dir}"
+            )
+        self.sh("git submodule update --init --recursive", cwd=self.env.build_dir)
+        self.sh("yarn config set enableGlobalCache true", cwd=self.env.build_dir)
+        self.sh(
+            f"yarn config set globalFolder {self.env.yarn_path}", cwd=self.env.build_dir
+        )
+        self.sh("yarn config set nodeLinker pnp", cwd=self.env.build_dir)
+        self.sh("yarn install", cwd=self.env.build_dir)
+        self.sh("yarn combine:css", cwd=self.env.build_dir)
+        return True
 
 class YarnBuild(SuiteTask):
     """Executes dependency installation and asset compilation"""
@@ -207,7 +249,7 @@ class AtomicDeploy(SuiteTask):
         final_release_dir = Path(cfg.get_release_dir(timestamp))
 
         # 1. Finalize the directory (Rename from -BUILDING to versioned path)
-        self.sh(f"mv {self.env.build_dir} {final_release_dir}")
+        self.sh(f"mv {self.env.build_dir} {final_release_dir}", shlex=True)
 
         # 2. Atomic Symlink Swap - ONLY if tests passed
         if test_success:
@@ -216,13 +258,13 @@ class AtomicDeploy(SuiteTask):
             temp_link = deploy_link.with_name(deploy_link.name + "_tmp")
 
             # Create temporary symlink pointing to the new version
-            self.sh(f"ln -sfn {final_release_dir} {temp_link}")
+            self.sh(f"ln -sfn {final_release_dir} {temp_link}", shlex=True)
 
             # Atomic rename of the symlink itself (overwrites the old link)
-            self.sh(f"mv -Tf {temp_link} {deploy_link}")
+            self.sh(f"mv -Tf {temp_link} {deploy_link}", shlex=True)
 
             # Restart service
-            self.sh(f"sudo systemctl restart {cfg.service_name}")
+            self.sh(f"sudo systemctl restart {cfg.service_name}", shlex=True)
         else:
             self.print("  [SKIP] Test failure detected. Symlink swap bypassed.")
             self.print(f"  [INFO] Artifact preserved at: {final_release_dir}")
