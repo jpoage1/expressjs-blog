@@ -20,6 +20,24 @@ function qualifyNavLinks(links) {
     return qualified;
   });
 }
+const mapMenuTree = (links, transformFn) => {
+  return links.map((link) => {
+    const processed = transformFn({ ...link });
+    if (processed.submenu) {
+      processed.submenu = mapMenuTree(processed.submenu, transformFn);
+    }
+    return processed;
+  });
+};
+
+function qualifyNavLinks(links, baseUrl) {
+  return mapMenuTree(links, (link) => {
+    if (link.href) {
+      link.href = qualifyLink(link.href, baseUrl);
+    }
+    return link;
+  });
+}
 
 function qualifySitemapLinks(links) {
   return links.map((item) => {

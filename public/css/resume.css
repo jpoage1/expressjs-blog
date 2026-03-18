@@ -1,0 +1,98 @@
+.resume-pdf-layout {
+  background-color: #f0f0f0 !important;
+  min-height: 0 !important; /* Overrides global 100vh */
+  height: auto !important;
+  margin: 0 !important;
+  display: flex;
+  justify-content: center;
+}
+
+.resume-container {
+  max-width: none !important; /* Overrides global 800px */
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+@media screen {
+  body {
+    background: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+  .resume-paper {
+    background: white;
+    width: 8.5in;
+    min-height: 11in;
+    margin: 20px 0;
+    padding: 0.5in;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+  }
+}
+
+@media print {
+  @page {
+    size: letter;
+    margin: 0; /* This removes the default browser margins where text is injected */
+  }
+  .resume-pdf-layout {
+    background: white !important;
+    margin: 0.5in; /* Re-establish a visual margin for the actual content */
+    padding: 0;
+  }
+  .resume-paper {
+    width: 8.5in;
+    height: 11in;
+    padding: 0;
+    margin: 0;
+    padding: 0.5in; /* Re-establish margins inside the paper for the printer */
+    box-shadow: none;
+  }
+  .no-print {
+    display: none;
+  }
+}
+
+body {
+  font-family: "Helvetica", "Arial", sans-serif;
+  color: #333;
+  line-height: 1.2;
+}
+h1 {
+  text-align: center;
+  text-transform: uppercase;
+  margin: 0;
+  font-size: 24pt;
+}
+.contact-bar {
+  text-align: center;
+  font-size: 10pt;
+  border-bottom: 2px solid #444;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+}
+h2 {
+  font-size: 14pt;
+  border-bottom: 1px solid #888;
+  text-transform: uppercase;
+  margin: 15px 0 5px 0;
+}
+.entry {
+  margin-bottom: 10px;
+}
+.entry-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+.sub-header {
+  display: flex;
+  justify-content: space-between;
+  font-style: italic;
+  font-size: 11pt;
+}
+ul {
+  margin: 5px 0;
+  padding-left: 20px;
+}

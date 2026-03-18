@@ -77,7 +77,10 @@ const hbsMiddleware = (req, res, next) => {
     registerHelpers(hbs);
     req.app.engine(VIEW_ENGINE, hbs.engine);
     req.app.set("view engine", VIEW_ENGINE);
-    req.app.set("views", path.join(__dirname, "../views"));
+    req.app.set("views", [
+      path.join(__dirname, "../views"),
+      path.join(__dirname, "../../content/docs/hexascript"),
+    ]);
   }
 
   next();

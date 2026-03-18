@@ -7,6 +7,10 @@ function hydrate(c = {}) {
   const domain = c?.network?.domain || process.env.SERVER_DOMAIN || "localhost";
   const address = c?.network?.address || process.env.ADDRESS || "0.0.0.0";
   const port = c?.network?.port || process.env.SERVER_PORT || 3400;
+  const logDir = c?.logging?.log_dir || process.env.LOG_DIR;
+  if (logDir == undefined) {
+    throw new Error("Log dir is undefined");
+  }
 
   return {
     meta: {
@@ -16,7 +20,7 @@ function hydrate(c = {}) {
       rootDir: c?.meta?.root_dir || process.env.ROOT_DIR,
     },
     logging: {
-      logDir: c?.logging?.log_dir || process.env.LOG_DIR,
+      logDir,
       logLevel: c?.logging?.log_level || process.env.LOG_LEVEL || "info",
       logsDbPath: c?.logging?.db_path || process.env.LOGS_DB_PATH,
     },
@@ -67,12 +71,14 @@ function loadConfig() {
   if (!configPath) {
     console.info("Notice: No config file provided. Use --config <path>");
     console.info("  Using defaults");
-    configPath = "../../config.toml";
+    configPath = "config.toml";
     let toml_config = {};
     try {
       const raw = fs.readFileSync(path.resolve(configPath), "utf8");
       const toml_config = parse(raw);
-    } finally {
+      return hydrate(toml_config);
+    } catch (e) {
+      console.warn("Warning: ", e.stack);
       return hydrate(toml_config);
     }
   }

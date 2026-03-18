@@ -1,0 +1,44 @@
+{{overrideCSS target="classes" prop="body" value="resume-pdf-layout"}}
+{{overrideCSS target="classes" prop="layout" value="resume-container"}}
+{{overrideCSS target="classes" prop="container" value="resume-paper"}}
+
+{{#section "styles"}}
+<link rel="stylesheet" href="{{baseUrl}}/static/css/resume.css">
+{{/section}}
+
+<h1>{{name}}</h1>
+<div class="contact-bar">
+  {{demographics.city}}, {{demographics.state}} {{demographics.zip}} | {{contact_information.cell}} | {{contact_information.email}}
+</div>
+
+<section>
+  <h2>Education</h2>
+  {{#each education}}
+  <div class="entry">
+    <div class="entry-header">
+      <span>{{institution}}</span>
+      <span>{{from}} — {{to}}</span>
+    </div>
+    <div class="sub-header">
+      <span>{{degree}} in {{program}}</span>
+      <span>{{city}}, {{state}}</span>
+    </div>
+  </div>
+  {{/each}}
+</section>
+
+<section>
+  <h2>Experience</h2>
+  {{#each work_history}}
+  <div class="entry">
+    <div class="entry-header">
+      <span>{{position}}</span>
+      <span>{{from}} — {{to}}</span>
+    </div>
+    <div class="sub-header">
+      <span>{{company}}</span>
+      <span>{{city}}, {{state}}</span>
+    </div>
+  </div>
+  {{/each}}
+</section>

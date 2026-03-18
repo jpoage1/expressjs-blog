@@ -42,8 +42,17 @@ function registerHelpers(hbs) {
         }
       }
       return null;
-    }
+    },
   );
+  hbs.handlebars.registerHelper("overrideCSS", function (options) {
+    const root = options.data.root;
+    const { target, prop, value } = options.hash;
+
+    if (root.css && root.css[target]) {
+      root.css[target][prop] = value;
+    }
+    return "";
+  });
 }
 
 module.exports = { registerHelpers };

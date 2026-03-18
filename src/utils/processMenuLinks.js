@@ -8,12 +8,18 @@ function processMenuLinks(links, isAuthenticated, currentPath) {
         if (currentPath !== "/" && !item.href.endsWith(currentPath)) {
           item.href = item.href + currentPath;
         }
+      } else if (item.html) {
+        item.href = `/docs/hexa/${item.html}`; // fixme
+      } else if (item.frame) {
+        item.href = `/docs/hexa/${item.frame}`; // fixme
+      } else if (item.mermaid) {
+        item.href = `/docs/hexa/${item.mermaid}`; // fixme
       }
       if (item.submenu) {
         item.submenu = processMenuLinks(
           item.submenu,
           isAuthenticated,
-          currentPath
+          currentPath,
         );
         if (!item.submenu.length) delete item.submenu;
       }

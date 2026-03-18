@@ -9,6 +9,7 @@ const errorPage = require("../controllers/errorPageController");
 const admin = require("./admin");
 const tags = require("./tags");
 const presentation = require("./presentation");
+const resume = require("./resume");
 
 const contact = require("./contact");
 const sitemap = require("./sitemap");
@@ -25,9 +26,18 @@ const favicon = require("serve-favicon");
 const faviconsPath = path.join(__dirname, "..", "..", "public", "favicons");
 const faviconFile = path.resolve(faviconsPath, "favicon.ico");
 
+const hexascriptDocs = require("../../content/docs/hexascript/src/script.js");
+
 router.head("/health", (req, res) => {
   res.sendStatus(200);
 });
+
+const { winstonLogger } = require("../utils/logging");
+//winstonLogger.warn("Log?", hexascriptDocs());
+router.use("/hexa-docs", hexascriptDocs);
+// router.use(hexascriptDocs);
+// hexascriptDocs;
+winstonLogger.info(hexascriptDocs);
 
 router.get("/error/:code", errorPage); // Landing page after error is logged
 
@@ -77,6 +87,7 @@ router.use("/favicons", express.static(faviconsPath));
 router.use(favicon(faviconFile));
 
 router.use(contact, csrfToken);
+router.use("/resume", resume);
 router.use(sitemap);
 router.use(pages);
 router.use(tags);

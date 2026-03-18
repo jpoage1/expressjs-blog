@@ -5,19 +5,17 @@
   {{> site_headers }}
 </head>
 
-<body class="{{css.classes.body}}">
-  {{#if showHeader}}
-    {{> page_headers}}
-  {{/if}}
-  <div class="{{css.classes.layout}}">
+<body class="pattern-dots">
+  {{> page_headers}}
+  <div class="layout">
     {{#if showSidebar}}
-    <aside class="{{css.classes.sidebar}}">
+    <aside class="sidebar">
       <nav>
         {{> postsMenu }}
       </nav>
     </aside>
     {{/if}}
-    <main class="{{css.classes.container}}">
+    <main class="container">
       {{{body}}}
     </main>
   </div>
