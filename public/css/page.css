@@ -4,11 +4,11 @@
     margin: 0; /* Remove auto centering since it's already in a flex container */
     padding: 3rem 2.5rem;
     line-height: 1.7;
-    color: #2d3748;
-    background-color: #ffffff;
+    color: var(--text-heading);
+    background-color: var(--bg-main);
     border-radius: 12px;
     box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-markdown);
     position: relative;
 }
 
@@ -19,12 +19,12 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(90deg, var(--gradient-start) 0%, #764ba2 100%);
     border-radius: 12px 12px 0 0;
 }
 .markdown-content h1 {
     font-size: 1.9rem;
-    color: #2d3748;
+    color: var(--text-heading);
     margin-top: 3.5rem;
     margin-bottom: 1.2rem;
     line-height: 1.3;
@@ -41,21 +41,21 @@
     top: 0.2em;
     width: 4px;
     height: 1.2em;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--gradient-start) 0%, #764ba2 100%);
     border-radius: 2px;
 }
 
 .markdown-content p {
     font-size: 1.125rem;
     margin-bottom: 1.5rem;
-    color: #4a5568;
+    color: var(--text-p-alt);
     text-align: justify;
     hyphens: auto;
 }
 
 .markdown-content h1 + p {
     font-size: 1.2rem;
-    color: #2d3748;
+    color: var(--text-heading);
     font-weight: 500;
     margin-bottom: 2rem;
 }
@@ -73,10 +73,10 @@
     margin-bottom: 1.5rem;
     padding-left: 2rem;
     position: relative;
-    background-color: #f8fafc;
+    background-color: var(--bg-list-item);
     padding: 1.5rem 1.5rem 1.5rem 3rem;
     border-radius: 8px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid var(--link-markdown);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -91,7 +91,7 @@
     position: absolute;
     left: 1rem;
     top: 1.5rem;
-    color: #667eea;
+    color: var(--text-blockquote)eea;
     font-size: 1.2rem;
     font-weight: bold;
 }
@@ -109,7 +109,7 @@
 .markdown-content hr {
     border: none;
     height: 1px;
-    background: linear-gradient(90deg, transparent 0%, #cbd5e0 20%, #cbd5e0 80%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, var(--hr-color) 20%, var(--hr-color) 80%, transparent 100%);
     margin: 3.5rem 0;
     position: relative;
 }
@@ -120,17 +120,17 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: #ffffff;
-    color: #667eea;
+    background: var(--bg-main);
+    color: var(--text-blockquote)eea;
     padding: 0 1rem;
     font-size: 1.2rem;
 }
 
 .markdown-content strong {
     font-weight: 700;
-    /* color: #2d3748; */
-    color: #4a5568;
-    /* background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); */
+    /* color: var(--text-heading); */
+    color: var(--text-p-alt);
+    /* background: linear-gradient(135deg, var(--gradient-start)15 0%, var(--gradient-end-trans) 100%); */
     /* padding: 0.1em 0.3em; */
     border-radius: 4px;
 }
@@ -142,7 +142,7 @@
 }
 
 .markdown-content a {
-    color: #667eea;
+    color: var(--text-blockquote)eea;
     text-decoration: none;
     font-weight: 600;
     position: relative;
@@ -156,12 +156,12 @@
     left: 0;
     width: 0;
     height: 2px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(90deg, var(--gradient-start) 0%, #764ba2 100%);
     transition: width 0.3s ease;
 }
 
 .markdown-content a:hover {
-    color: #764ba2;
+    color: var(--link-markdown-hover);
 }
 
 .markdown-content a:hover::after {
@@ -173,7 +173,7 @@
     display: inline-flex;
     align-items: center;
     padding: 0.5rem 1rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--gradient-start) 0%, #764ba2 100%);
     color: white;
     border-radius: 6px;
     text-decoration: none;

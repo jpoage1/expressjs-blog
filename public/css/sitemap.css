@@ -4,8 +4,8 @@ nav.sitemap {
   margin: 2rem auto;
   padding: 1rem 2rem;
   font-family: sans-serif;
-  background-color: #f8f9fa;
-  border: 1px solid #ddd;
+  background-color: var(--bg-body);
+  border: 1px solid var(--border-light-alt);
   border-radius: 8px;
 }
 
@@ -13,7 +13,7 @@ nav.sitemap h1 {
   font-size: 1.8rem;
   margin-bottom: 1rem;
   text-align: center;
-  color: #333;
+  color: var(--text-heading-dark);
 }
 
 /* Top-level list */
@@ -31,7 +31,7 @@ nav.sitemap li {
 /* Links */
 nav.sitemap a {
   text-decoration: none;
-  color: #007acc;
+  color: var(--link-sitemap);
   font-weight: 500;
 }
 
@@ -44,10 +44,10 @@ nav.sitemap li > ul {
   margin-top: 0.3rem;
   margin-left: 1.5rem;
   padding-left: 1rem;
-  border-left: 2px solid #ddd;
+  border-left: 2px solid var(--border-light-alt);
 }
 
 nav.sitemap li > ul li::before {
   content: "→ ";
-  color: #999;
+  color: var(--text-muted-light);
 }

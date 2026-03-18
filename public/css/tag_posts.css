@@ -7,13 +7,13 @@
 .tag-post-item {
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--border-light-alt);
 }
 
 .tag-post-link {
   font-weight: 600;
   font-size: 1.2rem;
-  color: #1a73e8;
+  color: var(--accent-blue);
   text-decoration: none;
 }
 
@@ -23,6 +23,6 @@
 
 .tag-post-excerpt {
   margin-top: 0.5rem;
-  color: #555;
+  color: var(--text-italic);
   font-size: 0.95rem;
 }

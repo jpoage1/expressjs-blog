@@ -1,8 +1,8 @@
 /* Base styles */
 html, body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f8f9fa;
-  color: #212529;
+  background-color: var(--bg-body);
+  color: var(--text-main);
   min-height: 100vh;
   line-height: 1.6;
 }
@@ -36,8 +36,8 @@ html, body {
   display: inline
 }
 footer {
-  background-color: #34495e;
-  color: #ecf0f1;
+  background-color: var(--bg-footer);
+  color: var(--text-light);
   padding: 2rem 0;
   text-align: center;
   border-top: none;
@@ -52,7 +52,7 @@ footer .container {
 }
 footer p {
   font-size: 0.85rem;
-  color: #bdc3c7;
+  color: var(--text-footer-p);
   line-height: 1.5;
   margin: 0;
   max-width: 600px;
@@ -63,7 +63,7 @@ footer p a {
   transition: color 0.2s ease-in-out;
 }
 footer p a:hover {
-  color: #ecf0f1;
+  color: var(--text-light);
   text-decoration: underline;
 }
 footer img {
@@ -114,18 +114,18 @@ footer .social-contact p svg:hover {
 }
 .xml-sitemap-link {
   font-size: 0.85em;
-  color: #777;
+  color: var(--text-muted-alt);
 }
 footer small {
-  color: #666; font-size: 10px; opacity: 0.3;
+  color: var(--text-placeholder); font-size: 10px; opacity: 0.3;
 }
 footer small a {
    color: inherit
 }
 /* Header */
 header#site-header {
-  background-color: #2c3e50;
-  color: #ecf0f1;
+  background-color: var(--bg-header);
+  color: var(--text-light);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position:relative;
   z-index: 10;
@@ -217,7 +217,7 @@ main h1 {
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  border-bottom: 2px solid #2c3e50;
+  border-bottom: 2px solid var(--accent-primary);
   padding-bottom: 0.3rem;
 }
 main article p {
@@ -254,7 +254,7 @@ nav.site-nav .dropdown-content form button {
   display: block;
   width: 100%;
   padding: 0.3rem 0.6rem;
-  color: #2c3e50;
+  color: var(--accent-primary);
   cursor: pointer;
   font: inherit;
   font-weight: 600; /* Match the link font weight */
@@ -263,13 +263,13 @@ nav.site-nav .dropdown-content form button {
   box-sizing: border-box;
 }
 header#site-header nav.site-nav > a {
-  color: #ecf0f1;
+  color: var(--text-light);
 }
 header#site-header nav.site-nav a:hover,
 header#site-header nav.site-nav a:focus,
 nav.site-nav .dropdown-content form button:hover,
 nav.site-nav .dropdown-content form button:focus {
-  background-color: #34495e;
+  background-color: var(--bg-footer);
 }
 nav.site-nav .dropdown {
   position: relative;
@@ -297,13 +297,13 @@ nav.site-nav .dropdown-content a {
   display: block;
   padding: 0.3rem 0.6rem;
   text-decoration: none;
-  color: #2c3e50;
+  color: var(--accent-primary);
   font-weight: 600; /* Match the button font weight */
 }
 nav.site-nav .dropdown-content a:hover,
 nav.site-nav .dropdown-content form button:hover {
-  color: #ecf0f1;
-  background-color: #34495e; /* Match the main nav hover color */
+  color: var(--text-light);
+  background-color: var(--bg-footer); /* Match the main nav hover color */
 }
 nav.site-nav .dropdown:hover .dropdown-content {
   display: block;
@@ -362,8 +362,8 @@ nav.site-nav .dropdown-content .dropdown:hover > .dropdown-content {
 }
 .sidebar {
   width: 250px;
-  background-color: #f8f9fa;
-  border-right: 1px solid #e0e0e0;
+  background-color: var(--bg-body);
+  border-right: 1px solid var(--accent-primary);
   padding: 1em;
   font-size: 0.95rem;
   font-family: Arial, sans-serif;
@@ -382,9 +382,9 @@ nav.site-nav .dropdown-content .dropdown:hover > .dropdown-content {
 .sidebar .menu-year {
   font-weight: 700;
   font-size: 1.2rem;
-  color: #333333;
+  color: var(--accent-primary);
   margin-bottom: 1rem;
-  border-bottom: 2px solid #2c3e50;
+  border-bottom: 2px solid var(--accent-primary);
   padding-bottom: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -392,7 +392,7 @@ nav.site-nav .dropdown-content .dropdown:hover > .dropdown-content {
 .sidebar .menu-month {
   margin-bottom: 1rem;
   font-weight: 600;
-  color: #555555;
+  color: var(--accent-primary);
 }
 .sidebar .menu-month ul.posts-list {
   list-style: none;
@@ -400,7 +400,7 @@ nav.site-nav .dropdown-content .dropdown:hover > .dropdown-content {
   margin-top: 0.3rem;
 }
 .sidebar .menu-month li.post-label a {
-  color: #2c3e50;
+  color: var(--accent-primary);
   text-decoration: none;
   display: block;
   padding: 0.2rem 0;
@@ -490,7 +490,7 @@ nav.site-nav .dropdown-content .dropdown:hover > .dropdown-content {
 }
 .toc a:hover {
   background-color: #e9ecef;
-  color: #2c3e50;
+  color: var(--accent-primary);
   border-left-color: #007bff;
   transform: translateX(2px);
 }
@@ -509,7 +509,7 @@ nav.site-nav .dropdown-content .dropdown:hover > .dropdown-content {
   font-weight: 700;
   font-size: 1.1rem;
   margin-bottom: 1rem;
-  color: #2c3e50;
+  color: var(--accent-primary);
   border-bottom: 2px solid #dee2e6;
   padding-bottom: 0.5rem;
   text-transform: uppercase;

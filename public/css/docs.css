@@ -2,8 +2,8 @@
 /* Base typography and layout */
 body {
     font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
-    background: #fdfdfd;
-    color: #333;
+    background: var(--bg-docs);
+    color: var(--text-heading-dark);
     margin: 0;
     line-height: 1.6;
     font-size: 14px;
@@ -26,29 +26,29 @@ h1, h2, h3 {
     margin-top: 2rem;
     margin-bottom: 0.75rem;
     font-weight: 600;
-    color: #1a1a1a;
+    color: var(--text-docs-h1);
     letter-spacing: -0.02em;
 }
 
 h1 {
     font-size: 2rem;
-    border-bottom: 2px solid #e5e7eb;
+    border-bottom: 2px solid var(--border-docs);
     padding-bottom: 0.5rem;
 }
 
 h2 {
     font-size: 1.5rem;
-    color: #374151;
+    color: var(--text-docs-h2);
 }
 
 h3 {
     font-size: 1.25rem;
-    color: #4b5563;
+    color: var(--text-docs-muted);
 }
 
 pre {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
+    background: var(--bg-body);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
     padding: 1.25rem;
     overflow-x: auto;
@@ -58,7 +58,7 @@ pre {
 }
 
 code {
-    background: #f1f3f4;
+    background: var(--bg-docs-inline);
     padding: 0.125rem 0.25rem;
     border-radius: 3px;
     font-size: 0.9em;
@@ -82,23 +82,23 @@ table {
 
 th, td {
     border: none;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--border-docs);
     padding: 0.75rem 1rem;
     text-align: left;
     vertical-align: top;
 }
 
 th {
-    background: #f9fafb;
+    background: var(--bg-docs-th);
     font-weight: 600;
-    color: #374151;
+    color: var(--text-docs-h2);
     font-size: 0.875rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
 tbody tr:hover {
-    background: #f9fafb;
+    background: var(--bg-docs-th);
 }
 
 /* Content sections */
@@ -108,7 +108,7 @@ tbody tr:hover {
 
 .key {
     font-weight: 600;
-    color: #1f2937;
+    color: var(--text-docs-strong);
 }
 
 .list {
@@ -121,8 +121,8 @@ tbody tr:hover {
 .doc-object {
     padding: 1.5rem;
     margin-bottom: 2rem;
-    border-left: 3px solid #e5e7eb;
-    background: #fefefe;
+    border-left: 3px solid var(--border-docs);
+    background: var(--bg-docs-card);
     border-radius: 0 6px 6px 0;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
@@ -136,7 +136,7 @@ tbody tr:hover {
 
 .doc-entry strong {
     min-width: 140px;
-    color: #374151;
+    color: var(--text-docs-h2);
     font-weight: 600;
     font-size: 0.875rem;
     flex-shrink: 0;
@@ -147,7 +147,7 @@ tbody tr:hover {
 .doc-entry span,
 .doc-entry div {
     flex: 1;
-    color: #4b5563;
+    color: var(--text-docs-muted);
 }
 
 /* Responsive adjustments */

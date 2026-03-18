@@ -1,6 +1,6 @@
 /* Blog Index Styles */
 .post {
-  background-color: #ffffff;
+  background-color: var(--bg-main);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   margin-bottom: 2rem;
@@ -11,7 +11,7 @@
 
 .post:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  border-left-color: #2c3e50;
+  border-left-color: var(--accent-primary);
   transform: translateY(-2px);
 }
 
@@ -27,26 +27,26 @@
 }
 
 .post-link {
-  color: #2c3e50;
+  color: var(--accent-primary);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .post-link:hover {
-  color: #1a73e8;
+  color: var(--accent-blue);
   text-decoration: underline;
 }
 
 .post-date {
   display: inline-block;
   font-size: 0.9rem;
-  color: #6c757d;
+  color: var(--text-muted);
   font-weight: 500;
   margin-bottom: 0.75rem;
   padding: 0.25rem 0.75rem;
-  background-color: #f8f9fa;
+  background-color: var(--bg-body);
   border-radius: 4px;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--border-subtle);
 }
 
 .post-tags {
@@ -60,24 +60,24 @@
 
 .post-tag {
   font-size: 0.8rem;
-  background-color: #e3f2fd;
-  color: #1976d2;
+  background-color: var(--bg-tag);
+  color: var(--accent-tag);
   padding: 0.25rem 0.6rem;
   border-radius: 16px;
   font-weight: 500;
   transition: all 0.2s ease;
-  border: 1px solid #bbdefb;
+  border: 1px solid var(--border-tag);
 }
 
 .post-tag:hover {
-  background-color: #1976d2;
-  color: #ffffff;
+  background-color: var(--accent-tag);
+  color: var(--text-white);
   transform: scale(1.05);
 }
 
 .post-excerpt {
   margin-bottom: 1.5rem;
-  color: #495057;
+  color: var(--text-muted-dark);
   line-height: 1.6;
 }
 
@@ -92,11 +92,11 @@
 .post-readmore {
   margin-top: 1.5rem;
   padding-top: 1rem;
-  border-top: 1px solid #e9ecef;
+  border-top: 1px solid var(--border-subtle);
 }
 
 .post-readmore a {
-  color: #1a73e8;
+  color: var(--accent-blue);
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
@@ -107,7 +107,7 @@
 }
 
 .post-readmore a:hover {
-  color: #2c3e50;
+  color: var(--accent-primary);
   text-decoration: underline;
   transform: translateX(4px);
 }

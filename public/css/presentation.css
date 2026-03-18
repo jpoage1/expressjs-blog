@@ -119,8 +119,8 @@ html {
   right: 2rem;
   padding: 0.4rem 1rem;
   background: transparent;
-  color: #fff;
-  border: 2px solid #888;
+  color: var(--text-white);
+  border: 2px solid var(--border-button);
   border-radius: 0.3rem;
   font-size: 0.9rem;
   font-family: inherit;
@@ -129,6 +129,6 @@ html {
 }
 
 #returnButton:hover {
-  background: #888;
-  color: #000;
+  background: var(--border-button);
+  color: var(--text-black);
 }

@@ -1,7 +1,7 @@
 /* Main content */
 main.container {
   flex: 1;
-  background-color: #ffffff;
+  background-color: var(--bg-main);
   padding: 2rem;
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
@@ -11,13 +11,13 @@ main h1 {
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  border-bottom: 2px solid #2c3e50;
+  border-bottom: 2px solid var(--accent-primary);
   padding-bottom: 0.3rem;
 }
 
 main article p {
   font-size: 1rem;
-  color: #444;
+  color: var(--text-article);
 }
 
 main {

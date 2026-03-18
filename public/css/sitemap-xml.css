@@ -2,8 +2,8 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 16px;
     margin: 30px;
-    background: #f9f9f9;
-    color: #222;
+    background: var(--bg-sitemap);
+    color: var(--text-bold);
 }
 table {
     border-collapse: collapse;
@@ -14,17 +14,17 @@ table {
     box-shadow: 0 0 12px rgba(0,0,0,0.1);
 }
 th, td {
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-light-alt);
     padding: 12px 15px;
     text-align: left;
 }
 th {
-    background-color: #007acc;
+    background-color: var(--action-alt);
     color: white;
     font-weight: 600;
 }
 a {
-    color: #007acc;
+    color: var(--link-sitemap);
     text-decoration: none;
 }
 a:hover {

@@ -4,11 +4,11 @@
     margin: 0; /* Remove auto centering as it's likely within a broader flex/grid layout */
     padding: 3rem 2.5rem;
     line-height: 1.7;
-    color: #2d3748;
-    background-color: #ffffff;
+    color: var(--text-heading);
+    background-color: var(--bg-main);
     border-radius: 12px;
     box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-markdown);
     position: relative;
     overflow: hidden; /* Ensures content doesn't break rounded corners */
 }
@@ -21,14 +21,14 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(90deg, var(--gradient-start) 0%, #764ba2 100%);
     border-radius: 12px 12px 0 0;
 }
 
 /* --- Section Headings (h1) --- */
 .page-content h1 {
     font-size: 1.9rem;
-    color: #2d3748;
+    color: var(--text-heading);
     margin-top: 3.5rem;
     margin-bottom: 1.2rem;
     line-height: 1.3;
@@ -46,7 +46,7 @@
     top: 0.2em;
     width: 4px;
     height: 1.2em;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--gradient-start) 0%, #764ba2 100%);
     border-radius: 2px;
 }
 
@@ -54,7 +54,7 @@
 .page-content p {
     font-size: 1.125rem;
     margin-bottom: 1.5rem;
-    color: #4a5568;
+    color: var(--text-p-alt);
     text-align: justify;
     hyphens: auto;
 }
@@ -62,7 +62,7 @@
 /* --- Paragraphs immediately following h1 --- */
 .page-content h1 + p {
     font-size: 1.2rem;
-    color: #2d3748;
+    color: var(--text-heading);
     font-weight: 500;
     margin-bottom: 2rem;
 }
@@ -80,14 +80,14 @@
     margin-bottom: 1.5rem;
     padding: 1.5rem 1.5rem 1.5rem 3rem; /* Spacing inside the box */
     position: relative;
-    background-color: #f8fafc; /* The 'round box' background */
+    background-color: var(--bg-list-item); /* The 'round box' background */
     border-radius: 8px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid var(--link-markdown);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     display: block; /* Ensures proper block behavior */
     line-height: 1.6;
-    color: #4a5568;
+    color: var(--text-p-alt);
     font-size: 1.1rem;
 }
 
@@ -102,7 +102,7 @@
     position: absolute;
     left: 1rem;
     top: 1.5rem;
-    color: #667eea;
+    color: var(--text-blockquote)eea;
     font-size: 1.2rem;
     font-weight: bold;
 }
@@ -125,7 +125,7 @@
     padding: 0.2rem 0; /* Simpler padding for nested items */
     margin-bottom: 0.3rem; /* Closer spacing for nested items */
     font-size: 1rem; /* Slightly smaller font for nested items */
-    color: #2d3748; /* Adjust color for nested items */
+    color: var(--text-heading); /* Adjust color for nested items */
     line-height: 1.5; /* Adjust line height for nested items */
     position: static;
 }
@@ -140,7 +140,7 @@
 .page-content hr {
     border: none;
     height: 1px;
-    background: linear-gradient(90deg, transparent 0%, #cbd5e0 20%, #cbd5e0 80%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, var(--hr-color) 20%, var(--hr-color) 80%, transparent 100%);
     margin: 3.5rem 0;
     position: relative;
 }
@@ -152,8 +152,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: #ffffff;
-    color: #667eea;
+    background: var(--bg-main);
+    color: var(--text-blockquote)eea;
     padding: 0 1rem;
     font-size: 1.2rem;
 }
@@ -161,12 +161,12 @@
 /* --- Strong Text --- */
 .page-content strong {
     font-weight: 700;
-    color: #4a5568; /* Ensures bold text is readable and consistent */
+    color: var(--text-p-alt); /* Ensures bold text is readable and consistent */
 }
 
 /* --- Standard Links --- */
 .page-content a {
-    color: #667eea;
+    color: var(--text-blockquote)eea;
     text-decoration: none;
     font-weight: 600;
     position: relative;
@@ -181,12 +181,12 @@
     left: 0;
     width: 0;
     height: 2px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(90deg, var(--gradient-start) 0%, #764ba2 100%);
     transition: width 0.3s ease;
 }
 
 .page-content a:hover {
-    color: #764ba2;
+    color: var(--link-markdown-hover);
 }
 
 .page-content a:hover::after {
@@ -197,7 +197,7 @@
     display: inline-flex;
     align-items: center;
     padding: 0.5rem 1rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--gradient-start) 0%, #764ba2 100%);
     color: white;
     border-radius: 6px;
     text-decoration: none;

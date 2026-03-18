@@ -9,9 +9,9 @@
 }
 
 .deep-dive-enhanced {
-    background: linear-gradient(135deg, #0A192F 0%, #1a2744 30%, #0f1b36 70%, #0A192F 100%);
+    background: linear-gradient(135deg, #0A192F 0%, var(--deep-dive-mid-1) 30%, var(--deep-dive-mid-2) 70%, var(--deep-dive-bg) 100%);
     border-radius: 8px;
-    color: #00CED1;
+    color: var(--deep-dive-glow);
     font-weight: 700;
     position: relative;
     overflow: hidden;
@@ -97,7 +97,7 @@
     position: absolute;
     width: 2px;
     height: 2px;
-    background: #00CED1;
+    background: var(--deep-dive-glow);
     border-radius: 50%;
     opacity: 0.6;
     animation: float 6s linear infinite;

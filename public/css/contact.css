@@ -27,7 +27,7 @@ label {
 .form-group input,
 .form-group textarea {
   padding: 0.5em;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-grey);
   border-radius: 4px;
   font-family: inherit;
   font-size: 1em;
@@ -61,7 +61,7 @@ label {
 
 button {
   padding: 0.6em 1.2em;
-  background-color: #007acc;
+  background-color: var(--action-alt);
   color: white;
   border: none;
   border-radius: 4px;
@@ -70,12 +70,12 @@ button {
 }
 
 button:hover {
-  background-color: #005fa3;
+  background-color: var(--action-alt-hover);
 }
 
 label.required::after {
   content: " *";
-  color: #d33;
+  color: var(--status-error);
   font-weight: normal;
   margin-left: 0.2em;
   font-size: 1.1em;
@@ -84,7 +84,7 @@ label.required::after {
 }
 
 .required-note {
-  color: #d33;
+  color: var(--status-error);
   font-size: 0.9rem;
   margin-top: 0.5rem;
   font-family: sans-serif;
@@ -129,7 +129,7 @@ input.honeypot {
 .char-counter {
   text-align: right;
   font-size: 0.9em;
-  color: #666;
+  color: var(--text-placeholder);
   margin-top: 5px;
   margin-right: 0.5rem;
 }
@@ -137,9 +137,9 @@ input.honeypot {
 .security-notice {
   margin-top: 20px;
   padding: 15px;
-  background-color: #f8f9fa;
+  background-color: var(--bg-body);
   border-radius: 5px;
-  border-left: 4px solid #007bff;
+  border-left: 4px solid var(--accent-blue-bright);
 }
 
 .security-notice details {
@@ -148,14 +148,14 @@ input.honeypot {
 
 .security-notice summary {
   font-weight: bold;
-  color: #007bff;
+  color: var(--accent-blue-bright);
   outline: none;
 }
 
 .security-content {
   margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px solid #dee2e6;
+  border-top: 1px solid var(--border-medium);
 }
 
 .security-content ul {
@@ -178,10 +178,10 @@ input.honeypot {
 
 .form-group input:invalid,
 .form-group textarea:invalid {
-  border-color: #dc3545;
+  border-color: var(--status-error-alt);
 }
 
 .form-group input:valid,
 .form-group textarea:valid {
-  border-color: #28a745;
+  border-color: var(--status-success);
 }
