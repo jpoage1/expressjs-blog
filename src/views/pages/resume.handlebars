@@ -18,10 +18,14 @@
 
 <h1 class="resume-h1">{{name}}</h1>
 <div class="resume-contact-bar">
-  {{demographics.city}}, {{demographics.state}} {{demographics.zip}} |
-  {{contact_information.cell}} |
-  {{contact_information.email}} |
-  <a href="{{website}}" class="resume-link">{{website}}</a>
+  {{#if demographics}}
+    {{demographics.city}}, {{demographics.state}} {{demographics.zip}}
+  {{/if}}
+  {{#if contact_information.cell}} | {{contact_information.cell}}{{/if}}
+  {{#if contact_information.email}} | {{contact_information.email}}{{/if}}
+  {{#if website}}
+    | <a href="{{website}}" class="resume-link">{{website}}</a>
+  {{/if}}
 </div>
 
 <section>
@@ -30,11 +34,11 @@
   <div class="resume-entry">
     <div class="resume-entry-header">
       <span>{{institution}}</span>
-      <span>{{from}} — {{to}}</span>
+      <span>{{#if from}}{{from}} — {{/if}}{{to}}</span>
     </div>
     <div class="resume-sub-header">
       <span>{{degree}} in {{program}}</span>
-      <span>{{city}}, {{state}}</span>
+      <span>{{#if city}}{{city}}, {{state}}{{/if}}</span>
     </div>
   </div>
   {{/each}}
@@ -46,11 +50,11 @@
   <div class="resume-entry">
     <div class="resume-entry-header">
       <span>{{position}}</span>
-      <span>{{from}} — {{to}}</span>
+      <span>{{#if from}}{{from}} — {{/if}}{{to}}</span>
     </div>
     <div class="resume-sub-header">
       <span>{{company}}</span>
-      <span>{{city}}, {{state}}</span>
+      <span>{{#if state}}{{#if city}}{{city}}, {{state}}{{/if}}{{/if}}</span>
     </div>
   </div>
   {{/each}}
