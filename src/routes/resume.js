@@ -16,14 +16,27 @@ router.get("/", async (req, res, next) => {
     const fileContent = await fs.readFile(dataPath, "utf8");
     const resumeData = JSON.parse(fileContent);
 
+    const isPaper = req.query.view === "paper";
+
+    const cssOverrrides = {
+      css: res.cssOverride({
+        classes: {
+          body: "resume-pdf-layout",
+          layout: "resume-container",
+          container: "resume-paper",
+        },
+      }),
+    };
+
     // Render using your existing Handlebars engine logic
     // This follows the pattern in src/routes/post.js [cite: 25]
     res.renderWithBaseContext("pages/resume", {
       ...resumeData,
       title: `Resume - ${resumeData.name}`,
-      showSidebar: false,
-      showFooter: false,
-      showHeader: false,
+      showSidebar: !isPaper,
+      showFooter: !isPaper,
+      showHeader: !isPaper,
+      ...((isPaper && cssOverrrides) || {}),
       // css: res.cssOverride({
       //   classes: {
       //     body: "resume-pdf-layout",

@@ -14,13 +14,22 @@
 }
 
 @media screen {
-  body {
+  body.resume-body {
     background: #e0e0e0;
     display: flex;
     justify-content: center;
     padding: 20px;
   }
-  .resume-paper {
+  :root[data-view-type="web"] .resume-paper {
+    background: transparent;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    min-height: 0;
+  }
+  :root[data-view-type="paper"] .resume-paper {
     background: white;
     width: 8.5in;
     min-height: 11in;
@@ -32,10 +41,6 @@
 }
 
 @media print {
-  @page {
-    size: letter;
-    margin: 0; /* This removes the default browser margins where text is injected */
-  }
   .resume-pdf-layout {
     background: white !important;
     margin: 0.5in; /* Re-establish a visual margin for the actual content */
@@ -48,51 +53,75 @@
     margin: 0;
     padding: 0.5in; /* Re-establish margins inside the paper for the printer */
     box-shadow: none;
-  }
-  .no-print {
-    display: none;
+
+  .resume-paper {
+    width: 8.5in !important;
+    height: 11in !important;
+    padding: 0.5in !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    background: white !important;
+    color: black !important;
+    overflow: hidden; /* Ensure single-page fit */
   }
 }
 
-body {
+:root[data-view-type="web"] body.resume-body {
+  font-family: inherit;
+  color: var(--text-main);
+  line-height: 1.6;
+}
+:root[data-view-type="paper"] body.resume-body {
   font-family: "Helvetica", "Arial", sans-serif;
   color: #333;
   line-height: 1.2;
 }
-h1 {
+:root[data-view-type="web"] h1.resume-h1 {
+  font-size: 2rem;
+  border-bottom: 2px solid var(--accent-primary);
+  text-align: left;
+  margin-bottom: 1rem;
+}
+:root[data-view-type="paper"] h1.resume-h1 {
   text-align: center;
   text-transform: uppercase;
   margin: 0;
   font-size: 24pt;
 }
-.contact-bar {
+.resume-contact-bar {
   text-align: center;
   font-size: 10pt;
   border-bottom: 2px solid #444;
   padding-bottom: 5px;
   margin-bottom: 15px;
 }
-h2 {
+:root[data-view-type="web"] h2.resume-h2 {
+  font-size: 1.4rem;
+  color: var(--accent-primary);
+  border-bottom: 1px solid var(--border-medium);
+  margin-top: 1.5rem;
+}
+:root[data-view-type="paper"] h2.resume-h2 {
   font-size: 14pt;
   border-bottom: 1px solid #888;
   text-transform: uppercase;
   margin: 15px 0 5px 0;
 }
-.entry {
+.resume-entry {
   margin-bottom: 10px;
 }
-.entry-header {
+.resume-entry-header {
   display: flex;
   justify-content: space-between;
   font-weight: bold;
 }
-.sub-header {
+.resume-sub-header {
   display: flex;
   justify-content: space-between;
   font-style: italic;
   font-size: 11pt;
 }
-ul {
+ul.resume {
   margin: 5px 0;
   padding-left: 20px;
 }

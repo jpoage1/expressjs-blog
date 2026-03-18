@@ -38,11 +38,15 @@ function cssOverride(overrides = {}) {
   };
 }
 
-const DEFAULT_CONTEXT = {
-  showSidebar: true,
-  showFooter: true,
-  showHeader: true,
-  css: cssOverride(),
+const getDefaultContext = (view = "web") => {
+  const isPaper = view == "paper";
+  return {
+    showSidebar: !isPaper,
+    showFooter: !isPaper,
+    showHeader: !isPaper,
+    viewType: view,
+    css: cssOverride(),
+  };
 };
 
 module.exports.attachBaseContextGetter = async (req, res, next) => {
@@ -66,7 +70,7 @@ module.exports.attachBaseContextGetter = async (req, res, next) => {
       formatMonth,
       baseUrl,
       isAuthenticated,
-      ...DEFAULT_CONTEXT,
+      ...getDefaultContext(req.query.view ?? "web"),
       ...overrides,
     };
 

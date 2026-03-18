@@ -1,0 +1,53 @@
+@media print {
+  @page {
+    size: letter;
+    margin: 0;
+  }
+
+  .no-print {
+    display: none;
+  }
+
+  /* 1. Strip UI Elements  */
+  header#site-header,
+  footer,
+  aside.sidebar,
+  .no-print {
+    display: none !important;
+  }
+  /* 2. Reset Layout Constraints */
+  .layout {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+  }
+  /* 3. Transform Main Content into "Paper" */
+  main.container {
+    width: 8.5in !important;
+    height: 11in !important;
+    padding: 0.5in !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    background: white !important;
+    color: black !important;
+    overflow: hidden; /* Ensure single-page fit */
+  }
+  /* 4. Kill global dot patterns and 100vh */
+  body.pattern-dots,
+  html {
+    background: white !important;
+    min-height: 0 !important;
+    height: auto !important;
+  }
+
+  .pattern-dots::after {
+    display: none !important;
+  }
+}
+
+:root[data-view-type="paper"] #site-header,
+:root[data-view-type="paper"] footer,
+:root[data-view-type="paper"] aside.sidebar {
+  display: none !important;
+}

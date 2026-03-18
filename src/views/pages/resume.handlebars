@@ -1,25 +1,35 @@
-{{overrideCSS target="classes" prop="body" value="resume-pdf-layout"}}
-{{overrideCSS target="classes" prop="layout" value="resume-container"}}
-{{overrideCSS target="classes" prop="container" value="resume-paper"}}
+{{!-- overrideCSS target="classes" prop="body" value="resume-pdf-layout" --}}
+{{!-- overrideCSS target="classes" prop="layout" value="resume-container" --}}
+{{!-- overrideCSS target="classes" prop="container" value="resume-paper" --}}
 
 {{#section "styles"}}
 <link rel="stylesheet" href="{{baseUrl}}/static/css/resume.css">
 {{/section}}
 
-<h1>{{name}}</h1>
-<div class="contact-bar">
+{{#section "scripts"}}
+<script src="/static/js/printButton.js"></script>
+{{/section}}
+
+
+<div class="no-print">
+    <button id="print-button" class="btn-primary">Print to PDF</button>
+    <button id="print-preview-button" class="btn-primary">Print Preview</button>
+</div>
+
+<h1 class="resume-h1">{{name}}</h1>
+<div class="resume-contact-bar">
   {{demographics.city}}, {{demographics.state}} {{demographics.zip}} | {{contact_information.cell}} | {{contact_information.email}}
 </div>
 
 <section>
-  <h2>Education</h2>
+  <h2 class="resume-h2">Education</h2>
   {{#each education}}
-  <div class="entry">
-    <div class="entry-header">
+  <div class="resume-entry">
+    <div class="resume-entry-header">
       <span>{{institution}}</span>
       <span>{{from}} — {{to}}</span>
     </div>
-    <div class="sub-header">
+    <div class="resume-sub-header">
       <span>{{degree}} in {{program}}</span>
       <span>{{city}}, {{state}}</span>
     </div>
@@ -30,12 +40,12 @@
 <section>
   <h2>Experience</h2>
   {{#each work_history}}
-  <div class="entry">
-    <div class="entry-header">
+  <div class="resume-entry">
+    <div class="resume-entry-header">
       <span>{{position}}</span>
       <span>{{from}} — {{to}}</span>
     </div>
-    <div class="sub-header">
+    <div class="resume-sub-header">
       <span>{{company}}</span>
       <span>{{city}}, {{state}}</span>
     </div>
