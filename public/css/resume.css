@@ -64,6 +64,16 @@
     color: black !important;
     overflow: hidden; /* Ensure single-page fit */
   }
+  .resume-link {
+    text-decoration: none !important;
+    color: black !important; /* Ensure black ink for printing */
+  }
+
+  /* Prevent Page Bleed */
+  .resume-paper {
+    overflow: hidden;
+    page-break-after: avoid;
+  }
 }
 
 :root[data-view-type="web"] body.resume-body {
@@ -124,4 +134,9 @@
 ul.resume {
   margin: 5px 0;
   padding-left: 20px;
+}
+
+:root[data-view-type="paper"] .resume-link {
+  text-decoration: none;
+  color: #333; /* Match your resume text color */
 }
