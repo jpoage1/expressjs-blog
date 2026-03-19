@@ -18,9 +18,11 @@
 
 <h1 class="resume-h1">{{name}}</h1>
 <div class="resume-contact-bar">
-  {{#if demographics}}
-    {{demographics.city}}, {{demographics.state}} {{demographics.zip}}
-  {{/if}}
+  {{#with demographics}}
+    {{#if city}}{{city}}, {{/if}}
+    {{#if state}}{{state}}{{/if}}
+    {{#if zip}} {{zip}}{{/if}}
+  {{/with}}
   {{#if contact_information.cell}} | {{contact_information.cell}}{{/if}}
   {{#if contact_information.email}} | {{contact_information.email}}{{/if}}
   {{#if website}}

@@ -8,13 +8,13 @@ const csrfToken = require("../middleware/csrfToken");
 const errorPage = require("../controllers/errorPageController");
 const admin = require("./admin");
 const tags = require("./tags");
-const presentation = require("./presentation");
 const resume = require("./resume");
 
 const contact = require("./contact");
 const sitemap = require("./sitemap");
 const { blogPost, blogIndex } = require("../controllers/blogControllers");
 const pages = require("./pages");
+const projects = require("./projects");
 const docs = require("./docs");
 const rssFeedController = require("../controllers/rssFeedController");
 const HttpError = require("../utils/HttpError");
@@ -90,8 +90,8 @@ router.use(contact, csrfToken);
 router.use("/resume", resume);
 router.use(sitemap);
 router.use(pages);
+router.use(projects);
 router.use(tags);
-router.use("/projects/website-presentation", presentation);
 router.use("/docs", docs);
 
 router.get("/blog/:year/:month/:name", blogPost);

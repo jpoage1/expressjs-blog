@@ -5,10 +5,14 @@ site_owner = "Your name"
 country = "Your country"# Optional
 
 log_level = "debug" # debug, info, warn, error
-log_dir = "/path/to/logs"
 root_dir = "/path/to/server"
 
 health_check = "/health"
+
+[logging]
+level = "debug"
+db_path = "/path/to/logs.sqlite3"
+log_dir = "/path/to/logs"
 
 [public]
 schema = "https"
