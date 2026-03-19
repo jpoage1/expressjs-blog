@@ -4,6 +4,7 @@ import shlex
 from lib.task_types import SuiteTask, SuiteSubTask
 from lib.types import Stage
 from core.tasks import YarnBuild
+from core.task_runner import TaskRunner
 
 
 class StartTestApp(SuiteSubTask):
@@ -23,7 +24,7 @@ class StartTestApp(SuiteSubTask):
 
         self.print(f"  [EXEC] Starting app in {self.env.build_dir}")
 
-        cmd = f"nohup yarn run prod --config {self.env.testing.config_file} >> '{self.env.test_log}' 2>&1 & echo $! > '{self.env.pidfile}'"
+        cmd = f"nohup sudo -u {self.env.user} yarn run prod --config {self.env.testing.config_file} >> '{self.env.test_log}' 2>&1 & echo $! > '{self.env.pidfile}'"
         # This doesn't work because systemd doesnt know where it is yet
         # cmd=f"sudo systemctl restart {self.env.testing.service_name}",
         self.sh(
@@ -116,9 +117,14 @@ class TestRunner(SuiteTask):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = "Integration Test Runner"
-        self._sub_tasks = [StartTestApp, WaitForReadiness, RunMochaTests, StopTestApp]
+        sub_tasks = [StartTestApp, WaitForReadiness, RunMochaTests, StopTestApp]
+
+        runner = TaskRunner(self, owner=self._owner, base_class_name="TestRunner")
+        runner.queue_tasks(sub_tasks).run()
 
     def _run(self):
+        return
+
         # 1. Check if we should even be here
         skip_param = self.args.get("skip_tests", False)
         enforced = self.get_arg("enforce_testing")
@@ -142,9 +148,12 @@ class TestRunner(SuiteTask):
                     self.print(f"  [FAIL] Test suite halted at: {task.name}")
                     break
 
+        except AttributeError as e:
+            success = False
+            self.fail(f"  [ERROR] failure during test execution: {e}")
         except Exception as e:
             success = False
-            self.print(f"  [ERROR] Critical failure during test execution: {e}")
+            self.fail(f"  [ERROR] Critical failure during test execution: {e}")
 
         finally:
             if self.do_dry_run():

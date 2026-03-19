@@ -21,8 +21,13 @@ class GetDeploymentConfig(SuiteTask):
         lua = LuaRuntime(unpack_returned_tuples=True)
         config_path = self.get_arg("config")
 
+        self.print("Reading file: ", config_path)
         with open(config_path, "r") as f:
-            cfg = lua.execute(f.read())
+            try:
+                lua_content = f.read()
+                cfg = lua.execute(lua_content)
+            except Exception as e:
+                self.fail("Failed to load deployment config: ", e)
 
         # 4. Hydrate self.env
         self.env.lua_cfg = cfg  # Store the lua object for functional calls later
@@ -46,6 +51,7 @@ class LoadServerConfig(SuiteTask):
     """Verifies TOML existence and hydrates the environment with health check URI components"""
 
     _stage = Stage.BOOTSTRAP
+    _deps = [GetDeploymentConfig]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -118,6 +124,7 @@ class HotFix(SuiteTask):
     """Bypasses the full build to update the current live deployment"""
 
     _stage = Stage.DEPLOY
+    _deps = [GetDeploymentConfig, LoadServerConfig]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -134,7 +141,7 @@ class HotFix(SuiteTask):
         # 2. Pull changes
         try:
             self.sh(
-                "git pull origin " + self.env.deploy_branch,
+                "sudo -u {self.env.user} git pull origin " + self.env.deploy_branch,
                 cwd=live_path,
                 handle_exception=False,
             )
@@ -169,10 +176,12 @@ class YarnBuild(SuiteTask):
 
         build_git_path = os.path.join(self.env.build_dir, ".git")
 
+        self.print("Build git path:", build_git_path)
+
         if os.path.exists(build_git_path):
             try:
                 self.sh(
-                    f"git pull origin {self.env.deploy_branch}",
+                    f"sudo -u {self.env.user} git pull origin {self.env.deploy_branch}",
                     cwd=self.env.build_dir,
                     handle_exception=False,
                 )
@@ -186,34 +195,6 @@ class YarnBuild(SuiteTask):
             self.sh(
                 f"git clone --branch {self.env.deploy_branch} {self.env.repo} {self.env.build_dir}"
             )
-        self.sh("git submodule update --init --recursive", cwd=self.env.build_dir)
-        self.sh("yarn config set enableGlobalCache true", cwd=self.env.build_dir)
-        self.sh(
-            f"yarn config set globalFolder {self.env.yarn_path}", cwd=self.env.build_dir
-        )
-        self.sh("yarn config set nodeLinker pnp", cwd=self.env.build_dir)
-        self.sh("yarn install", cwd=self.env.build_dir)
-        self.sh("yarn combine:css", cwd=self.env.build_dir)
-        return True
-
-class YarnBuild(SuiteTask):
-    """Executes dependency installation and asset compilation"""
-
-    _stage = Stage.BUILD
-    _deps = [GetDeploymentConfig, LoadServerConfig]
-    skip: bool = False
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.name = "Running Yarn build process"
-
-    def _run(self):
-        timestamp = time.strftime(self.env.timestamp_format)
-        self.env.release_dir = f"{Path(self.env.testing.deploy_link)}-{timestamp}"
-
-        self.sh(
-            f"git clone --branch {self.env.deploy_branch} {self.env.repo} {self.env.build_dir}"
-        )
         self.sh("git submodule update --init --recursive", cwd=self.env.build_dir)
         self.sh("yarn config set enableGlobalCache true", cwd=self.env.build_dir)
         self.sh(
