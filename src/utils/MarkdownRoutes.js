@@ -11,7 +11,16 @@ class MarkdownRoutes extends BaseRoute {
     super();
   }
 
-  register(routePath, markdownFile = "page", handlebarsFile = "page") {
+  register(routePath, markdownFile = "page", params = "page") {
+    let extraParams = {};
+    let handlebarsFile = params;
+
+    if (typeof params !== "object" || params === null) {
+      // Legacy mode: params is just the markdown filename string
+      handlebarsFile = params;
+    } else {
+      ({ handlebarsFile = "page", ...extraParams } = params);
+    }
     this.router.get(routePath, async (req, res, next) => {
       try {
         const filePath = path.join(
@@ -51,6 +60,7 @@ class MarkdownRoutes extends BaseRoute {
           // title: frontmatter.title,
           ...frontmatter,
           content: htmlContent,
+          ...extraParams,
         };
         res.renderWithBaseContext(`pages/${handlebarsFile}`, context);
       } catch (err) {

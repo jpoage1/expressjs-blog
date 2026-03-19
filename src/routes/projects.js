@@ -22,10 +22,14 @@ const { node_env } = meta;
 router.use("/projects/website-presentation", presentation);
 html.register("/games/word-guesser", "word-guesser");
 
-markdown.register("/projects/lisp-interpreter", "projects/lisp_interpreter");
-markdown.register("/projects/pipeline-runner", "projects/pipeline_runner");
-markdown.register("/projects/telemetry", "projects/telemetry");
-markdown.register("/projects/xmonad", "projects/xmonad");
+function createProject(url, file) {
+  markdown.register(url, file, { project: true });
+}
+createProject("/projects/lisp-interpreter", "projects/lisp_interpreter");
+createProject("/projects/pipeline-runner", "projects/pipeline_runner");
+createProject("/projects/telemetry", "projects/telemetry");
+createProject("/projects/xmonad", "projects/xmonad");
+createProject("/projects/word-guesser", "projects/word-guesser");
 
 router.get("/projects", async (req, res, next) => {
   try {
@@ -41,16 +45,20 @@ router.get("/projects", async (req, res, next) => {
       const fileContent = await fs.readFile(filePath, "utf-8");
       const { data } = matter(fileContent);
 
-      projects.push({
-        title: data.title,
-        status: data.published ? "Active" : "Archived",
-        status_class: data.published ? "active" : "archived",
-        description: data.description || "",
-        target_url: data.repository || `/${data.slug}`,
-        external: !!data.repository,
-        retrospective_url: `/${data.slug}`,
-        repository: data.repository,
-      });
+      if (data.published || node_env === "development") {
+        projects.push({
+          title: data.title,
+          status: data.published ? "Active" : "Archived",
+          status_class: data.published ? "active" : "archived",
+          description: data.description || "",
+          target_url: data.repository || `/${data.slug}`,
+          demo_url: data.demo_url,
+          demo_label: data.demo_label,
+          external: !!data.repository,
+          retrospective_url: `/${data.slug}`,
+          repository: data.repository,
+        });
+      }
     }
 
     res.renderWithBaseContext("pages/projects", { projects });

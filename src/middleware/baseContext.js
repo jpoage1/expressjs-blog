@@ -70,6 +70,8 @@ module.exports.attachBaseContextGetter = async (req, res, next) => {
       formatMonth,
       baseUrl,
       isAuthenticated,
+      node_env_dev: meta.node_env == "development",
+      node_env_prod: meta.node_env != "development",
       ...getDefaultContext(req.query.view ?? "web"),
       ...overrides,
     };

@@ -19,7 +19,9 @@
             {{title}}
           {{/if}}
         </h2>
-        <span class="project-status {{status_class}}">{{status}}</span>
+        {{#if node_env_dev}}
+          <span class="project-status {{status_class}}">{{status}}</span>
+        {{/if}}
       </div>
 
       <p class="project-description">{{description}}</p>
