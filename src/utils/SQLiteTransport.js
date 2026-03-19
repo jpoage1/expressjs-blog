@@ -1,11 +1,12 @@
 const Transport = require("winston-transport");
 const Database = require("better-sqlite3");
-const path = require("path");
+const { logging } = require("../config/loader");
+const dbFile = logging.getDBFile("logs.sqlite3");
 
 class SQLiteTransport extends Transport {
   constructor(opts) {
     super(opts);
-    this.db = new Database(path.resolve(__dirname, "../../data/logs.sqlite3"));
+    this.db = new Database(dbFile);
 
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS logs (
@@ -25,7 +26,7 @@ class SQLiteTransport extends Transport {
         FOREIGN KEY(log_id) REFERENCES logs(id) ON DELETE CASCADE,
         FOREIGN KEY(key_id) REFERENCES keys(id) ON DELETE CASCADE
       );
-      
+
       -- CRITICAL: These indexes will make your queries 100x faster
       CREATE INDEX IF NOT EXISTS idx_logs_timestamp_desc ON logs(timestamp DESC);
       CREATE INDEX IF NOT EXISTS idx_logs_level_timestamp ON logs(level, timestamp DESC);
@@ -39,12 +40,12 @@ class SQLiteTransport extends Transport {
     this.db.pragma("cache_size = 10000");
 
     this.insertLog = this.db.prepare(
-      `INSERT INTO logs (timestamp, level) VALUES (?, ?)`
+      `INSERT INTO logs (timestamp, level) VALUES (?, ?)`,
     );
     this.getKeyId = this.db.prepare(`SELECT id FROM keys WHERE key = ?`);
     this.insertKey = this.db.prepare(`INSERT INTO keys (key) VALUES (?)`);
     this.insertMetadata = this.db.prepare(
-      `INSERT INTO log_metadata (log_id, key_id, value) VALUES (?, ?, ?)`
+      `INSERT INTO log_metadata (log_id, key_id, value) VALUES (?, ?, ?)`,
     );
   }
 
@@ -93,7 +94,7 @@ class SQLiteTransport extends Transport {
         this.insertMetadata.run(
           logId,
           messageKeyId,
-          this.safeStringify(message)
+          this.safeStringify(message),
         );
       }
 

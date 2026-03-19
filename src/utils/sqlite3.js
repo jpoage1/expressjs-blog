@@ -1,6 +1,8 @@
 const sqlite3 = require("sqlite3").verbose();
+const { logging } = require("../../config/loader");
+const dbFile = logging.getDBFile("analytic.sqlite3");
 
-const db = new sqlite3.Database("./data/analytic2.sqlite3");
+const db = new sqlite3.Database(dbFile);
 db.run(`
   CREATE TABLE IF NOT EXISTS analytics (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

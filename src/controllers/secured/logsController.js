@@ -1,4 +1,3 @@
-const path = require("path");
 const fs = require("fs");
 const Database = require("better-sqlite3");
 const { winstonLogger } = require("../../utils/logging");
@@ -16,13 +15,13 @@ const allowedLevels = [
   "functions",
   "notice",
 ];
-const { logsDbPath } = logging;
+const dbFile = logging.getDBFile("logs.sqlite3");
 
-if (!fs.existsSync(logsDbPath)) {
-  fs.closeSync(fs.openSync(logsDbPath, "w"));
+if (!fs.existsSync(dbFile)) {
+  fs.closeSync(fs.openSync(dbFile, "w"));
 }
 
-const logsDb = new Database(logsDbPath, { readonly: true });
+const logsDb = new Database(dbFile, { readonly: true });
 
 exports.renderLogsPage = (req, res) => {
   res.renderWithBaseContext("admin-pages/logs", {

@@ -8,6 +8,8 @@ function hydrate(c = {}) {
   const address = c?.network?.address || process.env.ADDRESS || "0.0.0.0";
   const port = c?.network?.port || process.env.SERVER_PORT || 3400;
   const logDir = c?.logging?.log_dir || process.env.LOG_DIR;
+  const dbPath = c?.logging?.db_path || process.env.LOGS_DB_PATH;
+
   if (logDir == undefined) {
     throw new Error("Log dir is undefined");
   }
@@ -22,7 +24,8 @@ function hydrate(c = {}) {
     logging: {
       logDir,
       logLevel: c?.logging?.log_level || process.env.LOG_LEVEL || "info",
-      logsDbPath: c?.logging?.db_path || process.env.LOGS_DB_PATH,
+      dbPath,
+      getDBFile: (file) => path.join(dbPath, file),
     },
     public: {
       schema: c?.public?.schema || process.env.SERVER_SCHEMA || schema,
