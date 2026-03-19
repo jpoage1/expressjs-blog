@@ -30,6 +30,38 @@
   {{/if}}
 </div>
 
+<h2 class="resume-h2">Skills</h2>
+<div class="resume-skills">
+  {{#with skills}}
+  <div class="resume-skill-category"><strong>Languages:</strong> {{#each languages}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+  <div class="resume-skill-category"><strong>Frameworks:</strong> {{#each frameworks}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+  <div class="resume-skill-category"><strong>Tools:</strong> {{#each tools}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+  <div class="resume-skill-category"><strong>Operating Systems:</strong> {{#each operating_systems}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+  <div class="resume-skill-category"><strong>Infrastructure & Admin:</strong> {{#each infrastructure_and_admin}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+  <div class="resume-skill-category"><strong>Methodologies:</strong> {{#each methodologies}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+  {{/with}}
+</div>
+
+<h2 class="resume-h2">Technical Projects</h2>
+{{#each technical_projects}}
+  <div class="resume-entry">
+    <div class="resume-entry-header">
+      <span>{{name}}</span>
+    </div>
+    <div class="resume-sub-header">
+      <span>{{#each technologies}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</span>
+    </div>
+    <p class="resume-summary">{{summary}}</p>
+    <ul class="resume">
+      {{#each features}}
+        <li>{{this}}</li>
+      {{/each}}
+    </ul>
+  </div>
+{{/each}}
+
+
+
 <section>
   <h2 class="resume-h2">Education</h2>
   {{#each education}}
@@ -56,8 +88,17 @@
     </div>
     <div class="resume-sub-header">
       <span>{{company}}</span>
-      <span>{{#if state}}{{#if city}}{{city}}, {{state}}{{/if}}{{/if}}</span>
+      {{#if location}}
+        <span>{{location}}</span>
+      {{else}}
+        <span>{{#if state}}{{#if city}}{{city}}, {{state}}{{/if}}{{/if}}</span>
+      {{/if}}
     </div>
+    <ul class="resume">
+      {{#each responsibilities}}
+        <li>{{this}}</li>
+      {{/each}}
+    </ul>
   </div>
   {{/each}}
 </section>

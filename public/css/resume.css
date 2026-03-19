@@ -69,10 +69,10 @@
     color: black !important; /* Ensure black ink for printing */
   }
 
-  /* Prevent Page Bleed */
   .resume-paper {
     overflow: hidden;
     page-break-after: avoid;
+    padding: 0.25in !important;
   }
 }
 
@@ -84,7 +84,8 @@
 :root[data-view-type="paper"] body.resume-body {
   font-family: "Helvetica", "Arial", sans-serif;
   color: #333;
-  line-height: 1.2;
+  font-size: 9.5pt;
+  line-height: 1.15;
 }
 :root[data-view-type="web"] h1.resume-h1 {
   font-size: 2rem;
@@ -96,14 +97,17 @@
   text-align: center;
   text-transform: uppercase;
   margin: 0;
-  font-size: 24pt;
+  /* font-size: 24pt; */
+  font-size: 16pt;
+  margin-bottom: 2px;
 }
 .resume-contact-bar {
   text-align: center;
   font-size: 10pt;
   border-bottom: 2px solid #444;
   padding-bottom: 5px;
-  margin-bottom: 15px;
+  /* margin-bottom: 15px; */
+  padding-bottom: 2px;
 }
 :root[data-view-type="web"] h2.resume-h2 {
   font-size: 1.4rem;
@@ -112,18 +116,24 @@
   margin-top: 1.5rem;
 }
 :root[data-view-type="paper"] h2.resume-h2 {
-  font-size: 14pt;
+  /* font-size: 14pt; */
   border-bottom: 1px solid #888;
   text-transform: uppercase;
   margin: 15px 0 5px 0;
+  font-size: 11pt;
 }
 .resume-entry {
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
+  margin-bottom: 4px;
 }
 .resume-entry-header {
   display: flex;
   justify-content: space-between;
   font-weight: bold;
+}
+.resume-entry-header, .resume-sub-header {
+  align-items: baseline;
+  flex-wrap: nowrap;
 }
 .resume-sub-header {
   display: flex;
@@ -132,11 +142,30 @@
   font-size: 11pt;
 }
 ul.resume {
-  margin: 5px 0;
-  padding-left: 20px;
+  margin: 2px 0;
+  padding-left: 15px;
+  /* margin: 5px 0; */
+  /* padding-left: 20px; */
+}
+
+ul.resume li {
+  margin-bottom: 1px;
 }
 
 :root[data-view-type="paper"] .resume-link {
   text-decoration: none;
   color: #333; /* Match your resume text color */
+}
+.resume-skills {
+  margin-bottom: 10px;
+  font-size: 11pt;
+}
+.resume-skill-category {
+  margin-bottom: 3px;
+}
+
+.resume-summary {
+  margin: 2px 0;
+  font-size: 11pt;
+  /* margin: 5px 0; */
 }

@@ -33,6 +33,7 @@ router.get("/", async (req, res, next) => {
     res.renderWithBaseContext("pages/resume", {
       ...resumeData,
       title: `Resume - ${resumeData.name}`,
+      viewType: isPaper ? "paper" : "web",
       showSidebar: !isPaper,
       showFooter: !isPaper,
       showHeader: !isPaper,

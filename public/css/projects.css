@@ -14,6 +14,7 @@
 
 .project-title {
   margin: 0;
+  margin-bottom: 1rem;
   font-size: 2.5rem;
 }
 
@@ -63,4 +64,117 @@
   border: 0;
   border-top: 1px solid var(--border-medium, #eee);
   margin-top: 1.5rem;
+}
+
+.projects-intro {
+  margin-bottom: 2.5rem;
+  font-size: 1.1rem;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border-medium, #eee);
+  padding-bottom: 1.5rem;
+}
+
+/* Grid Layout */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+/* Individual Project Card */
+.project-card {
+  background: var(--bg-tag, #fafafa);
+  border: 1px solid var(--border-medium, #ccc);
+  border-radius: 6px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Card Header (Title & Status Badge) */
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.project-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.2;
+}
+
+.project-header a {
+  text-decoration: none;
+  color: var(--text-main);
+}
+
+.project-header a:hover {
+  color: var(--accent-primary);
+}
+
+/* Status Badges */
+.project-status {
+  font-family: "Roboto Mono", monospace;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.project-status.active {
+  background: rgba(46, 125, 50, 0.1);
+  color: #2e7d32;
+  border: 1px solid rgba(46, 125, 50, 0.2);
+}
+
+.project-status.archived {
+  background: rgba(230, 81, 0, 0.1);
+  color: #e65100;
+  border: 1px solid rgba(230, 81, 0, 0.2);
+}
+
+.project-status.dead {
+  background: rgba(198, 40, 40, 0.1);
+  color: #c62828;
+  border: 1px solid rgba(198, 40, 40, 0.2);
+}
+
+.project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.project-links a {
+  background: var(--bg-tag, #f0f0f0);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-family: "Roboto Mono", monospace;
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: var(--text-main);
+  border: 1px solid var(--border-medium, #ccc);
+  transition: all 0.2s ease;
+  text-align: center;
+  flex: 1 1 auto; /* Allows buttons to stretch and fill space evenly */
+}
+
+.project-links a:hover {
+  background: var(--accent-primary);
+  color: white;
 }
