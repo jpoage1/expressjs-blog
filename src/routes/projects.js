@@ -30,6 +30,7 @@ createProject("/projects/pipeline-runner", "projects/pipeline_runner");
 createProject("/projects/telemetry", "projects/telemetry");
 createProject("/projects/xmonad", "projects/xmonad");
 createProject("/projects/word-guesser", "projects/word-guesser");
+createProject("/about/blog", "projects/about-blog");
 
 router.get("/projects", async (req, res, next) => {
   try {

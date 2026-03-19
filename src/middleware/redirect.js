@@ -6,7 +6,7 @@ const { winstonLogger } = require("../utils/logging");
 
 // Configuration - adjust these as needed
 const redirectConfig = {
-  "/": `${baseUrl}/blog`,
+  "/": `${baseUrl}/projects`,
   // Add more redirects as needed
   // '/old-path': '/new-path',
 };

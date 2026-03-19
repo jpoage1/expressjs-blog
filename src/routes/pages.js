@@ -12,8 +12,6 @@ const construction = new ConstructionRoutes();
 const html = new HtmlRoutes();
 const markdown = new MarkdownRoutes();
 
-markdown.register("/about/blog", "about-blog");
-
 router.use(newsletter, csrfToken);
 
 construction.register("/changelog", "Changelog");
