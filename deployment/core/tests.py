@@ -123,7 +123,6 @@ class TestRunner(SuiteTask):
         runner.queue_tasks(sub_tasks).run()
 
     def _run(self):
-        return
 
         # 1. Check if we should even be here
         skip_param = self.args.get("skip_tests", False)
@@ -156,11 +155,10 @@ class TestRunner(SuiteTask):
             self.fail(f"  [ERROR] Critical failure during test execution: {e}")
 
         finally:
-            if self.do_dry_run():
-                return
-            # 3. Forced Teardown
-            # If the loop broke or failed, ensure StopTestApp runs if StartTestApp was attempted
-            self.print("  [CLEAN] Ensuring test environment teardown...")
-            cleanup = StopTestApp(parent=self, owner=self._owner)
-            cleanup.run()
-            self.env.test_success = success
+            if not self.do_dry_run():
+                # 3. Forced Teardown
+                # If the loop broke or failed, ensure StopTestApp runs if StartTestApp was attempted
+                self.print("  [CLEAN] Ensuring test environment teardown...")
+                cleanup = StopTestApp(parent=self, owner=self._owner)
+                cleanup.run()
+                self.env.test_success = success

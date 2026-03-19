@@ -5,16 +5,117 @@ import sys
 import subprocess
 from pathlib import Path
 from abc import ABC, abstractmethod
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Optional
 from shlex import split as shlex_split
 
 from lib.printer import Printer
 from lib.errors import TaskError
+from lib.types import typename
 
 
 if TYPE_CHECKING:
     from types import Stage, BuildEnv
     from task_types import BlogDeploySuite
+    from task_runner import TaskRunner
+
+
+class Task:
+    _initialized: bool = False
+    _registry: dict = {}
+    _loaded: dict = {}
+    _completed: dict = {}
+    _owner = None
+
+    # 1. The owner initializes the class
+    @staticmethod
+    def __init__(owner, task_list):
+        if Task._initialized:
+            return
+        Task._owner = owner
+        for task in task_list:
+            task_name = Task.get_key(task)
+            print(f"Registring {task_name}")
+            Task._registry[task_name] = task
+        return
+
+    # 2. Add a dependency from the registry
+    @staticmethod
+    def add(key):
+        """Adds a depndency only if it exists in the registry"""
+        key = Task.get_key(key)
+
+        # 1. Determine if the key exists in the registry
+        if not Task.exists(key):
+            raise ValueError(f"Dependency {key} does not exist in the registry")
+
+        # 2. Determine if the key has been initialized
+        if Task.initialized(key):
+            print(f"Fetching task: {key}")
+            # Return the key if already initialized
+            return Task._loaded[key]
+
+        # 3. Initialize the key
+        print(f"Initializing {key}")
+        dep = Task._registry[key]
+        task = dep(Task._owner, owner=Task._owner)
+        Task._loaded[key] = task
+        return task
+
+    @staticmethod
+    def exists(key):
+        key = Task.get_key(key)
+        return key in Task._registry.keys()
+
+
+    @staticmethod
+    def initialized(key):
+         """Returns the initialized object"""
+         key = Task.get_key(key)
+         return key in Task._completed.keys()
+
+
+    # 3. Run the task
+    @staticmethod
+    def run(key):
+        """Runs a task from the registry"""
+        key = Task.get_key(key)
+
+        # 1. Determine if the task has already ran
+        if Task.completed(key):
+            print(f"fetching result for {key}")
+            return Task._completed[key]
+
+        # 2. Initialize the dependency
+        # This is harmless if already initialized
+        # due to internal checks
+        task = Task.add(key) # Also provides the object
+
+        # 3. Run the task and store its result
+        print(f"Running task: {key}")
+        result = task.run()
+        Task._completed[key] = result
+
+        return result
+
+    @staticmethod
+    def get_key(key):
+        """Convert a raw class to a key"""
+        if type(key) is not str:
+            key = key.__name__
+        return key
+
+    @staticmethod
+    def completed(key):
+        """Returns a bool if the task has been completed or not"""
+        key = Task.get_key(key)
+        return key in Task._completed.keys()
+
+
+
+
+    @staticmethod
+    def get_owner():
+        return Task._owner
 
 
 class SuiteTask(ABC):
@@ -32,6 +133,8 @@ class SuiteTask(ABC):
     _initialized = False
     _deps = []
     env: "BuildEnv"
+    complete: bool = False
+    skip_list: List = []
 
     def __init__(
         self,
@@ -42,15 +145,18 @@ class SuiteTask(ABC):
         attach_printer: bool = True,
         **kwargs,
     ):
+        self.add_deps()
+
         from lib.task_types import SuiteTask
 
         if owner is None and not SuiteTask._initialized:
             raise ValueError("Owner is not set")
         if parent is None:
             raise ValueError("Parent is not set")
-        if kwargs and self.__class__.__name__ in kwargs.get("skip"):
-            self.skip = True
-            return
+        # print(kwargs, self.__class__.__name__)
+        # if kwargs and self.__class__.__name__ in self.get_arg("skip_list"):
+        #     self.skip = True
+        #     return
         SuiteTask._initialized = True
 
         if cwd is not None:
@@ -76,6 +182,21 @@ class SuiteTask(ABC):
             SuiteTask._global_counter += 1
         if attach_printer:
             self.attach_printer(parent)
+
+
+    def initialize_deps():
+        for dep in self._deps:
+            dep_name = dep.__name__
+            if not Task.initalized(dep_name):
+                Task.load(dep)
+
+    def add_deps(self):
+        for dep in self._deps:
+            Task.add(dep)
+
+    def run_deps(self):
+        for dep in self._deps:
+            Task.run(dep)
 
     def get_arg(self, arg):
         return self._owner.args.get(arg)
@@ -141,6 +262,15 @@ class SuiteTask(ABC):
         self.do_dry_run = func
 
     def run(self):
+        self.print("Running ", typename(self))
+        try:
+            if len(self._deps) > 0:
+                from core.task_runner import TaskRunner
+
+                TaskRunner.add_deps(self)
+                TaskRunner.run_deps(self)
+        except Exception as e:
+            raise Exception(f"Failed to load dependency for {typename(self)}: {e}")
         return self._run()
 
     def fail(self, *args, critical: bool = False, **kwargs):
@@ -313,3 +443,17 @@ class SuiteSubTask(SuiteTask):
     @staticmethod
     def get_count():
         return SuiteSubTask._sub_counter
+
+    def run(self):
+        self.print("Running ", typename(self))
+        try:
+            if len(self._deps) > 0:
+                from core.task_runner import TaskRunner
+
+                TaskRunner.load_deps(
+                    self,
+                    self._deps,
+                )
+        except Exception as e:
+            raise Exception(f"Failed to load dependency for {typename(self)}: {e}")
+        return self._run()

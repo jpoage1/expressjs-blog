@@ -7,14 +7,22 @@ class SuiteError(Exception):
         self, parent, *args, critical: bool = False, code: int | None = None, **kwargs
     ):
         super().__init__(*args, **kwargs)
-        parent.dump_print_queue()
-        traceback.print_stack()
-        print(*args, **kwargs)
+        try:
+            if type(parent).__name__ == "str":
+                print(parent)
+                raise Exception("Um... this is embarrassing. Parent? ", parent)
+            parent.dump_print_queue()
+            traceback.print_stack()
+            print(*args, **kwargs)
 
-        if code is not None:
-            sys.exit(code)
-        if critical:
-            raise RuntimeError(*args, **kwargs)
+            if code is not None:
+                sys.exit(code)
+            if critical:
+                raise RuntimeError(*args, **kwargs)
+        except Exception as e:
+            raise Exception(
+                f"There was an error while handling an exception: {e}"
+            ) from e
         sys.exit(1)
 
 

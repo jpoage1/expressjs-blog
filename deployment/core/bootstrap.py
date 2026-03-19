@@ -1,6 +1,7 @@
 import os
 import shutil
 
+from core.tasks import GetDeploymentConfig
 from lib.printer import clear_screen
 from lib.types import Stage
 from lib.task_types import SuiteTask, SuiteSubTask
@@ -26,6 +27,7 @@ class CheckNix(SuiteTask):
 
 
 class EnsureBuildPaths(SuiteTask):
+    _deps = [GetDeploymentConfig]
     _can_skip = False
     """Task 1: Ensure build paths exist"""
 

@@ -24,7 +24,7 @@ class Printer:
     ):
         self._parent = parent
         self._instance = instance
-        self._parent_id = parent._id if parent else 0
+        self._parent_id = type(parent)
         self._instance_id = instance.get_id()
 
     def dump(self):

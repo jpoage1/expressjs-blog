@@ -3,6 +3,10 @@ from enum import Enum
 from pathlib import Path
 
 
+def typename(t):
+    return type(t).__name__
+
+
 class Stage(Enum):
     ANY = "any"
     BOOTSTRAP = "bootstrap"

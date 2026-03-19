@@ -141,7 +141,7 @@ class HotFix(SuiteTask):
         # 2. Pull changes
         try:
             self.sh(
-                "sudo -u {self.env.user} git pull origin " + self.env.deploy_branch,
+                "git pull origin " + self.env.deploy_branch,
                 cwd=live_path,
                 handle_exception=False,
             )
@@ -181,7 +181,7 @@ class YarnBuild(SuiteTask):
         if os.path.exists(build_git_path):
             try:
                 self.sh(
-                    f"sudo -u {self.env.user} git pull origin {self.env.deploy_branch}",
+                    f"git pull origin {self.env.deploy_branch}",
                     cwd=self.env.build_dir,
                     handle_exception=False,
                 )
@@ -219,7 +219,9 @@ class AtomicDeploy(SuiteTask):
 
     def _run(self):
         # Determine success from the TestRunner flag
-        test_success = getattr(self.env, "test_success", False)
+        test_success = getattr(self.env, "test_success", False) or not self.get_arg(
+            "enforce_testing"
+        )
 
         # Select appropriate Lua config table
         cfg = self.env.release if test_success else self.env.testing
@@ -249,6 +251,7 @@ class AtomicDeploy(SuiteTask):
         else:
             self.print("  [SKIP] Test failure detected. Symlink swap bypassed.")
             self.print(f"  [INFO] Artifact preserved at: {final_release_dir}")
+            self.fail()
 
         return True
 
