@@ -66,13 +66,11 @@ class Task:
         key = Task.get_key(key)
         return key in Task._registry.keys()
 
-
     @staticmethod
     def initialized(key):
-         """Returns the initialized object"""
-         key = Task.get_key(key)
-         return key in Task._completed.keys()
-
+        """Returns the initialized object"""
+        key = Task.get_key(key)
+        return key in Task._completed.keys()
 
     # 3. Run the task
     @staticmethod
@@ -88,7 +86,7 @@ class Task:
         # 2. Initialize the dependency
         # This is harmless if already initialized
         # due to internal checks
-        task = Task.add(key) # Also provides the object
+        task = Task.add(key)  # Also provides the object
 
         # 3. Run the task and store its result
         print(f"Running task: {key}")
@@ -109,9 +107,6 @@ class Task:
         """Returns a bool if the task has been completed or not"""
         key = Task.get_key(key)
         return key in Task._completed.keys()
-
-
-
 
     @staticmethod
     def get_owner():
@@ -182,7 +177,6 @@ class SuiteTask(ABC):
             SuiteTask._global_counter += 1
         if attach_printer:
             self.attach_printer(parent)
-
 
     def initialize_deps():
         for dep in self._deps:
@@ -382,7 +376,7 @@ class SuiteTask(ABC):
 
         return TaskRunner.is_loaded(self._deps)
 
-    def poll_health_endpoint(self, uri, retries=3, delay=2, label="Service"):
+    def poll_health_endpoint(self, uri, retries=5, delay=5, label="Service"):
         """Shared polling logic for verifying service availability"""
         self.print(f"  [POLL] Verifying {label} Health: {uri}")
 

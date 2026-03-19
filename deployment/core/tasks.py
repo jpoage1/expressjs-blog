@@ -245,6 +245,7 @@ class AtomicDeploy(SuiteTask):
 
             # Atomic rename of the symlink itself (overwrites the old link)
             self.sh(f"mv -Tf {temp_link} {deploy_link}", shlex=True)
+            self.sh("yarn", cwd=final_release_dir)
 
             # Restart service
             self.sh(f"sudo systemctl restart {cfg.service_name}", shlex=True)

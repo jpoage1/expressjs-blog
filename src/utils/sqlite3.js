@@ -1,5 +1,5 @@
 const sqlite3 = require("sqlite3").verbose();
-const { logging } = require("../../config/loader");
+const { logging } = require("../config/loader");
 const dbFile = logging.getDBFile("analytic.sqlite3");
 
 const db = new sqlite3.Database(dbFile);
