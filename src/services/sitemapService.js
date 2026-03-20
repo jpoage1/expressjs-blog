@@ -46,37 +46,37 @@ class SitemapService {
     }
   }
 
-  async getStaticPages() {
-    try {
-      const filenames = await fs.readdir(this.pagesPath);
-      const pages = [];
+  // async getStaticPages() {
+  //   try {
+  //     const filenames = await fs.readdir(this.pagesPath);
+  //     const pages = [];
 
-      for (const file of filenames) {
-        const fullPath = path.join(this.pagesPath, file);
-        const stat = await fs.stat(fullPath);
-        if (stat.isDirectory()) continue;
+  //     for (const file of filenames) {
+  //       const fullPath = path.join(this.pagesPath, file);
+  //       const stat = await fs.stat(fullPath);
+  //       if (stat.isDirectory()) continue;
 
-        const raw = await fs.readFile(fullPath, "utf8");
-        const { data: frontmatter } = matter(raw);
+  //       const raw = await fs.readFile(fullPath, "utf8");
+  //       const { data: frontmatter } = matter(raw);
 
-        if (!frontmatter.published) continue;
+  //       if (!frontmatter.published) continue;
 
-        pages.push({
-          id: hash(frontmatter),
-          loc: `/${frontmatter.slug || file.replace(/\.(md|mdx|handlebars)$/, "")}`,
-          title: frontmatter.title || "",
-          lastmod: frontmatter.updated || frontmatter.date || null,
-          changefreq: "monthly",
-          priority: 0.7,
-        });
-      }
+  //       pages.push({
+  //         id: hash(frontmatter),
+  //         loc: `/${frontmatter.slug || file.replace(/\.(md|mdx|handlebars)$/, "")}`,
+  //         title: frontmatter.title || "",
+  //         lastmod: frontmatter.updated || frontmatter.date || null,
+  //         changefreq: "monthly",
+  //         priority: 0.7,
+  //       });
+  //     }
 
-      return pages;
-    } catch (err) {
-      console.warn("Failed to load static pages:", err);
-      return [];
-    }
-  }
+  //     return pages;
+  //   } catch (err) {
+  //     console.warn("Failed to load static pages:", err);
+  //     return [];
+  //   }
+  // }
 
   async getAllTags() {
     const tagMap = new Map();

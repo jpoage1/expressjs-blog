@@ -1,5 +1,8 @@
 const { baseUrl } = require("../utils/baseUrl");
 
+const isDisabled = (item) => item?.disabled ?? false;
+const isEnabled = (item) => !isDisabled(item);
+
 function qualifyLink(href) {
   if (!href) return href;
   // Return unchanged if href is absolute URL or protocol-relative
@@ -8,20 +11,8 @@ function qualifyLink(href) {
   return baseUrl + href;
 }
 
-function qualifyNavLinks(links) {
-  return links.map((link) => {
-    const qualified = { ...link };
-    if (qualified.href) {
-      qualified.href = qualifyLink(qualified.href);
-    }
-    if (qualified.submenu) {
-      qualified.submenu = qualifyNavLinks(qualified.submenu);
-    }
-    return qualified;
-  });
-}
 const mapMenuTree = (links, transformFn) => {
-  return links.map((link) => {
+  return links.filter(isEnabled).map((link) => {
     const processed = transformFn({ ...link });
     if (processed.submenu) {
       processed.submenu = mapMenuTree(processed.submenu, transformFn);
@@ -40,7 +31,7 @@ function qualifyNavLinks(links, baseUrl) {
 }
 
 function qualifySitemapLinks(links) {
-  return links.map((item) => {
+  return links.filter(isEnabled).map((item) => {
     const qualified = { ...item };
 
     if (typeof qualified.loc === "string") {
@@ -55,4 +46,9 @@ function qualifySitemapLinks(links) {
   });
 }
 
-module.exports = { qualifyNavLinks, qualifySitemapLinks, qualifyLink };
+module.exports = {
+  qualifyNavLinks,
+  mapMenuTree,
+  qualifySitemapLinks,
+  qualifyLink,
+};

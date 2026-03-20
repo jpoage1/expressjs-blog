@@ -12,7 +12,6 @@ const xmlTplSrc = fs.readFileSync(
 const xmlTpl = Handlebars.compile(xmlTplSrc);
 
 async function getSitemapHtml(req, res, next) {
-  re;
   try {
     const sitemap = await sitemapService.getCompleteSitemap();
     const context = {
