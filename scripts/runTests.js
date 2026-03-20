@@ -49,14 +49,17 @@ module.exports = class TestRunner {
     try {
       const commitHash = this.getCurrentCommitHash();
       const lastCommit = this.getLastTestedCommit();
+      const isForce =
+        process.argv.includes("--force") || process.argv.includes("--coverage");
 
-      if (lastCommit === commitHash) {
+      if (!isForce && lastCommit === commitHash) {
+        console.log("No changes detected. Skipping tests.");
         process.exit(0);
       }
 
       await this.runTestFile(
         "./test/env.test.js",
-        "environment validation tests"
+        "environment validation tests",
       );
       console.log("✓ Environment validation passed. Running route tests...");
 
