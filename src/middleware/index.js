@@ -9,6 +9,7 @@ const { applyProductionSecurity } = require("./applyProductionSecurity");
 const validateRequestIntegrity = require("./validateRequestIntegrity");
 const errorHandler = require("./errorHandler");
 const { attachBaseContextGetter, buildBaseContext } = require("./baseContext");
+const BaseContext = require("../utils/baseContext");
 const hbs = require("./hbs");
 const authCheck = require("./authCheck");
 const { redirectMiddleware } = require("./redirect");
@@ -40,7 +41,8 @@ function setupApp(config) {
   app.use(authCheck);
 
   // Setup handlebars
-  app.use(attachBaseContextGetter, buildBaseContext);
+  app.use(BaseContext);
+  // app.use(attachBaseContextGetter, buildBaseContext);
 
   // Setup production environment
   if (meta.node_env === "production" || meta.node_env === "testing") {

@@ -24,10 +24,10 @@ const POSTS_DIR = path.join(__dirname, "../../content/posts");
 function cssOverride(overrides = {}) {
   const defaults = {
     classes: {
-      body: "pattern-dots",
-      layout: "layout",
-      sidebar: "sidebar",
-      container: "container",
+      body: "pattern-dots no-print",
+      layout: "layout no-print",
+      sidebar: "sidebar no-print",
+      container: "container no-print",
     },
     styles: {},
   };
@@ -41,7 +41,7 @@ function cssOverride(overrides = {}) {
 const getDefaultContext = (view = "web") => {
   const isPaper = view == "paper";
   return {
-    showSidebar: !isPaper,
+    showSidebar: false,
     showFooter: !isPaper,
     showHeader: !isPaper,
     viewType: view,
@@ -50,6 +50,7 @@ const getDefaultContext = (view = "web") => {
 };
 
 module.exports.attachBaseContextGetter = async (req, res, next) => {
+  res.locals.isPaper = req.query.view == "print";
   req.getBaseContext = async (isAuthenticated, overrides = {}) => {
     const filteredNavLinks = processMenuLinks(
       navLinks,

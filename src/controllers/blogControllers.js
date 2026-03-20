@@ -71,6 +71,7 @@ exports.blogPost = async (req, res, next) => {
     }
     const htmlContent = marked(content);
     const context = {
+      showSidebar: !res.locals.isPaper,
       title: frontmatter.title,
       date: frontmatter.date,
       author: frontmatter.author,
@@ -121,5 +122,8 @@ exports.blogIndex = async (req, res) => {
     templateContent: post.excerpt || "",
   }));
 
-  res.renderWithBaseContext("pages/blog_index", { collections: { posts } });
+  res.renderWithBaseContext("pages/blog_index", {
+    showSidebar: !res.locals.isPaper,
+    collections: { posts },
+  });
 };

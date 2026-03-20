@@ -22,15 +22,17 @@ const { node_env } = meta;
 router.use("/projects/website-presentation", presentation);
 html.register("/games/word-guesser", "word-guesser");
 
-function createProject(url, file) {
-  markdown.register(url, file, { project: true });
+function createProject(url, file, overrides = {}) {
+  markdown.register(url, file, { project: true, ...overrides });
 }
 createProject("/projects/lisp-interpreter", "projects/lisp_interpreter");
 createProject("/projects/pipeline-runner", "projects/pipeline_runner");
 createProject("/projects/telemetry", "projects/telemetry");
 createProject("/projects/xmonad", "projects/xmonad");
 createProject("/projects/word-guesser", "projects/word-guesser");
-createProject("/about/blog", "projects/about-blog");
+createProject("/about/blog", "projects/about-blog", {
+  // showSidebar: true,
+});
 
 router.get("/projects", async (req, res, next) => {
   try {
