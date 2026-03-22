@@ -18,7 +18,9 @@
     "stop-main": "node_modules/pm2/bin/pm2 delete expressjs-blog-main",
     "stop-testing": "node_modules/pm2/bin/pm2 delete expressjs-blog-testing",
     "test:prepush": "node scripts/test-prepush.js --no-color",
+    "test:prepush:coverage": "node scripts/test-prepush.js --no-color --coverage",
     "test:postreceive": "node scripts/test-postreceive.js --no-color",
+    "test:postreceive:coverage": "node scripts/test-postreceive.js --no-color --coverage",
     "update-submodules": "git submodule update --init --recursive --remote"
   },
   "imports": {
@@ -68,6 +70,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",
+    "c8": "^11.0.0",
     "chai": "^6.2.2",
     "chai-as-promised": "^8.0.1",
     "fast-check": "^4.2.0",
