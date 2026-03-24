@@ -42,6 +42,7 @@ class HtmlRoutes extends BaseRoute {
           return res.renderWithBaseContext(
             this.cache.get(routePath).template,
             this.cache.get(routePath).context,
+            this.cache.get(routePath).cssOverrides,
           );
         }
         // Fetch the actual HTML file name from the YAML config
@@ -66,6 +67,11 @@ class HtmlRoutes extends BaseRoute {
           extraScripts: extraScripts || [],
           meta: pageConfig.meta || {},
         };
+        const cssOverrides = {
+          classes: {
+            content: "content",
+          },
+        };
         /*
           console.log("Assets Router Path", assetsRouterPath);
           console.log("Assets URI", assetsUri);
@@ -76,9 +82,9 @@ class HtmlRoutes extends BaseRoute {
 
         // 4. Update Cache
         if (this.shouldCache) {
-          this.cache.set(routePath, { template, context });
+          this.cache.set(routePath, { template, context, cssOverrides });
         }
-        res.renderWithBaseContext(template, context);
+        res.renderWithBaseContext(template, context, cssOverrides);
       } catch (err) {
         err.statusCode = 500;
         next(err);

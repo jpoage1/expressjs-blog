@@ -48,6 +48,7 @@ class BaseContextManager {
         layout: "layout no-print",
         sidebar: "sidebar no-print",
         container: "container no-print",
+        content: "markdown-content",
       },
       styles: {},
     };
@@ -97,23 +98,32 @@ class BaseContextManager {
 
     return context;
   }
-
-  renderWithBaseContext(template, overrides = {}) {
-    const context = Object.assign({}, this.baseContext, overrides);
-    this.res.render(template, context);
+  mergeOverrides(overrides = {}, cssOverrides = {}) {
+    return {
+      ...this.baseContext,
+      ...overrides,
+      css: {
+        ...this.baseContext?.css,
+        ...overrides?.css,
+        ...cssOverrides,
+      },
+    };
+  }
+  renderWithBaseContext(template, overrides = {}, cssOverrides = {}) {
+    this.res.render(template, this.mergeOverrides(overrides, cssOverrides));
   }
 
-  renderWithCallback(template, cb, overrides = {}) {
-    let context = Object.assign({}, this.baseContext, overrides);
-    this.res.logger.info(cb); // Retained mission critical log
+  renderWithCallback(template, cb, overrides = {}, cssOverrides = {}) {
+    let context = this.mergeOverrides(overrides, cssOverrides);
+    this.res.logger.info(cb);
     context = cb(context);
     this.res.render(template, context);
   }
 
-  renderGenericMessage(overrides = {}) {
+  renderGenericMessage(overrides = {}, cssOverrides = {}) {
     this.res.render(
       "pages/generic-message",
-      Object.assign({}, this.baseContext, overrides),
+      this.mergeOverrides(overrides, cssOverrides),
     );
   }
 }
