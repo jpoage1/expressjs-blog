@@ -14,6 +14,7 @@ const contact = require("./contact");
 const sitemap = require("./sitemap");
 const { blogPost, blogIndex } = require("../controllers/blogControllers");
 const pages = require("./pages");
+const guestAccess = require("./guestAccessRouter");
 const projects = require("./projects");
 const docs = require("./docs");
 const rssFeedController = require("../controllers/rssFeedController");
@@ -44,6 +45,7 @@ router.get("/error/:code", errorPage); // Landing page after error is logged
 router.get("/error", errorPage); // Landing page after error is logged
 
 router.use(admin);
+router.use(guestAccess);
 
 router.use(
   "/static",

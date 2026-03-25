@@ -1,0 +1,26 @@
+{{#section "scripts"}}
+<script type="module" src="/static/js/accessManager.js"></script>
+{{/section}}
+
+{{#section "styles"}}
+  <link rel="stylesheet" href="{{baseUrl}}/static/css/accessManager.css">
+{{/section}}
+
+<div class="admin-card">
+    <h1>Recruiter Access Generator</h1>
+    <p>Generate a one-time unique URI for prospective employers.</p>
+
+    <button id="generate-btn">GENERATE UNIQUE LINK</button>
+
+    <div id="result-container" class="hidden">
+        <div class="link-display" id="token-output"></div>
+        <div class="copy-group">
+            <button id="copy-token-btn">COPY TOKEN</button>
+        </div>
+        <div class="link-display" id="link-output"></div>
+        <div class="copy-group">
+            <button id="copy-link-btn">COPY LINK</button>
+        </div>
+    </div>
+</div>
+
