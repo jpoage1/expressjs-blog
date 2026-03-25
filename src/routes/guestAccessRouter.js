@@ -17,5 +17,6 @@ router.get(
 );
 
 router.get("/guest-access/:token", logEvent("admin"), handleAccessConsumption);
+router.get("/guest-access", logEvent("admin"), handleAccessConsumption);
 
 module.exports = router;

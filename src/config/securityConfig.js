@@ -33,5 +33,6 @@ module.exports = {
     frameSrc: ["'self'", "https://newassets.hcaptcha.com"],
     objectSrc: ["'none'"],
     upgradeInsecureRequests: [],
+    connectSrc: ["'self'", "https://auth.jasonpoage.com"],
   },
 };
