@@ -334,7 +334,7 @@ main.container {
   background-color: var(--bg-main);
   padding: 2rem;
   border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 main h1 {
   font-size: 1.5rem;
@@ -362,7 +362,6 @@ header#site-header nav.site-nav {
   display: flex;
   gap: 1rem;
   position: relative;
-  z-index: auto;
 }
 header#site-header nav.site-nav a,
 nav.site-nav .dropdown-content form button {

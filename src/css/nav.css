@@ -2,7 +2,6 @@ header#site-header nav.site-nav {
   display: flex;
   gap: 1rem;
   position: relative;
-  z-index: auto;
 }
 header#site-header nav.site-nav a,
 nav.site-nav .dropdown-content form button {
@@ -130,6 +129,7 @@ nav.site-nav > .dropdown:hover > .dropdown-content {
 nav.site-nav .dropdown-content > .dropdown:hover > .dropdown-content {
   display: block;
 }
+
 /* Nested Submenu Positioning */
 nav.site-nav .dropdown-content .dropdown-content {
   top: 0;

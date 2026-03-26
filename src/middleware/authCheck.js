@@ -23,7 +23,8 @@ setInterval(() => {
     }
   }
 }, cache_ttl);
-const SAFE_IPS = ["192.168.1.200", "192.168.1.50"];
+// const SAFE_IPS = ["192.168.1.200", "192.168.1.50"];
+const SAFE_IPS = [];
 
 module.exports = async (req, res, next) => {
   // Determine the client IP address.
@@ -33,7 +34,12 @@ module.exports = async (req, res, next) => {
   // --- Bypass Logic ---
   // Check if the client IP is in the list of safe IPs
   if (SAFE_IPS.includes(clientIp)) {
-    req.isAuthenticated = true; // Mark as authenticated (bypassed)
+    // -- fixme; harden for production by disabling this
+    res.locals.session = {
+      isAuthenticated: true,
+      user: "local-admin",
+      groups: ["admin", "guests"], // Assign groups needed for menu visibility
+    };
     if (req.log) {
       req.log.security(`Bypassing authentication for safe IP: ${clientIp}`);
     } else {
@@ -49,11 +55,11 @@ module.exports = async (req, res, next) => {
 
   const cached = authCache.get(cacheKey);
   if (isCacheValid(cached)) {
-    req.isAuthenticated = cached.isAuthenticated;
+    res.locals.session = cached.session;
     return next();
   }
 
-  req.isAuthenticated = false;
+  res.locals.session = { isAuthenticated: false, user: null, groups: [] };
 
   try {
     const controller = new AbortController();
@@ -67,10 +73,23 @@ module.exports = async (req, res, next) => {
 
     clearTimeout(timeout);
 
-    req.isAuthenticated = resVerify.status === 200;
+    if (resVerify.status === 200) {
+      // Extract Authelia identity headers from the verification response
+      const user = resVerify.headers.get("remote-user");
+      const groupsHeader = resVerify.headers.get("remote-groups") || "";
+      const groups = groupsHeader
+        ? groupsHeader.split(",").map((g) => g.trim())
+        : [];
+
+      res.locals.session = {
+        isAuthenticated: true,
+        user: user,
+        groups: groups,
+      };
+    }
 
     authCache.set(cacheKey, {
-      isAuthenticated: req.isAuthenticated,
+      session: res.locals.session,
       timestamp: Date.now(),
     });
   } catch (e) {

@@ -11,6 +11,7 @@ class CredentialManager {
     const urlParams = new URLSearchParams(window.location.search);
     this.hasRedirect = urlParams.has("rd");
     this.redirectUri = urlParams.get("rd") || "/";
+    this.action = urlParams.get("action");
   }
 
   /**
@@ -18,6 +19,12 @@ class CredentialManager {
    */
   async init() {
     // 1. Determine Identity State before binding listeners
+    if (this.action === "logout") {
+      await this.handleLogout();
+      window.location.href = window.location.pathname;
+      console.log(window.location.pathname);
+      return;
+    }
     await this.checkSession();
 
     const showTokenBtn = document.getElementById("show-token-entry-btn");

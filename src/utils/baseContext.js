@@ -27,12 +27,10 @@ class BaseContextManager {
   }
 
   async init() {
-    const isAuthenticated = this.req.isAuthenticated;
-    const token = generateToken();
-    const adminLoginUrl = qualifyLink(`/${token}`);
-    this.baseContext = await this.getBaseContext(isAuthenticated, {
-      adminLoginUrl,
-    });
+    console.log(this.res.locals);
+    const session = this.res.locals.session;
+    session.token = generateToken();
+    this.baseContext = await this.getBaseContext(session, {});
     this.next();
   }
 
@@ -70,12 +68,8 @@ class BaseContextManager {
     };
   }
 
-  async getBaseContext(isAuthenticated, overrides = {}) {
-    const filteredNavLinks = processMenuLinks(
-      navLinks,
-      isAuthenticated,
-      this.req.path,
-    );
+  async getBaseContext(session, overrides = {}) {
+    const filteredNavLinks = processMenuLinks(navLinks, session, this.req.path);
     const qualifiedNavLinks = qualifyNavLinks(filteredNavLinks);
     const menu = await getPostsMenu(POSTS_DIR);
     const siteOwner = meta.site_owner;
@@ -89,7 +83,8 @@ class BaseContextManager {
       years: menu,
       formatMonth,
       baseUrl,
-      isAuthenticated,
+      isAuthenticated: session.isAuthenticated,
+      session,
       node_env_dev: meta.node_env == "development",
       node_env_prod: meta.node_env != "development",
       ...this.getDefaultContext(this.req.query.view ?? "web"),
