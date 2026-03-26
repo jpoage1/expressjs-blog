@@ -2,7 +2,7 @@ header#site-header nav.site-nav {
   display: flex;
   gap: 1rem;
   position: relative;
-  z-index: 10;
+  z-index: auto;
 }
 header#site-header nav.site-nav a,
 nav.site-nav .dropdown-content form button {
@@ -41,7 +41,7 @@ nav.site-nav .dropdown-content form button:focus {
 nav.site-nav .dropdown {
   position: relative;
   display: block;
-  z-index: 11;
+  z-index: 1;
 }
 
 nav.site-nav .dropbtn {
@@ -50,15 +50,15 @@ nav.site-nav .dropbtn {
 }
 
 nav.site-nav .dropdown-content {
-  z-index: 11;
+  z-index: 1;
   display: none;
   position: absolute;
   background-color: white;
   min-width: 160px;
-  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
 
-  flex-direction: column;   
-  white-space: nowrap; 
+  flex-direction: column;
+  white-space: nowrap;
   left: 0;
   top: 100%;
 }
@@ -76,7 +76,6 @@ nav.site-nav .dropdown-content form button:hover {
   color: var(--text-light);
   background-color: var(--bg-footer); /* Match the main nav hover color */
 }
-
 
 header#site-header .menu-toggle {
   display: none;
@@ -97,6 +96,7 @@ nav.site-nav .dropdown-content form {
   gap: 1rem;
   width: 100%;
   padding-left: 64px; /* Same as icon width + gap to align with site title */
+  isolate: isolate;
 }
 
 /* Logo icon that acts as home link - spans from site title to nav */
@@ -111,15 +111,12 @@ nav.site-nav .dropdown-content form {
   bottom: 1rem;
 }
 
-
-
-
 nav.site-nav .dropdown-content .dropdown-content {
   top: 0;
   left: 100%; /* shift nested submenu to the right */
   margin-left: 0.2rem; /* small gap */
-  min-width: 160px;  
-  z-index: 12;
+  min-width: 160px;
+  z-index: auto;
 }
 nav.site-nav .dropdown-content .dropdown:hover > .dropdown-content {
   display: block;
@@ -132,4 +129,23 @@ nav.site-nav > .dropdown:hover > .dropdown-content {
 /* Only show direct submenu of nested dropdowns */
 nav.site-nav .dropdown-content > .dropdown:hover > .dropdown-content {
   display: block;
+}
+/* Nested Submenu Positioning */
+nav.site-nav .dropdown-content .dropdown-content {
+  top: 0;
+  left: 100%;
+  margin-left: 0.2rem; /* The visual gap */
+  min-width: 160px;
+  z-index: 100; /* Ensure it is above other page content */
+}
+
+/* The Bridge: Fills the 0.2rem dead zone with an invisible hit-box */
+nav.site-nav .dropdown-content .dropdown:hover > .dropdown-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -0.3rem; /* Slightly larger than the margin to ensure overlap */
+  width: 0.3rem;
+  height: 100%;
+  background: transparent;
 }
