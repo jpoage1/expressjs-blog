@@ -23,8 +23,12 @@ const adaptiveBodyParser = require("./adaptiveBodyParser");
 const analytics = require("../controllers/analyticsControllers");
 const httpLogger = require("../utils/structuredLogger");
 const cacheUtils = require("./cacheUtils");
+const authConfig = require("./authConfig");
+const debugMiddleware = require("./debug");
 const trace = require("./trace");
-const { meta } = require("../config/loader");
+const { meta, session } = require("../config/loader");
+const { auth, requiresAuth } = require("express-openid-connect");
+const { baseUrl } = require("../utils/baseUrl.js");
 
 function setupApp(config) {
   const app = express();
@@ -34,11 +38,13 @@ function setupApp(config) {
   app.use(adaptiveBodyParser);
 
   app.use(hbs);
-
   // Setup logging
   app.use(httpLogger, loggingMiddleware);
 
+  app.use(authConfig);
   app.use(authCheck);
+
+  app.use(debugMiddleware);
 
   // Setup handlebars
   app.use(BaseContext);

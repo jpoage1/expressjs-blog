@@ -7,10 +7,14 @@ class CredentialManager {
     this.container = document.getElementById("manager-container");
     this.token = this.container?.dataset.token || null;
 
+    this.isAuthenticated = this.container?.dataset.authenticated === "true";
+    this.username = this.container?.dataset.username || null;
+    this.groups = this.container?.dataset.groups || [];
+
     // Capture redirect target from URL or default to root
     const urlParams = new URLSearchParams(window.location.search);
     this.hasRedirect = urlParams.has("rd");
-    this.redirectUri = urlParams.get("rd") || "/";
+    this.redirectUri = urlParams.get("rd") || "/guest-access";
     this.action = urlParams.get("action");
   }
 
@@ -34,6 +38,7 @@ class CredentialManager {
     const returnLoginBtn = document.getElementById("return-to-login-btn");
     const authForm = document.getElementById("auth-form");
     const logoutBtn = document.getElementById("logout-btn");
+    const reLoginBtn = document.getElementById("re-login-btn");
 
     if (showTokenBtn) {
       showTokenBtn.addEventListener("click", () =>
@@ -81,6 +86,11 @@ class CredentialManager {
 
     if (logoutBtn) {
       logoutBtn.addEventListener("click", () => this.handleLogout());
+    }
+    if (reLoginBtn) {
+      reLoginBtn.addEventListener("click", () => {
+        this._switchState("logout-success-section", "login-section");
+      });
     }
   }
 
@@ -197,30 +207,36 @@ class CredentialManager {
 
     btn.disabled = true;
     btn.innerText = "AUTHENTICATING...";
-    errorEl?.classList.add("hidden");
 
     try {
+      // STEP 1: Satisfy Authelia's Identity Check via AJAX
+      // This puts the 'authelia_session' cookie in your browser.
       const response = await fetch(
         "https://auth.jasonpoage.com/api/firstfactor",
         {
           method: "POST",
-          mode: "cors",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: username,
-            password: password,
-            keepMeLoggedIn: keepMeLoggedIn,
-          }),
-          credentials: "include", // Required for session cookie storage
+          body: JSON.stringify({ username, password, keepMeLoggedIn }),
+          credentials: "include", // CRITICAL: This allows the browser to save the cookie
         },
       );
 
-      if (response.ok) {
-        window.location.href = this.redirectUri;
-      } else {
+      if (!response.ok) {
         const data = await response.json();
         throw new Error(data.message || "Invalid credentials.");
       }
+
+      // STEP 2: Trigger the OIDC Handshake
+      // Now that Authelia has your session cookie, this redirect will
+      // "blip" through Authelia and back to your app instantly.
+      const loginUrl = "/auth/login";
+      const target = this.hasRedirect
+        ? `?returnTo=${encodeURIComponent(this.redirectUri)}`
+        : "";
+      const loginUri = `${loginUrl}${target}`;
+
+      console.log(loginUri);
+      window.location.href = loginUri;
     } catch (err) {
       if (errorEl) {
         errorEl.innerText = err.message;
@@ -235,27 +251,23 @@ class CredentialManager {
    */
   async checkSession() {
     try {
-      // Authelia's internal identity endpoint
-      const response = await fetch(
-        "https://auth.jasonpoage.com/api/user/info",
-        {
-          method: "GET",
-          credentials: "include",
-        },
-      );
+      // Query the Express App, not the Authelia Portal
+      const response = await fetch("/api/auth/status");
 
       if (response.ok) {
-        const user = await response.json();
+        const session = await response.json();
 
-        if (this.hasRedirect && this.redirectUri !== "/") {
-          // Rule: Logged in + Redirect set -> GO
-          window.location.href = this.redirectUri;
-        } else {
-          this._displayLogoutState(user.data.display_name);
+        if (session.isAuthenticated) {
+          if (this.hasRedirect && this.redirectUri !== "/") {
+            window.location.href = this.redirectUri;
+          } else {
+            // Use the verified session username and groups
+            this._displayLogoutState(this.username);
+          }
         }
       }
     } catch (err) {
-      console.log("No active session detected.", err.stack);
+      console.log("No active application session detected.");
     }
   }
 
@@ -273,20 +285,31 @@ class CredentialManager {
 
   async handleLogout() {
     const btn = document.getElementById("logout-btn");
-    btn.disabled = true;
-    btn.innerText = "SIGNING OUT...";
+    if (btn) {
+      btn.disabled = true;
+      btn.innerText = "SIGNING OUT...";
+    }
 
     try {
-      await fetch("https://auth.jasonpoage.com/api/logout", {
+      // 1. Terminate the Express App session
+      const appLogout = await fetch("/api/auth/logout", {
         method: "POST",
-        credentials: "include",
+        headers: { "Content-Type": "application/json" },
       });
-      // Refresh to reset the UI to the clean login state
-      window.location.reload();
+
+      if (appLogout.ok) {
+        this.isAuthenticated = false;
+        this.container.dataset.authenticated = "false";
+        this._switchState("logout-section", "logout-success-section");
+      } else {
+        throw new Error("Logout failed");
+      }
     } catch (err) {
-      btn.disabled = false;
-      btn.innerText = "SIGN OUT";
-      console.error("Logout failed:", err);
+      console.error("Logout process failed:", err);
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = "SIGN OUT";
+      }
     }
   }
 }

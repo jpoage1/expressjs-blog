@@ -1,65 +1,122 @@
 // src/utils/processMenuLinks.js
+const { winstonLogger } = require("./logging/index.js");
+const { evaluateRules } = require("../utils/evaluateRules.js");
 
 /**
- * Evaluates access rules against the current identity context.
- * * Rules:
- * - Outer array: Logical OR (Success if any requirement block passes)
- * - Inner array: Logical AND (Success if all rules in the block pass)
- * * @param {Array<Array<string>>} rules - Nested rule set
- * @param {Object} auth - { isAuthenticated, user, groups }
+ * Applies attribute promotion from a child to a parent.
  */
-function evaluateRules(rules, session) {
-  if (!rules || !rules.length) return true;
+function promoteAttributes(parent, child) {
+  const promote = child.promote;
+  let keys = [];
 
-  const { user, groups = [] } = session;
+  if (promote === "true" || promote === true) {
+    keys = Object.keys(child).filter((k) => k !== "submenu" && k !== "promote");
+  } else if (typeof promote === "string") {
+    keys = [promote];
+  } else if (Array.isArray(promote)) {
+    keys = promote;
+  }
 
-  return rules.some((requirement) =>
-    requirement.every((rule) => {
-      const [type, value] = rule.split(":");
-      switch (type) {
-        case "group":
-          return groups.includes(value);
-        case "user":
-          return user === value;
-        default:
-          return false;
-      }
-    }),
-  );
+  keys.forEach((key) => {
+    parent[key] = child[key];
+  });
 }
-function processMenuLinks(links, session, currentPath) {
+
+/**
+ * Processes menu links with policy inheritance and parent-override logic.
+ * @param {Array} links - The menu items to filter.
+ * @param {Object} session - The { isAuthenticated, user, groups } object.
+ * @param {string} currentPath - The active URL path.
+ * @param {string} inheritedPolicy - The policy passed down from the parent (default "allow").
+ */
+function processMenuLinks(
+  links,
+  session,
+  currentPath,
+  inheritedPolicy = "allow",
+) {
+  if (!links) return [];
+
   return links
-    .filter((link) => {
-      const policy = link.policy || "allow";
-
-      if (policy == "allow" || policy === "deny-children") {
-        return true;
-      }
-
-      // 1. Check basic security requirement
-      if (policy == "deny" && !session.isAuthenticated) return false;
-
-      // 2. Check specific rules if they exist
-      return evaluateRules(link.rules, session);
-    })
     .map((link) => {
       const item = { ...link };
-      if (item.appendCurrentPath && typeof item.href === "string") {
-        if (currentPath !== "/" && !item.href.endsWith(currentPath)) {
-          item.href = item.href + currentPath;
-        }
-      } else if (item.html) {
-        item.href = `/docs/hexa/${item.html}`; // fixme
-      } else if (item.frame) {
-        item.href = `/docs/hexa/${item.frame}`; // fixme
-      } else if (item.mermaid) {
-        item.href = `/docs/hexa/${item.mermaid}`; // fixme
-      }
+      const activePolicy = item.policy || inheritedPolicy;
+      // winstonLogger.info(
+      //   JSON.stringify({ Label: item.label, Policy: activePolicy, session }),
+      // );
+
       if (item.submenu) {
-        item.submenu = processMenuLinks(item.submenu, session, currentPath);
-        if (!item.submenu.length) delete item.submenu;
+        const nextPolicy =
+          activePolicy === "deny-children" ? "deny" : activePolicy;
+        const processedSub = processMenuLinks(
+          item.submenu,
+          session,
+          currentPath,
+          nextPolicy,
+        );
+
+        const primaryChild = item.submenu[0];
+        const isPrimaryVisible = processedSub.some(
+          (s) => s.label === primaryChild.label,
+        );
+
+        // Promotion Logic: Trigger if only the primary child remains or the menu is empty
+        if (
+          (processedSub.length === 0 ||
+            (processedSub.length === 1 && isPrimaryVisible)) &&
+          primaryChild?.promote
+        ) {
+          const childPolicy = primaryChild.policy || "allow"; // Requirement: Default to allow
+
+          const isChildAccessible =
+            childPolicy === "allow" ||
+            (childPolicy === "deny" &&
+              session.isAuthenticated &&
+              evaluateRules(primaryChild.rules, session));
+
+          if (isChildAccessible) {
+            promoteAttributes(item, primaryChild);
+
+            // Policy inheritance: Apply child policy only if the child has its own children
+            if (primaryChild.submenu && primaryChild.submenu.length > 0) {
+              item.policy = childPolicy;
+              item.submenu = processMenuLinks(
+                primaryChild.submenu,
+                session,
+                currentPath,
+                item.policy,
+              );
+            } else {
+              item.policy = childPolicy;
+              delete item.submenu;
+            }
+          }
+        } else {
+          // Standard Dropdown: Filter out any item with the 'promote' key from the list
+          item.submenu = processedSub.filter((s) => !s.promote);
+          if (item.submenu.length === 0) delete item.submenu;
+        }
       }
+
+      // Path/Resource Normalization
+      if (item.appendCurrentPath && typeof item.href === "string") {
+        if (currentPath !== "/" && !item.href.endsWith(currentPath))
+          item.href += currentPath;
+      } else if (item.html || item.frame || item.mermaid) {
+        item.href = `/docs/hexa/${item.html || item.frame || item.mermaid}`;
+      }
+
       return item;
+    })
+    .filter((item) => {
+      // Final Security Gate (Parent Wins)
+      const policy = item.policy || inheritedPolicy;
+      if (policy === "allow" || policy === "deny-children") return true;
+      if (policy === "deny") {
+        console.log(session);
+        return session.isAuthenticated && evaluateRules(item.rules, session);
+      }
+      return false;
     });
 }
 module.exports = processMenuLinks;

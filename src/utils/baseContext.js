@@ -27,8 +27,18 @@ class BaseContextManager {
   }
 
   async init() {
-    console.log(this.res.locals);
-    const session = this.res.locals.session;
+    this.req.log.info(
+      "baseContext res.locals" + JSON.stringify(this.res.locals),
+    );
+    const session = this.res.locals.session || {
+      isAuthenticated: false,
+      user: null,
+      groups: [],
+    };
+    this.req.log.warn(
+      "baseContext res.locals.session" +
+        JSON.stringify(this.res.locals.session),
+    );
     session.token = generateToken();
     this.baseContext = await this.getBaseContext(session, {});
     this.next();
@@ -75,6 +85,10 @@ class BaseContextManager {
     const siteOwner = meta.site_owner;
 
     const context = {
+      session: {
+        ...session,
+        groups: session,
+      },
       title: getSiteTitle(siteOwner),
       siteOwner,
       originCountry: meta.country,

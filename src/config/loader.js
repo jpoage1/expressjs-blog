@@ -48,6 +48,13 @@ function hydrate(c = {}) {
         120000,
       timeout_ms: c?.auth?.timeout_ms || process.env.AUTH_TIMEOUT_MS || 5000,
     },
+    session: {
+      cookie: {
+        secure: true, // Required since you are using HTTPS via Nginx
+        sameSite: "Lax", // Allows the cookie to be sent on the top-level redirect back
+        domain: ".jasonpoage.com", // Ensures the cookie is visible across subdomains
+      },
+    },
     mail: {
       secure: c?.mail?.secure || process.env.MAIL_SECURE || false,
       auth: c?.mail?.auth || process.env.MAIL_AUTH || null,

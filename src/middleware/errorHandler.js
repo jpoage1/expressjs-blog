@@ -11,6 +11,7 @@ const {
   ERROR_REDIRECT_PATH,
 } = require("../constants/errorConstants");
 const { winstonLogger } = require("../utils/logging");
+const { meta } = require("../config/loader");
 
 module.exports = async (err, req, res, next) => {
   const statusCode = err.statusCode ?? DEFAULT_STATUS_CODE;
@@ -75,15 +76,20 @@ module.exports = async (err, req, res, next) => {
     metadata: err.metadata,
   });
 
-  const errorPageContext = await req.getBaseContext(
-    req?.isAuthenticated,
-    context,
-  );
-  res.status(errorContext.statusCode);
   try {
+    const errorPageContext = await req.getBaseContext(
+      req?.isAuthenticated,
+      context,
+    );
+    res.status(errorContext.statusCode);
     res.renderGenericMessage(errorPageContext);
   } catch (e) {
     winstonLogger.error(e, { context });
-    res.send("Critical error.");
+    if (meta.node_env == "production") {
+      res.send("Critical error.");
+    } else {
+      const response = "<pre>" + JSON.stringify(context, null, 2) + "</pre>";
+      res.send(response);
+    }
   }
 };
