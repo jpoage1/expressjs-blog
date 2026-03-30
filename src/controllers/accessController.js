@@ -9,7 +9,7 @@ exports.handleAccessConsumption = async (req, res, next) => {
 
   try {
     res.renderWithBaseContext("pages/credentials.handlebars", {
-      title: "Portfolio Access",
+      title: "Guest Access",
       token: token ?? "",
     });
   } catch (err) {

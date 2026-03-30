@@ -7,6 +7,8 @@ const { evaluateRules } = require("../utils/evaluateRules.js");
  */
 function promoteAttributes(parent, child) {
   const promote = child.promote;
+  if (!promote) return;
+
   let keys = [];
 
   if (promote === "true" || promote === true) {
