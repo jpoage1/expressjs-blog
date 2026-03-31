@@ -1,10 +1,10 @@
-// src/utils/sendContactMail.js
 const transporter = require("./transporter");
 const path = require("path");
 const fs = require("fs").promises;
 const { validateAndSanitizeEmail } = require("../utils/emailValidator");
 const { winstonLogger } = require("../utils/logging");
-const { mail } = require("../config/loader");
+const config = require("../config");
+const { mail } = config;
 
 // Fixed sanitizeInput function
 function sanitizeInput(input) {
@@ -33,7 +33,7 @@ const HttpError = require("./HttpError");
 
 async function sendContactMail({ name, email, subject, message }) {
   const cleanName = sanitizeInput(name);
-  const cleanSubject = sanitizeInput(subject || DEFAULT_SUBJECT);
+  const cleanSubject = sanitizeInput(subject || mail.defaultSubject);
   const cleanMessage = sanitizeInput(message);
 
   const {
@@ -59,10 +59,10 @@ async function sendContactMail({ name, email, subject, message }) {
     message: cleanMessage,
   };
   try {
-    const data = await fs.readFile(EMAIL_LOG_PATH, "utf-8");
+    const data = await fs.readFile(mail.logPath, "utf-8");
     const logs = JSON.parse(data);
     logs.push(emailLogEntry);
-    await fs.writeFile(EMAIL_LOG_PATH, JSON.stringify(logs, null, 2));
+    await fs.writeFile(mail.logPath, JSON.stringify(logs, null, 2));
   } catch (err) {
     winstonLogger.error("Failed to log email to file:", err);
     throw err;

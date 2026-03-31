@@ -6,6 +6,7 @@ const { format } = winston;
 
 const { logging } = require("../../../src/config/loader");
 const { logDir } = logging;
+const config = require("../../config");
 
 function createLogStreams(files) {
   return {
@@ -21,12 +22,14 @@ function createLogStreams(files) {
 }
 
 function createSessionTransport(dir) {
+  const settings = config.logging.session;
+
   return new DailyRotateFile({
     dirname: dir,
-    filename: "session-%DATE%.log",
-    datePattern: "YYYY-MM-DD",
-    zippedArchive: true,
-    maxFiles: "30d",
+    filename: settings.filename,
+    datePattern: settings.datePattern,
+    zippedArchive: settings.zippedArchive,
+    maxFiles: settings.maxFiles,
     format: format.combine(
       format.timestamp(),
       format.printf(
@@ -37,14 +40,17 @@ function createSessionTransport(dir) {
   });
 }
 
-function buildTransport(level, filename) {
+function buildTransport(level, filenamePrefix) {
+  const settings = config.logging.dailyRotate;
+  const logDir = config.logging.logDir;
+
   return new DailyRotateFile({
+    level: level,
     dirname: path.join(logDir, level),
-    filename: `${filename}-%DATE%.log`,
-    datePattern: "YYYY-MM-DD",
-    zippedArchive: true,
-    maxFiles: "14d",
-    level,
+    filename: `${filenamePrefix}${settings.filenameSuffix}`,
+    datePattern: settings.datePattern,
+    zippedArchive: settings.zippedArchive,
+    maxFiles: settings.maxFiles,
     format: format.combine(
       format.timestamp(),
       format.printf(({ timestamp, level, message }) => {

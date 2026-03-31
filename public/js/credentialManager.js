@@ -2,25 +2,56 @@
  * Manages the lifecycle of recruiter credentials.
  * Ensures credentials are only generated on explicit user intent.
  */
+
+function hydrate(container, defaults) {
+  const obj = {};
+  Object.keys(defaults).forEach((key) => {
+    obj[key] = container?.dataset[key] || defaults[key];
+  });
+  return obj;
+}
 class CredentialManager {
   constructor() {
     this.container = document.getElementById("manager-container");
-    this.token = this.container?.dataset.token || null;
-
-    this.isAuthenticated = this.container?.dataset.authenticated === "true";
-    this.username = this.container?.dataset.username || null;
-    this.groups = this.container?.dataset.groups || [];
+    this.hydrateConfig();
+    this.hydrateData();
+  }
+  hydrateConfig() {
+    const config_defaults = {
+      revealBase: "/access/",
+      authEndpoint: "/api/firstfactor",
+      loginPath: "/auth/login",
+      statusEndpoint: "/api/auth/status",
+      logoutEndpoint: "/api/auth/logout",
+      defaultRedirect: "/guest-access",
+    };
+    this.config = hydrate(this.container, config_defaults);
 
     // Capture redirect target from URL or default to root
     const urlParams = new URLSearchParams(window.location.search);
     this.hasRedirect = urlParams.has("rd");
-    this.redirectUri = urlParams.get("rd") || "/guest-access";
+    this.redirectUri = urlParams.get("rd") || this.config.defaultRedirect;
     this.action = urlParams.get("action");
+  }
+  hydrateData() {
+    const data_defaults = {
+      token: null,
+      authenticated: false,
+      username: null,
+      groups: [],
+    };
+
+    this.data = hydrate(this.container, data_defaults);
+
+    this.isAuthenticated = this.container?.dataset.authenticated === "true";
   }
 
   /**
    * Initializes event listeners for the reveal action.
    */
+  setToken(token) {
+    this.token = token.trim();
+  }
   async init() {
     // 1. Determine Identity State before binding listeners
     if (this.action === "logout") {
@@ -55,7 +86,7 @@ class CredentialManager {
     if (submitTokenBtn) {
       submitTokenBtn.addEventListener("click", () => {
         const input = document.getElementById("token-input-field");
-        this.token = input?.value.trim();
+        this.setToken(input?.value);
         if (this.token) this.handleReveal();
       });
     }
@@ -127,9 +158,7 @@ class CredentialManager {
     this._toggleLoading(btn, true);
 
     try {
-      const response = await fetch(
-        `https://access.jasonpoage.com/access/${this.token}`,
-      );
+      const response = await fetch(`${this.config.revealBase}${this.token}`);
       const data = await this._processResponse(response);
       this._displayCredentials(data);
     } catch (err) {
@@ -167,7 +196,6 @@ class CredentialManager {
    * Binds clipboard actions using dynamic import in-place.
    */
   async _initCopyButtons() {
-    const self = this;
     const userTrigger = document.getElementById("copy-user-btn");
     const userSource = document.getElementById("username");
     const passTrigger = document.getElementById("copy-pass-btn");
@@ -182,7 +210,6 @@ class CredentialManager {
    * UI state helper for the reveal button.
    */
   _toggleLoading(element, isLoading) {
-    const self = this;
     element.disabled = isLoading;
     element.innerText = isLoading ? "GENERATING..." : "GET CREDENTIALS";
   }
@@ -191,9 +218,8 @@ class CredentialManager {
    * Renders error state in the reveal section.
    */
   _handleRevealError(msg) {
-    const self = this;
     const messageEl = document.getElementById("reveal-section");
-    messageEl.innerHTML = `<h1 style="color: #ef4444">Access Denied</h1><p>${msg}</p>`;
+    messageEl.innerHTML = `<h1 style="color: var(--status-error)">Access Denied</h1><p style="color: var(--text-p-alt)">${msg}</p>`;
   }
   async handleLogin(e) {
     e.preventDefault();
@@ -211,15 +237,12 @@ class CredentialManager {
     try {
       // STEP 1: Satisfy Authelia's Identity Check via AJAX
       // This puts the 'authelia_session' cookie in your browser.
-      const response = await fetch(
-        "https://auth.jasonpoage.com/api/firstfactor",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password, keepMeLoggedIn }),
-          credentials: "include", // CRITICAL: This allows the browser to save the cookie
-        },
-      );
+      const response = await fetch(this.config.authEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, keepMeLoggedIn }),
+        credentials: "include", // CRITICAL: This allows the browser to save the cookie
+      });
 
       if (!response.ok) {
         const data = await response.json();
@@ -229,13 +252,11 @@ class CredentialManager {
       // STEP 2: Trigger the OIDC Handshake
       // Now that Authelia has your session cookie, this redirect will
       // "blip" through Authelia and back to your app instantly.
-      const loginUrl = "/auth/login";
       const target = this.hasRedirect
         ? `?returnTo=${encodeURIComponent(this.redirectUri)}`
         : "";
-      const loginUri = `${loginUrl}${target}`;
+      const loginUri = `${this.config.loginPath}${target}`;
 
-      console.log(loginUri);
       window.location.href = loginUri;
     } catch (err) {
       if (errorEl) {
@@ -252,7 +273,7 @@ class CredentialManager {
   async checkSession() {
     try {
       // Query the Express App, not the Authelia Portal
-      const response = await fetch("/api/auth/status");
+      const response = await fetch(this.config.statusEndpoint);
 
       if (response.ok) {
         const session = await response.json();
@@ -262,7 +283,7 @@ class CredentialManager {
             window.location.href = this.redirectUri;
           } else {
             // Use the verified session username and groups
-            this._displayLogoutState(this.username);
+            this._displayLogoutState(this.data.username);
           }
         }
       }
@@ -283,6 +304,11 @@ class CredentialManager {
     }
   }
 
+  _handleLogout() {
+    this.isAuthenticated = false;
+    this.container.dataset.authenticated = "false";
+  }
+
   async handleLogout() {
     const btn = document.getElementById("logout-btn");
     if (btn) {
@@ -292,14 +318,13 @@ class CredentialManager {
 
     try {
       // 1. Terminate the Express App session
-      const appLogout = await fetch("/api/auth/logout", {
+      const appLogout = await fetch(this.config.logoutEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
 
       if (appLogout.ok) {
-        this.isAuthenticated = false;
-        this.container.dataset.authenticated = "false";
+        this._handleLogout();
         this._switchState("logout-section", "logout-success-section");
       } else {
         throw new Error("Logout failed");

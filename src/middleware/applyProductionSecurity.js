@@ -42,15 +42,12 @@ function generateNonce() {
 const securityPolicy =
   (overrides = {}) =>
   (req, res, next) => {
-    const nonce = generateNonce();
-    res.locals.nonce = nonce;
-
     const mergedDirectives = {
       ...CSP_DIRECTIVES,
       ...overrides,
       scriptSrc: [
         ...(overrides.scriptSrc || CSP_DIRECTIVES.scriptSrc),
-        `'nonce-${nonce}'`,
+        `'nonce-${res.locals.session.nonce}'`,
       ],
     };
 

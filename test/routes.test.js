@@ -86,7 +86,7 @@ describe(`API route status tests with dependencies at ${baseUrl}`, () => {
       } catch (parseError) {
         console.error("JSON parse error:", parseError.message);
         throw new Error(
-          `Invalid JSON response: ${responseText.substring(0, 200)}...`
+          `Invalid JSON response: ${responseText.substring(0, 200)}...`,
         );
       }
 
@@ -154,7 +154,7 @@ describe(`API route status tests with dependencies at ${baseUrl}`, () => {
 
             expect(
               res.status,
-              `Route GET ${route.loc} should return 200`
+              `Route GET ${route.loc} should return 200`,
             ).to.equal(200);
           } catch (error) {
             console.error(route);
@@ -163,7 +163,7 @@ describe(`API route status tests with dependencies at ${baseUrl}`, () => {
           }
         }
       }
-    }
+    },
   );
 
   // Optional: Test the root route separately if you expect it to return 301
@@ -183,7 +183,7 @@ describe(`API route status tests with dependencies at ${baseUrl}`, () => {
       // console.log("Root route response headers:", res.headers.raw());
       expect(
         [301, 302].includes(res.status),
-        "Root route should return 301 or 302"
+        "Root route should return 301 or 302",
       ).to.be.true;
     } catch (error) {
       console.error("Error testing root route:", error.message);
@@ -191,7 +191,7 @@ describe(`API route status tests with dependencies at ${baseUrl}`, () => {
       // If we get a socket hang up, the server might be closing connections
       if (error.message.includes("socket hang up")) {
         console.log(
-          "Server appears to be closing connections. Skipping this test."
+          "Server appears to be closing connections. Skipping this test.",
         );
         this.skip();
       } else {

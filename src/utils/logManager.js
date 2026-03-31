@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { winstonLogger } = require("./logging");
+const { winstonLogger } = require("./logging/winston.js");
 
 const { meta, logging } = require("../config/loader");
 const { node_env } = meta;
@@ -42,7 +42,7 @@ class LogManager {
     winstonLogger.info(
       `LogManager initialized for ${this.isDevelopment ? "development" : "production"}`,
     );
-    winstonLogger.info(`Config:`, this.currentConfig);
+    winstonLogger.info(`LogManager Config:`, { config: this.currentConfig });
   }
 
   // Main cleanup orchestrator

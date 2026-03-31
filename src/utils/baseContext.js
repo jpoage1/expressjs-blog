@@ -7,7 +7,8 @@ const { baseUrl } = require("../utils/baseUrl.js");
 const navLinks = require(path.join(__dirname, "../../content/navLinks.json"));
 const processMenuLinks = require("../utils/processMenuLinks");
 const { generateToken } = require("../utils/adminToken");
-const { meta } = require("../config/loader");
+const config = require("../config");
+const { meta } = config;
 
 const getSiteTitle = (owner) => `${owner}'s Software Blog`;
 
@@ -24,21 +25,15 @@ class BaseContextManager {
     res.renderWithCallback = this.renderWithCallback.bind(this);
     res.renderGenericMessage = this.renderGenericMessage.bind(this);
     res.cssOverride = this.cssOverride.bind(this);
+    res.cssOverrideDefaults = this.cssOverrideDefaults.bind(this);
   }
 
   async init() {
-    this.req.log.info(
-      "baseContext res.locals" + JSON.stringify(this.res.locals),
-    );
     const session = this.res.locals.session || {
       isAuthenticated: false,
       user: null,
       groups: [],
     };
-    this.req.log.warn(
-      "baseContext res.locals.session" +
-        JSON.stringify(this.res.locals.session),
-    );
     session.token = generateToken();
     this.baseContext = await this.getBaseContext(session, {});
     this.next();
@@ -49,7 +44,34 @@ class BaseContextManager {
    * @param {Object} overrides - Object containing classes and styles to override.
    * @returns {Object} The merged CSS configuration object.
    */
-  cssOverride(overrides = {}) {
+  cssOverride(original, ...overridesList) {
+    const css = {
+      classes: { ...original.classes },
+      styles: { ...original.styles },
+    };
+
+    overridesList.forEach((overrides) => {
+      this.applyOverrides(css, overrides);
+    });
+
+    return css;
+  }
+  applyOverrides(target, overrides) {
+    if (!overrides) {
+      return;
+    }
+
+    target.classes = {
+      ...target.classes,
+      ...(overrides.classes || {}),
+    };
+
+    target.styles = {
+      ...target.styles,
+      ...(overrides.styles || {}),
+    };
+  }
+  cssOverrideDefaults(...overridesList) {
     const defaults = {
       classes: {
         body: "pattern-dots no-print",
@@ -60,11 +82,7 @@ class BaseContextManager {
       },
       styles: {},
     };
-
-    return {
-      classes: { ...defaults.classes, ...(overrides.classes || {}) },
-      styles: { ...defaults.styles, ...(overrides.styles || {}) },
-    };
+    return this.cssOverride(defaults, ...overridesList);
   }
 
   getDefaultContext(view = "web") {
@@ -74,7 +92,7 @@ class BaseContextManager {
       showFooter: !isPaper,
       showHeader: !isPaper,
       viewType: view,
-      css: this.cssOverride(),
+      css: this.cssOverrideDefaults(),
     };
   }
 
@@ -98,7 +116,8 @@ class BaseContextManager {
       formatMonth,
       baseUrl,
       isAuthenticated: session.isAuthenticated,
-      session,
+      endpoints: config.endpoints,
+      userdata: session,
       node_env_dev: meta.node_env == "development",
       node_env_prod: meta.node_env != "development",
       ...this.getDefaultContext(this.req.query.view ?? "web"),
@@ -108,15 +127,16 @@ class BaseContextManager {
     return context;
   }
   mergeOverrides(overrides = {}, cssOverrides = {}) {
-    return {
+    const css = this.cssOverride(
+      this.baseContext?.css || { classes: {}, styles: {} },
+      cssOverrides,
+    );
+    const context = {
       ...this.baseContext,
       ...overrides,
-      css: {
-        ...this.baseContext?.css,
-        ...overrides?.css,
-        ...cssOverrides,
-      },
+      css,
     };
+    return context;
   }
   renderWithBaseContext(template, overrides = {}, cssOverrides = {}) {
     this.res.render(template, this.mergeOverrides(overrides, cssOverrides));
@@ -124,7 +144,6 @@ class BaseContextManager {
 
   renderWithCallback(template, cb, overrides = {}, cssOverrides = {}) {
     let context = this.mergeOverrides(overrides, cssOverrides);
-    this.res.logger.info(cb);
     context = cb(context);
     this.res.render(template, context);
   }

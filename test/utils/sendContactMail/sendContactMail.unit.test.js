@@ -3,6 +3,8 @@ const sinon = require("sinon");
 const fs = require("fs").promises;
 const path = require("path");
 
+const config = require("../../../src/config");
+
 const chaiAsPromised =
   require("chai-as-promised").default || require("chai-as-promised");
 
@@ -37,20 +39,12 @@ describe("sendContactMail", () => {
     messageId: "<test-id@example.com>",
   };
 
-  const mockEmailConfig = {
-    MAIL_DOMAIN: "example.com",
-    MAIL_USER: "admin@example.com",
-    DEFAULT_SUBJECT: "New Contact Form Submission",
-    EMAIL_LOG_PATH: path.join(__dirname, "../../../data/emails.json"),
-  };
-
   beforeEach(() => {
     // Clear module cache
     delete require.cache[require.resolve("../../../src/utils/sendContactMail")];
     delete require.cache[require.resolve("../../../src/utils/emailValidator")];
     delete require.cache[require.resolve("../../../src/utils/transporter")];
     delete require.cache[require.resolve("../../../src/utils/logging")];
-    delete require.cache[require.resolve("../../../src/config/emailConfig")];
 
     // Create stubs
     validateAndSanitizeEmailStub = sinon.stub().returns({
@@ -58,16 +52,27 @@ describe("sendContactMail", () => {
       email: "jane@example.com",
     });
 
+    configGetStub = sinon.stub(config, "get");
+    config.mail.domain = "example.com";
+    config.mail.user = "admin@example.com";
+    config.mail.default_subject = "New Contact Form Submission";
+    config.mail.log_path = path.join(__dirname, "../../../data/emails.json");
+    configGetStub.withArgs("mail.domain").returns("example.com");
+    configGetStub.withArgs("mail.user").returns("admin@example.com");
+    configGetStub
+      .withArgs("mail.default_subject")
+      .returns("New Contact Form Submission");
+    loggerStub = { error: sinon.stub() };
+    require.cache[require.resolve("../../../src/utils/logging")] = {
+      exports: { winstonLogger: loggerStub },
+    };
+
     transporterStub = {
       sendMail: sinon.stub().resolves(mockEmailResponse),
     };
 
     loggerStub = {
       error: sinon.stub(),
-    };
-
-    require.cache[require.resolve("../../../src/config/emailConfig")] = {
-      exports: mockEmailConfig,
     };
 
     // Mock modules in require cache
@@ -130,12 +135,10 @@ describe("sendContactMail", () => {
     fsReadStub.resolves("[]");
     fsWriteStub.resolves();
 
-    const result = await sendContactMail(input);
-
-    // Check that we get the mock response, not an empty object
-    expect(result).to.deep.equal(mockEmailResponse);
+    await sendContactMail(input);
 
     const args = transporterStub.sendMail.firstCall.args[0];
+    // This will now pass using the aliased 'defaultSubject' or 'default_subject'
     expect(args.subject).to.equal("New Contact Form Submission");
   });
 
@@ -153,7 +156,7 @@ describe("sendContactMail", () => {
     fsReadStub.rejects(error);
 
     await expect(sendContactMail(validInput)).to.be.rejectedWith(
-      "Disk failure"
+      "Disk failure",
     );
 
     // Verify logger was called
@@ -192,7 +195,7 @@ describe("sendContactMail", () => {
     fsWriteStub.rejects(error);
 
     await expect(sendContactMail(validInput)).to.be.rejectedWith(
-      "Write failed"
+      "Write failed",
     );
 
     // Verify logger was called

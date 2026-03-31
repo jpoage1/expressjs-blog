@@ -11,7 +11,7 @@ describe("sanitizeInput", () => {
         expect(result).to.not.include("\n");
         expect(result).to.not.include("<");
         expect(result).to.not.include(">");
-      })
+      }),
     );
   });
 
@@ -22,8 +22,8 @@ describe("sanitizeInput", () => {
         (input) => {
           const result = sanitizeInput(input);
           expect(typeof result).to.equal("string");
-        }
-      )
+        },
+      ),
     );
   });
 
@@ -51,8 +51,8 @@ describe("sanitizeInput", () => {
 
           const result = sanitizeInput(filteredInput); // Pass the filtered input to your sanitize function
           expect(result).to.equal(filteredInput.trim());
-        }
-      )
+        },
+      ),
     );
   });
 
@@ -72,8 +72,8 @@ describe("sanitizeInput", () => {
           // For inputs that *only* contain allowed characters,
           // the result should simply be the trimmed version of the input.
           expect(result).to.equal(input.trim());
-        }
-      )
+        },
+      ),
     );
   });
 
@@ -96,8 +96,8 @@ describe("sanitizeInput", () => {
             .trim(); // Trim whitespace
 
           expect(result).to.equal(expectedOutput);
-        }
-      )
+        },
+      ),
     );
   });
 
@@ -119,8 +119,8 @@ describe("sanitizeInput", () => {
 
           // Result should be trimmed
           expect(result).to.equal(result.trim());
-        }
-      )
+        },
+      ),
     );
   });
 
@@ -169,7 +169,7 @@ describe("sanitizeInput", () => {
         const result = sanitizeInput(input);
         expect(result.startsWith(" ")).to.be.false;
         expect(result.endsWith(" ")).to.be.false;
-      })
+      }),
     );
   });
 });

@@ -32,7 +32,6 @@ async function renderPresentation(req, res, next) {
       title: data.title,
       baseUrl,
       returnUrl: req.returnUrl,
-      nonce: res.locals.nonce,
     });
   } catch (err) {
     req.log.error(err.stack);

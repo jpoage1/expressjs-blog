@@ -1,34 +1,17 @@
 // src/utils/logging/config.js
 const path = require("path");
+const config = require("./index");
 
-const { logging } = require("../config/loader");
+const { logging } = config;
 
 const customLevels = {
-  levels: {
-    error: 0,
-    warn: 1,
-    security: 3,
-    event: 2,
-    notice: 4,
-    info: 5,
-    debug: 6,
-    analytics: 7, // use a unique value
-  },
-  colors: {
-    error: "red",
-    warn: "yellow",
-    security: "magenta",
-    event: "cyan",
-    notice: "cyan",
-    info: "green",
-    debug: "blue",
-    analytics: "gray", // or another distinct color
-  },
+  levels: config.logging.levels,
+  colors: config.logging.colors,
 };
 
 const LOG_LEVELS = customLevels.levels;
 
-const { logDir, logLevel } = logging;
+const { logDir } = config.logging;
 
 const sessionTimestamp = new Date().toISOString().replace(/[:.]/g, "-");
 const sessionDir = path.join(logDir, "sessions", sessionTimestamp);

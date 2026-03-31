@@ -92,7 +92,7 @@ function renderWithBaseContext(res, baseContext) {
 function renderWithCallback(res, baseContext) {
   return (template, cb, overrides = {}) => {
     let context = Object.assign({}, baseContext, overrides);
-    res.logger.info(cb);
+    // res.logger.info(cb);
     context = cb(context);
     res.render(template, context);
   };

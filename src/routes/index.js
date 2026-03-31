@@ -33,12 +33,9 @@ router.head("/health", (req, res) => {
   res.sendStatus(200);
 });
 
-const { winstonLogger } = require("../utils/logging");
-//winstonLogger.warn("Log?", hexascriptDocs());
+const { logger } = require("../utils/logging");
+// logger.info("hexascriptDocs", { hexascriptDocs });
 router.use("/hexa-docs", hexascriptDocs);
-// router.use(hexascriptDocs);
-// hexascriptDocs;
-winstonLogger.info(hexascriptDocs);
 
 router.get("/error/:code", errorPage); // Landing page after error is logged
 

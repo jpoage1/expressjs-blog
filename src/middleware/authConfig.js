@@ -1,4 +1,4 @@
-// src/setupMiddleware.js
+// src/authConfig.js
 const { TRUST_PROXY } = require("../constants/middlewareConstants");
 
 const { meta, session } = require("../config/loader");

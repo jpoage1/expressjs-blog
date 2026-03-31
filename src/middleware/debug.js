@@ -28,6 +28,7 @@ const debug = async (req, res) => {
       "req.oidc.fetchUserInfo()": userinfo,
       "req.locals.session": res.locals.session || "unset",
       "req.oidc.user": req.oidc.user || "unset",
+      "req.oidc.idTokenClaims.claims": req.oidc.idTokenClaims || "not set",
 
       metadata: {
         "trust-proxy": TRUST_PROXY,
@@ -44,7 +45,7 @@ const debug = async (req, res) => {
 
         // 4. Scopes (What was actually granted by Authelia)
         grantedScopes: tokenSet?.scope,
-        "req.openidTokens": req.openidTokens ?? "not set",
+        "req.openidTokens": req.openidTokens,
       },
     };
 

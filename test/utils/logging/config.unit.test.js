@@ -4,31 +4,39 @@ const fs = require("fs");
 const path = require("path");
 const proxyquire = require("proxyquire").noPreserveCache();
 
-const { meta, rootDir } = require("../../../src/config/loader");
 const {
   sessionTimestamp,
   sessionDir,
   logFiles,
-  LOG_LEVELS,
-} = require("../../../src/utils/config/logging");
-
-const { logDir } = meta;
+} = require("../../../src/config/logging");
+const config = require("../../../src/config");
 
 describe("config.js", () => {
-  it("rootDir contains package.json", () => {
-    const pkgJsonPath = path.join(rootDir, "package.json");
+  it("config.meta.rootDir contains package.json", () => {
+    const pkgJsonPath = path.join(config.meta.rootDir, "package.json");
     const exists = fs.existsSync(pkgJsonPath);
-    expect(exists).to.equal(true, `package.json not found in ${rootDir}`);
+    expect(exists).to.equal(
+      true,
+      `package.json not found in ${config.meta.rootDir}`,
+    );
   });
 
-  it("rootDir matches resolved 3-levels-up path", () => {
+  it("config.meta.rootDir matches resolved 3-levels-up path", () => {
     const expected = path.resolve(__dirname, "../../../");
-    expect(rootDir).to.equal(expected);
+    expect(config.meta.rootDir).to.equal(expected);
   });
 
-  it("logDir is within rootDir and ends with 'logs'", () => {
-    expect(logDir.startsWith(rootDir)).to.be.true;
-    expect(path.basename(logDir)).to.equal("logs");
+  it("config.logging.logDir is within config.meta.rootDir and ends with 'logs'", () => {
+    const root = config.meta.rootDir;
+    const log = config.logging.logDir;
+
+    // Use a custom error message to display values on failure
+    expect(
+      log.startsWith(root),
+      `Path Mismatch:\n  config.meta.rootDir: "${root}"\n  config.logging.logDir: "${log}"`,
+    ).to.be.true;
+
+    expect(path.basename(log)).to.equal("logs");
   });
 
   it("sessionTimestamp matches expected ISO pattern with no colons or dots", () => {
@@ -37,8 +45,12 @@ describe("config.js", () => {
     );
   });
 
-  it("sessionDir is built from logDir and sessionTimestamp", () => {
-    const expected = path.join(logDir, "sessions", sessionTimestamp);
+  it("sessionDir is built from config.logging.logDir and sessionTimestamp", () => {
+    const expected = path.join(
+      config.logging.logDir,
+      "sessions",
+      sessionTimestamp,
+    );
     expect(sessionDir).to.equal(expected);
   });
 
@@ -49,13 +61,13 @@ describe("config.js", () => {
   ["info", "notice", "error", "warn", "debug"].forEach((level) => {
     it(`logFiles.${level} points to ${level}.log in correct subdir`, () => {
       expect(logFiles[level]).to.equal(
-        path.join(logDir, level, `${level}.log`),
+        path.join(config.logging.logDir, level, `${level}.log`),
       );
     });
   });
 
-  it("LOG_LEVELS defines correct level-to-priority mapping", () => {
-    expect(LOG_LEVELS).to.deep.equal({
+  it("config.logging.levels defines correct level-to-priority mapping", () => {
+    expect(config.logging.levels).to.deep.equal({
       error: 0,
       warn: 1,
       event: 2,
@@ -65,15 +77,5 @@ describe("config.js", () => {
       debug: 6,
       analytics: 7,
     });
-  });
-
-  it("LOG_LEVEL defaults to 'info' when process.env.LOG_LEVEL is unset", () => {
-    const original = process.env.LOG_LEVEL;
-    delete process.env.LOG_LEVEL;
-
-    const { LOG_LEVEL } = proxyquire("../../../src/utils/logging/config", {});
-    expect(LOG_LEVEL).to.equal("info");
-
-    if (original !== undefined) process.env.LOG_LEVEL = original;
   });
 });

@@ -4,13 +4,18 @@ const transporter = require("../../src/utils/transporter");
 const { winstonLogger } = require("../../src/utils/logging");
 const sendNewsletterSubscriptionMail = require("../../src/utils/sendNewsletterSubscriptionMail");
 
+const config = require("../../src/config");
+
+const TEST_DOMAIN = "example.com";
+const TEST_NEWSLETTER = "newsletter@example.com";
+
 describe("sendNewsletterSubscriptionMail", () => {
   let sendMailStub;
   let errorStub;
 
   beforeEach(() => {
-    process.env.MAIL_DOMAIN = "example.com";
-    process.env.MAIL_NEWSLETTER = "newsletter@example.com";
+    config.mail.domain = TEST_DOMAIN;
+    config.mail.newsletter = TEST_NEWSLETTER;
 
     sendMailStub = sinon.stub(transporter, "sendMail");
     errorStub = sinon.stub(winstonLogger, "error");
@@ -26,7 +31,7 @@ describe("sendNewsletterSubscriptionMail", () => {
   it("calls transporter.sendMail with correct mail data", async () => {
     sendMailStub.resolves("sent");
 
-    const email = "user@example.com";
+    const email = TEST_NEWSLETTER;
     const result = await sendNewsletterSubscriptionMail({ email });
 
     sinon.assert.calledOnce(sendMailStub);
