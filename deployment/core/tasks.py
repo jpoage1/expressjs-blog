@@ -3,11 +3,11 @@ import time
 import tomllib
 from lupa import LuaRuntime
 from pathlib import Path
-from lib.task_types import SuiteTask
-from lib.types import Stage
+from deployment_pipeline.lib.task_types import DeploymentTask
+from pipeline_runner.lib.types import Stage
 
 
-class GetDeploymentConfig(SuiteTask):
+class GetDeploymentConfig(DeploymentTask):
 
     _stage = Stage.BOOTSTRAP
     _deps = []
@@ -30,6 +30,7 @@ class GetDeploymentConfig(SuiteTask):
                 self.fail("Failed to load deployment config: ", e)
 
         # 4. Hydrate self.env
+        self.cfg = cfg  # Store the lua object for functional calls later
         self.env.lua_cfg = cfg  # Store the lua object for functional calls later
         self.env.app_name = cfg.app_name
         self.env.repo = cfg.repo
@@ -47,7 +48,7 @@ class GetDeploymentConfig(SuiteTask):
         return True
 
 
-class LoadServerConfig(SuiteTask):
+class LoadServerConfig(DeploymentTask):
     """Verifies TOML existence and hydrates the environment with health check URI components"""
 
     _stage = Stage.BOOTSTRAP
@@ -120,7 +121,7 @@ class PipelineSuccess(Exception):
     pass
 
 
-class HotFix(SuiteTask):
+class HotFix(DeploymentTask):
     """Bypasses the full build to update the current live deployment"""
 
     _stage = Stage.DEPLOY
@@ -159,7 +160,7 @@ class HotFix(SuiteTask):
         raise PipelineSuccess("Hot fix applied successfully")
 
 
-class YarnBuild(SuiteTask):
+class YarnBuild(DeploymentTask):
     """Executes dependency installation and asset compilation"""
 
     _stage = Stage.BUILD
@@ -206,7 +207,7 @@ class YarnBuild(SuiteTask):
         return True
 
 
-class AtomicDeploy(SuiteTask):
+class AtomicDeploy(DeploymentTask):
     """Performs rsync to release directory and updates environment symlink"""
 
     _stage = Stage.DEPLOY
@@ -257,7 +258,7 @@ class AtomicDeploy(SuiteTask):
         return True
 
 
-class HealthCheck(SuiteTask):
+class HealthCheck(DeploymentTask):
     """Polls the local production service endpoint"""
 
     _stage = Stage.DEPLOY

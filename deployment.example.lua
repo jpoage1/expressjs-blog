@@ -1,19 +1,26 @@
-local app_name = "Express Blog"
-local repo = "ssh://git@git.jasonpoage.vpn:29418/jason/express-blog.git"
-local config_dir = "/srv/jasonpoage.com/env/"
+local app_name = "deployment-pipeline"
+local git_user = "example"
+
+local repo = "ssh://git@github.com/" .. git_user .. "/" .. app_name .. ".git"
+local config_dir = "/etc/" .. app_name
 -- 1. Static Lookups
-local base = "/srv/jasonpoage.com"
+local base = "/var/lib/" .. app_name
 local deployments = base .. "/deployments"
+
+-- Pipeline testing
+local config_file = "/etc/" .. app_name .. "/config.toml"
 
 function get_config(env_key)
 	-- Specific folder name for this environment
-	local instance_name = "blog-" .. env_key
+	local instance_name = app_name .. "-" .. env_key
 	local deploy_link = deployments .. "/" .. instance_name
 
 	return {
 		deploy_link = deploy_link,
-		config_file = config_dir .. env_key .. ".toml",
-		service_name = "expressjs-blog@" .. env_key .. ".service",
+		-- Pipeline testing
+		config_file = config_file,
+		-- config_file = config_dir .. env_key .. ".toml",
+		service_name = app_name .. "@" .. env_key .. ".service",
 		-- Tracking which deployments were successful
 		get_release_dir = function(timestamp)
 			return deploy_link .. "-" .. timestamp

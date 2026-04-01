@@ -1,10 +1,10 @@
 import time
 import shlex
 
-from lib.task_types import SuiteTask, SuiteSubTask
-from lib.types import Stage
-from core.tasks import YarnBuild
-from core.task_runner import TaskRunner
+from pipeline_runner.lib.task_types import SuiteTask, SuiteSubTask
+from pipeline_runner.lib.types import Stage
+from pipeline_runner.core.tasks import YarnBuild
+from pipeline_runner.core.task_runner import TaskRunner
 
 
 class StartTestApp(SuiteSubTask):

@@ -1,7 +1,7 @@
 import sys
 
 
-from core.suite import DeploymentSuite
+from deployment_pipeline.core.suite import DeploymentSuite
 
 
 def main():

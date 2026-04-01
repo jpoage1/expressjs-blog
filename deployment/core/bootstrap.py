@@ -1,45 +1,7 @@
-import os
 import shutil
 
-from core.tasks import GetDeploymentConfig
-from lib.printer import clear_screen
-from lib.types import Stage
-from lib.task_types import SuiteTask, SuiteSubTask
-
-
-class CheckNix(SuiteTask):
-    _stage = Stage.BOOTSTRAP
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.name = "Checking if we are in a nix shell..."
-
-    def _run(self):
-        if not shutil.which("nix"):
-            self.print("⬡ Nix tools not found in PATH.")
-            return
-
-        # 2. Check if already in a shell
-        shell_type = os.environ.get("IN_NIX_SHELL")
-        if shell_type:
-            self._in_nix_shell = shell_type
-        return True
-
-
-class EnsureBuildPaths(SuiteTask):
-    _deps = [GetDeploymentConfig]
-    _can_skip = False
-    """Task 1: Ensure build paths exist"""
-
-    _stage = Stage.BOOTSTRAP
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.name = "Setting up bulid path"
-
-    def _run(self):
-        """Ensure build directory exists"""
-        self.env.build_dir.mkdir(parents=True, exist_ok=True)
+from pipeline_runner.lib.types import Stage
+from pipeline_runner.lib.task_types import SuiteTask
 
 
 class VerifySystemDependencies(SuiteTask):

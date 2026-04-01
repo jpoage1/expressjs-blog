@@ -1,4 +1,4 @@
 if __name__ == "__main__":
-    from main import main
+    from deployment_pipeline.main import main
 
     main()

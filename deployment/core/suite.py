@@ -1,13 +1,15 @@
 import argparse
 from pathlib import Path
 
-from lib.errors import SuiteError
-from lib.task_types import SuiteTask, Task
-from core.task_runner import TaskRunner
-from lib.types import BuildEnv
-from core.bootstrap import *
-from core.task_runner import *
-from core.suite import *
+from pipeline_runner.lib.exceptions import SuiteError
+from pipeline_runner.lib.task_types import SuiteTask, Task
+from pipeline_runner.core.bootstrap import *
+
+from deployment_pipeline.core.task_runner import *
+
+from deployment_pipeline.lib.types import BuildEnv
+
+# from core.suite import *
 
 
 def load_parser():
@@ -55,7 +57,7 @@ class DeploymentSuite(SuiteTask):
     Replaces tdd_loop.sh with zero subprocess overhead for Python logic.
     """
 
-    name = "Hexa Core Test Script Runner"
+    name = "Deployment Test Runner"
     root_dir: Path | None
     _in_nix_shell: bool
     _owner: "DeploymentSuite"
@@ -123,8 +125,3 @@ class DeploymentSuite(SuiteTask):
         task = self.get_arg("task")
         Task.run(task)
         return self
-        runner = TaskRunner(
-            self, all_tasks, base_class_name="SuiteTask", owner=self._owner
-        )
-        runner.queue_tasks(all_tasks)
-        runner.run()

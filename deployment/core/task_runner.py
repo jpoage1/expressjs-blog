@@ -1,24 +1,16 @@
 from os import wait
 from typing import List
 
-from lib.types import Stage, typename
-from lib.errors import TaskError
-from lib.task_types import SuiteTask
+from pipeline_runner.lib.types import Stage, typename
+from pipeline_runner.lib.exceptions import TaskError
+from pipeline_runner.lib.task_types import SuiteTask
 
-from core.bootstrap import *
-from core.task_runner import *
-from core.suite import *
+from pipeline_runner.core.bootstrap import *
+from deployment_pipeline.core.task_runner import *
+from pipeline_runner.core.suite import *
 
 
-from core.tasks import (
-    GetDeploymentConfig,
-    LoadServerConfig,
-    HotFix,
-    YarnBuild,
-    AtomicDeploy,
-    HealthCheck,
-    PipelineSuccess,
-)
+from deployment_pipeline.core.tasks import PipelineSuccess
 
 
 class TaskRunner(SuiteTask):
