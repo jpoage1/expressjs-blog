@@ -33,11 +33,6 @@ const blockLocalhostAccess = (req, res, next) => {
   }
   next();
 };
-const crypto = require("crypto");
-
-function generateNonce() {
-  return crypto.randomBytes(16).toString("base64");
-}
 
 const securityPolicy =
   (overrides = {}) =>

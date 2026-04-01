@@ -3,46 +3,57 @@ const fetch = require("node-fetch").default;
 const { expect } = require("chai");
 const http = require("http");
 const https = require("https");
-
+const AuthSession = require("./fixtures/AuthSession");
+const config = require("../src/config");
 const fs = require("fs");
 
-require("dotenv").config();
-
-const domain = process.env.SERVER_DOMAIN;
-const port = process.env.SERVER_PORT;
-const schema = process.env.SERVER_SCHEMA;
-const server_address = process.env.SERVER_ADDRESS;
-const baseUrl = `${schema}://${domain}`;
-
 // Create a proper HTTP agent
-const httpAgent = new http.Agent({
-  keepAlive: true,
-  maxSockets: 10,
-  timeout: 10000,
-});
+// const httpAgent = new http.Agent({
+//   keepAlive: true,
+//   maxSockets: 10,
+//   timeout: 10000,
+// });
 
-const useHttps = schema === "https";
+// const useHttps = schema === "https";
 
-const agent = useHttps
-  ? new https.Agent({
-      keepAlive: true,
-      maxSockets: 10,
-      timeout: 10000,
-      // ca: fs.readFileSync(process.env.SSL_CA_PATH),
-      // cert: fs.readFileSync(process.env.SSL_CERT_PATH),
-      // key: fs.readFileSync(process.env.SSL_KEY_PATH),
-      rejectUnauthorized: true, // or false if using self-signed certs during dev
-    })
-  : new http.Agent({
-      keepAlive: true,
-      maxSockets: 10,
-      timeout: 10000,
-    });
+// const agent = useHttps
+//   ? new https.Agent({
+//       keepAlive: true,
+//       maxSockets: 10,
+//       timeout: 10000,
+//       // ca: fs.readFileSync(process.env.SSL_CA_PATH),
+//       // cert: fs.readFileSync(process.env.SSL_CERT_PATH),
+//       // key: fs.readFileSync(process.env.SSL_KEY_PATH),
+//       rejectUnauthorized: true, // or false if using self-signed certs during dev
+//     })
+//   : new http.Agent({
+//       keepAlive: true,
+//       maxSockets: 10,
+//       timeout: 10000,
+//     });
+
+const { schema, domain, port } = config.network;
+const baseUrl = `${schema}://${domain}${port === 80 || port === 443 ? "" : `:${port}`}`;
 
 describe(`API route status tests with dependencies at ${baseUrl}`, () => {
   let serverOnline = false;
   let routes = [];
 
+  let session;
+
+  before(async () => {
+    expect(
+      config.testing?.username,
+      "Config Error: testing.username is not defined",
+    ).to.be.a("string").and.not.be.empty;
+    expect(
+      config.testing?.password,
+      "Config Error: testing.password is not defined",
+    ).to.be.a("string").and.not.be.empty;
+
+    session = new AuthSession();
+    await session.authenticate();
+  });
   // Clean up the agent after all tests
   after(() => {
     if (httpAgent.destroy) {

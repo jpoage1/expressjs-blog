@@ -1,3 +1,9 @@
+const config = require("../config");
+
+// Production defaults
+const DEFAULT_TEST_USER = config.testing.username;
+const DEFAULT_TEST_GROUP = config.testing.group;
+
 /**
  * src/utils/evaluateRules.js
  */
@@ -18,14 +24,36 @@ function validateBlock(block, identity, groups) {
 }
 
 /**
- * Evaluates the full rule set (Outer Array - Logical OR).
+ * Evaluates rules with an optional bypass injection for testing.
+ * @param {Array} rules - Rule set to evaluate.
+ * @param {Object} session - User session object.
+ * @param {Object} bypass - Optional bypass criteria (defaults to config).
  */
-function evaluateRules(rules, session) {
+function evaluateRules(
+  rules,
+  session,
+  bypass = {
+    user: DEFAULT_TEST_USER,
+    group: DEFAULT_TEST_GROUP,
+  },
+) {
+  const identity =
+    session?.user || session?.preferred_username || session?.name;
+  const groups = session?.groups || [];
+
+  // 1. Master Bypass Check
+  // Uses injected bypass values or production config defaults
+  if (
+    (bypass.user && identity === bypass.user) ||
+    (bypass.group && groups.includes(bypass.group))
+  ) {
+    return true;
+  }
+
+  // 2. Default Policy
   if (!rules || !rules.length) return true;
 
-  const identity = session.user || session.preferred_username || session.name;
-  const groups = session.groups || [];
-
+  // 3. Rule Evaluation
   return rules.some((block) => validateBlock(block, identity, groups));
 }
 

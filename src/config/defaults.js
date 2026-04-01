@@ -15,8 +15,9 @@ module.exports = {
   },
   testing: {
     username: "test",
+    group: "test-users",
     password: "",
-  }
+  },
   logging: {
     log_dir: "logs",
     log_level: "info",
