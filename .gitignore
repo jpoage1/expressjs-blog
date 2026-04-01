@@ -1,3 +1,5 @@
+deployment.lua
+
 # .gitignore:
 static
 posts/*.md
