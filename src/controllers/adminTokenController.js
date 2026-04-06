@@ -12,6 +12,7 @@ exports.cleanupTokensMiddleware = (req, res, next) => {
 // this is redirecting to authelia, despite being a "safe ip"
 
 exports.handleTokenRedirect = (req, res, next) => {
+  return next();
   const { token } = req.params;
   if (req.isAuthenticated || !token) return next();
 
@@ -33,4 +34,5 @@ exports.handleTokenRedirect = (req, res, next) => {
   res.set("Content-Type", "text/html");
   res.customRedirect(adminLoginUrl, 301);
   console.log("test");
+  next();
 };

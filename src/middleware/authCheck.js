@@ -17,16 +17,21 @@ module.exports = async (req, res, next) => {
   if (req.oidc.isAuthenticated()) {
     // Pull data directly from the encrypted session cookie
     // No network calls, no Map lookups, no staleness
-    const user = await req.oidc.fetchUserInfo();
-    const claims = req.oidc.idTokenClaims;
-    const oidcNonce = claims.nonce;
+    try {
+      const user = await req.oidc.fetchUserInfo();
+      const claims = req.oidc.idTokenClaims;
+      const oidcNonce = claims.nonce;
 
-    res.locals.session = {
-      // claims,
-      isAuthenticated: true,
-      nonce: oidcNonce,
-      ...user,
-    };
+      res.locals.session = {
+        // claims,
+        isAuthenticated: true,
+        nonce: oidcNonce,
+        ...user,
+      };
+    } catch (e) {
+      // This should clear the session when i get around to it
+      return next();
+    }
   }
 
   next();

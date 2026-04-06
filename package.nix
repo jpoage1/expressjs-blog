@@ -21,17 +21,6 @@
     rev = "main";
     hash = "sha256-2yapZOSOop/ng8MNjZcuJIr7Qu9rZfeHlH8h0ljN4aE=";
   };
-  # deployment_pipeline = python3Packages.buildPythonPackage {
-  #   pname = "deployment_pipeline";
-  #   version = "0.1.0";
-  #   pyproject = true;
-  #   src = vpn_source;
-  #   nativeBuildInputs = with python3Packages; [
-  #     setuptools
-  #     wheel
-  #   ];
-  #   doCheck = false;
-  # };
   deployment_pipeline = pkgs.callPackage local_source {};
 in
   python3Packages.buildPythonApplication {
