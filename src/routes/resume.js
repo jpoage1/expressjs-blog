@@ -18,34 +18,28 @@ router.get("/", async (req, res, next) => {
 
     const isPaper = req.query.view === "paper";
 
-    const cssOverrrides = {
-      css: res.cssOverride({
-        classes: {
-          body: "resume-pdf-layout",
-          layout: "resume-container",
-          container: "resume-paper",
-        },
-      }),
-    };
-
     // Render using your existing Handlebars engine logic
     // This follows the pattern in src/routes/post.js [cite: 25]
-    res.renderWithBaseContext("pages/resume", {
-      ...resumeData,
-      title: `Resume - ${resumeData.name}`,
-      viewType: isPaper ? "paper" : "web",
-      showSidebar: !isPaper,
-      showFooter: !isPaper,
-      showHeader: !isPaper,
-      ...((isPaper && cssOverrrides) || {}),
-      // css: res.cssOverride({
-      //   classes: {
-      //     body: "resume-pdf-layout",
-      //     layout: "resume-container",
-      //     container: "resume-paper",
-      //   },
-      // }),
-    });
+    res.renderWithBaseContext(
+      "pages/resume",
+      {
+        ...resumeData,
+        title: `Resume - ${resumeData.name}`,
+        viewType: isPaper ? "paper" : "web",
+        showSidebar: !isPaper,
+        showFooter: !isPaper,
+        showHeader: !isPaper,
+      },
+      isPaper
+        ? {
+            classes: {
+              body: "resume-pdf-layout resume-body",
+              layout: "resume-container",
+              container: "resume-paper",
+            },
+          }
+        : {},
+    );
   } catch (err) {
     req.log.error(err.stack);
     next(new HttpError("Could not load resume data", 500));

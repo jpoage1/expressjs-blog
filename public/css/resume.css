@@ -1,4 +1,4 @@
-.resume-pdf-layout {
+.resume-body {
   background-color: #f0f0f0 !important;
   min-height: 0 !important; /* Overrides global 100vh */
   height: auto !important;
@@ -41,38 +41,28 @@
 }
 
 @media print {
-  .resume-pdf-layout {
+  .resume-body {
     background: white !important;
     margin: 0.5in; /* Re-establish a visual margin for the actual content */
     padding: 0;
   }
-  .resume-paper {
-    width: 8.5in;
-    height: 11in;
-    padding: 0;
-    margin: 0;
-    padding: 0.5in; /* Re-establish margins inside the paper for the printer */
-    box-shadow: none;
 
   .resume-paper {
     width: 8.5in !important;
     height: 11in !important;
-    padding: 0.5in !important;
+    min-height: 11in !important;
+    padding: 0.25in !important;
     margin: 0 !important;
     box-shadow: none !important;
     background: white !important;
     color: black !important;
-    overflow: hidden; /* Ensure single-page fit */
+    /* overflow: hidden; /1* Ensure single-page fit *1/ */
+    overflow: visible !important;
+    page-break-after: avoid;
   }
   .resume-link {
     text-decoration: none !important;
     color: black !important; /* Ensure black ink for printing */
-  }
-
-  .resume-paper {
-    overflow: hidden;
-    page-break-after: avoid;
-    padding: 0.25in !important;
   }
 }
 
@@ -131,7 +121,8 @@
   justify-content: space-between;
   font-weight: bold;
 }
-.resume-entry-header, .resume-sub-header {
+.resume-entry-header,
+.resume-sub-header {
   align-items: baseline;
   flex-wrap: nowrap;
 }
