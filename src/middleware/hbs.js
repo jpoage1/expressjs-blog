@@ -49,6 +49,7 @@ const hbsMiddleware = (req, res, next) => {
         json(context) {
           return JSON.stringify(context, null, 2);
         },
+        eq: (a, b) => a === b,
         // helperMissing(context, options) {
         //   var options = arguments[arguments.length - 1];
         //   var args = Array.prototype.slice.call(

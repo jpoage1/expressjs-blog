@@ -77,10 +77,12 @@ module.exports = async (err, req, res, next) => {
   });
 
   try {
-    const errorPageContext = await req.getBaseContext(
-      req?.isAuthenticated,
-      context,
-    );
+    const session = res.locals.session || {
+      isAuthenticated: false,
+      user: null,
+      groups: [],
+    };
+    const errorPageContext = await req.getBaseContext(session, context);
     res.status(errorContext.statusCode);
     res.renderGenericMessage(errorPageContext);
   } catch (e) {

@@ -37,11 +37,8 @@ async function loadAllYamlDocs() {
 /**
  * Base context generator
  */
-module.exports = async function getDocsContext(
-  isAuthenticated,
-  overrides = {},
-) {
-  const filteredNavLinks = processMenuLinks(navLinks, isAuthenticated);
+module.exports = async function getDocsContext(session, overrides = {}) {
+  const filteredNavLinks = processMenuLinks(navLinks, session);
   const qualifiedNavLinks = qualifyNavLinks(filteredNavLinks);
   const siteOwner = meta.site_owner;
 
@@ -61,7 +58,7 @@ module.exports = async function getDocsContext(
     navLinks: qualifiedNavLinks,
     baseUrl,
     paths: docsMenu,
-    isAuthenticated,
+    isAuthenticated: session.isAuthenticated,
     showFooter: true,
     showSidebar: true,
     ...overrides,

@@ -1,15 +1,14 @@
 {
   lib,
   pkgs,
-  python3Packages,
   fetchgit,
   fetchFromGitHub,
   nodejs_latest,
-  nodePackages,
   chromium,
   imagemagick,
   makeWrapper,
   which,
+  python3Packages,
 }: let
   local_source = ../../deployment_pipeline;
   vpn_source = builtins.fetchGit {
@@ -19,7 +18,7 @@
     owner = "jpoage1";
     repo = "deployment_pipeline";
     rev = "main";
-    hash = "sha256-2yapZOSOop/ng8MNjZcuJIr7Qu9rZfeHlH8h0ljN4aE=";
+    hash = "sha256-WHDDL1ej8au4pKCQTBVWs4VXKVNx/wIOS9HMSaoyOFI=";
   };
   deployment_pipeline = pkgs.callPackage local_source {};
 in
@@ -37,7 +36,7 @@ in
       [
         deployment_pipeline
         nodejs_latest
-        nodePackages.pnpm
+        # pnpm
         chromium
         imagemagick
         which

@@ -54,7 +54,7 @@ module.exports.attachBaseContextGetter = async (req, res, next) => {
   req.getBaseContext = async (isAuthenticated, overrides = {}) => {
     const filteredNavLinks = processMenuLinks(
       navLinks,
-      isAuthenticated,
+      res.locals.session,
       req.path,
     );
     const qualifiedNavLinks = qualifyNavLinks(filteredNavLinks);

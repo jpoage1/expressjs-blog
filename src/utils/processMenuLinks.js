@@ -38,6 +38,8 @@ function processMenuLinks(
   inheritedPolicy = "allow",
 ) {
   if (!links) return [];
+  if (!session)
+    throw new Error(`Session is undefined: ${JSON.stringify(session)}`);
 
   return links
     .map((link) => {

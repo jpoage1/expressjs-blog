@@ -15,6 +15,13 @@
     <button id="print-button" class="btn-primary">Print to PDF</button>
     <button id="print-preview-button" class="btn-primary">Print Preview</button>
 </div>
+<div class="no-print resume-profile-switcher">
+  {{#each profileLinks}}
+    <a href="{{url}}" class="btn-primary {{#if active}}active{{/if}}">
+      {{label}}
+    </a>
+  {{/each}}
+</div>
 
 <h1 class="resume-h1">{{name}}</h1>
 <div class="resume-contact-bar">

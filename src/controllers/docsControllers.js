@@ -28,13 +28,13 @@ async function checkDocCache(req, fileNamesOrPath, namespace = "") {
         const stat = await fs.stat(filePath);
         return stat;
       } catch (err) {
-        throw err;
+        throw new Error(`${err.message}`);
       }
-    })
+    }),
   );
 
   const lastModified = new Date(
-    Math.max(...statPaths.map((s) => s.mtimeMs))
+    Math.max(...statPaths.map((s) => s.mtimeMs)),
   ).toUTCString();
 
   const hashBase = Array.isArray(fileNamesOrPath)
@@ -53,9 +53,10 @@ exports.renderDocsIndex = async (req, res, next) => {
     const yamlFiles = await getYamlFileNames();
 
     // Read from cache
-    if (await checkDocCache(req, yamlFiles)) return;
+    const docCache = await checkDocCache(req, yamlFiles);
+    if (docCache) return docCache;
 
-    const context = await docsContext(req.isAuthenticated, {
+    const context = await docsContext(res.locals.session, {
       layout: "docs",
       docPath: "/docs",
       docModule: null,
@@ -66,10 +67,22 @@ exports.renderDocsIndex = async (req, res, next) => {
         docsPaths: yamlFiles.map((name) => `${req.baseUrl || ""}/${name}`),
       });
     } catch (err) {
-      return next(new HttpError("Failed to render page", 424, err.stack));
+      return next(
+        new HttpError(
+          `Failed to render page: ${err.message ?? err}`,
+          424,
+          err.stack,
+        ),
+      );
     }
   } catch (err) {
-    return next(new HttpError("Failed to read docs directory", 500, err.stack));
+    return next(
+      new HttpError(
+        `Failed to read docs directory: ${err.message ?? err}`,
+        500,
+        err.stack,
+      ),
+    );
   }
 };
 
@@ -88,9 +101,9 @@ exports.renderDocsSummary = async (req, res, next) => {
       }
     }
 
-    const context = await docsContext(req.isAuthenticated, {
+    const context = await docsContext(res.locals.session, {
       layout: "docs",
-      docPath: baseUrl + "/docs/summary",
+      docPath: req.baseUrl + "/docs/summary",
       docModule: null,
     });
     try {
@@ -107,22 +120,26 @@ exports.renderDocsSummary = async (req, res, next) => {
 };
 
 exports.renderDocsByType = async (req, res, next) => {
+  if (!res.locals.session) {
+    next(new Error("No session"));
+  }
   const { moduleType: docPath } = req.params;
 
   // Read from cache
   if (await checkDocCache(req, docPath)) return;
 
   const doc = await loadDocFile(docPath);
+  if (!doc) return next(new HttpError("Documentation not found", 404));
 
-  const context = await docsContext(req.isAuthenticated, {
+  const context = await docsContext(res.locals.session, {
     layout: "docs",
-    docPath: baseUrl + "/docs" + docPath,
+    docPath: req.baseUrl + "/docs" + docPath,
     docModule: null,
   });
 
   const modulesWithLinks = Object.entries(doc.modules).map(([key]) => ({
     name: key,
-    url: `${baseUrl}/docs/${docPath}/${key}`,
+    url: `${req.baseUrl}/docs/${docPath}/${key}`,
   }));
   try {
     res.render("docs/path", {
@@ -133,7 +150,9 @@ exports.renderDocsByType = async (req, res, next) => {
       modules: modulesWithLinks,
     });
   } catch (e) {
-    return next(new HttpError("Failed to render page", 424, err.stack));
+    return next(
+      new HttpError(`Failed to render docs: ${e.message}`, 424, err.stack),
+    );
   }
 };
 
@@ -150,7 +169,7 @@ exports.renderDocsModule = async (req, res, next) => {
   if (!moduleDoc)
     return next(new HttpError("Module documentation not found", 404));
 
-  const context = await docsContext(req.isAuthenticated, {
+  const context = await docsContext(res.locals.session, {
     layout: "docs",
     docPath,
     docModule: module,
