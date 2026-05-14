@@ -1,63 +1,93 @@
 {
-  lib,
-  pkgs,
-  fetchgit,
-  fetchFromGitHub,
-  nodejs_latest,
-  chromium,
-  imagemagick,
-  makeWrapper,
-  which,
-  python3Packages,
-}: let
-  local_source = ../../deployment_pipeline;
-  vpn_source = builtins.fetchGit {
-    url = "ssh://git@git.jasonpoage.vpn:29418/jason/deployment_pipeline.git";
-  };
-  github_source = fetchFromGitHub {
-    owner = "jpoage1";
-    repo = "deployment_pipeline";
-    rev = "main";
-    hash = "sha256-WHDDL1ej8au4pKCQTBVWs4VXKVNx/wIOS9HMSaoyOFI=";
-  };
-  deployment_pipeline = pkgs.callPackage local_source {};
-in
-  python3Packages.buildPythonApplication {
-    pname = "deployment_pipeline";
-    version = "0.1.0";
-    pyproject = true;
-
-    src = ./.;
-
-    nativeBuildInputs = [makeWrapper];
-
-    # Combine Python and System dependencies
-    propagatedBuildInputs =
-      [
-        deployment_pipeline
-        nodejs_latest
-        # pnpm
-        chromium
-        imagemagick
-        which
-      ]
-      ++ (with python3Packages; [
-        tomli
-        lupa
-        pip
-        setuptools
-      ]);
-
-    # # Inject environment variables into the final binary
-    # postFixup = ''
-    #   wrapProgram $out/bin/deployment_pipeline \
-    #     --set PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true \
-    #     --set PUPPETEER_EXECUTABLE_PATH ${chromium}/bin/chromium
-    # '';
-
-    meta = with lib; {
-      description = "Deployment Pipeline with Node.js and Chromium integration";
-      license = licenses.mit;
-      maintainers = ["Jason Poage"];
+  pkgs ? import <nixpkgs> {},
+  archName ? "x64",
+  portable ? true,
+  installBase ? "/usr",
+  ...
+} @ params: let
+  inherit (pkgs) lib;
+  traceLoad = name: value: builtins.trace "Initializing Component: ${name}" value;
+  blogScope = lib.makeScope pkgs.newScope (self: let
+    ctx = {
+      inherit (self);
+      express-blog = self;
+      src = ./.;
     };
-  }
+    dependencies = import ./nixpkgs/dependencies.nix params;
+  in
+    with self; {
+      paths = portable:
+        if portable
+        then {
+          pythonBin = "${installBase}/bin/yarn";
+          sharePath = "${installBase}/share/express-blog";
+        }
+        else {
+          yarnBin = "${pkgs.yarn-berry}/bin/yarn";
+          sharePath = "${express-blog.blog-engine}/share/express-blog";
+        };
+      # Shared Metadata
+      inherit (builtins.fromJSON (builtins.readFile ./version.json)) version;
+      inherit (paths portable) pythonBin sharePath;
+      inherit archName portable;
+
+      inherit (dependencies) nodePackages;
+      blog-engine = traceLoad "blog-engine" (callPackage ./nixpkgs/blog-engine.nix (ctx
+        // {
+          enableAssetStaging = false;
+        }));
+      bundle = traceLoad "bundle" (callPackage ./nixpkgs/bundle.nix (ctx
+        // {
+          inherit archName;
+          enableAssetStaging = true;
+        }));
+      # staticAssets = traceLoad "staticAssets" (callPackage ./nixpkgs/staticAssets.nix ctx);
+      yarnCache = callPackage ./nixpkgs/yarnCache.nix (params // ctx);
+
+      all = [
+        bundle
+        deb-x64
+        deb-arm64
+      ];
+
+      # The final "Suite" as a symlinkJoin
+      suite = pkgs.symlinkJoin {
+        name = "express-blog-${version}";
+        paths = all;
+        meta = with lib; {
+          description = "Complete Express Blog Orchestration Suite";
+          platforms = platforms.linux;
+        };
+      };
+
+      # Function to generate a .deb for a specific architecture
+      mkDeb = args: callPackage ./nixpkgs/deb.nix (ctx // args);
+      deb-x64 = traceLoad "deb-x64" (mkDeb {
+        targetSuite = bundle;
+        archName = "amd64";
+      });
+
+      deb-arm64 = traceLoad "deb-arm64" (
+        let
+          armPkgs = import pkgs.path {
+            system = "aarch64-linux";
+            config.allowUnfree = true;
+          };
+          armRepo = armPkgs.callPackage ./package.nix {
+            inherit
+              staticPath
+              ;
+          };
+        in
+          mkDeb {
+            targetSuite = armRepo.bundle;
+            archName = "arm64";
+          }
+      );
+
+      express-blog = self;
+
+      docker = callPackage ./nixpkgs/docker.nix ctx;
+    });
+in
+  blogScope
