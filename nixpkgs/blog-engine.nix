@@ -5,6 +5,8 @@
   fetchFromGitHub,
   nodejs_24,
   stdenv,
+  python3,
+  pkg-config,
   yarn-berry,
   express-blog,
   src ? ../.,
@@ -59,7 +61,7 @@
           "/package.json"
           "/node_modules"
           "/.yarn"
-          "/.yarnrc"
+          "/.yarnrc.yml"
           "/yarn.lock"
           "/package.json"
           "/.yarn/install-state.gz"
@@ -75,24 +77,42 @@ in
     src = filteredSource;
 
     nativeBuildInputs = [
+      python3
+      pkg-config
       nodejs_24
       yarn-berry
     ];
 
+    buildInputs = [
+      pkgs.vips # Required for 'sharp' native build
+    ];
+
     preBuild = ''
       export HOME=$(mktemp -d)
+      export YARN_CACHE_FOLDER=${express-blog.yarnCache}
+
+      echo "Setting custom cache folder to ${express-blog.yarnCache}"
+
+      export PUPPETEER_SKIP_DOWNLOAD=1
+      export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1
+
+      yarn config set enableGlobalCache false
       yarn config set cacheFolder ${express-blog.yarnCache}
       yarn install --immutable --immutable-cache
     '';
 
     buildPhase = ''
+      runHook preBuild
       yarn combine:css
+      runHook postBuild
     '';
 
     doCheck = true;
 
     checkPhase = ''
+      runHook preCheck
       yarn test:postreceive
+      runHook postCheck
     '';
 
     installPhase = ''

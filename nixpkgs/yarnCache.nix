@@ -37,17 +37,17 @@
 
       keep = isYarnInternals || isCoreMetadata;
     in
-      keep;
-    # # Only trace if it's NOT a cache file to keep the log readable
-    # if isYarnInternals
-    # then true
-    # else
-    #   builtins.trace "Filter: ${relPath} -> ${
-    #     if keep
-    #     then "KEEP-offline-cache"
-    #     else "SKIP-offline-cache"
-    #   }"
-    #   keep;
+      # keep;
+      # Only trace if it's NOT a cache file to keep the log readable
+      if isYarnInternals
+      then true
+      else
+        builtins.trace "Filter: ${relPath} -> ${
+          if keep
+          then "KEEP-offline-cache"
+          else "SKIP-offline-cache"
+        }"
+        keep;
   };
 in
   stdenv.mkDerivation {
