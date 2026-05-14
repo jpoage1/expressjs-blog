@@ -1,36 +1,48 @@
-# Dockerfile
-
-# Docker image
-FROM node:22-bookworm
+# ---- Build Stage ----
+FROM node:22-bookworm AS builder
 
 ARG GIT_REPO
 ARG GIT_COMMIT
-ARG NODE_ENV
 
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies for native modules
 RUN apt-get update && apt-get install -y \
     python3 \
     make \
     g++ \
     libvips-dev \
-    sqlite3 \
     git \
     && rm -rf /var/lib/apt/lists/*
 
+# Clone specific commit/branch
 RUN git clone --depth 1 --branch "$GIT_COMMIT" "$GIT_REPO" . \
     || (git clone "$GIT_REPO" . && git checkout "$GIT_COMMIT")
 
-# Fails if the lockfile is out of sync with package.json.
-RUN npm ci
+RUN corepack enable && corepack prepare yarn@4.9.2 --activate
 
-# Build step if needed (adjust as appropriate)
-RUN npm run combine:css
+# Install dependencies and build assets
+RUN yarn install
+RUN yarn combine:css
 
-# Set environment variables
-ENV NODE_ENV="$NODE_ENV"
+# ---- Runtime Stage ----
+FROM node:22-bookworm-slim
 
-# Start the app
-CMD ["npm", "run", "prod"]
+WORKDIR /app
+ENV NODE_ENV=production
+
+# Install runtime library for sharp (vips)
+RUN apt-get update && apt-get install -y \
+    libvips \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy only necessary files from builder
+COPY --from=builder /app/package.json /app/yarn.lock ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/src ./src
+
+RUN corepack enable && corepack prepare yarn@4.9.2 --activate
+
+EXPOSE 3000
+CMD ["yarn", "prod"]

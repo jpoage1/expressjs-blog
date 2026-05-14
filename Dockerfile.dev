@@ -1,0 +1,36 @@
+# ---- Development Stage ----
+FROM node:22-bookworm
+
+# Arguments
+ARG NODE_ENV=development
+ENV NODE_ENV="$NODE_ENV"
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies for native modules
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    libvips-dev \
+    sqlite3 \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy local code into the container
+COPY . .
+
+RUN corepack enable && corepack prepare yarn@4.9.2 --activate
+
+# Install dependencies according to lockfile
+RUN yarn install
+
+# Build assets if needed
+RUN yarn combine:css
+
+# Expose typical development port
+EXPOSE 3000
+
+# Start development server
+CMD ["yarn", "start"]

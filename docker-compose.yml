@@ -1,0 +1,30 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: production
+        GIT_REPO: ${GIT_REPO:-https://github.com/jpoage1/expressjs-blog.git}
+        GIT_COMMIT: ${GIT_COMMIT:-main}
+    image: express-blog:latest
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    restart: always
+
+  # app-dev:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.dev
+  #     args:
+  #       NODE_ENV: development
+  #   environment:
+  #     NODE_ENV: development
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules:/app/node_modules
+  #   ports:
+  #     - "3000:3000"
+  #   command: ["npm", "run", "dev"]
