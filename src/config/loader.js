@@ -2,6 +2,34 @@ const fs = require("fs");
 const path = require("path");
 const { parse } = require("smol-toml");
 const os = require("os");
+const { PathNotFoundError } = require("../utils/errors.js");
+const {
+  validatePath,
+  validateExplicitPath,
+} = require("../utils/validation.js");
+const FALLBACK_ROOT_DIR = path.resolve("./");
+
+const FALLBACK_CONTENT_PATHS = [
+  "/var/lib/express-blog",
+  path.join(os.homedir(), "share", "express-blog"),
+  path.join(__dirname, FALLBACK_ROOT_DIR, "content"),
+];
+const FALLBACK_DB_PATHS = [
+  "/var/lib/express-blog/data",
+  path.join(os.homedir(), "local", "state", "express-blog", "data"),
+  path.join(__dirname, FALLBACK_ROOT_DIR, "data"),
+];
+const FALLBACK_LOG_PATHS = [
+  "/var/log/express-blog",
+  path.join(os.homedir(), "local", "state", "express-blog", "logs"),
+  path.join(__dirname, FALLBACK_ROOT_DIR, "logs"),
+];
+const FALLBACK_CONFIG_PATHS = [
+  path.join(os.homedir(), ".config", "express-blog", "config.toml"), // XDG Compliance
+  path.join(os.homedir(), ".express-blog.toml"), // Hidden Home file
+  "/etc/express-blog/config.toml", // Global
+  "./config.toml",
+];
 
 /**
  * Validates and resolves an explicit configuration path.
@@ -10,24 +38,13 @@ const os = require("os");
  * @returns {{ path: string, isExplicit: true }}
  * @throws {Error} If the path does not exist.
  */
-function validateExplicitPath(rawPath, sourceName) {
-  const resolved = path.resolve(rawPath);
-
-  if (!fs.existsSync(resolved)) {
-    throw new Error(
-      `Explicit ${sourceName} config path does not exist: ${resolved}`,
-    );
-  }
-
-  return { path: resolved, isExplicit: true };
-}
 
 /**
  * Resolves the configuration file path based on priority.
  * Fallbacks include XDG standard paths and hidden home directory files.
  * @returns {{ path: string, isExplicit: boolean }}
  */
-function resolveConfigPath() {
+function resolveConfigPath(rootDir = FALLBACK_ROOT_DIR) {
   // 1. CLI Argument Priority
   const cliPath = getCliArgument("--config");
   if (cliPath) return validateExplicitPath(cliPath, "CLI");
@@ -37,18 +54,11 @@ function resolveConfigPath() {
   if (envPath) return validateExplicitPath(envPath, "Environment");
 
   // 3. Implicit Fallbacks
-  const tryPaths = [
-    path.join(os.homedir(), ".config", "express-blog", "config.toml"), // XDG Compliance
-    path.join(os.homedir(), ".express-blog.toml"), // Hidden Home file
-    "/etc/express-blog/config.toml", // Global
-    path.resolve("./config.toml"), // Local CWD
-  ];
-
-  const implicitPath = getFirstExistingPath(tryPaths);
+  const implicitPath = getFirstExistingPath(FALLBACK_CONFIG_PATHS, rootDir);
 
   if (!implicitPath) {
     throw new Error(
-      `No configuration found in searched paths: ${JSON.stringify(tryPaths)}`,
+      `No configuration found in searched paths: ${JSON.stringify(FALLBACK_CONFIG_PATHS)}`,
     );
   }
 
@@ -67,29 +77,55 @@ function getCliArgument(flag) {
 /**
  * Returns the first path in an array that exists on the filesystem.
  */
-function getFirstExistingPath(paths) {
-  return paths.find((p) => fs.existsSync(p)) || null;
+
+function getFirstExistingPath(paths, rootDir = FALLBACK_ROOT_DIR) {
+  for (const p of paths) {
+    const resolvedPath = path.resolve(p);
+    if (fs.existsSync(resolvedPath)) {
+      return resolvedPath;
+    }
+  }
+  return null;
 }
 
 function hydrate(c = {}) {
+  let rootDir = process.env.ROOT_DIR || c?.meta?.root_dir || FALLBACK_ROOT_DIR;
+  const paths = {
+    rootDir,
+    logDir:
+      process.env.LOG_DIR ||
+      c?.logging?.log_dir ||
+      getFirstExistingPath(FALLBACK_LOG_PATHS, rootDir),
+    dbPath:
+      process.env.LOGS_DB_PATH ||
+      c?.logging?.db_path ||
+      getFirstExistingPath(FALLBACK_DB_PATHS, rootDir),
+    contentPath:
+      process.env.CONTENT_PATH ||
+      c?.meta?.content_path ||
+      getFirstExistingPath(FALLBACK_CONTENT_PATHS, rootDir),
+  };
+
+  Object.entries(paths).forEach(([key, p]) => {
+    paths[key] = path.resolve(p);
+    validatePath(paths[key], key);
+  });
+  const { logDir, dbPath, contentPath } = paths;
+  rootDir = paths.rootDir;
+
   const schema = process.env.SERVER_SCHEMA || c?.network?.schema || "http";
   const domain = process.env.SERVER_DOMAIN || c?.network?.domain || "localhost";
   const address =
     process.env.SERVER_ADDRESS || c?.network?.address || "0.0.0.0";
   const port = process.env.SERVER_PORT || c?.network?.port || 3400;
-  const logDir = process.env.LOG_DIR || c?.logging?.log_dir;
-  const dbPath = process.env.LOGS_DB_PATH || c?.logging?.db_path;
-
-  if (logDir == undefined) {
-    throw new Error("Log dir is undefined");
-  }
 
   return {
     meta: {
       node_env: process.env.NODE_ENV || c?.meta?.node_env || "development",
       site_owner: process.env.SITE_OWNER || c?.meta?.site_owner || undefined,
       country: process.env.COUNTRY || c?.meta?.country || undefined,
-      rootDir: process.env.ROOT_DIR || c?.meta?.root_dir,
+      rootDir,
+      content: contentPath,
     },
     logging: {
       logDir,
