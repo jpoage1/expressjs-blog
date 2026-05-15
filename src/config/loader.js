@@ -146,6 +146,7 @@ function hydrate(c = {}) {
       port,
     },
     auth: {
+      enabled: process.env.AUTH_ENABLE || c?.auth?.enable || false,
       verify: process.env.AUTH_VERIFY || c?.auth?.verify || null,
       login: process.env.AUTH_LOGIN || c?.auth?.login || null,
       cache_ttl:
@@ -204,4 +205,8 @@ function loadConfig() {
 }
 
 const config = loadConfig();
+console.log("--------------------------------------------------");
+console.log("------------------CONFIGURATION-------------------");
+console.log("--------------------------------------------------");
+console.log(config);
 module.exports = config;

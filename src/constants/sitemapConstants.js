@@ -1,7 +1,9 @@
 // constants/sitemapConstants.js
-const STATIC_SITEMAP_PATH = "../../content/sitemap.json";
-const POSTS_PATH = "../../content/posts";
-const PAGES_PATH = "../../content/pages";
+const path = require("path");
+const { meta } = require("../config/loader.js");
+const STATIC_SITEMAP_PATH = path.join(meta.content, "/sitemap.json");
+const POSTS_PATH = path.join(meta.content, "posts");
+const PAGES_PATH = path.join(meta.content, "pages");
 
 const DEFAULT_CHANGEFREQ = "monthly";
 const DEFAULT_PRIORITY = "0.5";

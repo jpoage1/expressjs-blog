@@ -1,4 +1,5 @@
 // middleware/authCheck.js
+const config = require("../config/loader.js");
 
 const crypto = require("crypto");
 function generateNonce() {
@@ -7,6 +8,15 @@ function generateNonce() {
 
 module.exports = async (req, res, next) => {
   // Initialize default state
+  if (!config.auth.enabled) {
+    res.locals.session = {
+      nonce: generateNonce(),
+      isAuthenticated: true,
+      user: "user",
+      groups: [],
+    };
+    return next();
+  }
   res.locals.session = {
     nonce: generateNonce(),
     isAuthenticated: false,

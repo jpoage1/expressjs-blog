@@ -1,5 +1,7 @@
 const helmet = require("helmet");
 const hpp = require("hpp");
+const rateLimit = require("express-rate-limit");
+
 const xssSanitizer = require("../utils/xssSanitizer");
 const HttpError = require("../utils/HttpError");
 const { baseUrl } = require("../utils/baseUrl");
@@ -14,6 +16,14 @@ const {
 } = require("../config/securityConfig");
 
 const { meta } = require("../config/loader");
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: "Too many requests from this IP, please try again later.",
+});
 
 const disablePoweredBy = (req, res, next) => {
   req.app.disable("x-powered-by");
@@ -56,7 +66,7 @@ const applyProductionSecurity = [
   disablePoweredBy,
   hpp(),
   xssSanitizer,
-  // rateLimit middleware can be added here
+  limiter,
   blockLocalhostAccess,
   helmet.hsts({ maxAge: HSTS_MAX_AGE }),
   securityPolicy(),

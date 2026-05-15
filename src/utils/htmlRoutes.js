@@ -6,6 +6,8 @@ const path = require("path");
 const yaml = require("js-yaml");
 const { baseUrl } = require("./baseUrl.js");
 
+const { meta } = require("../config/loader.js");
+
 class HtmlRoutes extends BaseRoute {
   constructor() {
     super();
@@ -20,10 +22,7 @@ class HtmlRoutes extends BaseRoute {
    */
   async register(routePath, contentFolder) {
     // Use the 'contentFolder' argument to find the directory
-    const folderPath = path.join(
-      __dirname,
-      `../../content/html/${contentFolder}`,
-    );
+    const folderPath = path.join(`${meta.content}/html/${contentFolder}`);
     const configPath = path.join(folderPath, `config.yaml`);
     // The router's endpoint
     const assetsRouterPath = path.join(routePath, "assets");

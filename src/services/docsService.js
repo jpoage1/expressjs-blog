@@ -2,14 +2,19 @@ const fs = require("fs/promises");
 const path = require("path");
 const yaml = require("js-yaml");
 const { winstonLogger } = require("../utils/logging");
+const { PathNotFoundError } = require("../utils/errors");
+const { meta } = require("../config/loader.js");
 
-const docsDir = path.join(__dirname, "../../content/docs");
+const docsDir = path.join(meta.content, "/docs");
 const docsCache = {}; // { [path]: { modules: {}, crossCuttingSummary: {} } }
 
 async function loadDocFile(filePath) {
   if (docsCache[filePath]) return docsCache[filePath];
   try {
     const fullPath = path.join(docsDir, filePath + ".yaml");
+    if (!path.resolve(fullPath)) {
+      throw new PathNotFoundError(fullPath, "Yaml Docs");
+    }
     const fileContent = await fs.readFile(fullPath, "utf-8");
     const parsed = yaml.load(fileContent);
     const crossCuttingSummary = parsed["Cross Cutting Summary"] || null;

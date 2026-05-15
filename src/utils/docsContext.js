@@ -6,13 +6,13 @@ const yaml = require("js-yaml");
 const { qualifyNavLinks } = require("./qualifyLinks");
 const { baseUrl } = require("./baseUrl");
 const generateDocsMenuModel = require("./generateDocsMenuModel");
-const navLinks = require(path.join(__dirname, "../../content/navLinks.json"));
 const processMenuLinks = require("../utils/processMenuLinks");
 const { meta } = require("../config/loader");
+const navLinks = require(path.join(meta.content, "navLinks.json"));
 
 const getSiteTitle = (owner) => `${owner}'s Software Blog`;
 
-const YAML_DOCS_DIR = path.join(__dirname, "../../content/docs");
+const YAML_DOCS_DIR = path.join(meta.content, "/docs");
 
 /**
  * Load and parse all YAML documentation files in content/docs/

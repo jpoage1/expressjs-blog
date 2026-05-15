@@ -36,7 +36,7 @@ createProject("/about/blog", "projects/about-blog", {
 
 router.get("/projects", async (req, res, next) => {
   try {
-    const projectsDir = path.join(__dirname, "../../content/pages/projects");
+    const projectsDir = path.join(meta.content, "/pages/projects");
     const files = await fs.readdir(projectsDir);
 
     const projects = [];

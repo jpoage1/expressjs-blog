@@ -6,6 +6,8 @@ const matter = require("gray-matter");
 const { marked } = require("marked");
 const { getProjectDates } = require("../utils/gitDates"); // Import the utility
 
+const { meta } = require("../config/loader.js");
+
 class MarkdownRoutes extends BaseRoute {
   constructor() {
     super();
@@ -23,10 +25,7 @@ class MarkdownRoutes extends BaseRoute {
     }
     this.router.get(routePath, async (req, res, next) => {
       try {
-        const filePath = path.join(
-          __dirname,
-          `../../content/pages/${markdownFile}.md`,
-        );
+        const filePath = path.join(`${meta.content}/pages/${markdownFile}.md`);
         const fileContent = await fs.readFile(filePath, "utf8");
         const { data: frontmatter, content } = matter(fileContent);
 

@@ -9,9 +9,14 @@ const yaml = require("js-yaml");
 const { glob } = require("glob");
 const { qualifySitemapLinks } = require("../utils/qualifyLinks");
 const { winstonLogger } = require("../utils/logging");
+const { meta } = require("../config/loader.js");
+const { validatePath } = require("../utils/validation.js");
 
-const CONTENT_ROOT = path.resolve(__dirname, "../../content");
-const NAVLINKS_PATH = path.resolve(__dirname, "../../content/navLinks.json");
+const CONTENT_ROOT = validatePath(meta.content, "Content Root");
+const NAVLINKS_PATH = validatePath(
+  path.join(meta.content, "navLinks.json"),
+  "navLinks",
+);
 
 const pattern = `${CONTENT_ROOT}/**/*.md`;
 
@@ -127,7 +132,7 @@ class SitemapService {
   }
 
   async getDocsEntries(filePath) {
-    const docsDir = path.resolve(__dirname, "../../content/docs");
+    const docsDir = path.resolve(meta.content, "docs");
     const files = await fs.readdir(docsDir);
     const entries = [];
 

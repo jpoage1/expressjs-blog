@@ -1,7 +1,8 @@
 // src/authConfig.js
 const { TRUST_PROXY } = require("../constants/middlewareConstants");
 
-const { meta, session } = require("../config/loader");
+const config = require("../config/loader");
+const { meta, session } = config;
 const { auth, requiresAuth } = require("express-openid-connect");
 const { baseUrl } = require("../utils/baseUrl.js");
 
@@ -65,4 +66,8 @@ const authConfig = {
   },
 };
 
-module.exports = auth(authConfig);
+function disableAuth(req, res, next) {
+  next();
+}
+
+module.exports = config.auth.enabled ? auth(authConfig) : disableAuth;

@@ -2579,7 +2579,7 @@ __metadata:
     express-handlebars: "npm:^8.0.3"
     express-list-endpoints: "npm:^7.1.1"
     express-openid-connect: "npm:^2.19.4"
-    express-rate-limit: "npm:^8.0.1"
+    express-rate-limit: "npm:^8.5.2"
     fast-check: "npm:^4.2.0"
     glob: "npm:^11.0.3"
     gray-matter: "npm:^4.0.3"
@@ -2661,14 +2661,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-rate-limit@npm:^8.0.1":
-  version: 8.0.1
-  resolution: "express-rate-limit@npm:8.0.1"
+"express-rate-limit@npm:^8.5.2":
+  version: 8.5.2
+  resolution: "express-rate-limit@npm:8.5.2"
   dependencies:
-    ip-address: "npm:10.0.1"
+    ip-address: "npm:^10.2.0"
   peerDependencies:
     express: ">= 4.11"
-  checksum: 10c0/c3cca4a87c6839e3ed94617405091e80ecbcc7200e34495aeedc48c819ce1ca7073d522706e46369cc252b8df0364ae5ff181f4ae75e75cbbe9adf3f19ec6666
+  checksum: 10c0/c98c49b93e94627940cf5e7c2578718b94d77163357161c3343d148e46257136c988933a96d6e1e728a010683133a58f68cad46928b063cf8d99521c8772578d
   languageName: node
   linkType: hard
 
@@ -3778,10 +3778,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ip-address@npm:10.0.1":
-  version: 10.0.1
-  resolution: "ip-address@npm:10.0.1"
-  checksum: 10c0/1634d79dae18394004775cb6d699dc46b7c23df6d2083164025a2b15240c1164fccde53d0e08bd5ee4fc53913d033ab6b5e395a809ad4b956a940c446e948843
+"ip-address@npm:^10.2.0":
+  version: 10.2.0
+  resolution: "ip-address@npm:10.2.0"
+  checksum: 10c0/5a00aada6e922c9c69dfc800ed5d0fa3348675ebdeed0e1575f503f27ca385b5f534363c9af7ad1daf64c1f1409388cdd3cc2e9b9b0fe1c924a431378d55075a
   languageName: node
   linkType: hard
 

@@ -27,7 +27,7 @@ const favicon = require("serve-favicon");
 const faviconsPath = path.join(__dirname, "..", "..", "public", "favicons");
 const faviconFile = path.resolve(faviconsPath, "favicon.ico");
 
-const hexascriptDocs = require("../../content/docs/hexascript/src/script.js");
+const hexascriptDocs = require(`${meta.content}/docs/hexascript/src/script.js`);
 
 router.head("/health", (req, res) => {
   res.sendStatus(200);

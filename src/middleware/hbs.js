@@ -3,6 +3,8 @@ const path = require("path");
 const exphbs = require("express-handlebars");
 const Handlebars = require("handlebars");
 
+const { meta } = require("../config/loader.js");
+
 const { registerHelpers } = require("../utils/hbsHelpers");
 const {
   VIEW_ENGINE,
@@ -80,7 +82,7 @@ const hbsMiddleware = (req, res, next) => {
     req.app.set("view engine", VIEW_ENGINE);
     req.app.set("views", [
       path.join(__dirname, "../views"),
-      path.join(__dirname, "../../content/docs/hexascript"),
+      path.join(meta.content, "/docs/hexascript"),
     ]);
   }
 

@@ -62,6 +62,10 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/src ./src
 
+# Create required system paths and ensure proper permissions
+RUN mkdir -p /var/lib/express-blog /var/log/express-blog && \
+    chmod 755 /var/lib/express-blog /var/log/express-blog
+
 RUN corepack enable && corepack prepare yarn@4.9.2 --activate
 
 EXPOSE 3000

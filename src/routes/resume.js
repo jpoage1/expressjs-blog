@@ -31,7 +31,7 @@ function filterByProfile(data, profile) {
 
 router.get("/", async (req, res, next) => {
   try {
-    const dataPath = path.resolve(__dirname, "../../content/resume.json");
+    const dataPath = path.resolve(meta.content, "/resume.json");
     const fileContent = await fs.readFile(dataPath, "utf8");
     const resumeData = JSON.parse(fileContent);
 

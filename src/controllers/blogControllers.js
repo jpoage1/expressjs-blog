@@ -33,7 +33,7 @@ exports.blogPost = async (req, res, next) => {
 
   const mdPath = path.join(
     __dirname,
-    "../../content/posts",
+    `${meta.content}/posts`,
     year,
     month,
     `${name}.md`,
@@ -84,7 +84,7 @@ exports.blogPost = async (req, res, next) => {
 };
 
 exports.blogIndex = async (req, res) => {
-  const postsDir = path.join(__dirname, "../../content/posts");
+  const postsDir = path.join(meta.content, "posts");
   const allPosts = await getAllPosts(postsDir, {
     includeUnpublished: req.query.drafts === "true",
   });

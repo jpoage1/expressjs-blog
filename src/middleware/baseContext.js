@@ -8,13 +8,13 @@ const getPostsMenu = require("../services/postsMenuService");
 const { formatMonth } = require("../utils/formatMonth");
 const { qualifyNavLinks } = require("../utils/qualifyLinks.js");
 const { baseUrl } = require("../utils/baseUrl.js");
-const navLinks = require(path.join(__dirname, "../../content/navLinks.json"));
-const processMenuLinks = require("../utils/processMenuLinks");
 const { meta } = require("../config/loader");
+const navLinks = require(path.join(meta.content, "/navLinks.json"));
+const processMenuLinks = require("../utils/processMenuLinks");
 
 const getSiteTitle = (owner) => `${owner}'s Software Blog`;
 
-const POSTS_DIR = path.join(__dirname, "../../content/posts");
+const POSTS_DIR = path.join(meta.content, "/posts");
 
 /**
  * Merges CSS class and style overrides with default values.
