@@ -197,7 +197,16 @@ function loadConfig() {
   try {
     const raw = fs.readFileSync(path.resolve(configPath), "utf8");
     const toml_config = parse(raw);
-    return hydrate(toml_config);
+    const config = hydrate(toml_config);
+    const include = function (file) {
+      const fullPath = path.join(this.meta.content, file);
+      const resolved = path.resolve(fullPath);
+      return require(resolved);
+    }.bind(config);
+    config.include = include;
+    config.routes = include("routes.js");
+
+    return config;
   } catch (err) {
     console.error(`Failed to load config at ${configPath}:`, err.stack);
     process.exit(1);

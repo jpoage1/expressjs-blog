@@ -13,9 +13,10 @@ const resume = require("./resume");
 const contact = require("./contact");
 const sitemap = require("./sitemap");
 const { blogPost, blogIndex } = require("../controllers/blogControllers");
-const pages = require("./pages");
+const newsletter = require("./newsletter");
+
 const guestAccess = require("./guestAccessRouter");
-const projects = require("./projects");
+const pages = require("./pages");
 const docs = require("./docs");
 const rssFeedController = require("../controllers/rssFeedController");
 const HttpError = require("../utils/HttpError");
@@ -88,8 +89,8 @@ router.use(favicon(faviconFile));
 router.use(contact, csrfToken);
 router.use("/resume", resume);
 router.use(sitemap);
+router.use(newsletter, csrfToken);
 router.use(pages);
-router.use(projects);
 router.use(tags);
 router.use("/docs", docs);
 
