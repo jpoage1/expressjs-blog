@@ -29,6 +29,9 @@ FROM node:22-bookworm-slim
 
 WORKDIR /app
 ENV NODE_ENV=production
+ENV PORT=3000
+ENV CONFIG_PATH=/etc/app/config.toml
+
 
 # Install runtime library for sharp (vips)
 RUN apt-get update && apt-get install -y \

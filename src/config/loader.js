@@ -2,12 +2,83 @@ const fs = require("fs");
 const path = require("path");
 const { parse } = require("smol-toml");
 
-DEFAULT_CONFIG_PATH = "config.toml";
+const fs = require("fs");
+const path = require("path");
+const os = require("os");
+
+/**
+ * Validates and resolves an explicit configuration path.
+ * @param {string} rawPath - The raw path string from CLI or ENV.
+ * @param {string} sourceName - The name of the source for error reporting.
+ * @returns {{ path: string, isExplicit: true }}
+ * @throws {Error} If the path does not exist.
+ */
+function validateExplicitPath(rawPath, sourceName) {
+  const resolved = path.resolve(rawPath);
+
+  if (!fs.existsSync(resolved)) {
+    throw new Error(
+      `Explicit ${sourceName} config path does not exist: ${resolved}`,
+    );
+  }
+
+  return { path: resolved, isExplicit: true };
+}
+
+/**
+ * Resolves the configuration file path based on priority.
+ * Fallbacks include XDG standard paths and hidden home directory files.
+ * @returns {{ path: string, isExplicit: boolean }}
+ */
+function resolveConfigPath() {
+  // 1. CLI Argument Priority
+  const cliPath = getCliArgument("--config");
+  if (cliPath) return validateExplicitPath(cliPath, "CLI");
+
+  // 2. Environment Variable Priority
+  const envPath = process.env.CONFIG_PATH;
+  if (envPath) return validateExplicitPath(envPath, "Environment");
+
+  // 3. Implicit Fallbacks
+  const tryPaths = [
+    path.join(os.homedir(), ".config", "express-blog", "config.toml"), // XDG Compliance
+    path.join(os.homedir(), ".express-blog.toml"), // Hidden Home file
+    "/etc/express-blog/config.toml", // Global
+    path.resolve("./config.toml"), // Local CWD
+  ];
+
+  const implicitPath = getFirstExistingPath(tryPaths);
+
+  if (!implicitPath) {
+    throw new Error(
+      `No configuration found in searched paths: ${JSON.stringify(tryPaths)}`,
+    );
+  }
+
+  return { path: implicitPath, isExplicit: false };
+}
+
+/**
+ * Extracts value from CLI arguments.
+ */
+function getCliArgument(flag) {
+  const index = process.argv.indexOf(flag);
+  const hasNextValue = index !== -1 && process.argv[index + 1];
+  return hasNextValue ? process.argv[index + 1] : null;
+}
+
+/**
+ * Returns the first path in an array that exists on the filesystem.
+ */
+function getFirstExistingPath(paths) {
+  return paths.find((p) => fs.existsSync(p)) || null;
+}
 
 function hydrate(c = {}) {
   const schema = process.env.SERVER_SCHEMA || c?.network?.schema || "http";
   const domain = process.env.SERVER_DOMAIN || c?.network?.domain || "localhost";
-  const address = process.env.ADDRESS || c?.network?.address || "0.0.0.0";
+  const address =
+    process.env.SERVER_ADDRESS || c?.network?.address || "0.0.0.0";
   const port = process.env.SERVER_PORT || c?.network?.port || 3400;
   const logDir = process.env.LOG_DIR || c?.logging?.log_dir;
   const dbPath = process.env.LOGS_DB_PATH || c?.logging?.db_path;
@@ -87,22 +158,7 @@ function hydrate(c = {}) {
 function loadConfig() {
   // Use a simple flag parser (e.g., --config)
   const configIdx = process.argv.indexOf("--config");
-  let configPath = configIdx !== -1 ? process.argv[configIdx + 1] : null;
-
-  if (!configPath) {
-    console.info("Notice: No config file provided. Use --config <path>");
-    console.info("  Using defaults");
-    configPath = DEFAULT_CONFIG_PATH;
-    let toml_config = {};
-    try {
-      const raw = fs.readFileSync(path.resolve(configPath), "utf8");
-      const toml_config = parse(raw);
-      return hydrate(toml_config);
-    } catch (e) {
-      console.warn("Warning: ", e.stack);
-      return hydrate(toml_config);
-    }
-  }
+  let configPath = resolveConfigPath();
 
   try {
     const raw = fs.readFileSync(path.resolve(configPath), "utf8");
