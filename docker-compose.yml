@@ -7,7 +7,7 @@ services:
         NODE_ENV: production
         GIT_REPO: ${GIT_REPO:-https://github.com/jpoage1/expressjs-blog.git}
         GIT_COMMIT: ${GIT_COMMIT:-main}
-    image: express-blog:latest
+    image: jpoage1/express-blog:latest
     environment:
       NODE_ENV: production
     ports:

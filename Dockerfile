@@ -21,7 +21,7 @@ RUN git clone --depth 1 --branch "$GIT_COMMIT" "$GIT_REPO" . \
 RUN corepack enable && corepack prepare yarn@4.9.2 --activate
 
 # Install dependencies and build assets
-RUN yarn install
+RUN yarn install  --frozen-lockfile
 RUN yarn combine:css
 
 # ---- Runtime Stage ----
@@ -45,4 +45,4 @@ COPY --from=builder /app/src ./src
 RUN corepack enable && corepack prepare yarn@4.9.2 --activate
 
 EXPOSE 3000
-CMD ["yarn", "prod"]
+CMD ["yarn", "start"]

@@ -2,13 +2,15 @@ const fs = require("fs");
 const path = require("path");
 const { parse } = require("smol-toml");
 
+DEFAULT_CONFIG_PATH = "config.toml";
+
 function hydrate(c = {}) {
-  const schema = c?.network?.schema || process.env.SERVER_SCHEMA || "http";
-  const domain = c?.network?.domain || process.env.SERVER_DOMAIN || "localhost";
-  const address = c?.network?.address || process.env.ADDRESS || "0.0.0.0";
-  const port = c?.network?.port || process.env.SERVER_PORT || 3400;
-  const logDir = c?.logging?.log_dir || process.env.LOG_DIR;
-  const dbPath = c?.logging?.db_path || process.env.LOGS_DB_PATH;
+  const schema = process.env.SERVER_SCHEMA || c?.network?.schema || "http";
+  const domain = process.env.SERVER_DOMAIN || c?.network?.domain || "localhost";
+  const address = process.env.ADDRESS || c?.network?.address || "0.0.0.0";
+  const port = process.env.SERVER_PORT || c?.network?.port || 3400;
+  const logDir = process.env.LOG_DIR || c?.logging?.log_dir;
+  const dbPath = process.env.LOGS_DB_PATH || c?.logging?.db_path;
 
   if (logDir == undefined) {
     throw new Error("Log dir is undefined");
@@ -16,10 +18,10 @@ function hydrate(c = {}) {
 
   return {
     meta: {
-      node_env: c?.meta?.node_env || process.env.NODE_ENV || "development",
-      site_owner: c?.meta?.site_owner || process.env.SITE_OWNER || undefined,
-      country: c?.meta?.country || process.env.COUNTRY || undefined,
-      rootDir: c?.meta?.root_dir || process.env.ROOT_DIR,
+      node_env: process.env.NODE_ENV || c?.meta?.node_env || "development",
+      site_owner: process.env.SITE_OWNER || c?.meta?.site_owner || undefined,
+      country: process.env.COUNTRY || c?.meta?.country || undefined,
+      rootDir: process.env.ROOT_DIR || c?.meta?.root_dir,
     },
     logging: {
       logDir,
@@ -28,10 +30,10 @@ function hydrate(c = {}) {
       getDBFile: (file) => path.join(dbPath, file),
     },
     public: {
-      schema: c?.public?.schema || process.env.SERVER_SCHEMA || schema,
-      port: c?.public?.port || process.env.SERVER_PORT || port,
-      domain: c?.public?.domain || process.env.SERVER_DOMAIN || domain,
-      address: c?.public?.address || process.env.SERVER_ADDRESS || address,
+      schema: process.env.SERVER_SCHEMA || c?.public?.schema || schema,
+      port: process.env.SERVER_PORT || c?.public?.port || port,
+      domain: process.env.SERVER_DOMAIN || c?.public?.domain || domain,
+      address: process.env.SERVER_ADDRESS || c?.public?.address || address,
     },
     network: {
       domain,
@@ -40,36 +42,45 @@ function hydrate(c = {}) {
       port,
     },
     auth: {
-      verify: c?.auth?.verify || process.env.AUTH_VERIFY || null,
-      login: c?.auth?.login || process.env.AUTH_LOGIN || null,
+      verify: process.env.AUTH_VERIFY || c?.auth?.verify || null,
+      login: process.env.AUTH_LOGIN || c?.auth?.login || null,
       cache_ttl:
-        c?.auth?.cache_ttl ||
         parseInt(process.env.AUTH_CACHE_TTL, 10) ||
+        c?.auth?.cache_ttl ||
         120000,
-      timeout_ms: c?.auth?.timeout_ms || process.env.AUTH_TIMEOUT_MS || 5000,
+      timeout_ms: process.env.AUTH_TIMEOUT_MS || c?.auth?.timeout_ms || 5000,
     },
     session: {
       cookie: {
-        secure: true, // Required since you are using HTTPS via Nginx
-        sameSite: "Lax", // Allows the cookie to be sent on the top-level redirect back
-        domain: ".jasonpoage.com", // Ensures the cookie is visible across subdomains
+        secure:
+          process.env.SESSION_COOKIE_SECURE ||
+          c?.session?.cookie?.secure ||
+          true, // Required since you are using HTTPS via Nginx
+        sameSite:
+          process.env.SESSION_COOKIE_SAME_SITE ||
+          c?.session?.cookie?.sameSite ||
+          "Lax", // Allows the cookie to be sent on the top-level redirect back
+        domain:
+          process.env.SESSION_COOKIE_DOMAIN ||
+          c?.session?.cookie?.domain ||
+          domain, // Ensures the cookie is visible across subdomains
       },
     },
     mail: {
-      secure: c?.mail?.secure || process.env.MAIL_SECURE || false,
-      auth: c?.mail?.auth || process.env.MAIL_AUTH || null,
-      domain: c?.mail?.domain || process.env.MAIL_DOMAIN || "localhost",
-      host: c?.mail?.host || process.env.MAIL_HOST || "localhost",
-      port: c?.mail?.port || process.env.MAIL_PORT || 1025,
+      secure: process.env.MAIL_SECURE || c?.mail?.secure || false,
+      auth: process.env.MAIL_AUTH || c?.mail?.auth || null,
+      domain: process.env.MAIL_DOMAIN || c?.mail?.domain || domain,
+      host: process.env.MAIL_HOST || c?.mail?.host || domain,
+      port: process.env.MAIL_PORT || c?.mail?.port || 1025,
       newsletter:
-        c?.mail?.newsletter ||
         process.env.MAIL_NEWSLETTER ||
-        "newsletter@localhost",
-      pass: c?.mail?.pass || null,
+        c?.mail?.newsletter ||
+        `newsletter@${domain}`,
+      pass: process.env.MAIL_PASS || c?.mail?.pass || null,
     },
     hcaptcha: {
-      secret: c?.hcaptcha?.secret || process.env.HCAPTCHA_SECRET || null,
-      key: c?.hcaptcha?.key || process.env.HCAPTCHA_KEY || null,
+      secret: process.env.HCAPTCHA_SECRET || c?.hcaptcha?.secret || null,
+      key: process.env.HCAPTCHA_KEY || c?.hcaptcha?.key || null,
     },
   };
 }
@@ -81,7 +92,7 @@ function loadConfig() {
   if (!configPath) {
     console.info("Notice: No config file provided. Use --config <path>");
     console.info("  Using defaults");
-    configPath = "config.toml";
+    configPath = DEFAULT_CONFIG_PATH;
     let toml_config = {};
     try {
       const raw = fs.readFileSync(path.resolve(configPath), "utf8");
