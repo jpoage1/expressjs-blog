@@ -17,8 +17,15 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     && rm -rf /var/lib/apt/lists/*
 
 # Clone specific commit/branch
-RUN git clone --depth 1 --branch "$GIT_COMMIT" "$GIT_REPO" . \
-    || (git clone "$GIT_REPO" . && git checkout "$GIT_COMMIT")
+# RUN git clone --depth 1 --branch "$GIT_COMMIT" "$GIT_REPO" . \
+#     || (git clone "$GIT_REPO" . && git checkout "$GIT_COMMIT")
+
+COPY ./.yarnrc.yml ./package.json ./yarn.lock ./
+COPY ./.yarn ./.yarn
+COPY ./node_modules ./node_modules
+COPY ./public ./public
+COPY ./scripts ./scripts
+COPY ./src ./src
 
 ENV YARN_CACHE_FOLDER=/var/cache/yarn
 ENV PUPPETEER_CACHE_DIR=/var/cache/puppeteer
@@ -38,7 +45,6 @@ FROM node:24-bookworm-slim
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
-ENV CONFIG_PATH=/etc/app/config.toml
 
 
 # Install runtime library for sharp (vips)

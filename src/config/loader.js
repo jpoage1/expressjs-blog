@@ -1,9 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const { parse } = require("smol-toml");
-
-const fs = require("fs");
-const path = require("path");
 const os = require("os");
 
 /**
@@ -158,7 +155,7 @@ function hydrate(c = {}) {
 function loadConfig() {
   // Use a simple flag parser (e.g., --config)
   const configIdx = process.argv.indexOf("--config");
-  let configPath = resolveConfigPath();
+  let configPath = resolveConfigPath().path;
 
   try {
     const raw = fs.readFileSync(path.resolve(configPath), "utf8");

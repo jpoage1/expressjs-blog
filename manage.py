@@ -3,54 +3,113 @@ import os
 import sys
 import subprocess
 import argparse
+from pathlib import Path
+from typing import Optional, Union
+
+CONFIG_PATH_TYPE = Union[Path, str]
+
+
+class ContainerNameError(Exception):
+    """Raised when an operation requiring an explicit container target is missing definition."""
+
+
+ERROR_TYPES = (FileNotFoundError, ContainerNameError)
 
 
 class ContainerManager:
-    def __init__(self, repo_name: str, git_repo: str, git_commit: str):
-        self.repo_name = repo_name
-        self.git_repo = git_repo
-        self.git_commit = git_commit
+    repo_name: Optional[str] = None
+    container_name: Optional[str] = None
+    git_repo: Optional[str] = None
+    git_commit: Optional[str] = None
+    config_path: Optional[CONFIG_PATH_TYPE] = None
+
+    def init(
+        self,
+        **kwargs,
+    ):
+        for arg_name in [
+            "repo_name",
+            "git_repo",
+            "git_commit",
+            "config_path",
+            "container_name",
+        ]:
+            arg = kwargs.get(arg_name, None)
+            if arg is not None:
+                self.__setattr__(arg_name, arg)
+
+    def set_config(self, config_path: CONFIG_PATH_TYPE) -> None:
+        resolved_path = Path(config_path).resolve()
+        if not resolved_path.exists():
+            raise FileNotFoundError
+        self.config_path = resolved_path
 
     def build(self) -> None:
-        """Builds the docker image utilizing host networking."""
+        """Builds the docker image utilizing host networking with optional build args."""
         cmd = [
             "docker",
             "build",
             "--network=host",
-            "--build-arg",
-            f"GIT_REPO={self.git_repo}",
-            "--build-arg",
-            f"GIT_COMMIT={self.git_commit}",
-            "-t",
-            f"{self.repo_name}:latest",
-            ".",
         ]
+
+        if self.git_repo:
+            cmd.extend(["--build-arg", f"GIT_REPO={self.git_repo}"])
+
+        if self.git_commit:
+            cmd.extend(["--build-arg", f"GIT_COMMIT={self.git_commit}"])
+
+        cmd.extend(
+            [
+                "-t",
+                f"{self.repo_name}:latest",
+                ".",
+            ]
+        )
+
         self._execute(cmd)
 
+    def _ensure_container_name(self):
+        if not self.container_name:
+            raise ContainerNameError
+
     def run(self) -> None:
-        """Executes podman run with the --replace flag."""
+        """Executes podman run with the --replace flag and optional volume mapping."""
+        self._ensure_container_name()
+
         cmd = [
             "podman",
             "run",
             "-d",
             "--replace",
             "--name",
-            "blog-test",
+            self.container_name,
             "-p",
             "3000:3000",
-            f"localhost/{self.repo_name}:latest",
         ]
+
+        if self.config_path:
+            cmd.extend(["-v", f"{self.config_path}:/app/config.toml:Z"])
+
+        cmd.append(f"localhost/{self.repo_name}:latest")
+
         self._execute(cmd)
 
     def logs(self) -> None:
-        """Streams container logs to stdout."""
-        cmd = ["podman", "logs", "-f", "blog-test"]
+        """Streams container logs to stdout. Fails explicitly if container_name is missing."""
+        self._ensure_container_name()
+
+        cmd = ["podman", "logs", "-f", self.container_name]
         self._execute(cmd)
 
     def clean(self) -> None:
-        """Removes the test container and prunes all local images."""
+        """Removes the test container and prunes all local images. Fails explicitly if container_name is missing."""
+        self._ensure_container_name()
+
         print("[*] Cleaning container storage...")
-        subprocess.run(["podman", "rm", "-f", "blog-test"], check=False)
+
+        remove_container = ["podman", "rm", "-f", self.container_name]
+        subprocess.run(remove_container, check=False)
+
         subprocess.run(["podman", "system", "prune", "-a", "-f"], check=True)
 
     def force_clean(self) -> None:
@@ -77,20 +136,16 @@ class ContainerManager:
             sys.exit(1)
 
 
-def ensure_root() -> None:
+def _ensure_root() -> None:
     """Forces re-execution with sudo if euid is not 0."""
     if os.geteuid() != 0:
         os.execvp("sudo", ["sudo", sys.executable] + sys.argv)
 
 
 def main() -> None:
-    ensure_root()
+    _ensure_root()
 
-    manager = ContainerManager(
-        repo_name="jpoage1/expressjs-blog",
-        git_repo="https://github.com/jpoage1/expressjs-blog",
-        git_commit="main",
-    )
+    manager = ContainerManager()
 
     dispatch = {
         "build": manager.build,
@@ -109,6 +164,37 @@ def main() -> None:
         nargs="?",
         help="Command to execute.",
     )
+    parser.add_argument(
+        "--name",
+        help="Target container name",
+    )
+    parser.add_argument(
+        "config",
+        nargs="?",
+        default="config.toml",
+        help="Config file",
+    )
+    parser.add_argument(
+        "-c",
+        "--config",
+        default="config.toml",
+        help="Path to the application configuration file.",
+    )
+    parser.add_argument(
+        "--repo-name",
+        default="jpoage1/expressjs-blog",
+        help="Target container repository name.",
+    )
+    parser.add_argument(
+        "--git-repo",
+        default="https://github.com/jpoage1/expressjs-blog",
+        help="Git source repository URL.",
+    )
+    parser.add_argument(
+        "--git-commit",
+        default="main",
+        help="Target git commit, branch, or identifier tag.",
+    )
 
     args = parser.parse_args()
 
@@ -116,7 +202,29 @@ def main() -> None:
         parser.print_help()
         sys.exit(0)
 
-    dispatch[args.command]()
+    manager.init(
+        repo_name=args.repo_name,
+        git_repo=args.git_repo,
+        git_commit=args.git_commit,
+        container_name=args.name,
+    )
+
+    if args.command == "run" and args.config:
+        try:
+            manager.set_config(args.config)
+        except FileNotFoundError as e:
+            sys.stderr.write(
+                f"CONFIGURATION_ERROR: Target definition file missing: {e.filename}\n"
+            )
+            sys.exit(1)
+
+    try:
+        dispatch[args.command]()
+    except ContainerNameError:
+        sys.stderr.write(
+            "COMMAND_VALIDATION_ERROR: Target target execution missing parameter: container_name\n"
+        )
+        sys.exit(1)
 
 
 if __name__ == "__main__":
