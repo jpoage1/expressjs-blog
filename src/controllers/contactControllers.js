@@ -1,7 +1,6 @@
 // src/routes/contact.js
 const { sendContactMail } = require("../utils/sendContactMail");
 const verifyHCaptcha = require("../utils/verifyHCaptcha");
-const { qualifyLink } = require("../utils/qualifyLinks");
 const { analyzeThreatLevel } = require("../utils/securityForensics");
 const { validateAndSanitizeEmail } = require("../utils/emailValidator");
 
@@ -28,7 +27,7 @@ module.exports.handleContactFormPost = async (req, res, next) => {
           formData: { name, email, subject, message },
           failureReason: emailResult.message || "invalid_input",
           processingStep: "validation",
-        }
+        },
       );
       return next(validationError);
     }
@@ -44,7 +43,7 @@ module.exports.handleContactFormPost = async (req, res, next) => {
     // Analyze threat level
     const threatAnalysis = analyzeThreatLevel(
       { name, email, message, subject },
-      securityData
+      securityData,
     );
 
     // Log form submission attempt
@@ -97,7 +96,7 @@ module.exports.handleContactFormPost = async (req, res, next) => {
     // Prepare and send email
     const emailData = prepareEmail(
       { name, email, message, subject },
-      threatAnalysis
+      threatAnalysis,
     );
 
     try {
@@ -126,7 +125,7 @@ module.exports.handleContactFormPost = async (req, res, next) => {
             name: emailError.name,
           },
           processingStep: "email_sending",
-        }
+        },
       );
 
       return next(emailFailureEvent);
@@ -157,7 +156,7 @@ module.exports.renderContactForm = async (req, res) => {
   const context = {
     csrfToken: res.locals.csrfToken,
     title: "Contact",
-    formAction: qualifyLink("/contact"),
+    formAction: res.locals.qualifyLink("/contact"),
     formMethod: "POST",
   };
 

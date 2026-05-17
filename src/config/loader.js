@@ -118,6 +118,11 @@ function hydrate(c = {}) {
   const address =
     process.env.SERVER_ADDRESS || c?.network?.address || "0.0.0.0";
   const port = process.env.SERVER_PORT || c?.network?.port || 3400;
+  const basePath = process.env.SERVER_BASE_PATH || c?.network?.base_path || "";
+  const publicSchema = process.env.PUBLIC_SCHEMA || c?.public?.schema || schema;
+  const fallbackPort =
+    publicSchema == "http" ? 80 : publicSchema == "https" ? 443 : port;
+  const publicPort = process.env.PUBLIC_PORT || c?.public?.port || fallbackPort;
 
   return {
     meta: {
@@ -133,17 +138,21 @@ function hydrate(c = {}) {
       dbPath,
       getDBFile: (file) => path.join(dbPath, file),
     },
+    // For constructing URL's
     public: {
-      schema: process.env.SERVER_SCHEMA || c?.public?.schema || schema,
-      port: process.env.SERVER_PORT || c?.public?.port || port,
-      domain: process.env.SERVER_DOMAIN || c?.public?.domain || domain,
-      address: process.env.SERVER_ADDRESS || c?.public?.address || address,
+      basePath: process.env.PUBLIC_BASE_PATH || c?.public?.base_path || "",
+      schema: publicSchema,
+      port: publicPort,
+      domain: process.env.PUBLIC_DOMAIN || c?.public?.domain || domain,
+      address: process.env.PUBLIC_ADDRESS || c?.public?.address || address,
     },
+    // For bootstrap
     network: {
       domain,
       address,
       schema,
       port,
+      basePath,
     },
     auth: {
       enabled: process.env.AUTH_ENABLE || c?.auth?.enable || false,

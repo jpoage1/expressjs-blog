@@ -2,7 +2,6 @@ const fs = require("fs");
 const path = require("path");
 const Handlebars = require("handlebars");
 const sitemapService = require("../services/sitemapService");
-const { qualifyLink } = require("../utils/qualifyLinks");
 
 // Precompile XML template once
 const xmlTplSrc = fs.readFileSync(
@@ -37,7 +36,7 @@ async function getSitemapXml(req, res, next) {
   try {
     const urls = await sitemapService.getAllUrls();
     const formattedUrls = urls.map((url) => ({
-      loc: qualifyLink(url.loc),
+      loc: res.locals.qualifyLink(url.loc),
       lastmod: url.lastmod,
       changefreq: url.changefreq,
       priority: url.priority,

@@ -4,7 +4,6 @@ const rateLimit = require("express-rate-limit");
 
 const xssSanitizer = require("../utils/xssSanitizer");
 const HttpError = require("../utils/HttpError");
-const { baseUrl } = require("../utils/baseUrl");
 const {
   LOCALHOST_HOSTNAMES,
   HEALTHCHECK_METHOD,

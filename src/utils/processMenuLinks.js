@@ -36,6 +36,7 @@ function processMenuLinks(
   session,
   currentPath,
   inheritedPolicy = "allow",
+  baseUri,
 ) {
   if (!links) return [];
   if (!session)
@@ -107,7 +108,7 @@ function processMenuLinks(
         if (currentPath !== "/" && !item.href.endsWith(currentPath))
           item.href += currentPath;
       } else if (item.html || item.frame || item.mermaid) {
-        item.href = `/docs/hexa/${item.html || item.frame || item.mermaid}`;
+        item.href = `/docs/${item.html || item.frame || item.mermaid}`;
       }
 
       return item;
@@ -117,7 +118,7 @@ function processMenuLinks(
       const policy = item.policy || inheritedPolicy;
       if (policy === "allow" || policy === "deny-children") return true;
       if (policy === "deny") {
-        console.log(session);
+        console.log(`[SESSION_DEBUG]: ${JSON.stringify(session)}`);
         return session.isAuthenticated && evaluateRules(item.rules, session);
       }
       return false;

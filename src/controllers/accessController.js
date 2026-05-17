@@ -1,5 +1,4 @@
 const { session } = require("../config/loader.js");
-const { baseUrl } = require("../utils/baseUrl.js");
 
 /**
  * Handles the GET request from a recruiter clicking the unique link.

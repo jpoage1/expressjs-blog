@@ -3,7 +3,7 @@ const path = require("path");
 const getPostsMenu = require("../services/postsMenuService");
 const { formatMonth } = require("../utils/formatMonth");
 const { qualifyNavLinks, qualifyLink } = require("../utils/qualifyLinks");
-const { baseUrl } = require("../utils/baseUrl.js");
+const { getBaseUrl } = require("../utils/baseUrl.js");
 
 const processMenuLinks = require("../utils/processMenuLinks");
 const { generateToken } = require("../utils/adminToken");
@@ -17,6 +17,8 @@ const POSTS_DIR = path.join(meta.content, "/posts");
 
 class BaseContextManager {
   constructor(req, res, next) {
+    this.basePath = "";
+    this.baseUrl = getBaseUrl();
     this.req = req;
     this.res = res;
     this.next = next;
@@ -30,6 +32,18 @@ class BaseContextManager {
   }
 
   async init() {
+    this.res.locals.basePath = this.getBasePath();
+    this.res.locals.baseUrl = getBaseUrl({
+      basePath: this.res.locals.basePath,
+    });
+    console.log(`basePath: ${this.res.locals.basePath}`);
+    console.log(`baseUrl: ${this.res.locals.baseUrl}`);
+    console.log(`port: ${config.public.port}`);
+    console.log(`port: ${config.network.port}`);
+
+    this.res.locals.qualifyLink = (path) =>
+      qualifyLink(path, this.res.locals.baseUrl);
+
     const session = this.res.locals.session || {
       isAuthenticated: false,
       user: null,
@@ -37,7 +51,17 @@ class BaseContextManager {
     };
     session.token = generateToken();
     this.baseContext = await this.getBaseContext(session, {});
+
     this.next();
+  }
+
+  getBasePath() {
+    const basePath = this.req.headers["x-base-path"] || config.public.basePath;
+    if (this.req.url.startsWith(basePath)) {
+      // Strip the dynamic path so the router routes match correctly
+      this.req.url = this.req.url.replace(basePath, "") || "/";
+    }
+    return basePath;
   }
 
   /**
@@ -99,7 +123,10 @@ class BaseContextManager {
 
   async getBaseContext(session, overrides = {}) {
     const filteredNavLinks = processMenuLinks(navLinks, session, this.req.path);
-    const qualifiedNavLinks = qualifyNavLinks(filteredNavLinks);
+    const qualifiedNavLinks = qualifyNavLinks(
+      filteredNavLinks,
+      this.res.locals.baseUrl,
+    );
     const menu = await getPostsMenu(POSTS_DIR);
     const siteOwner = meta.site_owner;
 
@@ -115,7 +142,8 @@ class BaseContextManager {
       navLinks: qualifiedNavLinks,
       years: menu,
       formatMonth,
-      baseUrl,
+      basePath: this.res.locals.basePath,
+      baseUrl: this.res.locals.baseUrl,
       isAuthenticated: session.isAuthenticated,
       endpoints: config.endpoints,
       userdata: session,

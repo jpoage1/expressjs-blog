@@ -3,7 +3,7 @@ const { baseUrl } = require("../utils/baseUrl");
 const isDisabled = (item) => item?.disabled ?? false;
 const isEnabled = (item) => !isDisabled(item);
 
-function qualifyLink(href) {
+function qualifyLink(href, baseUrl = "") {
   if (!href) return href;
   // Return unchanged if href is absolute URL or protocol-relative
   if (/^(?:[a-zA-Z][a-zA-Z\d+\-.]*:)?\/\//.test(href)) return href;

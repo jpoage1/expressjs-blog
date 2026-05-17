@@ -4,7 +4,6 @@ const BaseRoute = require("./BaseRoute");
 const fs = require("fs/promises");
 const path = require("path");
 const yaml = require("js-yaml");
-const { baseUrl } = require("./baseUrl.js");
 
 const { meta } = require("../config/loader.js");
 
@@ -49,7 +48,7 @@ class HtmlRoutes extends BaseRoute {
         const htmlContent = await fs.readFile(filePath, "utf8");
 
         // -- The uri
-        const assetsUri = baseUrl + assetsRouterPath;
+        const assetsUri = res.locals.baseUrl + assetsRouterPath;
 
         const extraStyles = pageConfig.styles.map(
           (stylePath) => assetsUri + "/" + stylePath,

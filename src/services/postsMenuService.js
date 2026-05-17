@@ -2,7 +2,7 @@
 const { getAllPosts } = require("../utils/postFileUtils");
 const { qualifyLink } = require("../utils/qualifyLinks");
 
-async function getPostsMenu(baseDir) {
+async function getPostsMenu(baseDir, baseUri = "") {
   const allPosts = await getAllPosts(baseDir);
 
   // Group posts by year and month
@@ -20,7 +20,7 @@ async function getPostsMenu(baseDir) {
     }
 
     monthMap.get(post.month).push({
-      url: qualifyLink(post.url),
+      url: qualifyLink(post.url, baseUri),
       slug: post.slug,
       title: post.title,
       date: post.date,

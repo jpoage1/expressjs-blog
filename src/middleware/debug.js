@@ -4,7 +4,6 @@ const router = require("express").Router();
 const { TRUST_PROXY } = require("../constants/middlewareConstants");
 const { meta, session } = require("../config/loader");
 const { requiresAuth } = require("express-openid-connect");
-const { baseUrl } = require("../utils/baseUrl.js");
 
 const cookieParser = require("cookie-parser");
 router.use(cookieParser());
@@ -32,7 +31,7 @@ const debug = async (req, res) => {
 
       metadata: {
         "trust-proxy": TRUST_PROXY,
-        baseUrl,
+        baseUrl: res.locals.baseUrl,
         user: username,
         // 1. Connection Security (Critical for Access Tokens)
         protocol: req.protocol,

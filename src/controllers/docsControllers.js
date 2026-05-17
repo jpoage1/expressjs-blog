@@ -1,8 +1,6 @@
 const fs = require("fs/promises");
 const path = require("path");
 const { createHash } = require("crypto");
-const { qualifyLink } = require("../utils/qualifyLinks");
-const { baseUrl } = require("../utils/baseUrl");
 const HttpError = require("../utils/HttpError");
 const docsContext = require("../utils/docsContext");
 const {
@@ -64,7 +62,9 @@ exports.renderDocsIndex = async (req, res, next) => {
     try {
       res.render("docs/index", {
         ...context,
-        docsPaths: yamlFiles.map((name) => `${req.baseUrl || ""}/${name}`),
+        docsPaths: yamlFiles.map(
+          (name) => `${res.locals.baseUrl || ""}/${name}`,
+        ),
       });
     } catch (err) {
       return next(
@@ -103,7 +103,7 @@ exports.renderDocsSummary = async (req, res, next) => {
 
     const context = await docsContext(res.locals.session, {
       layout: "docs",
-      docPath: req.baseUrl + "/docs/summary",
+      docPath: res.locals.baseUrl + "/docs/summary",
       docModule: null,
     });
     try {
@@ -133,18 +133,18 @@ exports.renderDocsByType = async (req, res, next) => {
 
   const context = await docsContext(res.locals.session, {
     layout: "docs",
-    docPath: req.baseUrl + "/docs" + docPath,
+    docPath: res.locals.baseUrl + "/docs" + docPath,
     docModule: null,
   });
 
   const modulesWithLinks = Object.entries(doc.modules).map(([key]) => ({
     name: key,
-    url: `${req.baseUrl}/docs/${docPath}/${key}`,
+    url: `${res.locals.baseUrl}/docs/${docPath}/${key}`,
   }));
   try {
     res.render("docs/path", {
       ...context,
-      docsHome: qualifyLink("/docs"),
+      docsHome: res.locals.qualifyLink("/docs"),
       pathName: docPath,
       crossCuttingSummary: doc.crossCuttingSummary,
       modules: modulesWithLinks,
@@ -178,8 +178,8 @@ exports.renderDocsModule = async (req, res, next) => {
   try {
     res.render("docs/module", {
       ...context,
-      docsHome: qualifyLink("/docs"),
-      pathUrl: qualifyLink("/docs/" + docPath),
+      docsHome: res.locals.qualifyLink("/docs"),
+      pathUrl: res.locals.qualifyLink("/docs/" + docPath),
       pathName: docPath,
       module,
       moduleDoc: filterModuleSecurityKeys(moduleDoc),

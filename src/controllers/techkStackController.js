@@ -3,13 +3,12 @@
 const HttpError = require("../utils/HttpError"); // Adjust path as needed
 const { meta } = require("../config/loader.js");
 const techStack = require(`${meta.content}/techStack.json`); // JSON file from previous message
-const { baseUrl } = require("../utils/baseUrl");
 module.exports = (req, res, next) => {
   try {
     const techWithBase = techStack.map((item) => ({
       ...item,
-      png: baseUrl + item.png,
-      svg: baseUrl + item.svg,
+      png: req.locals.baseUrl + item.png,
+      svg: req.locals.baseUrl + item.svg,
     }));
     res.renderWithBaseContext("pages/stack", {
       tech: techWithBase,

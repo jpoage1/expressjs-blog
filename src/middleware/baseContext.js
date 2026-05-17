@@ -7,7 +7,6 @@ const path = require("path");
 const getPostsMenu = require("../services/postsMenuService");
 const { formatMonth } = require("../utils/formatMonth");
 const { qualifyNavLinks } = require("../utils/qualifyLinks.js");
-const { baseUrl } = require("../utils/baseUrl.js");
 const { meta } = require("../config/loader");
 const navLinks = require(path.join(meta.content, "/navLinks.json"));
 const processMenuLinks = require("../utils/processMenuLinks");
@@ -21,6 +20,7 @@ const POSTS_DIR = path.join(meta.content, "/posts");
  * @param {Object} overrides - Object containing classes and styles to override.
  * @returns {Object} The merged CSS configuration object.
  */
+
 function cssOverride(overrides = {}) {
   const defaults = {
     classes: {
@@ -58,7 +58,7 @@ module.exports.attachBaseContextGetter = async (req, res, next) => {
       req.path,
     );
     const qualifiedNavLinks = qualifyNavLinks(filteredNavLinks);
-    const menu = await getPostsMenu(POSTS_DIR);
+    const menu = await getPostsMenu(POSTS_DIR, res.locals.baseUrl);
     const siteOwner = meta.site_owner;
 
     const context = {
@@ -69,7 +69,7 @@ module.exports.attachBaseContextGetter = async (req, res, next) => {
       navLinks: qualifiedNavLinks,
       years: menu,
       formatMonth,
-      baseUrl,
+      baseUrl: res.locals.baseUrl,
       isAuthenticated,
       node_env_dev: meta.node_env == "development",
       node_env_prod: meta.node_env != "development",
@@ -108,7 +108,7 @@ function renderGenericMessage(res, baseContext) {
 module.exports.buildBaseContext = async (req, res, next) => {
   const isAuthenticated = req.isAuthenticated;
   const token = generateToken();
-  const adminLoginUrl = qualifyLink(`/${token}`);
+  const adminLoginUrl = this.res.locals.qualifyLink(`/${token}`);
 
   const baseContext = await req.getBaseContext(isAuthenticated, {
     adminLoginUrl,

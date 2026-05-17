@@ -6,13 +6,12 @@ const {
 const sendNewsletterSubscriptionMail = require("../utils/sendNewsletterSubscriptionMail");
 const { validateAndSanitizeEmail } = require("../utils/emailValidator");
 const { ERRORS } = require("../constants/newsletterConstants");
-const { qualifyLink } = require("../utils/qualifyLinks");
 
 exports.renderNewsletterForm = async (req, res) => {
   res.renderWithBaseContext("pages/newsletter.handlebars", {
     csrfToken: res.locals.csrfToken,
     title: "Newsletter",
-    formAction: qualifyLink("/newsletter"),
+    formAction: res.locals.qualifyLink("/newsletter"),
     formMethod: "POST",
   });
 };

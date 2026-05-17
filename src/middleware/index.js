@@ -10,6 +10,7 @@ const validateRequestIntegrity = require("./validateRequestIntegrity");
 const errorHandler = require("./errorHandler");
 const { attachBaseContextGetter, buildBaseContext } = require("./baseContext");
 const BaseContext = require("../utils/baseContext");
+const { withBasePath } = require("./withBasePath");
 const hbs = require("./hbs");
 const authCheck = require("./authCheck");
 const { redirectMiddleware } = require("./redirect");
@@ -28,7 +29,6 @@ const debugMiddleware = require("./debug");
 const trace = require("./trace");
 const { meta, session } = require("../config/loader");
 const { auth, requiresAuth } = require("express-openid-connect");
-const { baseUrl } = require("../utils/baseUrl.js");
 
 function setupApp(config) {
   const app = express();
@@ -61,14 +61,20 @@ function setupApp(config) {
   app.use(formatHtml);
   app.use(redirectMiddleware);
   app.use(cacheUtils);
-  app.post("/track", logEvent("analytics"), analytics);
-  app.post("/analytics", logEvent("analytics"), analytics);
-  app.use("/admin", logEvent("admin"), securedMiddleware, securedRoutes);
-  app.use(logEvent("public"), routes);
 
-  app.use(errorHandler);
+  const router = express.Router();
 
-  return app;
+  router.post("/track", logEvent("analytics"), analytics);
+  router.post("/analytics", logEvent("analytics"), analytics);
+  router.use("/admin", logEvent("admin"), securedMiddleware, securedRoutes);
+  // app.post(withBasePath("/track"), logEvent("analytics"), analytics);
+  // app.post(withBasePath("/analytics"), logEvent("analytics"), analytics);
+  // app.use(withBasePath("/admin"), logEvent("admin"), securedMiddleware, securedRoutes);
+  router.use(logEvent("public"), routes);
+
+  router.use(errorHandler);
+
+  return app.use(withBasePath, router);
 }
 
 module.exports = setupApp;

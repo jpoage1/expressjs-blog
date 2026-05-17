@@ -3,8 +3,6 @@ const fs = require("fs/promises");
 const yaml = require("js-yaml");
 
 const HttpError = require("../utils/HttpError");
-const { qualifyLink } = require("../utils/qualifyLinks");
-const { baseUrl } = require("../utils/baseUrl");
 
 const yamlPath = path.resolve("content/presentation.yaml");
 
@@ -18,7 +16,7 @@ async function renderPresentation(req, res, next) {
         if (slide.images) {
           slide.images = slide.images.map((img) => {
             if (img.src && !img.src.match(/^https?:\/\//)) {
-              img.src = qualifyLink(img.src);
+              img.src = res.locals.qualifyLink(img.src);
             }
             return img;
           });
@@ -30,7 +28,7 @@ async function renderPresentation(req, res, next) {
       layout: "presentation",
       slides: data.slides,
       title: data.title,
-      baseUrl,
+      baseUrl: res.locals.baseUrl,
       returnUrl: req.returnUrl,
     });
   } catch (err) {

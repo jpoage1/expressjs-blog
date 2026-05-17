@@ -33,9 +33,11 @@ server.once("listening", () => {
   server.close();
 
   app.listen(c.port, () => {
-    winstonLogger.info(
-      `Server listening on ${c.schema}://${c.domain}:${c.port}`,
-    );
+    const listenInfo = [
+      `${c.schema}://${c.domain}:${c.port}`,
+      `${c.schema}://${c.address}:${c.port}`,
+    ];
+    winstonLogger.info(`Server listening on: ${JSON.stringify(listenInfo)}`);
     winstonLogger.info(`NODE_ENV: ${meta.node_env}`);
   });
 });
