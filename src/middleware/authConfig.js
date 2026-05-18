@@ -1,4 +1,5 @@
 // src/authConfig.js
+console.log("Fix auth config authConfig.js has hard coded config values");
 const { TRUST_PROXY } = require("../constants/middlewareConstants");
 
 const config = require("../config/loader");
@@ -48,7 +49,7 @@ const authConfig = {
   // },
   session,
   secret: "insecure_secret",
-  clientID: "express-blog",
+  clientID: "expressjs-blog",
   clientSecret: "insecure_secret",
   baseURL: baseUrl,
   issuerBaseURL: "https://auth.jasonpoage.com",
@@ -57,7 +58,7 @@ const authConfig = {
     response_type: "code",
     response_mode: "query",
     scope: "openid profile email groups",
-    // audience: "express-blog",
+    // audience: "expressjs-blog",
   },
   routes: {
     callback: "/auth/callback",

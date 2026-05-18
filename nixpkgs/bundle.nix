@@ -3,16 +3,16 @@
   lib,
   stdenv,
   makeWrapper,
-  express-blog,
+  expressjs-blog,
   python3,
   portable ? true,
   ...
 }: let
-  paths = express-blog.paths portable;
-  pythonEnv = python3.withPackages (ps: express-blog.api-server.propagatedBuildInputs);
+  paths = expressjs-blog.paths portable;
+  pythonEnv = python3.withPackages (ps: expressjs-blog.api-server.propagatedBuildInputs);
   api-server-bin = with paths;
     pkgs.writeTextFile {
-      name = "express-blog";
+      name = "expressjs-blog";
       executable = false;
       text = ''
         #!/bin/bash
@@ -21,8 +21,8 @@
     };
 in
   stdenv.mkDerivation {
-    pname = "express-blog-${lib.optionalString (!express-blog.portable) "-nix"}";
-    inherit (express-blog) version;
+    pname = "expressjs-blog-${lib.optionalString (!expressjs-blog.portable) "-nix"}";
+    inherit (expressjs-blog) version;
 
     # No source needed; we are just aggregating deliverables
     unpackPhase = "true";
@@ -30,20 +30,20 @@ in
     nativeBuildInputs = [makeWrapper];
 
     # Reference the completed derivations
-    buildInputs = with express-blog; [
+    buildInputs = with expressjs-blog; [
       blog-engine
     ];
 
-    dontPatchShebangs = express-blog.portable;
+    dontPatchShebangs = expressjs-blog.portable;
 
-    installPhase = with express-blog;
+    installPhase = with expressjs-blog;
     with paths; ''
       set -x
       # Initialize FHS structure
       mkdir -p $out/bin
-      mkdir -p $out/lib/express-blog
-      mkdir -p $out/share/express-blog
-      mkdir -p $out/etc/express-blog
+      mkdir -p $out/lib/expressjs-blog
+      mkdir -p $out/share/expressjs-blog
+      mkdir -p $out/etc/expressjs-blog
       set +x
     '';
 

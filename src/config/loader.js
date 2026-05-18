@@ -10,24 +10,24 @@ const {
 const FALLBACK_ROOT_DIR = path.resolve("./");
 
 const FALLBACK_CONTENT_PATHS = [
-  "/var/lib/express-blog",
-  path.join(os.homedir(), "share", "express-blog"),
+  "/var/lib/expressjs-blog",
+  path.join(os.homedir(), "share", "expressjs-blog"),
   path.join(__dirname, FALLBACK_ROOT_DIR, "content"),
 ];
 const FALLBACK_DB_PATHS = [
-  "/var/lib/express-blog/data",
-  path.join(os.homedir(), "local", "state", "express-blog", "data"),
+  "/var/lib/expressjs-blog/data",
+  path.join(os.homedir(), "local", "state", "expressjs-blog", "data"),
   path.join(__dirname, FALLBACK_ROOT_DIR, "data"),
 ];
 const FALLBACK_LOG_PATHS = [
-  "/var/log/express-blog",
-  path.join(os.homedir(), "local", "state", "express-blog", "logs"),
+  "/var/log/expressjs-blog",
+  path.join(os.homedir(), "local", "state", "expressjs-blog", "logs"),
   path.join(__dirname, FALLBACK_ROOT_DIR, "logs"),
 ];
 const FALLBACK_CONFIG_PATHS = [
-  path.join(os.homedir(), ".config", "express-blog", "config.toml"), // XDG Compliance
-  path.join(os.homedir(), ".express-blog.toml"), // Hidden Home file
-  "/etc/express-blog/config.toml", // Global
+  path.join(os.homedir(), ".config", "expressjs-blog", "config.toml"), // XDG Compliance
+  path.join(os.homedir(), ".expressjs-blog.toml"), // Hidden Home file
+  "/etc/expressjs-blog/config.toml", // Global
   "./config.toml",
 ];
 
@@ -125,6 +125,7 @@ function hydrate(c = {}) {
   const publicPort = process.env.PUBLIC_PORT || c?.public?.port || fallbackPort;
 
   return {
+    views: process.env.HANDLEBARS_VIEWS || c?.handlebars?.views || [],
     meta: {
       node_env: process.env.NODE_ENV || c?.meta?.node_env || "development",
       site_owner: process.env.SITE_OWNER || c?.meta?.site_owner || undefined,

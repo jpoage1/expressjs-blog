@@ -2,16 +2,16 @@
   pkgs,
   targetSuite,
   archName,
-  express-blog,
+  expressjs-blog,
   nfpm,
   ...
 }: let
-  inherit (express-blog) version;
+  inherit (expressjs-blog) version;
   postinstall = pkgs.writeText "post-install.sh" ''
     #!/bin/bash
     set -e
 
-    REQUIREMENTS="/usr/share/express-blog/requirements.txt"
+    REQUIREMENTS="/usr/share/expressjs-blog/requirements.txt"
 
     if [ -f "$REQUIREMENTS" ]; then
       echo "Installing Python dependencies from $REQUIREMENTS via pip..."
@@ -23,7 +23,7 @@
     fi
   '';
   nfpmConfig = pkgs.writeText "nfpm-${archName}.yaml" (builtins.toJSON {
-    name = "express-blog";
+    name = "expressjs-blog";
     arch = archName;
     platform = "linux";
     inherit version;
@@ -66,11 +66,11 @@
 in
   pkgs.stdenv.mkDerivation {
     inherit version;
-    name = "express-blog-${archName}";
+    name = "expressjs-blog-${archName}";
     nativeBuildInputs = [nfpm];
     phases = ["installPhase"];
     installPhase = ''
       mkdir -p $out
-      ${nfpm}/bin/nfpm package --config ${nfpmConfig} --packager deb --target $out/express-blog-${version}_${archName}.deb
+      ${nfpm}/bin/nfpm package --config ${nfpmConfig} --packager deb --target $out/expressjs-blog-${version}_${archName}.deb
     '';
   }

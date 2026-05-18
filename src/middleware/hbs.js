@@ -77,13 +77,14 @@ const hbsMiddleware = (req, res, next) => {
       runtimeOptions: RUNTIME_OPTIONS,
     });
 
+    const defaultViews = path.join(__dirname, "../views");
+    const views = [defaultViews];
+    config.views.foreach(views.push);
+
     registerHelpers(hbs);
     req.app.engine(VIEW_ENGINE, hbs.engine);
     req.app.set("view engine", VIEW_ENGINE);
-    req.app.set("views", [
-      path.join(__dirname, "../views"),
-      path.join(meta.content, "/docs/hexascript"),
-    ]);
+    req.app.set("views", defaultViews);
   }
 
   next();

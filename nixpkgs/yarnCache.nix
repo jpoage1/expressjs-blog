@@ -3,7 +3,7 @@
   stdenv,
   python3,
   pkg-config,
-  express-blog,
+  expressjs-blog,
   node-gyp,
   libGL,
   libX11,
@@ -12,7 +12,7 @@
   src ? ../.,
   ...
 }: let
-  inherit (express-blog) nodePackages version;
+  inherit (expressjs-blog) nodePackages version;
   inherit (nodePackages) yarn-berry;
   cleanedSource = lib.cleanSourceWith {
     inherit src;
@@ -51,7 +51,7 @@
   };
 in
   stdenv.mkDerivation {
-    name = "express-blog.yarn-cache";
+    name = "expressjs-blog.yarn-cache";
     src = cleanedSource;
 
     nativeBuildInputs =

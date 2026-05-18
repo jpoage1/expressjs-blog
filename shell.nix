@@ -1,9 +1,9 @@
 # shell.nix
 {pkgs ? import <nixpkgs> {}}: let
-  express-blog = pkgs.callPackage ./package.nix {};
+  expressjs-blog = pkgs.callPackage ./package.nix {};
 in
   pkgs.mkShell {
-    inputsFrom = [express-blog];
+    inputsFrom = [expressjs-blog];
     shellHook = ''
       export PYTHONPATH="$PYTHONPATH:$(pwd)/src"
       export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true

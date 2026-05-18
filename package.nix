@@ -10,7 +10,7 @@
   blogScope = lib.makeScope pkgs.newScope (self: let
     ctx = {
       inherit (self);
-      express-blog = self;
+      expressjs-blog = self;
       src = ./.;
     };
     dependencies = import ./nixpkgs/dependencies.nix params;
@@ -20,11 +20,11 @@
         if portable
         then {
           pythonBin = "${installBase}/bin/yarn";
-          sharePath = "${installBase}/share/express-blog";
+          sharePath = "${installBase}/share/expressjs-blog";
         }
         else {
           yarnBin = "${pkgs.yarn-berry}/bin/yarn";
-          sharePath = "${express-blog.blog-engine}/share/express-blog";
+          sharePath = "${expressjs-blog.blog-engine}/share/expressjs-blog";
         };
       # Shared Metadata
       inherit (builtins.fromJSON (builtins.readFile ./version.json)) version;
@@ -52,7 +52,7 @@
 
       # The final "Suite" as a symlinkJoin
       suite = pkgs.symlinkJoin {
-        name = "express-blog-${version}";
+        name = "expressjs-blog-${version}";
         paths = all;
         meta = with lib; {
           description = "Complete Express Blog Orchestration Suite";
@@ -85,7 +85,7 @@
           }
       );
 
-      express-blog = self;
+      expressjs-blog = self;
 
       docker = callPackage ./nixpkgs/docker.nix ctx;
     });

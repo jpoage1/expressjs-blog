@@ -5,7 +5,7 @@ pipeline {
         // Map the branch name from the webhook or manual trigger
         // If BRANCH_NAME is not set, we use the parameter
         TARGET_BRANCH = "${env.BRANCH_NAME ?: params.branch}"
-        GIT_REPO = 'ssh://git@git.jasonpoage.vpn:29418/jason/express-blog.git'
+        GIT_REPO = 'ssh://git@git.jasonpoage.vpn:29418/jason/expressjs-blog.git'
         CREDENTIALS_ID = '08a57452-477d-4aa6-86c6-242553660b3f'
     }
 
@@ -46,7 +46,7 @@ pipeline {
                   def mode = params.HOTFIX_MODE ? "--hotfix" : ""
                   def skipFlag = params.SKIP_TESTS ? "--skip-tests" : ""
                   // Call the python binary inside the venv directly
-                  sh "./.venv/bin/python3 -u ./deployment --config /etc/express-blog/deployment.lua --branch ${env.TARGET_BRANCH} ${skipFlag} ${mode}"
+                  sh "./.venv/bin/python3 -u ./deployment --config /etc/expressjs-blog/deployment.lua --branch ${env.TARGET_BRANCH} ${skipFlag} ${mode}"
               }
           }
       }

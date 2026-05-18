@@ -8,13 +8,13 @@
   python3,
   pkg-config,
   yarn-berry,
-  express-blog,
+  expressjs-blog,
   src ? ../.,
   ...
 }: let
   local_source = ./.;
   vpn_source = builtins.fetchGit {
-    url = "ssh://git@git.jasonpoage.vpn:29418/jason/express-blog.git";
+    url = "ssh://git@git.jasonpoage.vpn:29418/jason/expressjs-blog.git";
   };
   github_source = fetchFromGitHub {
     owner = "jpoage1";
@@ -24,7 +24,7 @@
   };
   deployment_pipeline = pkgs.callPackage local_source {};
   filteredSource = lib.cleanSourceWith {
-    name = "express-blog.blog-engine-source";
+    name = "expressjs-blog.blog-engine-source";
     inherit src;
     filter = name: type: let
       relPath = lib.removePrefix (toString src) (toString name);
@@ -71,7 +71,7 @@
   };
 in
   stdenv.mkDerivation rec {
-    pname = "express-blog";
+    pname = "expressjs-blog";
     version = "1.0.0";
 
     src = filteredSource;
@@ -89,15 +89,15 @@ in
 
     preBuild = ''
       export HOME=$(mktemp -d)
-      export YARN_CACHE_FOLDER=${express-blog.yarnCache}
+      export YARN_CACHE_FOLDER=${expressjs-blog.yarnCache}
 
-      echo "Setting custom cache folder to ${express-blog.yarnCache}"
+      echo "Setting custom cache folder to ${expressjs-blog.yarnCache}"
 
       export PUPPETEER_SKIP_DOWNLOAD=1
       export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1
 
       yarn config set enableGlobalCache false
-      yarn config set cacheFolder ${express-blog.yarnCache}
+      yarn config set cacheFolder ${expressjs-blog.yarnCache}
       yarn install --immutable --immutable-cache
     '';
 
@@ -116,8 +116,8 @@ in
     '';
 
     installPhase = ''
-      mkdir -p $out/share/express-blog
-      cp -r . $out/share/express-blog
+      mkdir -p $out/share/expressjs-blog
+      cp -r . $out/share/expressjs-blog
     '';
 
     meta = with lib; {

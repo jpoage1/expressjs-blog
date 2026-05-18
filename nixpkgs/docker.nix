@@ -2,28 +2,28 @@
   pkgs ? import <nixpkgs> {},
   lib,
   stdenv,
-  express-blog,
+  expressjs-blog,
   ...
 } @ params: let
-  bundle = express-blog.bundle.override {portable = false;};
+  bundle = expressjs-blog.bundle.override {portable = false;};
 
-  configPath = "/etc/express-blog/config.json";
+  configPath = "/etc/expressjs-blog/config.json";
 
   blogInit = ''
     set -x
-    mkdir -p /var/lib/express-blog
-    mkdir -p /var/log/express-blog
+    mkdir -p /var/lib/expressjs-blog
+    mkdir -p /var/log/expressjs-blog
 
     INIT_FLAG="/app/.initialized"
 
     if [ ! -f "$INIT_FLAG" ]; then
       echo "[INIT] First-time setup: Running migrations and seeds..."
-      express-blog migrate-up --config ${configPath}
-      express-blog seed --config ${configPath}
+      expressjs-blog migrate-up --config ${configPath}
+      expressjs-blog seed --config ${configPath}
       touch "$INIT_FLAG"
     fi
 
-    exec express-blog start --config ${configPath}
+    exec expressjs-blog start --config ${configPath}
   '';
   entrypoint = pkgs.writeShellScriptBin "entrypoint.sh" ''
     ${blogInit}
@@ -37,12 +37,12 @@
   ];
 in
   pkgs.dockerTools.buildImage {
-    name = "express-blog.docker";
+    name = "expressjs-blog.docker";
     tag = "latest";
     created = "now";
 
     copyToRoot = pkgs.buildEnv {
-      name = "express-blog.docker-image";
+      name = "expressjs-blog.docker-image";
       paths = dockerPkgs;
       pathsToLink = ["/bin" "/lib" "/share" "/etc"];
     };
@@ -51,14 +51,14 @@ in
       Cmd = ["entrypoint.sh"];
       WorkingDir = "/app";
 
-      Env = with express-blog; [
+      Env = with expressjs-blog; [
         "HOME=/root"
         "PATH=${pkgs.lib.makeBinPath dockerPkgs}"
       ];
 
       Volumes = {
-        "/var/lib/express-blog" = {};
-        "/etc/express-blog" = {};
+        "/var/lib/expressjs-blog" = {};
+        "/etc/expressjs-blog" = {};
       };
     };
   }
