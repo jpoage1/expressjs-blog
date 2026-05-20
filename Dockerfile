@@ -47,7 +47,7 @@ ENV BUILD_SHA=${BUILD_SHA}
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
-ENV LOG_DIR=/app/logs
+ENV LOG_DIR=/var/log/expressjs-blog
 
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -63,8 +63,8 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/src ./src
 
-RUN mkdir -p /var/log/express-blog && \
-    chmod 755 /var/log/express-blog
+RUN mkdir -p /var/log/expressjs-blog && \
+    chmod 755 /var/log/expressjs-blog
 
 RUN corepack enable && corepack prepare yarn@4.9.2 --activate
 

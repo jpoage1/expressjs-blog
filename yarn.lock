@@ -2560,9 +2560,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-blog@workspace:.":
+"expressjs-blog@workspace:.":
   version: 0.0.0-use.local
-  resolution: "express-blog@workspace:."
+  resolution: "expressjs-blog@workspace:."
   dependencies:
     "@faker-js/faker": "npm:^9.9.0"
     "@glint/core": "npm:^1.5.2"
