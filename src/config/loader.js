@@ -107,9 +107,25 @@ function hydrate(c = {}) {
   };
 
   Object.entries(paths).forEach(([key, p]) => {
+    if (!key) {
+      throw new Error(
+        `Unexpected behavior: path key '${key}' is not a valid key for value '${p}' `,
+      );
+    }
+    if (!p) {
+      const toEnvVar = (key) => key.replace(/([A-Z])/g, "_$1").toUpperCase();
+
+      const toConfigKey = (key) => key.replace(/([A-Z])/g, "_$1").toLowerCase();
+
+      console.log(
+        `Notice: ${key} is not set. Use env var ${toEnvVar(key)} or config key ${toConfigKey(key)}`,
+      );
+      return;
+    }
     paths[key] = path.resolve(p);
     validatePath(paths[key], key);
   });
+
   const { logDir, dbPath, contentPath } = paths;
   rootDir = paths.rootDir;
 
