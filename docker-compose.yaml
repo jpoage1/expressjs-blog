@@ -42,4 +42,3 @@ services:
 volumes:
   blog-logs:
   blog-state:
-  blog-content:

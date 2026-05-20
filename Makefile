@@ -10,6 +10,7 @@ GIT_ASSETS := $(shell grep -v '^\s*#' .git-assets | grep -v '^\s*$$' | tr '\n' '
 .PHONY: build run logs stop push-local push-registry deploy release commit-push amends push-repo help
 
 build:
+	yarn install
 	docker compose build app
 
 run:
