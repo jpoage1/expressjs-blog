@@ -32,8 +32,8 @@ services:
 
     volumes:
       - ./config.toml:/app/config.toml:Z
-      - blog-logs:/var/log/express-blog:Z
-      - blog-state:/root/.local/state/express-blog:Z
+      - blog-logs:/var/log/expressjs-blog:Z
+      - blog-state:/root/.local/state/expressjs-blog:Z
     restart: always
     command:
       - yarn

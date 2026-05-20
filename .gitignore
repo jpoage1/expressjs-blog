@@ -82,12 +82,12 @@ config.toml
 /logs/*/*.json
 /logs/*/*/*.json
 *.gz
-data/*
+/data
 !data/.gitkeep
 .last_tested_commit
 .last_unit_tested_commit
 .last_successful_prepush_test
-certs/*
-test/logs/*
+/certs
+/test/logs
 
 

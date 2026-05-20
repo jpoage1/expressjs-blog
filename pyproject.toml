@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "express-blog-deployment"
+name = "expressjs-blog-deployment"
 version = "0.1.0"
 dependencies = [
     "deployment_pipeline @ git+ssh://git@git.jasonpoage.vpn:29418/jason/deployment_pipeline.git@6d8433152ebd9691dd58c089a9a66b2b5ac6c4a5",

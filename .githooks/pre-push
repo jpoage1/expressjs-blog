@@ -1,12 +1,12 @@
 #!/bin/sh
 # Push content subrepo before pushing main repo
 
-if [ -n "$SKIP_PRE_PUSH" ]; then
+remote="$1"
+
+if [ -n "$SKIP_PRE_PUSH" ] || [ "$remote" == "backup" ]; then
   echo "Skipping pre-push"
   exit 0
 fi
-
-remote="$1"
 
 . "$(pwd)/.env"
 

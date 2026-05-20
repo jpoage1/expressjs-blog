@@ -1,0 +1,35 @@
+# Application source
+src
+content
+public
+
+# Build files
+package.json
+yarn.lock
+pyproject.toml
+
+# Docker
+docker-compose.yaml
+Dockerfile
+Dockerfile.dev
+
+# Config
+Makefile
+.githooks
+.git-assets
+.gitignore
+requirements.txt
+favicon-shell.nix
+ecosystem.config.js
+version.json
+config.example.toml
+nodemon.json
+
+# CI/CD
+Jenkinsfile
+deployment
+
+# Nix
+default.nix
+shell.nix
+package.nix
