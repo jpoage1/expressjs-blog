@@ -41,9 +41,13 @@ RUN --mount=type=cache,target=/root/.yarn/berry/cache,sharing=shared \
 # ---- Runtime Stage ----
 FROM node:24-bookworm-slim
 
+ARG BUILD_SHA
+ENV BUILD_SHA=${BUILD_SHA}
+
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
+ENV LOG_DIR=/app/logs
 
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -63,6 +67,8 @@ RUN mkdir -p /var/log/express-blog && \
     chmod 755 /var/log/express-blog
 
 RUN corepack enable && corepack prepare yarn@4.9.2 --activate
+
+RUN echo "Build SHA: ${BUILD_SHA}"
 
 EXPOSE 3000
 CMD ["yarn", "start"]

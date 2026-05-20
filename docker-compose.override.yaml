@@ -1,16 +1,8 @@
 services:
   app:
     build:
-      context: .
       dockerfile: Dockerfile.dev
       args:
-        PUBLIC_SCHEMA: https
-        PUBLIC_PORT: 443
-        SERVER_PORT: 3000
-        SERVER_SCHEMA: http
-        SERVER_PORT: 3000
-        SERVER_DOMAIN: localhost
-        SERVER_ADDRESS: 0.0.0.0
         NODE_ENV: development
     environment:
       NODE_ENV: development
@@ -18,4 +10,3 @@ services:
       - .:/app
       # Anonymous volume prevents host node_modules from overwriting container node_modules
       - /app/node_modules
-    command: ["yarn", "start"]

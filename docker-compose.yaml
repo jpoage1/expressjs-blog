@@ -1,45 +1,45 @@
 services:
   app:
+    container_name: expressjs-blog
+    profiles:
+      - build-only
+    image: jpoage1/expressjs-blog:latest
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        NODE_ENV: production
+        GIT_REPO: ${GIT_REPO:-https://github.com/jpoage1/expressjs-blog.git}
+        GIT_COMMIT: ${GIT_COMMIT:-main}
+        BUILD_SHA: ${BUILD_SHA:-unknown}
+
         CONTENT_PATH: /app/content
         CONFIG_PATH: /app/config.toml
-        # GIT_REPO: ${GIT_REPO:-https://github.com/jpoage1/expressjs-blog.git}
-        # GIT_COMMIT: ${GIT_COMMIT:-main}
-    command:
-      - yarn
-      - start
-    image: jpoage1/express-blog:latest
+
+        NODE_ENV: production
     environment:
       NODE_ENV: production
       CONTENT_PATH: /app/content
       CONFIG_PATH: /app/config.toml
+
+      SERVER_SCHEMA: http
+      SERVER_PORT: 3000
+      SERVER_DOMAIN: localhost
+      SERVER_ADDRESS: 0.0.0.0 # Listen address
+
+      PUBLIC_SCHEMA: http
+      PUBLIC_PORT: 3000
+      PUBLIC_ADDRESS: 127.0.0.1
+
     volumes:
       - ./config.toml:/app/config.toml:Z
-      - ./content:/app/content:Z
       - blog-logs:/var/log/express-blog:Z
       - blog-state:/root/.local/state/express-blog:Z
-    ports:
-      - "3400:3400"
     restart: always
+    command:
+      - yarn
+      - start
 
 volumes:
   blog-logs:
   blog-state:
-  # app-dev:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.dev
-  #     args:
-  #       NODE_ENV: development
-  #   environment:
-  #     NODE_ENV: development
-  #   volumes:
-  #     - .:/app
-  #     - /app/node_modules:/app/node_modules
-  #   ports:
-  #     - "3000:3000"
-  #   command: ["npm", "run", "dev"]
+  blog-content:
