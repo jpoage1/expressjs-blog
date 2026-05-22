@@ -5,17 +5,12 @@ services:
       - build-only
     image: jpoage1/expressjs-blog:latest
     build:
-      context: .
+      # context: .
       dockerfile: Dockerfile
       args:
         GIT_REPO: ${GIT_REPO:-https://github.com/jpoage1/expressjs-blog.git}
         GIT_COMMIT: ${GIT_COMMIT:-main}
         BUILD_SHA: ${BUILD_SHA:-unknown}
-
-        CONTENT_PATH: /app/content
-        CONFIG_PATH: /app/config.toml
-
-        NODE_ENV: production
     environment:
       NODE_ENV: production
       CONTENT_PATH: /app/content

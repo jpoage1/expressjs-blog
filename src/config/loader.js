@@ -12,17 +12,17 @@ const FALLBACK_ROOT_DIR = path.resolve("./");
 const FALLBACK_CONTENT_PATHS = [
   "/var/lib/expressjs-blog",
   path.join(os.homedir(), "share", "expressjs-blog"),
-  path.join(__dirname, FALLBACK_ROOT_DIR, "content"),
+  path.join(FALLBACK_ROOT_DIR, "content"),
 ];
 const FALLBACK_DB_PATHS = [
   "/var/lib/expressjs-blog/data",
   path.join(os.homedir(), "local", "state", "expressjs-blog", "data"),
-  path.join(__dirname, FALLBACK_ROOT_DIR, "data"),
+  path.join(FALLBACK_ROOT_DIR, "data"),
 ];
 const FALLBACK_LOG_PATHS = [
   "/var/log/expressjs-blog",
   path.join(os.homedir(), "local", "state", "expressjs-blog", "logs"),
-  path.join(__dirname, FALLBACK_ROOT_DIR, "logs"),
+  path.join(FALLBACK_ROOT_DIR, "logs"),
 ];
 const FALLBACK_CONFIG_PATHS = [
   path.join(os.homedir(), ".config", "expressjs-blog", "config.toml"), // XDG Compliance
@@ -51,14 +51,14 @@ function resolveConfigPath(rootDir = FALLBACK_ROOT_DIR) {
 
   // 2. Environment Variable Priority
   const envPath = process.env.CONFIG_PATH;
-  if (envPath) return validateExplicitPath(envPath, "Environment");
+  if (envPath) return validateExplicitPath(envPath, "ENV");
 
   // 3. Implicit Fallbacks
   const implicitPath = getFirstExistingPath(FALLBACK_CONFIG_PATHS, rootDir);
 
   if (!implicitPath) {
-    throw new Error(
-      `No configuration found in searched paths: ${JSON.stringify(FALLBACK_CONFIG_PATHS)}`,
+    console.log(
+      `No configuration found in searched paths: ${JSON.stringify(FALLBACK_CONFIG_PATHS)}. Using defaults.`,
     );
   }
 
@@ -88,6 +88,16 @@ function getFirstExistingPath(paths, rootDir = FALLBACK_ROOT_DIR) {
   return null;
 }
 
+function logError(key) {
+  const toEnvVar = (key) => key.replace(/([A-Z])/g, "_$1").toUpperCase();
+
+  const toConfigKey = (key) => key.replace(/([A-Z])/g, "_$1").toLowerCase();
+
+  console.log(
+    `Notice: ${key} is not set. Use env var ${toEnvVar(key)} or config key ${toConfigKey(key)}`,
+  );
+}
+
 function hydrate(c = {}) {
   let rootDir = process.env.ROOT_DIR || c?.meta?.root_dir || FALLBACK_ROOT_DIR;
   const paths = {
@@ -106,6 +116,8 @@ function hydrate(c = {}) {
       getFirstExistingPath(FALLBACK_CONTENT_PATHS, rootDir),
   };
 
+  console.log(`[DEBUG_ENV] ${JSON.stringify(paths)}`);
+
   Object.entries(paths).forEach(([key, p]) => {
     if (!key) {
       throw new Error(
@@ -113,13 +125,7 @@ function hydrate(c = {}) {
       );
     }
     if (!p) {
-      const toEnvVar = (key) => key.replace(/([A-Z])/g, "_$1").toUpperCase();
-
-      const toConfigKey = (key) => key.replace(/([A-Z])/g, "_$1").toLowerCase();
-
-      console.log(
-        `Notice: ${key} is not set. Use env var ${toEnvVar(key)} or config key ${toConfigKey(key)}`,
-      );
+      logError(key);
       return;
     }
     paths[key] = path.resolve(p);
@@ -221,10 +227,17 @@ function loadConfig() {
   let configPath = resolveConfigPath().path;
 
   try {
-    const raw = fs.readFileSync(path.resolve(configPath), "utf8");
-    const toml_config = parse(raw);
+    let toml_config = {};
+    if (configPath) {
+      const raw = fs.readFileSync(path.resolve(configPath), "utf8");
+      const toml_config = parse(raw);
+    }
     const config = hydrate(toml_config);
     const include = function (file) {
+      if (!this.meta.content) {
+        console.log(FALLBACK_CONTENT_PATHS);
+        throw new Error("Content path is not set");
+      }
       const fullPath = path.join(this.meta.content, file);
       const resolved = path.resolve(fullPath);
       return require(resolved);

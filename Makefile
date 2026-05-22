@@ -3,15 +3,31 @@ SHA := $(shell git rev-parse --short HEAD)
 REPO_NAME := jpoage1/expressjs-blog
 IMAGE := $(REPO_NAME):latest
 PORT := 3000
+CONTAINER ?= express-blog
 export BUILD_SHA=$(SHA)
 
 GIT_ASSETS := $(shell grep -v '^\s*#' .git-assets | grep -v '^\s*$$' | tr '\n' ' ')
 
-.PHONY: build run logs stop push-local push-registry deploy release commit-push amends push-repo help
+.PHONY: kill build run logs stop save rollout push-local push-registry deploy release commit-push amends push-repo help
+
+kill:
+	docker stop $(CONTAINER)
+	docker rm  $(CONTAINER)
+
+shell:
+	docker run -it --rm -p 3000:3000 docker.io/jpoage1/expressjs-blog:latest /bin/sh
+
+fresh-shell: kill
+	docker run -it --rm -p 3000:3000 docker.io/jpoage1/expressjs-blog:latest /bin/sh
 
 build:
 	yarn install
-	docker compose build app
+	docker compose -f docker-compose.yaml build app
+
+build-shell: build fresh-shell
+
+run-bare:
+	docker run -d -p 3000:3000 --name express-blog docker.io/jpoage1/expressjs-blog:latest
 
 run:
 	docker compose up app
@@ -22,9 +38,14 @@ logs:
 stop:
 	docker compose down
 
-push-local:
+save:
 	docker save $(IMAGE) | sudo k3s ctr images import -
+
+rollout:
 	kubectl rollout restart deployment/expressjs-blog -n production
+
+push-local-build: build save rollout
+push-local: save rollout
 
 push-registry:
 	docker compose push app

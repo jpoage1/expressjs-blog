@@ -23,8 +23,10 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 COPY ./.yarnrc.yml ./package.json ./yarn.lock ./
 COPY ./.yarn ./.yarn
 COPY ./node_modules ./node_modules
+COPY ./.puppeteer /var/cache/puppeteer
 COPY ./public ./public
 COPY ./scripts ./scripts
+COPY ./content ./content
 COPY ./src ./src
 
 ENV YARN_CACHE_FOLDER=/var/cache/yarn
@@ -35,8 +37,8 @@ RUN corepack enable && corepack prepare yarn@4.9.2 --activate
 RUN --mount=type=cache,target=/root/.yarn/berry/cache,sharing=shared \
     --mount=type=cache,target=/app/.yarn/unplugged,sharing=shared \
     --mount=type=cache,target=/var/cache/puppeteer,sharing=shared \
-    yarn install  --immutable && \
-    yarn combine:css
+    yarn combine:css && \
+    yarn workspaces focus --production
 
 # ---- Runtime Stage ----
 FROM node:24-bookworm-slim
@@ -47,7 +49,13 @@ ENV BUILD_SHA=${BUILD_SHA}
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
-ENV LOG_DIR=/var/log/expressjs-blog
+# These have fallback defaults built in, no need to explicitly define them.
+# Explicit definition will fail for testing
+# ENV LOG_DIR=/var/log/expressjs-blog
+# ENV CONFIG_PATH=/app/config.toml
+# ENV DB_PATH=/var/log/expressjs-blog
+# ENV CONTENT_PATH=/app/content
+
 
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -61,6 +69,7 @@ COPY --from=builder /app/.yarn ./.yarn
 COPY --from=builder /app/package.json /app/yarn.lock ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/content ./content
 COPY --from=builder /app/src ./src
 
 RUN mkdir -p /var/log/expressjs-blog && \
