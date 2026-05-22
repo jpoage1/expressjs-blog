@@ -233,7 +233,7 @@ function loadConfig() {
     let toml_config = {};
     if (configPath) {
       const raw = fs.readFileSync(path.resolve(configPath), "utf8");
-      const toml_config = parse(raw);
+      toml_config = parse(raw);
     }
     const config = hydrate(toml_config);
     const include = function (file) {

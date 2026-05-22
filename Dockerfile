@@ -79,8 +79,9 @@ COPY --from=builder /app/BUILD_SHA_FILE ./BUILD_SHA_FILE
 RUN export BUILD_SHA=$(cat ./BUILD_SHA_FILE) && \
     echo "Build SHA: ${BUILD_SHA}"
 
-RUN mkdir -p /var/log/expressjs-blog && \
-    chmod 755 /var/log/expressjs-blog
+RUN mkdir -p /var/log/expressjs-blog/data && \
+    chmod 755 /var/log/expressjs-blog && \
+    chmod 755 /var/log/expressjs-blog/data
 
 RUN corepack enable && corepack prepare yarn@4.9.2 --activate
 
