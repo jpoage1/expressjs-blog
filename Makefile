@@ -1,14 +1,25 @@
 SHELL := /bin/bash
 SHA := $(shell git rev-parse --short HEAD)
 REPO_NAME := jpoage1/expressjs-blog
+IMG := docker.io/jpoage1/expressjs-blog
 IMAGE := $(REPO_NAME):latest
 PORT := 3000
 CONTAINER ?= boring_rhodes
+TAG := latest
+
 export BUILD_SHA=$(SHA)
 
 GIT_ASSETS := $(shell grep -v '^\s*#' .git-assets | grep -v '^\s*$$' | tr '\n' ' ')
 
 .PHONY: kill build run logs stop save rollout push-local push-registry deploy release commit-push amends push-repo help
+
+dev:
+	docker run -it --rm \
+		-p 3000:3000 \
+		-v $(PWD)/src:/app/src \
+		-v $(PWD)/content:/app/content \
+		-e NODE_ENV=development \
+		$(IMG):$(TAG)
 
 kill:
 	docker stop $(CONTAINER)

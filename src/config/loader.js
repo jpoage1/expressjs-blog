@@ -9,28 +9,6 @@ const {
 } = require("../utils/validation.js");
 const FALLBACK_ROOT_DIR = path.resolve("./");
 
-const FALLBACK_CONTENT_PATHS = [
-  "/var/lib/expressjs-blog",
-  path.join(os.homedir(), "share", "expressjs-blog"),
-  path.join(FALLBACK_ROOT_DIR, "content"),
-];
-const FALLBACK_DB_PATHS = [
-  "/var/lib/expressjs-blog/data",
-  path.join(os.homedir(), "local", "state", "expressjs-blog", "data"),
-  path.join(FALLBACK_ROOT_DIR, "data"),
-];
-const FALLBACK_LOG_PATHS = [
-  "/var/log/expressjs-blog",
-  path.join(os.homedir(), "local", "state", "expressjs-blog", "logs"),
-  path.join(FALLBACK_ROOT_DIR, "logs"),
-];
-const FALLBACK_CONFIG_PATHS = [
-  path.join(os.homedir(), ".config", "expressjs-blog", "config.toml"), // XDG Compliance
-  path.join(os.homedir(), ".expressjs-blog.toml"), // Hidden Home file
-  "/etc/expressjs-blog/config.toml", // Global
-  "./config.toml",
-];
-
 /**
  * Validates and resolves an explicit configuration path.
  * @param {string} rawPath - The raw path string from CLI or ENV.
@@ -98,6 +76,36 @@ function logError(key) {
   );
 }
 
+const FALLBACK_CONTENT_PATHS = [
+  "/var/lib/expressjs-blog",
+  path.join(os.homedir(), "share", "expressjs-blog"),
+  path.join(FALLBACK_ROOT_DIR, "content"),
+];
+
+const FALLBACK_LOG_PATHS = [
+  "/var/log/expressjs-blog",
+  path.join(os.homedir(), "local", "state", "expressjs-blog", "logs"),
+  path.join(FALLBACK_ROOT_DIR, "logs"),
+];
+
+console.log(FALLBACK_ROOT_DIR);
+console.log(FALLBACK_LOG_PATHS);
+console.log(getFirstExistingPath(FALLBACK_LOG_PATHS));
+
+const FALLBACK_DB_PATHS = [
+  "/var/lib/expressjs-blog/data",
+  "/var/log/expressjs-blog/data",
+  path.join(os.homedir(), "local", "state", "expressjs-blog", "data"),
+  path.join(FALLBACK_ROOT_DIR, "data"),
+];
+
+const FALLBACK_CONFIG_PATHS = [
+  path.join(os.homedir(), ".config", "expressjs-blog", "config.toml"), // XDG Compliance
+  path.join(os.homedir(), ".expressjs-blog.toml"), // Hidden Home file
+  "/etc/expressjs-blog/config.toml", // Global
+  "./config.toml",
+];
+
 function hydrate(c = {}) {
   let rootDir = process.env.ROOT_DIR || c?.meta?.root_dir || FALLBACK_ROOT_DIR;
   const paths = {
@@ -105,18 +113,27 @@ function hydrate(c = {}) {
     logDir:
       process.env.LOG_DIR ||
       c?.logging?.log_dir ||
-      getFirstExistingPath(FALLBACK_LOG_PATHS, rootDir),
+      getFirstExistingPath(FALLBACK_LOG_PATHS, rootDir) ||
+      FALLBACK_LOG_PATHS.at(-1),
     dbPath:
-      process.env.LOGS_DB_PATH ||
+      process.env.LOGGING_DB_PATH ||
       c?.logging?.db_path ||
-      getFirstExistingPath(FALLBACK_DB_PATHS, rootDir),
+      getFirstExistingPath(FALLBACK_DB_PATHS, rootDir) ||
+      FALLBACK_DB_PATHS.at(-1),
     contentPath:
       process.env.CONTENT_PATH ||
       c?.meta?.content_path ||
       getFirstExistingPath(FALLBACK_CONTENT_PATHS, rootDir),
   };
 
+  console.log(`[DEBUG_DB_PATHS] ${JSON.stringify(FALLBACK_DB_PATHS)}`);
   console.log(`[DEBUG_ENV] ${JSON.stringify(paths)}`);
+
+  [paths.logDir, paths.dbPath]
+    .filter((dir) => !fs.existsSync(dir))
+    .forEach((dir) => {
+      fs.mkdirSync(dir, { recursive: true });
+    });
 
   Object.entries(paths).forEach(([key, p]) => {
     if (!key) {
@@ -133,6 +150,11 @@ function hydrate(c = {}) {
   });
 
   const { logDir, dbPath, contentPath } = paths;
+  if (dbPath === FALLBACK_ROOT_DIR) {
+    console.warn(
+      `Using fallback root dir "${FALLBACK_ROOT_DIR}". This may be a potential security risk.`,
+    );
+  }
   rootDir = paths.rootDir;
 
   const schema = process.env.SERVER_SCHEMA || c?.network?.schema || "http";
