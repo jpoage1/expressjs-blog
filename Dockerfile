@@ -29,6 +29,9 @@ COPY ./scripts ./scripts
 COPY ./content ./content
 COPY ./src ./src
 
+RUN find . -type f -not -path '*/node_modules/*' -not -path '*/.yarn/*' -print0 | \
+    sort -z | xargs -0 sha256sum | sha256sum | cut -d' ' -f1 > /app/BUILD_SHA_FILE
+
 ENV YARN_CACHE_FOLDER=/var/cache/yarn
 ENV PUPPETEER_CACHE_DIR=/var/cache/puppeteer
 
@@ -71,13 +74,15 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/content ./content
 COPY --from=builder /app/src ./src
+COPY --from=builder /app/BUILD_SHA_FILE ./BUILD_SHA_FILE
+
+RUN export BUILD_SHA=$(cat ./BUILD_SHA_FILE) && \
+    echo "Build SHA: ${BUILD_SHA}"
 
 RUN mkdir -p /var/log/expressjs-blog && \
     chmod 755 /var/log/expressjs-blog
 
 RUN corepack enable && corepack prepare yarn@4.9.2 --activate
-
-RUN echo "Build SHA: ${BUILD_SHA}"
 
 EXPOSE 3000
 CMD ["yarn", "start"]

@@ -159,7 +159,10 @@ function hydrate(c = {}) {
       logDir,
       logLevel: c?.logging?.log_level || process.env.LOG_LEVEL || "info",
       dbPath,
-      getDBFile: (file) => path.join(dbPath, file),
+      getDBFile(file = "storage.db") {
+        console.log("[DEBUG_PATH]", dbPath, file);
+        return path.join(dbPath, file);
+      },
     },
     // For constructing URL's
     public: {

@@ -3,7 +3,7 @@ SHA := $(shell git rev-parse --short HEAD)
 REPO_NAME := jpoage1/expressjs-blog
 IMAGE := $(REPO_NAME):latest
 PORT := 3000
-CONTAINER ?= express-blog
+CONTAINER ?= boring_rhodes
 export BUILD_SHA=$(SHA)
 
 GIT_ASSETS := $(shell grep -v '^\s*#' .git-assets | grep -v '^\s*$$' | tr '\n' ' ')
