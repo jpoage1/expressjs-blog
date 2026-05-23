@@ -88,10 +88,6 @@ const FALLBACK_LOG_PATHS = [
   path.join(FALLBACK_ROOT_DIR, "logs"),
 ];
 
-console.log(FALLBACK_ROOT_DIR);
-console.log(FALLBACK_LOG_PATHS);
-console.log(getFirstExistingPath(FALLBACK_LOG_PATHS));
-
 const FALLBACK_DB_PATHS = [
   "/var/lib/expressjs-blog/data",
   "/var/log/expressjs-blog/data",
@@ -125,9 +121,6 @@ function hydrate(c = {}) {
       c?.meta?.content_path ||
       getFirstExistingPath(FALLBACK_CONTENT_PATHS, rootDir),
   };
-
-  console.log(`[DEBUG_DB_PATHS] ${JSON.stringify(FALLBACK_DB_PATHS)}`);
-  console.log(`[DEBUG_ENV] ${JSON.stringify(paths)}`);
 
   [paths.logDir, paths.dbPath]
     .filter((dir) => !fs.existsSync(dir))
@@ -182,7 +175,6 @@ function hydrate(c = {}) {
       logLevel: c?.logging?.log_level || process.env.LOG_LEVEL || "info",
       dbPath,
       getDBFile(file = "storage.db") {
-        console.log("[DEBUG_PATH]", dbPath, file);
         return path.join(dbPath, file);
       },
     },
@@ -260,7 +252,6 @@ function loadConfig() {
     const config = hydrate(toml_config);
     const include = function (file) {
       if (!this.meta.content) {
-        console.log(FALLBACK_CONTENT_PATHS);
         throw new Error("Content path is not set");
       }
       const fullPath = path.join(this.meta.content, file);

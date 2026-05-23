@@ -3,7 +3,8 @@ const path = require("path");
 const exphbs = require("express-handlebars");
 const Handlebars = require("handlebars");
 
-const { meta } = require("../config/loader.js");
+const config = require("../config/loader.js");
+const { meta } = config;
 
 const { registerHelpers } = require("../utils/hbsHelpers");
 const {
@@ -79,7 +80,8 @@ const hbsMiddleware = (req, res, next) => {
 
     const defaultViews = path.join(__dirname, "../views");
     const views = [defaultViews];
-    config.views.foreach(views.push);
+    console.log("config.views:", config.views);
+    config.views.forEach(views.push);
 
     registerHelpers(hbs);
     req.app.engine(VIEW_ENGINE, hbs.engine);
