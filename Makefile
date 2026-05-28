@@ -1,11 +1,16 @@
 SHELL := /bin/bash
 SHA := $(shell git rev-parse --short HEAD)
+ARCH := amd64
+TAG := latest
+
+REGISTRY  ?= 192.168.1.50:5000
 REPO_NAME := jpoage1/expressjs-blog
-IMG := docker.io/jpoage1/expressjs-blog
+IMG       := $(REGISTRY)/$(REPO_NAME)
 IMAGE := $(REPO_NAME):latest
+
 PORT := 3000
 CONTAINER ?= boring_rhodes
-TAG := latest
+
 
 export BUILD_SHA=$(SHA)
 
@@ -32,8 +37,12 @@ fresh-shell: kill
 	docker run -it --rm -p 3000:3000 docker.io/jpoage1/expressjs-blog:latest /bin/sh
 
 build:
-	yarn install
-	docker compose -f docker-compose.yaml build app
+	REGISTRY=$(REGISTRY) docker buildx build \
+		--platform linux/amd64,linux/arm64 \
+		--tag $(IMG):$(TAG) \
+		--tag $(IMG):$(SHA) \
+		--push \
+		.
 
 build-shell: build fresh-shell
 
@@ -58,14 +67,18 @@ rollout:
 push-local-build: build save rollout
 push-local: save rollout
 
-push-registry:
-	docker compose push app
-	docker tag $(IMAGE) $(REPO_NAME):$(SHA)
-	docker push $(REPO_NAME):$(SHA)
+push-registry: build
 
-release-local: build push-local
+release-local:
+	docker buildx build \
+		--platform linux/amd64,linux/arm64 \
+		--tag $(IMG):$(TAG) \
+		--tag $(IMG):$(SHA) \
+		--output type=oci,dest=/tmp/finance-api.tar \
+		. && \
+	sudo k3s ctr -n k8s.io images import /tmp/finance-api.tar
 
-release-registry: build push-registry
+release-registry: build
 
 help:
 	@echo "Usage: make [target] [AMEND=1]"
@@ -81,6 +94,10 @@ help:
 	@echo "  commit-push       Stage git assets and push to deployment remote"
 	@echo "  amends            Amend last commit"
 	@echo "  push-repo         Push to origin"
+	@echo "Examples:"
+	@echo "  make build ARCH=amd64"
+	@echo "  make release-registry REGISTRY=registry.jasonpoage.com"
+	@echo "  make push-registry REGISTRY=thinkpadt14.jasonpoage.com ARCH=arm64"
 
 commit:
 	git add $(GIT_ASSETS)

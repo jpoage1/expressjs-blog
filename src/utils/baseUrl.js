@@ -26,7 +26,7 @@ function getBaseUrl({
 
   const omitPort =
     (finalPort == 80 && finalProtocol == "http") ||
-    (finalProtocol == "443" && finalProtocol == "https");
+    (finalPort == 443 && finalProtocol == "https");
   const showPort = omitPort ? "" : `:${finalPort}`;
 
   // return `${finalProtocol}://${finalDomain}${finalPort != 80 ? `:${finalPort}` : ""}`;

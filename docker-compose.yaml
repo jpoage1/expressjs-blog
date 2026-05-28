@@ -3,14 +3,19 @@ services:
     container_name: expressjs-blog
     profiles:
       - build-only
-    image: jpoage1/expressjs-blog:latest
+    image: ${REGISTRY:-docker.io}/jpoage1/expressjs-blog:latest
     build:
       # context: .
       dockerfile: Dockerfile
+      # cache_from: []
       args:
         GIT_REPO: ${GIT_REPO:-https://github.com/jpoage1/expressjs-blog.git}
         GIT_COMMIT: ${GIT_COMMIT:-main}
         BUILD_SHA: ${BUILD_SHA:-unknown}
+        BUILDKIT_INLINE_CACHE: "0"
+      platforms:
+        - linux/arm64
+        - linux/amd64
     environment:
       NODE_ENV: production
       CONTENT_PATH: /app/content

@@ -88,6 +88,16 @@
       expressjs-blog = self;
 
       docker = callPackage ./nixpkgs/docker.nix ctx;
+      docker-arm64 = traceLoad "docker-arm64" (
+        let
+          armPkgs = import pkgs.path {
+            system = "aarch64-linux";
+            config.allowUnfree = true;
+          };
+          armRepo = armPkgs.callPackage ./package.nix {};
+        in
+          armRepo.docker
+      );
     });
 in
   blogScope

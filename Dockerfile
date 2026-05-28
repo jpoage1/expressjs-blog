@@ -1,6 +1,8 @@
 # ---- Build Stage ----
 FROM node:24-bookworm AS builder
 
+ARG TARGETARCH
+
 ARG GIT_REPO
 ARG GIT_COMMIT
 
@@ -32,14 +34,13 @@ COPY ./src ./src
 RUN find . -type f -not -path '*/node_modules/*' -not -path '*/.yarn/*' -print0 | \
     sort -z | xargs -0 sha256sum | sha256sum | cut -d' ' -f1 > /app/BUILD_SHA_FILE
 
-ENV YARN_CACHE_FOLDER=/var/cache/yarn
-ENV PUPPETEER_CACHE_DIR=/var/cache/puppeteer
+ENV YARN_CACHE_FOLDER=/var/cache/yarn/$TARGETARCH
+ENV PUPPETEER_CACHE_DIR=/var/cache/puppeteer/$TARGETARCH
 
-RUN corepack enable && corepack prepare yarn@4.9.2 --activate
-
-RUN --mount=type=cache,target=/root/.yarn/berry/cache,sharing=shared \
-    --mount=type=cache,target=/app/.yarn/unplugged,sharing=shared \
-    --mount=type=cache,target=/var/cache/puppeteer,sharing=shared \
+RUN --mount=type=cache,target=/root/.yarn/berry/cache/$TARGETARCH,sharing=shared \
+    --mount=type=cache,target=/app/.yarn/unplugged/$TARGETARCH,sharing=shared \
+    --mount=type=cache,target=/var/cache/puppeteer/$TARGETARCH,sharing=shared \
+    corepack enable && corepack prepare yarn@4.9.2 --activate && \
     yarn combine:css && \
     yarn workspaces focus --production
 
