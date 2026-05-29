@@ -8,14 +8,13 @@
   "scripts": {},
   "imports": {
     "@config/*": "./content/config/*",
-    "@controllers/*": "./src/controllers/*",
-    "@html/*": "./src/*",
-    "@images/*": "./src/services/*",
-    "@pages/*": "./src/config/*",
-    "@posts/*": "./content/*",
-    "@utils/*": "./src/utils/*",
-    "@routes/*": "./content/controllers/*",
-    "@utils/*": "./content/utils/*"
+    "@controllers/*": "./controllers/*",
+    "@html/*": "./html/*",
+    "@images/*": "./images/*",
+    "@pages/*": "./pages/*",
+    "@posts/*": "./posts/*",
+    "@utils/*": "./utils/*",
+    "@routes/*": "./routes/*"
   },
   "keywords": [],
   "author": "",

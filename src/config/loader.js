@@ -259,7 +259,7 @@ function loadConfig() {
       return require(resolved);
     }.bind(config);
     config.include = include;
-    const getRoutes = include("routes.js").bind(config);
+    const getRoutes = include("routes").bind(config);
     config.routes = getRoutes();
 
     return config;

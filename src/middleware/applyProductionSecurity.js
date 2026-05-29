@@ -1,6 +1,7 @@
 const helmet = require("helmet");
 const hpp = require("hpp");
 const rateLimit = require("express-rate-limit");
+console.warn("Hard coded values in applyProductionSecurity");
 
 const xssSanitizer = require("../utils/xssSanitizer");
 const HttpError = require("../utils/HttpError");

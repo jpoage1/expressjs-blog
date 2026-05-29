@@ -8,7 +8,6 @@ const csrfToken = require("../middleware/csrfToken");
 const errorPage = require("../controllers/errorPageController");
 const admin = require("./admin");
 const tags = require("./tags");
-const resume = require("./resume");
 
 const contact = require("./contact");
 const sitemap = require("./sitemap");
@@ -82,7 +81,6 @@ router.use("/favicons", express.static(faviconsPath));
 router.use(favicon(faviconFile));
 
 router.use(contact, csrfToken);
-router.use("/resume", resume);
 router.use(sitemap);
 router.use(newsletter, csrfToken);
 router.use(pages);

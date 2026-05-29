@@ -1,13 +1,7 @@
 // src/middleware/redirect.js
 
 const { winstonLogger } = require("../utils/logging");
-
-// Configuration - adjust these as needed
-const getRedirectConfig = (baseUrl) => ({
-  "/": `${baseUrl}/projects`,
-  // Add more redirects as needed
-  // '/old-path': '/new-path',
-});
+const config = require("#config/loader.js");
 
 // Generic redirect handler
 function handleRedirect(req, res, targetPath, status = 302) {
@@ -39,7 +33,7 @@ function handleRedirect(req, res, targetPath, status = 302) {
 function redirectMiddleware(req, res, next) {
   res.customRedirect = (targetPath, status) =>
     handleRedirect(req, res, targetPath, status);
-  const redirectConfig = getRedirectConfig(res.locals.baseUrl);
+  const redirectConfig = config.redirects;
 
   const targetPath = redirectConfig[req.path];
   if (targetPath) {
@@ -54,5 +48,4 @@ function redirectMiddleware(req, res, next) {
 module.exports = {
   redirectMiddleware,
   handleRedirect,
-  getRedirectConfig,
 };

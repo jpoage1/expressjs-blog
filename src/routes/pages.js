@@ -21,7 +21,6 @@ const { node_env } = meta;
 const { constructionRoutes, markdownRoutes, htmlRoutes, projects } = routes;
 
 constructionRoutes?.forEach((route) => {
-  console.log("DEBUG_ROUTE", route);
   const { path, title } = route;
   construction.register(path, title);
 });

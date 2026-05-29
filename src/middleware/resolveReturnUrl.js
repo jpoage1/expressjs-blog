@@ -1,7 +1,8 @@
 const { baseUrl } = require("../utils/baseUrl");
+const config = require("../utils/baseUrl");
 
 function resolveReturnUrl(req, res, next) {
-  const myDomain = "jasonpoage.com";
+  const domain = config.public.domain;
   const fallbackUrl = baseUrl;
   const referrer = req.body?.referrer;
 
@@ -11,9 +12,9 @@ function resolveReturnUrl(req, res, next) {
 
   try {
     const url = new URL(referrer);
-    const isSameDomain = url.hostname.endsWith(myDomain);
+    const isSameDomain = url.hostname.endsWith(domain);
     const isNotPresentation = !url.pathname.includes(
-      "/projects/website-presentation"
+      "/projects/website-presentation",
     );
 
     if (isSameDomain && isNotPresentation) {
