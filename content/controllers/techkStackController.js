@@ -1,8 +1,8 @@
 // controllers/techStackController.js
 
-const HttpError = require("../utils/HttpError"); // Adjust path as needed
-const { meta } = require("../config/loader.js");
-const techStack = require(`${meta.content}/techStack.json`); // JSON file from previous message
+const HttpError = require("#utils/HttpError.js");
+const techStack = require(`../techStack.json`);
+
 module.exports = (req, res, next) => {
   try {
     const techWithBase = techStack.map((item) => ({

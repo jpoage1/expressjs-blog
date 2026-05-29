@@ -21,22 +21,17 @@ const docs = require("./docs");
 const rssFeedController = require("../controllers/rssFeedController");
 const HttpError = require("../utils/HttpError");
 
-const stack = require("../controllers/techkStackController");
 const { meta } = require("../config/loader");
 
 const favicon = require("serve-favicon");
 const faviconsPath = path.join(__dirname, "..", "..", "public", "favicons");
 const faviconFile = path.resolve(faviconsPath, "favicon.ico");
 
-const hexascriptDocs = require(`${meta.content}/docs/hexascript/src/script.js`);
-
 router.head("/health", (req, res) => {
   res.sendStatus(200);
 });
 
 const { logger } = require("../utils/logging");
-// logger.info("hexascriptDocs", { hexascriptDocs });
-router.use("/hexa-docs", hexascriptDocs);
 
 router.get("/error/:code", errorPage); // Landing page after error is logged
 
@@ -96,8 +91,6 @@ router.use("/docs", docs);
 
 router.get("/blog/:year/:month/:name", blogPost);
 router.get("/blog", blogIndex);
-
-router.get("/stack", stack);
 
 router.get("/robots.txt", robots);
 router.get("/rss-feed.xml", rssFeedController);

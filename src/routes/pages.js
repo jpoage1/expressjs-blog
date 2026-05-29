@@ -5,7 +5,6 @@ const ConstructionRoutes = require("../utils/ConstructionRoutes");
 const MarkdownRoutes = require("../utils/MarkdownRoutes");
 const HtmlRoutes = require("../utils/htmlRoutes");
 const csrfToken = require("../middleware/csrfToken");
-const presentation = require("./presentation");
 const { meta, routes } = require("../config/loader");
 
 const path = require("path");
@@ -21,28 +20,26 @@ const { node_env } = meta;
 
 const { constructionRoutes, markdownRoutes, htmlRoutes, projects } = routes;
 
-constructionRoutes.forEach((route) => {
+constructionRoutes?.forEach((route) => {
   console.log("DEBUG_ROUTE", route);
   const { path, title } = route;
   construction.register(path, title);
 });
-markdownRoutes.forEach((route) => {
+markdownRoutes?.forEach((route) => {
   const { path, file } = route;
   markdown.register(path, file);
 });
-htmlRoutes.forEach((route) => {
+htmlRoutes?.forEach((route) => {
   const { path, contentFolder } = route;
   html.register(path, contentFolder);
 });
-projects.forEach((route) => {
+projects?.forEach((route) => {
   const { path, file, overrides } = route;
   markdown.register(path, file, {
     project: true,
     ...overrides,
   });
 });
-
-router.use("/projects/website-presentation", presentation);
 
 router.get("/projects", async (req, res, next) => {
   try {

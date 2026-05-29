@@ -1,0 +1,44 @@
+[
+  { "loc": "/", "label": "Home" },
+  { "loc": "/contact", "label": "Contact" },
+  {
+    "label": "Pages",
+    "children":  [
+      { "loc": "#inject:pages", "label": "Pages Placeholder" },
+      { "loc": "#inject:extra-pages", "label": "Extra Pages Placeholder" }
+    ]
+  },
+  {
+    "label": "Blog",
+    "children": [
+      { "loc": "/blog", "label": "Blog Index" },
+      {
+        "label": "Blog Posts",
+        "children": [
+          { "loc": "#inject:blog-posts", "label": "Blog Post Placeholder" }
+        ]
+      },
+      { "loc": "/tags", "label": "Tags / Topics",
+       "children": [
+        { "loc": "#inject:tags", "label": "Tags Placeholder" }
+       ]
+      }
+    ]
+  },
+  {
+    "label": "Documentation", 
+    "children": [
+      { "loc": "/docs", "label": "Docs Home" },
+      { "label": "Modules", "children":
+        [
+          { "loc": "#inject:docs", "label": "Docs Modules" }
+        ]
+      },
+      { "loc": "/docs/summary", "label": "Docs Summary" }
+    ]
+  },
+  { "loc": "/newsletter", "label": "Newsletter" },
+  { "loc": "/archive", "label": "Archive" },
+  { "loc": "/changelog", "label": "Site Updates / Changelog" },
+  { "loc": "/rss-feed.xml", "label": "RSS Feed" }
+]

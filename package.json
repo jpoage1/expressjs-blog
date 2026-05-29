@@ -24,7 +24,15 @@
     "update-submodules": "git submodule update --init --recursive --remote"
   },
   "imports": {
-    "#src/*": "./src/*"
+    "#src/*": "./src/*",
+    "#controllers/*": "./src/controllers/*",
+    "#utils/*": "./src/utils/*",
+    "#services/*": "./src/services/*",
+    "#config/*": "./src/config/*",
+    "#content/*": "./content/*",
+    "##controllers/*": "./content/controllers/*",
+    "##utils/*": "./content/utils/*",
+    "##config/*": "./content/config/*"
   },
   "puppeteer": {
     "cacheDirectory": "./.custom-cache/puppeteer"

@@ -8,7 +8,7 @@ const { baseUrl } = require("./baseUrl");
 const generateDocsMenuModel = require("./generateDocsMenuModel");
 const processMenuLinks = require("../utils/processMenuLinks");
 const { meta } = require("../config/loader");
-const navLinks = require(path.join(meta.content, "navLinks.json"));
+const navLinks = require(path.join(meta.content, "config/navLinks.json"));
 
 const getSiteTitle = (owner) => `${owner}'s Software Blog`;
 

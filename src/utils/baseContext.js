@@ -1,15 +1,15 @@
 // src/utils/baseContext.js
 const path = require("path");
-const getPostsMenu = require("../services/postsMenuService");
-const { formatMonth } = require("../utils/formatMonth");
-const { qualifyNavLinks, qualifyLink } = require("../utils/qualifyLinks");
-const { getBaseUrl } = require("../utils/baseUrl.js");
+const getPostsMenu = require("#services/postsMenuService.js");
+const { formatMonth } = require("#utils/formatMonth.js");
+const { qualifyNavLinks, qualifyLink } = require("#utils/qualifyLinks.js");
+const { getBaseUrl } = require("#utils/baseUrl.js");
 
-const processMenuLinks = require("../utils/processMenuLinks");
-const { generateToken } = require("../utils/adminToken");
-const config = require("../config/loader.js");
+const processMenuLinks = require("#utils/processMenuLinks.js");
+const { generateToken } = require("#utils/adminToken.js");
+const config = require("#config/loader.js");
 const { meta } = config;
-const navLinks = require(path.join(meta.content, "/navLinks.json"));
+const navLinks = require(path.join("##config/navLinks.json"));
 
 const getSiteTitle = (owner) => `${owner}'s Software Blog`;
 

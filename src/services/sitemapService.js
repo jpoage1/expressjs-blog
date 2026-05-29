@@ -14,7 +14,7 @@ const { validatePath } = require("../utils/validation.js");
 
 const CONTENT_ROOT = validatePath(meta.content, "Content Root");
 const NAVLINKS_PATH = validatePath(
-  path.join(meta.content, "navLinks.json"),
+  path.join(meta.content, "config/navLinks.json"),
   "navLinks",
 );
 

@@ -1,0 +1,72 @@
+[
+  {
+    "href": "/",
+    "label": "Home"
+  },
+  {
+    "label": "About",
+    "submenu": [
+      {
+        "href": "/about/blog",
+        "label": "About This Blog"
+      }
+    ]
+  },
+  {
+    "href": "/blog",
+    "label": "Blog"
+  },
+  {
+    "href": "/newsletter",
+    "label": "Newsletter"
+  },
+  {
+    "href": "/contact",
+    "label": "Contact"
+  },
+  {
+    "label": "Account",
+    "policy": "deny-children",
+    "submenu": [
+      {
+        "promote": "href",
+        "label": "Account Home",
+        "href": "/guest-access"
+      },
+      {
+        "href": "/access/manager",
+        "label": "Access Manager",
+        "rules": [["user:admin"]]
+      },
+      {
+        "href": "/admin/logs",
+        "label": "Logs",
+        "rules": [["user:admin"]]
+      },
+      {
+        "href": "https://example.com",
+        "label": "Production",
+        "appendCurrentPath": "True",
+        "rules": [["user:admin"]]
+      },
+      {
+        "href": "https://test.example.com",
+        "label": "Testing",
+        "appendCurrentPath": "True",
+        "rules": [["user:admin"]]
+      },
+      {
+        "href": "https://dev.example.com",
+        "label": "Development",
+        "appendCurrentPath": "True",
+        "rules": [["user:admin"]]
+      },
+      {
+        "href": "https://example.com/auth/logout",
+        "method": "post",
+        "label": "Logout",
+        "rules": [["user:admin"], ["group:guests"], ["group:people"]]
+      }
+    ]
+  }
+]
