@@ -2,66 +2,50 @@ pipeline {
     agent any
 
     environment {
-        // Map the branch name from the webhook or manual trigger
-        // If BRANCH_NAME is not set, we use the parameter
-        TARGET_BRANCH = "${env.BRANCH_NAME ?: params.branch}"
-        GIT_REPO = 'ssh://git@git.jasonpoage.vpn:29418/jason/expressjs-blog.git'
+        TARGET_BRANCH  = "${env.BRANCH_NAME ?: params.branch}"
+        GIT_REPO       = 'ssh://git@git.jasonpoage.vpn:29418/jason/expressjs-blog.git'
         CREDENTIALS_ID = '08a57452-477d-4aa6-86c6-242553660b3f'
     }
 
     parameters {
-        string(name: 'branch', defaultValue: 'refs/heads/main', description: 'Deployment branch')
-        booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Skip integration tests')
-        booleanParam(name: 'HOTFIX_MODE', defaultValue: true, description: 'Skip cloning/installing; pull and restart only')
+        string(      name: 'branch',     defaultValue: 'refs/heads/main', description: 'Deployment branch')
+        booleanParam(name: 'SKIP_TESTS', defaultValue: false,             description: 'Skip integration tests')
+        booleanParam(name: 'HOTFIX_MODE',defaultValue: false,             description: 'Pull and restart only — skip build')
+        booleanParam(name: 'DRY_RUN',    defaultValue: false,             description: 'Print steps without executing')
     }
 
     stages {
-        stage('Setup Runner') {
-          steps {
-            checkout scm
-            sh """
-                # Define a fixed path for this project's venv
-                VENV_PATH="/var/lib/jenkins/venvs/${JOB_NAME}"
 
-                # Create if missing
-                if [ ! -d "\$VENV_PATH" ]; then
-                    python3 -m venv "\$VENV_PATH"
-                fi
-
-                # Only install if requirements.txt is newer than the venv's lib directory
-                if [ requirements.txt -nt "\$VENV_PATH/lib" ]; then
-                    "\$VENV_PATH/bin/pip" install -r requirements.txt
-                    touch "\$VENV_PATH/lib" # Update timestamp to mark as "synced"
-                fi
-
-                # Link it into the workspace so the rest of the script works as-is
-                ln -sfn "\$VENV_PATH" .venv
-            """
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
         }
-      }
 
-      stage('Execute Deployment') {
-          steps {
-              script {
-                  def mode = params.HOTFIX_MODE ? "--hotfix" : ""
-                  def skipFlag = params.SKIP_TESTS ? "--skip-tests" : ""
-                  // Call the python binary inside the venv directly
-                  sh "./.venv/bin/python3 -u ./deployment --config /etc/expressjs-blog/deployment.lua --branch ${env.TARGET_BRANCH} ${skipFlag} ${mode}"
-              }
-          }
-      }
+        stage('Deploy') {
+            steps {
+                script {
+                    def flags = [
+                        "--branch ${env.TARGET_BRANCH}",
+                        "--config /etc/expressjs-blog/deployment.lua",
+                        params.HOTFIX_MODE  ? "--hotfix"      : "",
+                        params.SKIP_TESTS   ? "--skip-tests"  : "",
+                        params.DRY_RUN      ? "--dry-run"     : "",
+                    ].findAll { it }.join(" ")
+
+                    sh "bash deploy.sh ${flags}"
+                }
+            }
+        }
+
     }
 
     post {
-        //always {
-            // Clean up the build directory in the workspace to prevent the "already exists" error
-            //sh "rm -rf build/"
-        //}
         success {
             echo "Deployment of ${env.TARGET_BRANCH} successful."
         }
         failure {
-            echo "Deployment of ${env.TARGET_BRANCH} failed. Check Python logs above."
+            echo "Deployment of ${env.TARGET_BRANCH} failed."
         }
     }
 }
