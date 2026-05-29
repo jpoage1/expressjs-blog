@@ -1,5 +1,5 @@
 // src/authConfig.js
-console.log("Fix auth config authConfig.js has hard coded config values");
+console.warn("Fix auth config authConfig.js has hard coded config values");
 const { TRUST_PROXY } = require("../constants/middlewareConstants");
 
 const config = require("../config/loader");

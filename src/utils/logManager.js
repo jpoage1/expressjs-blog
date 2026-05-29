@@ -6,6 +6,8 @@ const { meta, logging } = require("../config/loader");
 const { node_env } = meta;
 const { logDir } = logging;
 
+const LogBuffer = require("./logging/LogBuffer.js");
+
 class LogManager {
   constructor(logDir, options = {}) {
     this.logDir = logDir;
@@ -47,37 +49,42 @@ class LogManager {
 
   // Main cleanup orchestrator
   cleanup(force = false) {
-    try {
-      const metrics = this.getMetrics();
-      winstonLogger.info(`\n=== Log Cleanup Started ===`);
-      winstonLogger.info(`Current sessions: ${metrics.sessionCount}`);
-      winstonLogger.info(`Total size: ${metrics.totalSizeMB.toFixed(2)}MB`);
-      winstonLogger.info(`Disk usage: ${metrics.diskUsagePercent.toFixed(1)}%`);
+    const buffer = new LogBuffer(winstonLogger, "info");
 
-      // Emergency cleanup if disk is critically full
-      if (metrics.diskUsagePercent > this.currentConfig.maxDiskUsagePercent) {
-        winstonLogger.info(`🚨 EMERGENCY CLEANUP: Disk usage critical!`);
-        return this.emergencyCleanup();
+    return buffer.execute(() => {
+      try {
+        const metrics = this.getMetrics();
+        buffer.push(`=== Log Cleanup Started ===`);
+        buffer.push(`Current sessions: ${metrics.sessionCount}`);
+        buffer.push(`Total size: ${metrics.totalSizeMB.toFixed(2)}MB`);
+        buffer.push(`Disk usage: ${metrics.diskUsagePercent.toFixed(1)}%`);
+
+        // Emergency cleanup if disk is critically full
+        if (metrics.diskUsagePercent > this.currentConfig.maxDiskUsagePercent) {
+          buffer.push(`🚨 EMERGENCY CLEANUP: Disk usage critical!`);
+          return this.emergencyCleanup();
+        }
+
+        // Size-based cleanup if total size exceeded
+        if (metrics.totalSizeMB > this.currentConfig.maxTotalSizeMB) {
+          buffer.push(`📦 SIZE-BASED CLEANUP: Total size exceeded`);
+          return this.sizeLimitedCleanup();
+        }
+
+        // Regular cleanup if time-based or forced
+        if (force || this.shouldRunRegularCleanup()) {
+          buffer.push(`🕒 REGULAR CLEANUP: Time-based maintenance`);
+          return this.regularCleanup();
+        }
+
+        buffer.push(`✅ No cleanup needed`);
+        return { cleaned: false, reason: "thresholds not met" };
+      } catch (error) {
+        // Log explicitly using error level, but let the surrounding transaction clear out the info buffer metrics
+        winstonLogger.error(`❌ Cleanup failed:`, error);
+        return { cleaned: false, error: error.message };
       }
-
-      // Size-based cleanup if total size exceeded
-      if (metrics.totalSizeMB > this.currentConfig.maxTotalSizeMB) {
-        winstonLogger.info(`📦 SIZE-BASED CLEANUP: Total size exceeded`);
-        return this.sizeLimitedCleanup();
-      }
-
-      // Regular cleanup if time-based or forced
-      if (force || this.shouldRunRegularCleanup()) {
-        winstonLogger.info(`🕒 REGULAR CLEANUP: Time-based maintenance`);
-        return this.regularCleanup();
-      }
-
-      winstonLogger.info(`✅ No cleanup needed`);
-      return { cleaned: false, reason: "thresholds not met" };
-    } catch (error) {
-      winstonLogger.error(`❌ Cleanup failed:`, error);
-      return { cleaned: false, error: error.message };
-    }
+    });
   }
 
   // Get current metrics
