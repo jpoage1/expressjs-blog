@@ -107,7 +107,9 @@ router.get("/", (req, res) => {
 });
 
 router.use((req, res, next) => {
-  req.log.warn(`RESOURCE_NOT_FOUND: ${req.url}`);
+  req.log.warn(
+    `RESOURCE_NOT_FOUND: ${JSON.stringify({ url: req.url, originalUrl: req.originalUrl })}`,
+  );
   next(new HttpError("Page not found", 404));
 });
 

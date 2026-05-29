@@ -64,6 +64,17 @@ function setupApp(config) {
 
   const router = express.Router();
 
+  router.use((req, res, next) => {
+    if (req.method === "HEAD") {
+      req.method = "GET";
+      res.removeHeader = res.removeHeader || function () {};
+      // suppress body on the way out
+      const originalSend = res.send.bind(res);
+      res.send = (body) => originalSend("");
+    }
+    next();
+  });
+
   router.post("/track", logEvent("analytics"), analytics);
   router.post("/analytics", logEvent("analytics"), analytics);
   router.use("/admin", logEvent("admin"), securedMiddleware, securedRoutes);

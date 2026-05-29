@@ -85,4 +85,7 @@ router.use(construction.getRouter());
 router.use(html.getRouter());
 router.use(markdown.getRouter());
 
+const { router: contentRouter } = routes;
+if (contentRouter) router.use(contentRouter);
+
 module.exports = router;
