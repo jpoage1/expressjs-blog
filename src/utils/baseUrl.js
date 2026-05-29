@@ -1,7 +1,5 @@
 // src/utils/baseUrl.js
-const { public } = require("#config/loader.js");
 const config = require("#config/loader.js");
-console.log(config);
 
 function withBasePath(path = "") {
   const basePath = public.basePath;
@@ -15,6 +13,7 @@ function getBaseUrl({
   port = null,
   basePath = "",
 } = {}) {
+  const { public } = config;
   const finalBasePath = basePath || public?.basePath || "";
   const finalPort = port || public.port;
   const finalProtocol = schema || public.schema;
@@ -30,15 +29,5 @@ function getBaseUrl({
   // return `${finalProtocol}://${finalDomain}${finalPort != 80 ? `:${finalPort}` : ""}`;
   return `${finalProtocol}://${finalDomain}${showPort}${finalBasePath}`;
 }
-let baseUrl = {};
-// The content module needs to import baseUrl before the config is loaded.
-try {
-  baseUrl = getBaseUrl();
-} catch (e) {
-  console.info(
-    `Notice: baseUrl cannot be configured yet. The config likely has not yet been hydrated; swallowing the error now.\nMessage: ${e.message}`,
-  );
-  // Swallow the error so that the content module can hydrate the baseUrl
-}
 
-module.exports = { baseUrl, getBaseUrl, withBasePath };
+module.exports = { getBaseUrl, withBasePath };

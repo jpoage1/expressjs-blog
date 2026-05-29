@@ -1,11 +1,11 @@
 // src/authConfig.js
 console.warn("Fix auth config authConfig.js has hard coded config values");
-const { TRUST_PROXY } = require("../constants/middlewareConstants");
-
-const config = require("../config/loader");
-const { meta, session } = config;
 const { auth, requiresAuth } = require("express-openid-connect");
-const { baseUrl } = require("../utils/baseUrl.js");
+const { TRUST_PROXY } = require("#constants/middlewareConstants.js");
+
+const { getBaseUrl } = require("#utils/baseUrl.js");
+const config = require("#config/loader.js");
+const { meta, session } = config;
 
 const authConfig = {
   // idpLogout: true,
@@ -51,7 +51,7 @@ const authConfig = {
   secret: "insecure_secret",
   clientID: "expressjs-blog",
   clientSecret: "insecure_secret",
-  baseURL: baseUrl,
+  baseURL: getBaseUrl(config.public),
   issuerBaseURL: "https://auth.jasonpoage.com",
   authRequired: false,
   authorizationParams: {

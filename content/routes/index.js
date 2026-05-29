@@ -8,8 +8,8 @@ function getRoutes() {
     // logger.info("hexascriptDocs", { hexascriptDocs });
     // router.use("/hexa-docs", hexascriptDocs);
     const resume = require("./resume");
-    const stack = require("@controllers/techkStackController.js").bind(this);
-    const presentation = require("@controllers/presentation.js");
+    const stack = require("#controllers/techStackController.js").bind(this);
+    const presentation = require("#controllers/presentation.js");
 
     router.get("/stack", stack);
     router.use("/projects/website-presentation", presentation);
@@ -19,7 +19,6 @@ function getRoutes() {
   }
   const { node_env, content: contentPath } = this.meta;
 
-  console.log(this);
   const baseUrl = getBaseUrl(this.public);
   return {
     constructionRoutes: [

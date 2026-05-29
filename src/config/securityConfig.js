@@ -1,6 +1,9 @@
 // config/securityConfig.js
 
-const { baseUrl } = require("../utils/baseUrl");
+const { getBaseUrl } = require("../utils/baseUrl");
+const config = require("#config/loader.js");
+
+const baseUrl = getBaseUrl(config.public);
 
 module.exports = {
   LOCALHOST_HOSTNAMES: ["127.0.0.1", "localhost"],

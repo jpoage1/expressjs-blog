@@ -61,7 +61,7 @@ class MarkdownRoutes extends BaseRoute {
           content: htmlContent,
           ...extraParams,
         };
-        console.log(extraParams);
+        console.log("extraParams: ", extraParams);
         res.renderWithBaseContext(`pages/${handlebarsFile}`, context);
       } catch (err) {
         err.statusCode = 500;

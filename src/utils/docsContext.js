@@ -4,7 +4,7 @@ const fs = require("fs/promises");
 const yaml = require("js-yaml");
 
 const { qualifyNavLinks } = require("./qualifyLinks");
-const { baseUrl } = require("./baseUrl");
+const config = require("#config/loader.js");
 const generateDocsMenuModel = require("./generateDocsMenuModel");
 const processMenuLinks = require("../utils/processMenuLinks");
 const { meta } = require("../config/loader");
@@ -56,7 +56,7 @@ module.exports = async function getDocsContext(session, overrides = {}) {
     siteOwner,
     originCountry: meta.country,
     navLinks: qualifiedNavLinks,
-    baseUrl,
+    baseUrl: getBaseUrl(config.public),
     paths: docsMenu,
     isAuthenticated: session.isAuthenticated,
     showFooter: true,

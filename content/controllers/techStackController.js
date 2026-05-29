@@ -1,7 +1,7 @@
 // controllers/techStackController.js
 
-const HttpError = require("#utils/HttpError.js");
-const techStack = require(`../techStack.json`);
+const HttpError = require("../../src/utils/HttpError.js");
+const techStack = require(`#config/techStack.json`);
 
 module.exports = (req, res, next) => {
   try {

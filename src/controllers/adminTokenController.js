@@ -33,6 +33,5 @@ exports.handleTokenRedirect = (req, res, next) => {
   const adminLoginUrl = `${auth.login}${redirectTo}`;
   res.set("Content-Type", "text/html");
   res.customRedirect(adminLoginUrl, 301);
-  console.log("test");
   next();
 };

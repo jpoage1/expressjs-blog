@@ -1,4 +1,7 @@
-const { baseUrl } = require("../utils/baseUrl");
+const { getBaseUrl } = require("../utils/baseUrl");
+const config = require("../config/loader");
+
+const baseUrl = getBaseUrl(config.public);
 
 const isDisabled = (item) => item?.disabled ?? false;
 const isEnabled = (item) => !isDisabled(item);

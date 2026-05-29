@@ -7,14 +7,14 @@
   "type": "commonjs",
   "scripts": {},
   "imports": {
-    "@config/*": "./content/config/*",
-    "@controllers/*": "./controllers/*",
-    "@html/*": "./html/*",
-    "@images/*": "./images/*",
-    "@pages/*": "./pages/*",
-    "@posts/*": "./posts/*",
-    "@utils/*": "./utils/*",
-    "@routes/*": "./routes/*"
+    "#config/*": "./config/*",
+    "#controllers/*": "./controllers/*",
+    "#html/*": "./html/*",
+    "#images/*": "./images/*",
+    "#pages/*": "./pages/*",
+    "#posts/*": "./posts/*",
+    "#utils/*": "./utils/*",
+    "#routes/*": "./routes/*"
   },
   "keywords": [],
   "author": "",
