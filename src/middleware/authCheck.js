@@ -11,7 +11,7 @@ module.exports = async (req, res, next) => {
   if (!config.auth.enabled) {
     res.locals.session = {
       nonce: generateNonce(),
-      isAuthenticated: true,
+      isAuthenticated: false,
       user: "user",
       groups: [],
     };
