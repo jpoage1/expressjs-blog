@@ -1,6 +1,12 @@
-const db = require("../utils/sqlite3");
+// src/controllers/analyticsControllers.js
+// Receives the client-side POST to /track with JS-enriched data:
+// viewport, loadTime, js_enabled: true, and the actual page URL.
+// This is distinct from what structuredLogger records — that captures
+// the POST to /track itself; this captures the page view it describes.
 
-// Route: JavaScript-enabled tracking
+const { upsertVisitor, recordRequest } = require("../services/visitorService");
+const { winstonLogger } = require("../utils/logging");
+
 module.exports = (context) => (req, res) => {
   const {
     url = "",
@@ -12,12 +18,12 @@ module.exports = (context) => (req, res) => {
   } = req.body;
 
   const forwardedIp = req.ip;
-  const directIp = req.connection.remoteAddress;
-  const timestamp = Date.now();
+  const directIp = req.connection?.remoteAddress;
 
+  // File log preserved for dev debugging — same as before
   req.log.analytics({
     context,
-    timestamp,
+    timestamp: Date.now(),
     url,
     referrer,
     userAgent,
@@ -28,5 +34,24 @@ module.exports = (context) => (req, res) => {
     directIp,
     js_enabled: true,
   });
+
+  // Respond immediately — never hold the client waiting on DB writes
   res.sendStatus(204);
+
+  // Fire-and-forget: record in Postgres with client-side enrichment
+  (async () => {
+    try {
+      const visitorId = await upsertVisitor(forwardedIp, userAgent);
+      await recordRequest(visitorId, "GET", url, 200, referrer, {
+        directIp,
+        viewport,
+        loadTime,
+        event,
+        context,
+        jsEnabled: true,
+      });
+    } catch (err) {
+      console.error("analyticsController insert failed:", err.message);
+    }
+  })();
 };

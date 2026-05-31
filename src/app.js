@@ -1,48 +1,22 @@
 // src/app.js
 require("dotenv").config();
 
-const { network: c, meta } = require("./config/loader");
+const { network: c, meta } = require("#config/loader.js");
 
 const net = require("net");
 const setupMiddleware = require("./middleware");
 const {
   handleUncaughtException,
   handleUnhandledRejection,
-} = require("./utils/logging/handlers");
-const { winstonLogger } = require("./utils/logging");
-const LogBuffer = require("./utils/logging/LogBuffer.js");
+} = require("#utils/logging/handlers.js");
+const { winstonLogger } = require("#utils/logging/index.js");
+const LogBuffer = require("#utils/logging/LogBuffer.js");
 
-const { startTokenCleanup } = require("./utils/tokenCleanup");
-const { cleanupOldSessions } = require("./utils/logManager");
+const { startTokenCleanup } = require("#utils/tokenCleanup.js");
+const { cleanupOldSessions } = require("#utils/logManager.js");
+const { getExpress5Routes } = require("#utils/routerUtils.js");
 
 const startupBuffer = new LogBuffer(winstonLogger, "info");
-
-/**
- * Extracts and flattens all registered routes from an Express 5 router stack.
- */
-function getExpress5Routes(routerStack, parentPath = "") {
-  let routes = [];
-
-  routerStack.forEach((layer) => {
-    if (layer.route) {
-      const path = `${parentPath}${layer.route.path}`;
-      const methods = Object.keys(layer.route.methods)
-        .filter((method) => layer.route.methods[method])
-        .map((method) => method.toUpperCase());
-
-      routes.push({ path, methods });
-    } else if (layer.name === "router" && layer.handle && layer.handle.stack) {
-      const basePath = layer.path || "";
-      const nestedRoutes = getExpress5Routes(
-        layer.handle.stack,
-        parentPath + basePath,
-      );
-      routes = routes.concat(nestedRoutes);
-    }
-  });
-
-  return routes;
-}
 
 /**
  * Centers and pads a method array string to fit a fixed 10-character column width.

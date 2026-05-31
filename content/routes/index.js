@@ -7,13 +7,11 @@ function getRoutes() {
     // const hexascriptDocs = require(`${meta.content}/docs/hexascript/src/script.js`);
     // logger.info("hexascriptDocs", { hexascriptDocs });
     // router.use("/hexa-docs", hexascriptDocs);
-    const resume = require("./resume");
     const stack = require("#controllers/techStackController.js").bind(this);
-    const presentation = require("#controllers/presentation.js");
+    const presentation = require("#controllers/presentationController.js");
 
     router.get("/stack", stack);
     router.use("/projects/website-presentation", presentation);
-    router.use("/resume", resume);
   } catch (e) {
     console.error(`Missing module: ${e.message}`, e.stack);
   }

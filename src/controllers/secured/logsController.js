@@ -1,27 +1,96 @@
+// src/controllers/secured/logsController.js
+//
+// fetchLogs      — reads from daily log files on disk (no SQLite, no ORM)
+// fetchAnalytics — reads from Postgres visitors/requests/security_flags tables
+// renderLogsPage — unchanged
+//
+// Response shape is intentionally stable: when Fluentd replaces file-based
+// shipping, fetchLogs swaps its data source without any frontend changes.
+
 const fs = require("fs");
-const Database = require("better-sqlite3");
+const path = require("path");
 const { winstonLogger } = require("../../utils/logging");
-const analyticsDb = require("../../utils/sqlite3");
 const { logging } = require("../../config/loader");
+const pool = require("../../db/pool");
 
 const allowedLevels = [
-  "warn",
   "error",
+  "warn",
   "security",
+  "notice",
   "event",
-  "analytics",
   "info",
   "debug",
-  "functions",
-  "notice",
 ];
-const dbFile = logging.getDBFile("logs.sqlite3");
 
-if (!fs.existsSync(dbFile)) {
-  fs.closeSync(fs.openSync(dbFile, "w"));
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Read log entries from a DailyRotateFile log directory.
+ * Each level writes to logs/<level>/<level>-YYYY-MM-DD.log (or <level>.log
+ * for the current day's active file). Lines are plain text formatted as:
+ *   [ISO-timestamp] [LEVEL] message
+ *
+ * Returns an array of { timestamp, level, message } objects, most recent first.
+ */
+function readLevelFile(level, date) {
+  const logDir = path.join(logging.logDir, level);
+
+  if (!fs.existsSync(logDir)) return [];
+
+  // Prefer the dated file when a date filter is active, otherwise use
+  // the current rolling file. Falls back to the most recently modified
+  // file in the directory if neither exists.
+  let filePath;
+  if (date) {
+    filePath = path.join(logDir, `${level}-${date}.log`);
+  } else {
+    // Active file (winston-daily-rotate-file keeps a symlink-style named file)
+    const active = path.join(logDir, `${level}.log`);
+    filePath = fs.existsSync(active) ? active : null;
+  }
+
+  if (!filePath || !fs.existsSync(filePath)) return [];
+
+  const raw = fs.readFileSync(filePath, "utf8");
+  const lines = raw.split("\n").filter(Boolean);
+
+  return lines
+    .map((line) => {
+      // Format: [2026-05-31T00:00:00.000Z] [LEVEL] rest of message
+      const match = line.match(/^\[([^\]]+)\]\s+\[([^\]]+)\]\s+([\s\S]*)$/);
+      if (!match) return null;
+      return {
+        timestamp: match[1],
+        level: match[2].toLowerCase(),
+        message: match[3],
+      };
+    })
+    .filter(Boolean)
+    .reverse(); // most recent first
 }
 
-const logsDb = new Database(dbFile, { readonly: true });
+function paginate(items, page, limit) {
+  const total = items.length;
+  const totalPages = Math.ceil(total / limit);
+  const offset = (page - 1) * limit;
+  return {
+    items: items.slice(offset, offset + limit),
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages,
+      hasMore: page < totalPages,
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Render
+// ---------------------------------------------------------------------------
 
 exports.renderLogsPage = (req, res) => {
   res.renderWithBaseContext("admin-pages/logs", {
@@ -30,82 +99,130 @@ exports.renderLogsPage = (req, res) => {
   });
 };
 
-exports.fetchLogs = (req, res) => {
-  const log_level = req.query.log_level || "*";
-  const date = req.query.date || "*";
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 50;
-  const offset = (page - 1) * limit;
+// ---------------------------------------------------------------------------
+// Logs — file-based
+// Swap this function's body for a Loki HTTP query when Fluentd is in place.
+// The response envelope stays identical.
+// ---------------------------------------------------------------------------
 
-  if (log_level !== "*" && !allowedLevels.includes(log_level)) {
+exports.fetchLogs = (req, res) => {
+  const logLevel = req.query.log_level || "*";
+  const date = req.query.date || null;
+  const page = Math.max(parseInt(req.query.page) || 1, 1);
+  const limit = Math.max(parseInt(req.query.limit) || 50, 1);
+
+  if (logLevel !== "*" && !allowedLevels.includes(logLevel)) {
     return res.status(400).json({ error: "Invalid log_level" });
   }
 
-  const conditions = [];
-  const params = [];
+  try {
+    const levels = logLevel === "*" ? allowedLevels : [logLevel];
+    const allEntries = levels.flatMap((level) => readLevelFile(level, date));
 
-  if (log_level !== "*") {
-    conditions.push("level = ?");
-    params.push(log_level);
+    // Sort descending across all levels when reading multiple
+    allEntries.sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1));
+
+    const { items: logs, pagination } = paginate(allEntries, page, limit);
+
+    // Stable response shape — matches what a Loki query would return
+    res.json({ logs, pagination });
+  } catch (err) {
+    winstonLogger.error("fetchLogs error:", err);
+    res.status(500).json({ error: "Failed to read logs" });
   }
+};
 
-  if (date !== "*") {
-    conditions.push("date(timestamp) = ?");
-    params.push(date);
-  }
+// ---------------------------------------------------------------------------
+// Analytics — Postgres
+// ---------------------------------------------------------------------------
 
-  const whereClause = conditions.length
-    ? "WHERE " + conditions.join(" AND ")
-    : "";
-  const countQuery = `SELECT COUNT(*) as total FROM logs ${whereClause}`;
-  const totalResult = logsDb.prepare(countQuery).get(...params);
-  const total = totalResult.total;
+exports.fetchAnalyticsLogs = async (req, res) => {
+  const page = Math.max(parseInt(req.query.page) || 1, 1);
+  const limit = Math.max(parseInt(req.query.limit) || 50, 1);
+  const offset = (page - 1) * limit;
 
-  const logQuery = `
-    SELECT id, timestamp, level
-    FROM logs
-    ${whereClause}
-    ORDER BY timestamp DESC
-    LIMIT ? OFFSET ?
-  `;
+  // Optional filters
+  const classification = req.query.classification || null; // e.g. "bad_actor"
+  const flagType = req.query.flag_type || null; // e.g. "probe"
+  const flagStatus = req.query.flag_status || "pending"; // default: pending flags
 
   try {
-    const logRows = logsDb.prepare(logQuery).all(...params, limit, offset);
-    if (logRows.length === 0) {
-      return res.json({
-        logs: [],
-        pagination: { page, limit, total, totalPages: 0, hasMore: false },
-      });
+    // --- Visitor + request summary ---
+    const visitorsQuery = `
+      SELECT
+        v.id,
+        v.ip,
+        v.user_agent,
+        v.first_seen,
+        v.last_seen,
+        v.classification,
+        v.blocked,
+        COUNT(r.id) AS request_count
+      FROM visitors v
+      LEFT JOIN requests r ON r.visitor_id = v.id
+      ${classification ? "WHERE v.classification = $3" : ""}
+      GROUP BY v.id
+      ORDER BY v.last_seen DESC
+      LIMIT $1 OFFSET $2
+    `;
+
+    const countQuery = `
+      SELECT COUNT(*) AS total FROM visitors
+      ${classification ? "WHERE classification = $1" : ""}
+    `;
+
+    const visitorParams = classification
+      ? [limit, offset, classification]
+      : [limit, offset];
+
+    const countParams = classification ? [classification] : [];
+
+    const [visitorsResult, countResult] = await Promise.all([
+      pool.query(visitorsQuery, visitorParams),
+      pool.query(countQuery, countParams),
+    ]);
+
+    const total = parseInt(countResult.rows[0].total, 10);
+    const totalPages = Math.ceil(total / limit);
+
+    // --- Pending flags for the returned visitors ---
+    const visitorIds = visitorsResult.rows.map((r) => r.id);
+    let flags = [];
+
+    if (visitorIds.length > 0) {
+      const placeholders = visitorIds.map((_, i) => `$${i + 2}`).join(", ");
+      const flagsQuery = `
+        SELECT visitor_id, flag_type, created_at, route, hit_count, status, details
+        FROM security_flags
+        WHERE status = $1
+          AND visitor_id IN (${placeholders})
+        ORDER BY created_at DESC
+      `;
+      const flagsResult = await pool.query(flagsQuery, [
+        flagStatus,
+        ...visitorIds,
+      ]);
+      flags = flagsResult.rows;
     }
 
-    const logIds = logRows.map((row) => row.id);
-    const placeholders = logIds.map(() => "?").join(",");
-    const metadataQuery = `
-      SELECT m.log_id, k.key, m.value
-      FROM log_metadata m
-      JOIN keys k ON k.id = m.key_id
-      WHERE m.log_id IN (${placeholders})
-    `;
-    const metadataRows = logsDb.prepare(metadataQuery).all(...logIds);
-
-    const metadataMap = {};
-    metadataRows.forEach((row) => {
-      if (!metadataMap[row.log_id]) metadataMap[row.log_id] = {};
-      try {
-        metadataMap[row.log_id][row.key] = JSON.parse(row.value);
-      } catch {
-        metadataMap[row.log_id][row.key] = row.value;
-      }
+    // Attach flags to their visitor
+    const flagsByVisitor = {};
+    flags.forEach((f) => {
+      if (!flagsByVisitor[f.visitor_id]) flagsByVisitor[f.visitor_id] = [];
+      flagsByVisitor[f.visitor_id].push(f);
     });
 
-    const logs = logRows.map((row) => ({
-      id: row.id,
-      timestamp: row.timestamp,
-      level: row.level,
-      ...(metadataMap[row.id] || {}),
+    const logs = visitorsResult.rows.map((v) => ({
+      id: v.id,
+      ip: v.ip,
+      userAgent: v.user_agent,
+      firstSeen: v.first_seen,
+      lastSeen: v.last_seen,
+      classification: v.classification,
+      blocked: v.blocked,
+      requestCount: parseInt(v.request_count, 10),
+      flags: flagsByVisitor[v.id] || [],
     }));
-
-    const totalPages = Math.ceil(total / limit);
 
     res.json({
       logs,
@@ -117,78 +234,8 @@ exports.fetchLogs = (req, res) => {
         hasMore: page < totalPages,
       },
     });
-  } catch (error) {
-    winstonLogger.error("Query error:", error);
-    res.status(500).json({ error: "Failed to query logs" });
-  }
-};
-
-exports.fetchAnalyticsLogs = (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 50;
-  const offset = (page - 1) * limit;
-
-  if (page < 1 || limit < 1) {
-    return res.status(400).json({ error: "Invalid pagination parameters" });
-  }
-
-  const conditions = [];
-  const params = [];
-  const whereClause = conditions.length
-    ? "WHERE " + conditions.join(" AND ")
-    : "";
-
-  try {
-    const countQuery = `SELECT COUNT(*) as total FROM analytics_view ${whereClause}`;
-    analyticsDb.get(countQuery, params, (err, totalResult) => {
-      if (err) {
-        winstonLogger.error("Count query error:", err);
-        return res.status(500).json({ error: "Failed to query logs" });
-      }
-
-      const total = totalResult.total;
-      const queryParams = [...params, limit, offset];
-
-      const logsQuery = `
-        SELECT
-          id,
-          timestamp_human AS timestamp,
-          url,
-          referrer,
-          user_agent,
-          viewport,
-          load_time,
-          event,
-          forwardedIp,
-          directIp,
-          js_enabled
-        FROM analytics_view
-        ${whereClause}
-        ORDER BY timestamp DESC
-        LIMIT ? OFFSET ?
-      `;
-
-      analyticsDb.all(logsQuery, queryParams, (err, logs) => {
-        if (err) {
-          winstonLogger.error("Logs query error:", err);
-          return res.status(500).json({ error: "Failed to query logs" });
-        }
-
-        const totalPages = Math.ceil(total / limit);
-        res.json({
-          logs,
-          pagination: {
-            page,
-            limit,
-            total,
-            totalPages,
-            hasMore: page < totalPages,
-          },
-        });
-      });
-    });
-  } catch (error) {
-    winstonLogger.error("Query error:", error);
-    res.status(500).json({ error: "Failed to query logs" });
+  } catch (err) {
+    winstonLogger.error("fetchAnalyticsLogs error:", err);
+    res.status(500).json({ error: "Failed to query analytics" });
   }
 };

@@ -1,0 +1,329 @@
+
+title: "Final Website Project Presentation"
+slides:
+  - number: 1
+    heading: "Project Overview & Vision"
+    paragraphs:
+      - "This presentation showcases a <strong>personal publishing platform</strong> designed for technical professionals. It serves as both a comprehensive <strong>portfolio</strong> and a continuously expanding <strong>knowledge base</strong>."
+      - "Our primary goal is to demonstrate strong <strong>software architecture skills</strong>, clear technical <strong>communication</strong> and practical <strong>development experience</strong> through real-world applications and content."
+
+  - number: 2
+    heading: "Website Showcase: Core & Content"
+    images:
+      - src: /static/images/home.png
+        alt: "Homepage Screenshot"
+      - src: /static/images/logging.png
+        alt: "Log Viewer / Admin Interface Screenshot"
+    listItems:
+      - text: "Explore the <strong>Homepage</strong> to see introductory content and the foundational layout."
+      - text: "View a sample of the <strong>Log Viewer / Admin Interface</strong>, demonstrating backend utility."
+
+  - number: 3
+    heading: "Website Showcase: Navigation & Interaction"
+    images:
+      - src: /static/images/nav-bar.png
+        alt: "Navigation Bar Screenshot"
+      - src: /static/images/contact.png
+        alt: "Contact Page"
+      - src: /static/images/newsletter.png
+        alt: "Newsletter Signup"
+    listItems:
+      - text: "Discover the main site <strong>Navigation Bar</strong>, highlighting menu behavior and accessibility."
+      - text: "See user interaction elements like the <strong>Contact Page</strong> and <strong>Newsletter Signup</strong> form."
+
+  - number: 4
+    heading: "Website Showcase: Essential Elements & Utilities"
+    images:
+      - src: /static/images/footer.png
+        alt: "Footer"
+      - src: /static/images/table-of-contents.png
+        alt: "Admin Interface Screenshot"
+      - src: /static/images/construction.png
+        alt: "'Under Construction' Page"
+    listItems:
+      - text: "Review consistent elements like the <strong>Footer</strong>."
+      - text: "Examine the dynamic <strong>Table of Contents</strong>"
+      - text: "Note utility pages such as the 'Under Construction' placeholder."
+
+  - number: 5
+    heading: "Website Showcase: Documentation" # NEW HEADING
+    images:
+      - src: /static/images/documentation.png # NEW IMAGE
+        alt: "Documentation Homepage Screenshot"
+    listItems:
+      - text: "Explore the dedicated <strong>Documentation Portal</strong>, offering comprehensive guides and technical insights."
+      - text: "The documentation enhances usability and serves as a valuable resource for understanding system functionalities."
+
+  - number: 6
+    heading: "Website Showcase: Sitemap Pages"
+    images:
+      - src: /static/images/sitemap.png
+        alt: "Sitemap PNG Page"
+      - src: /static/images/sitemap-xml.png
+        alt: "Sitemap XML Page"
+    listItems:
+      - text: "Explore the <strong>Sitemap (HTML & XML)</strong> illustrating site structure for search engines."
+
+  - number: 7
+    heading: "Website Showcase: Error Pages"
+    images:
+      - src: /static/images/error404.png
+        alt: "Custom Error 404 Page"
+      - src: /static/images/error403.png
+        alt: "Custom Error 403 Page"
+      - src: /static/images/error500.png
+        alt: "Custom Error 500 Page"
+    listItems:
+      - text: "Custom <strong>Error Pages (404, 403, 500)</strong> demonstrate robust error handling."
+
+  - number: 8
+    heading: "Design Philosophy: Layout & Color"
+    listItems:
+      - text: "<strong>Clean & Efficient Layout:</strong> A two-column structure (sidebar on left, main content on right) prioritizes legibility and quick access to categorized topics."
+      - text: "<strong>Harmonious Color Scheme:</strong> Neutral grayscale tones are accented with selective colors for links and interactive elements. Support for both light and dark modes ensures optimal readability."
+
+  - number: 9
+    heading: "Design Philosophy: Navigation & Interaction"
+    listItems:
+      - text: "<strong>Intuitive Navigation:</strong> A top-level horizontal menu with an 'About' dropdown offers primary access, complemented by a sidebar for chronological and tag-based Browse of blog posts."
+      - text: "<strong>Seamless User Interaction:</strong> Integrated contact, comment, and newsletter forms are designed to be unobtrusive, easy to find, and simple to use."
+      - text: "<strong>Cross-Browser & Responsive:</strong> Rigorously tested across Chrome, Firefox, and Edge, the design ensures proper rendering and functionality on both desktop and mobile devices."
+
+  - number: 10
+    heading: "Technical Architecture"
+    listItems:
+      - text: "<strong>Frontend Stack:</strong> Built with <strong>HTML5</strong> and <strong>CSS3</strong> for structure and styling. Dynamic content is populated using <strong>Handlebars templates</strong> for server-side rendering."
+      - text: "<strong>Backend Logic:</strong> Powered by <strong>Node.js</strong> and <strong>Express</strong>. Content is managed via <strong>Markdown files</strong>, converted to structured HTML at runtime."
+      - text: "<strong>Security & Proxy Layer:</strong> An <strong>NGINX reverse proxy</strong> handles incoming requests and routing. <strong>Authelia</strong> provides optional authentication for administrative tools."
+      - text: "<strong>Dynamic Content System:</strong> Blog posts are automatically indexed by tag, topic, and publication date. Archive pages and an RSS feed are dynamically generated from content metadata."
+
+  - number: 11
+    heading: "Challenges & Solutions"
+    listItems:
+      - text: "<strong>Challenge: Adapting to Assignment Scope (Static vs. Dynamic):</strong> The initial requirement was static HTML/CSS, but the project evolved into a full backend stack with routing and templating.<br /><strong>Resolution:</strong> Ensured all output HTML and CSS remain clean, standards-compliant, and semantically structured, meeting the spirit of the original requirement while exceeding its scope."
+      - text: "<strong>Challenge: Complex Proxy & Authentication Integration:</strong> Configuring the NGINX reverse proxy and integrating upstream authentication demanded meticulous coordination across multiple layers.<br /><strong>Resolution:</strong> Isolated session management through Authelia and maintained a stateless design within the application to prevent session coupling and enhance robustness."
+      - text: "<strong>Challenge: Balancing Functionality with Maintainability:</strong> Avoiding unnecessary complexity was crucial to preserve clarity and support future scalability.<br /><strong>Resolution:</strong> Employed semantic HTML, modular templates, and clear component boundaries, establishing a solid foundation for long-term growth and ease of maintenance."
+
+  - number: 12
+    heading: "Conclusion & Project Impact"
+    paragraphs:
+      - "This project significantly <strong>exceeds the base assignment requirements</strong>, delivering a fully functional and extensible web platform."
+      - "It features comprehensive backend integration, secure routing, and dynamic content generation."
+      - "The site adeptly demonstrates foundational HTML/CSS practices while seamlessly incorporating modern development tooling."
+      - "<strong>Tailored for a technical audience</strong>, this platform exemplifies performance, clarity, and real-world applicability in software development."
+
+  - number: 13
+    heading: "Thank You!"
+    paragraphs:
+      - "I hope you enjoyed the presentation."
+      - '<button id="returnButton" href="#" class="reveal-button">Return to Website</button>'
+ #------------------------------------------------
+  - number: 1
+    heading: "Project Background: The Linguistic Noise Problem"
+    listItems:
+      - [cite_start]text: "Modern Large Language Models are constrained by finite context windows and extraneous semantic load. [cite: 383]"
+      - [cite_start]text: "Standard human-readable source code is statistically sparse, wasting valuable tokens on syntax and identifiers. [cite: 384]"
+      - [cite_start]text: "This 'linguistic noise' dilutes AI attention and limits its ability to reason over large-scale software architectures. [cite: 385]"
+
+  - number: 2
+    heading: "Recommended Solution: HexaCore Logic Lab"
+    listItems:
+      - [cite_start]text: "A specialized research ecosystem that replaces verbose programming syntax with a high-density 'Logic Calculus'. [cite: 2, 381]"
+      - [cite_start]text: "Utilizes Hexascript, a 5-pass compiler that transpiles Python logic into a 1:1 mapped intermediate representation. [cite: 47, 386]"
+      - [cite_start]text: "Features an N-IDE (Neural-Integrated Development Environment) frontend to interact with the logic engine and visualize token density. [cite: 86, 89, 90]"
+
+  - number: 3
+    heading: "Why This Solution? (Competitive Research)"
+    listItems:
+      - [cite_start]text: "Unlike frameworks like 'Denser' which use telegraphic pseudocode, or 'CoThink' which optimizes reasoning paths, Hexascript directly engineers the underlying data density. [cite: 359, 360, 361, 362]"
+      - [cite_start]text: "The system implements Instruction Set Randomization (ISR) using a master entropy seed to randomize opcodes and addresses. [cite: 397]"
+      - [cite_start]text: "This methodology forces AI agents to move beyond memorizing static syntax patterns and instead acquire pure structural reasoning. [cite: 387, 388]"
+
+  - number: 4
+    heading: "Live Demonstration"
+    listItems:
+      - [cite_start]text: "We will highlight the N-IDE's dual context windows, showing side-by-side visualization of high-level source code and Hexascript bytecode. [cite: 404]"
+      - [cite_start]text: "We will explore the 5-pass compilation pipeline: Lex/Parse, Seeded Interning, Linearization, Logic Squeeze, and Tier 0 Emission. [cite: 390, 391, 392]"
+      - [cite_start]text: "A live look at low-latency telemetry will capture execution traces, proving functional parity between Python and the C++ VM. [cite: 409, 414, 440]"
+
+  - number: 5
+    heading: "Next Steps: Autonomous Training Phase"
+    listItems:
+      - [cite_start]text: "Implementing a self-correcting feedback loop (HexaAgent) that uses VM telemetry to guide LLM bytecode mutations. [cite: 411]"
+      - [cite_start]text: "Executing a Curriculum Learning Strategy, moving from a fixed ground truth baseline to universal generalization using randomized seeds. [cite: 446, 447, 452]"
+      - [cite_start]text: "Generating a 'Textbook' dataset featuring chaos injection—including invalid opcodes and register overflows—to train models on self-correction. [cite: 413, 423]"
+
+  - number: 6
+    heading: "Conclusion"
+    paragraphs:
+      - [cite_start]"The HexaCore Logic Lab delivers a reproducible, fully-integrated logic research environment powered by NixOS and Docker. [cite: 432, 438]"
+      - [cite_start]"By targeting a minimum 60% reduction in LLM token count, the platform paves the way for higher logic density in AI-driven reasoning tasks. [cite: 389, 442]"
+      - '<button id="returnButton" href="#" class="reveal-button">Return to Main View</button>'
+# -------------------------------------------------------
+  - number: 1
+    heading: "Project Background: The Linguistic Noise Problem"
+    listItems:
+      - text: "Modern Large Language Models are constrained by finite context windows and extraneous semantic load."
+      - text: "Standard human-readable source code is statistically sparse, wasting valuable tokens on syntax and identifiers."
+      - text: "This 'linguistic noise' dilutes AI attention and limits its ability to reason over large-scale software architectures."
+
+  - number: 2
+    heading: "Recommended Solution: HexaCore Logic Lab"
+    listItems:
+      - text: "A specialized research ecosystem that replaces verbose programming syntax with a high-density 'Logic Calculus'."
+      - text: "Utilizes Hexascript, a 5-pass compiler that transpiles Python logic into a 1:1 mapped intermediate representation."
+      - text: "Features an N-IDE (Neural-Integrated Development Environment) frontend to interact with the logic engine and visualize token density."
+
+  - number: 3
+    heading: "Why This Solution? (Competitive Research)"
+    listItems:
+      - text: "Unlike frameworks like 'Denser' which use telegraphic pseudocode, or 'CoThink' which optimizes reasoning paths, Hexascript directly engineers the underlying data density."
+      - text: "The system implements Instruction Set Randomization (ISR) using a master entropy seed to randomize opcodes and addresses."
+      - text: "This methodology forces AI agents to move beyond memorizing static syntax patterns and instead acquire pure structural reasoning."
+
+  - number: 4
+    heading: "Demonstration: C++ Core & Telemetry"
+    listItems:
+      - text: "We will explore the 5-pass compilation pipeline: Lex/Parse, Seeded Interning, Linearization, Logic Squeeze, and Tier 0 Emission."
+      - text: "A live look at low-latency telemetry will capture execution traces, proving functional parity between Python and the C++ VM."
+      - text: "The Decompiler module successfully maps raw .hex bytecode back to aliases using the generated .meta.json artifact."
+
+  - number: 5
+    heading: "Demonstration: N-IDE Frontend"
+    listItems:
+      - text: "Highlighting the N-IDE's dual context windows, showing side-by-side visualization of high-level source code and Hexascript bytecode."
+      - text: "Dynamic configuration models via the FastAPI gateway expose compiler flags and telemetry settings."
+      - text: "Strict separation of concerns via Svelte and TypeScript reactive state management."
+
+  - number: 6
+    heading: "Scope Adjustments: Autonomy & Telemetry"
+    listItems:
+      - text: "<strong>Autonomous Agents & Miners:</strong> Shifted focus to generating structured chaos datasets (invalid opcodes, overflows) to maximize structural research. Multi-threaded agent feedback loops are slated for Phase 2."
+      - text: "<strong>Hardware Telemetry:</strong> Abandoned the Lua-based metrics poller to reduce multi-language stack complexity, prioritizing robust C++ VM logic telemetry over host hardware tracking."
+
+  - number: 7
+    heading: "Scope Adjustments: Architecture & UI"
+    listItems:
+      - text: "<strong>Orchestration:</strong> Substituted the planned Golang entry point with a Bash wrapper to prioritize development velocity and rapid iteration of the FastAPI server."
+      - text: "<strong>UI Feature Parity:</strong> Paused Svelte visual components for reversible decompilation and real-time error notifications to guarantee the mathematical integrity and stability of the core 5-pass C++ compiler."
+
+  - number: 8
+    heading: "Next Steps: Autonomous Training Phase"
+    listItems:
+      - text: "Implementing a self-correcting feedback loop (HexaAgent) that uses VM telemetry to guide LLM bytecode mutations."
+      - text: "Executing a Curriculum Learning Strategy, moving from a fixed ground truth baseline to universal generalization using randomized seeds."
+      - text: "Expanding the 'Textbook' dataset via the DatasetBuilder to train models on autonomous self-correction."
+
+  - number: 9
+    heading: "Conclusion"
+    paragraphs:
+      - "The HexaCore Logic Lab successfully delivers a reproducible, fully-integrated logic research environment powered by NixOS and Docker."
+      - "By targeting a minimum 60% reduction in LLM token count and prioritizing mathematical precision over surface-level UI, the platform paves the way for higher logic density in AI-driven reasoning tasks."
+      - '<button id="returnButton" href="#" class="reveal-button">Return to Main View</button>'
+# ------------------------------------
+  - number: 1
+    heading: "Project Variances: Autonomous Agents & Data Miners"
+    listItems:
+      - text: "<strong>Original Scope:</strong> Autonomous multi-threaded dataset miners and the HexaAgent self-correcting feedback loop."
+      - text: "<strong>Variance Justification:</strong> Initial prototypes were developed, but research objectives shifted toward generating complex 'chaos' datasets (invalid opcodes, structural noise) to rigorously test AI reasoning."
+      - text: "<strong>Current Status:</strong> Generating this level of structured garbage data required high sophistication. The fully autonomous feedback loop was strategically transitioned to a post-capstone development phase."
+
+  - number: 2
+    heading: "Project Variances: Hardware Telemetry Integration"
+    listItems:
+      - text: "<strong>Original Scope:</strong> A custom Lua-based C++ metrics poller for tracking host system health."
+      - text: "<strong>Variance Justification:</strong> This poller is a fully developed standalone application from a prior project, and its integration was designated as a stretch goal."
+      - text: "<strong>Current Status:</strong> Development hours were reallocated to secure and harden the MVP requirements of the core Hexascript transpiler pipeline."
+
+  - number: 3
+    heading: "Project Variances: Visual Error Notifications"
+    listItems:
+      - text: "<strong>Original Scope:</strong> A real-time visual error notification system within the frontend user interface."
+      - text: "<strong>Variance Justification:</strong> The system was successfully prototyped but experienced state-management regressions as the backend architecture evolved."
+      - text: "<strong>Current Status:</strong> UI rendering fixes were deprioritized in favor of hardening the core compiler execution pipeline, ensuring critical errors are reliably logged to the backend console."
+
+  - number: 4
+    heading: "Project Variances: Golang Orchestration"
+    listItems:
+      - text: "<strong>Original Scope:</strong> Executing the backend API and C++ core via a Golang orchestration entry point."
+      - text: "<strong>Variance Justification:</strong> Initial experiments utilizing a Go-based orchestration layer introduced unnecessary friction and brittleness to the build process."
+      - text: "<strong>Current Status:</strong> To maintain high development velocity and system reliability, standard Bash scripting was utilized to orchestrate the FastAPI server and Docker deployment."
+
+  - number: 5
+    heading: "Project Variances: Decompilation Visualization"
+    listItems:
+      - text: "<strong>Original Scope:</strong> Frontend UI components for visualizing reversible decompilation and reverse-mapped logic."
+      - text: "<strong>Variance Justification:</strong> Early drafts successfully visualized this logic. However, implementing strict cross-boundary data normalization (OpenAPI, Pydantic, Zod, Pybind11) rendered the original UI plumbing obsolete."
+      - text: "<strong>Current Status:</strong> Rebuilding these specific Svelte panes was deferred to prioritize critical system deployment and reproducibility standards, such as .deb packages and Docker images."
+
+  - number: 6
+    heading: "Project Variances: Dual-Pane Inference UI"
+    listItems:
+      - text: "<strong>Original Scope:</strong> Dual-pane simultaneous comparative rendering for A/B testing of prompt configurations."
+      - text: "<strong>Variance Justification:</strong> This feature was nearly functional prior to the data-typing refactor. Development was postponed based on strict architectural priority."
+      - text: "<strong>Current Status:</strong> It was strategically necessary to stabilize the upstream data generation and C++ compilation phases before finalizing downstream LLM inference comparisons."
+
+  - number: 7
+    heading: "Project Variances: LLM Server List UI"
+    listItems:
+      - text: "<strong>Original Scope:</strong> A dedicated Server List View UI implementation for managing LLM servers."
+      - text: "<strong>Variance Justification:</strong> While basic server configurations exist in the backend, the dedicated frontend UI was deferred due to strict time constraints."
+      - text: "<strong>Current Status:</strong> Development bandwidth was allocated exclusively to stabilizing the foundational CRUD operations that form the core requirements of the Frontend-Backend-Database architecture."
+
+  - number: 8
+    heading: "Project Variances: Dynamic Manifest Sync"
+    listItems:
+      - text: "<strong>Original Scope:</strong> Dynamic manifest synchronization fetching C++ binary capabilities via the /api/capabilities endpoint."
+      - text: "<strong>Variance Justification:</strong> The endpoint and dynamic capability broadcasting are fully operational within the C++ core and FastAPI backend."
+      - text: "<strong>Current Status:</strong> The variance is strictly limited to the Svelte frontend, which does not yet parse this endpoint to dynamically render its component layout."
+
+  - number: 9
+    heading: "Architectural Scalability: Control & Data Plane Split"
+    listItems:
+      - text: "The system implements a Controller/Worker architecture, separating the research sandbox from the main API server to establish a strict Control Plane / Data Plane split."
+      - text: "<strong>API Server (Control Plane):</strong> Acts as a stable, thin coordinator managing database persistence, state, and orchestration."
+      - text: "<strong>Sandbox (Data Plane):</strong> An ephemeral, high-performance execution environment dedicated to heavy, unpredictable logic processing."
+
+  - number: 10
+    heading: "System Isolation & Fault Tolerance"
+    listItems:
+      - text: "Decoupling the sandbox into a separate container or remote node (e.g., a Raspberry Pi or VPS) prevents research-intensive tasks from starving the API of resources."
+      - text: "<strong>Failure Isolation:</strong> If an experimental research script causes a memory overflow or kernel panic, the API server remains online and stable to report the failure."
+      - text: "<strong>Synchronization:</strong> The remote sandbox autonomously reports execution results and telemetry back to the API via webhooks or shared volumes."
+
+  - number: 11
+    heading: "Solving the 'No Package Manager' Problem"
+    listItems:
+      - text: "While a distroless Docker image minimizes the API's attack surface, the research sandbox requires a full Filesystem Hierarchy Standard (FHS) environment for debugging."
+      - text: "<strong>Nix-Built FHS Image:</strong> Generates a specialized 'Research Image' equipped with a full shell and debugging suite (gdb, strace, ltrace)."
+      - text: "<strong>Debian Overlay:</strong> Layering Nix-built Hexascript binaries onto a debian-slim base provides package management (`apt`) for on-the-fly tool installation while keeping core logic reproducible."
+
+  - number: 12
+    heading: "SSH as the Administrative Research Interface"
+    listItems:
+      - text: "SSH serves as an efficient 'raw access' backdoor, bypassing the need for a GUI during the rapid prototyping phase."
+      - text: "Researchers can directly manipulate the environment, test new compiler flags, and manually inspect Intermediate Representation (IR) artifacts."
+      - text: "This distributed architecture demonstrates a professional understanding of system isolation, scaling beyond a monolithic application into a distributed logic research system."
+  - number: 13
+    heading: "Security Segmentation: Distroless vs. Hybrid"
+    listItems:
+      - text: "Apply image strategies based on architectural roles: utilize the distroless Nix-native approach for the public-facing API server to strictly minimize the attack surface."
+      - text: "Reserve the Debian-based hybrid image exclusively for the isolated research sandbox where raw access and FHS assumptions are required."
+
+  - number: 14
+    heading: "Diagnostic Tooling & Memory Profiling"
+    listItems:
+      - text: "The Debian overlay provides immediate `apt` access to standard memory profiling and debugging utilities like Valgrind or GDB."
+      - text: "This environment enables rigorous validation of C++ boundary conditions, explicitly testing for memory overflows and unhandled exceptions directly within the deployed container state."
+
+  - number: 15
+    heading: "Performance Trade-offs: Bloat vs. Utility"
+    listItems:
+      - text: "Layering a Debian base introduces non-deterministic image bloat, significantly increasing the storage footprint and potential cold-start latency compared to pure Nix closures."
+      - text: "The utility of live inspectability during the presentation and active research phases explicitly outweighs the performance degradation of the larger container footprint."
+
+  - number: 16
+    heading: "Local FHS Alternatives (buildFHSUserEnv)"
+    listItems:
+      - text: "While the hybrid Docker image solves deployment inspectability, local development can achieve the same FHS compliance without container overhead."
+      - text: "Utilizing Nix's `buildFHSUserEnv` creates a virtualized FHS namespace locally, maintaining a tight compile-and-test loop before packaging the final Docker artifacts."

@@ -170,6 +170,18 @@ function hydrate(c = {}) {
       rootDir,
       content: contentPath,
     },
+    dbUrl: process.env.DB_URL || c?.dbUrl || null,
+    db: {
+      host: process.env.DB_HOST || c?.db?.host || "localhost",
+      port: process.env.DB_PORT || c?.db?.port || "5432",
+      database: process.env.DB_DATABASE || c?.db?.database || "expressjs-blog",
+      user: process.env.DB_USER || c?.db?.user || "expressjs-blog",
+      password: process.env.DB_PASS || c?.db?.password || null,
+      max:
+        process.env.DB_POOL_MAX ||
+        c?.db?.db_pool_max ||
+        parseInt(process.env.PG_POOL_MAX || "6", 10),
+    },
     logging: {
       logDir,
       logLevel: c?.logging?.log_level || process.env.LOG_LEVEL || "info",
@@ -273,7 +285,8 @@ function loadConfig() {
       const routesModule = include("routes");
 
       if (typeof routesModule === "function") {
-        config.routes = routesModule.bind(config)();
+        // should be express.Router
+        config.routes = routesModule.bind(config);
       } else if (typeof routesModule === "object" && routesModule !== null) {
         // Verify all keys are vaild
         const validKeys = [
