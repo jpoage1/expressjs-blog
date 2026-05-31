@@ -3,7 +3,7 @@ SHA := $(shell git rev-parse --short HEAD)
 ARCH := amd64
 TAG := latest
 
-REGISTRY  ?= 192.168.1.50:5000
+REGISTRY  ?= registry.jasonpoage.com
 REPO_NAME := jpoage1/expressjs-blog
 IMG       := $(REGISTRY)/$(REPO_NAME)
 IMAGE := $(REPO_NAME):latest

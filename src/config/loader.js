@@ -246,8 +246,14 @@ function loadConfig() {
   try {
     let toml_config = {};
     if (configPath) {
-      const raw = fs.readFileSync(path.resolve(configPath), "utf8");
-      toml_config = parse(raw);
+      try {
+        const raw = fs.readFileSync(path.resolve(configPath), "utf8");
+        toml_config = parse(raw);
+      } catch (err) {
+        throw new Error(`Failed to parse config file: ${configPath}`, {
+          cause: err,
+        });
+      }
     }
     const config = hydrate(toml_config);
     const include = function (file) {
@@ -256,15 +262,53 @@ function loadConfig() {
       }
       const fullPath = path.join(this.meta.content, file);
       const resolved = path.resolve(fullPath);
-      return require(resolved);
+      try {
+        return require(resolved);
+      } catch (err) {
+        throw new Error(`Failed to include module: ${file}`, { cause: err });
+      }
     }.bind(config);
     config.include = include;
-    const getRoutes = include("routes").bind(config);
-    config.routes = getRoutes();
+    try {
+      const routesModule = include("routes");
 
-    return config;
+      if (typeof routesModule === "function") {
+        config.routes = routesModule.bind(config)();
+      } else if (typeof routesModule === "object" && routesModule !== null) {
+        // Verify all keys are vaild
+        const validKeys = [
+          "constructionRoutes",
+          "markdownRoutes",
+          "htmlRoutes",
+          "projects",
+          "router",
+        ];
+        const actualKeys = Object.keys(routesModule);
+        const invalidKeys = actualKeys.filter(
+          (key) => !validKeys.includes(key),
+        );
+
+        if (invalidKeys.length > 0) {
+          throw new Error(
+            `Invalid keys found in routes module: ${invalidKeys.join(", ")}`,
+          );
+        }
+        config.routes = routesModule;
+      } else {
+        throw new Error(
+          `Invalid route object. Expected an array or function, got: ${typeof routesModule}\n` +
+            JSON.stringify(routesModule, null, 2),
+        );
+      }
+      return config;
+    } catch (e) {
+      throw new Error(`Route configuration error: ${e.message}`, e.stack);
+    }
   } catch (err) {
-    console.error(`Failed to load config at ${configPath}:`, err.stack);
+    console.error(`Config load failure: ${err.message}`);
+    if (err.cause) {
+      console.error("Caused by:", err.cause.stack);
+    }
     process.exit(1);
   }
 }
