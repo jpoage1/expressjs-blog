@@ -1,4 +1,6 @@
-// src/setupMiddleware.js
+// src/middleware/index.js
+// CHANGED: Added blocklist middleware (runs before body parsing) and
+// blocklist.start() to begin periodic refresh from Postgres.
 const express = require("express");
 const compression = require("compression");
 
@@ -30,11 +32,25 @@ const trace = require("./trace");
 const { meta, session } = require("../config/loader");
 const { auth, requiresAuth } = require("express-openid-connect");
 
+// NEW: blocklist
+const blocklist = require("../services/blocklist");
+const blocklistMiddleware = require("./blocklist");
+
 function setupApp(config) {
   const app = express();
 
+  // Start the blocklist refresh cycle. Loads blocked IPs from Postgres
+  // into an in-memory Set, refreshed every 5 minutes. If Postgres is
+  // unreachable on boot, the set starts empty (fail-open).
+  blocklist.start();
+
   app.disable("x-powered-by");
   app.set("trust proxy", TRUST_PROXY);
+
+  // Blocklist runs first — before body parsing, before auth, before
+  // anything. req.ip is available because trust proxy is set above.
+  app.use(blocklistMiddleware);
+
   app.use(adaptiveBodyParser);
 
   app.use(hbs);
@@ -78,9 +94,6 @@ function setupApp(config) {
   router.post("/track", logEvent("analytics"), analytics);
   router.post("/analytics", logEvent("analytics"), analytics);
   router.use("/admin", logEvent("admin"), securedMiddleware, securedRoutes);
-  // app.post(withBasePath("/track"), logEvent("analytics"), analytics);
-  // app.post(withBasePath("/analytics"), logEvent("analytics"), analytics);
-  // app.use(withBasePath("/admin"), logEvent("admin"), securedMiddleware, securedRoutes);
   router.use(logEvent("public"), routes);
 
   router.use(errorHandler);

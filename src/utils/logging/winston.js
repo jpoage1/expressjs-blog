@@ -1,4 +1,6 @@
-// src/utils/logging/index.js
+// src/utils/logging/winston.js
+// CHANGED: Removed sqliteTransport from transports array.
+// All other transports (DailyRotateFile per level, session, console) unchanged.
 const util = require("util");
 const { createLogger, format, transports } = require("winston");
 const { SPLAT, LEVEL, MESSAGE } = require("triple-beam");
@@ -7,7 +9,7 @@ const { customLevels, LOG_LEVEL } = require("../../config/logging");
 
 const { buildTransport } = require("./streams");
 
-const { sessionTransport, sqliteTransport } = require("./config.js");
+const { sessionTransport } = require("./config.js");
 const config = require("../../config");
 
 const formatMessage = (info) => {
@@ -15,7 +17,6 @@ const formatMessage = (info) => {
   const splat = info[SPLAT] || [];
   const settings = config.logging.prettyPrint;
 
-  // util.formatWithOptions applies splat arguments using config values
   const formattedMessage = util.formatWithOptions(
     {
       colors: settings.colors,
@@ -27,7 +28,6 @@ const formatMessage = (info) => {
     ...splat,
   );
 
-  // Isolate Error for stack trace
   const error =
     splat.find((arg) => arg instanceof Error) ||
     (message instanceof Error ? message : null);
@@ -64,7 +64,6 @@ const winstonLogger = createLogger({
       ),
       transports: [new transports.Console()],
     }),
-    sqliteTransport,
   ],
 });
 

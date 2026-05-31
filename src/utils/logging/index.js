@@ -4,11 +4,7 @@ const { patchConsole, shouldLog, writeLog } = require("./consolePatch");
 const { formatFunctionName, formatLogMessage } = require("./formatters");
 
 const { initializeLogDirectories } = require("./initializeDirectories.js");
-const {
-  logStreams,
-  sessionTransport,
-  sqliteTransport,
-} = require("./config.js");
+const { logStreams, sessionTransport } = require("./config.js");
 patchConsole(logStreams, sessionTransport);
 
 const { manualLogger } = require("./manualLogger.js");

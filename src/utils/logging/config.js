@@ -1,6 +1,8 @@
-// src/utils/logging/index.js
+// src/utils/logging/config.js
+// CHANGED: Removed SQLiteTransport — the synchronous better-sqlite3 writes
+// were blocking the event loop on every log call. File-based logging via
+// DailyRotateFile and raw streams continues working as before.
 const winston = require("winston");
-const SQLiteTransport = require("../SQLiteTransport");
 
 const { patchConsole } = require("./consolePatch");
 
@@ -12,12 +14,10 @@ winston.addColors(customLevels.colors);
 
 const logStreams = createLogStreams(logFiles);
 const sessionTransport = createSessionTransport(sessionDir);
-const sqliteTransport = new SQLiteTransport();
 patchConsole(logStreams, sessionTransport);
 
 module.exports = {
   logStreams,
   sessionTransport,
-  sqliteTransport,
   winston,
 };
