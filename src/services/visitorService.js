@@ -2,7 +2,7 @@
 // All database operations for visitor tracking and security flagging.
 // Uses raw pg prepared statements — no ORM, no query builder.
 // Every write is fire-and-forget: a failed insert must never reject a request.
-const pool = require("../db/pool");
+const { getPool } = require("../db/pool");
 
 // --- Prepared SQL ---
 
@@ -35,7 +35,7 @@ const GET_BLOCKED_IPS = `
  * The UPSERT updates last_seen on every hit so you always know recency.
  */
 async function upsertVisitor(ip, userAgent) {
-  const { rows } = await pool.query(UPSERT_VISITOR, [ip, userAgent]);
+  const { rows } = await getPool().query(UPSERT_VISITOR, [ip, userAgent]);
   return rows[0].id;
 }
 
@@ -77,7 +77,7 @@ async function createFlag(visitorId, flagType, route, hitCount, details) {
  * Returns the set of currently blocked IPs. Used by the blocklist service.
  */
 async function getBlockedIPs() {
-  const { rows } = await pool.query(GET_BLOCKED_IPS);
+  const { rows } = await getPool().query(GET_BLOCKED_IPS);
   return new Set(rows.map((r) => r.ip));
 }
 

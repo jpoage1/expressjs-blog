@@ -12,4 +12,29 @@ class PathNotFoundError extends Error {
     }
   }
 }
-module.exports = { PathNotFoundError };
+
+class ContextualError extends Error {
+  constructor(context, originalError = null) {
+    const validContext =
+      typeof context === "string" ? context : String(context);
+
+    let detailedMessage = validContext;
+    if (originalError instanceof Error) {
+      detailedMessage = `${validContext}: ${originalError.message}`;
+    } else if (originalError !== null && originalError !== undefined) {
+      detailedMessage = `${validContext}: ${String(originalError)}`;
+    }
+
+    super(detailedMessage);
+    this.name = this.constructor.name;
+
+    if (originalError instanceof Error) {
+      this.originalError = originalError;
+      this.stack = `${this.stack}\nCaused by: ${originalError.stack}`;
+    } else if (originalError !== null && originalError !== undefined) {
+      this.stack = `${this.stack}\nContext Data: ${String(originalError)}`;
+    }
+  }
+}
+
+module.exports = { ContextualError, PathNotFoundError };

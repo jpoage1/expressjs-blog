@@ -11,7 +11,7 @@ const fs = require("fs");
 const path = require("path");
 const { winstonLogger } = require("../../utils/logging");
 const { logging } = require("../../config/loader");
-const pool = require("../../db/pool");
+const { getPool } = require("../../db/pool");
 
 const allowedLevels = [
   "error",
@@ -178,8 +178,8 @@ exports.fetchAnalyticsLogs = async (req, res) => {
     const countParams = classification ? [classification] : [];
 
     const [visitorsResult, countResult] = await Promise.all([
-      pool.query(visitorsQuery, visitorParams),
-      pool.query(countQuery, countParams),
+      getPool().query(visitorsQuery, visitorParams),
+      getPool().query(countQuery, countParams),
     ]);
 
     const total = parseInt(countResult.rows[0].total, 10);
@@ -198,7 +198,7 @@ exports.fetchAnalyticsLogs = async (req, res) => {
           AND visitor_id IN (${placeholders})
         ORDER BY created_at DESC
       `;
-      const flagsResult = await pool.query(flagsQuery, [
+      const flagsResult = await getPool().query(flagsQuery, [
         flagStatus,
         ...visitorIds,
       ]);

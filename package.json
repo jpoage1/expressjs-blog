@@ -27,6 +27,7 @@
     "#src/*": "./src/*",
     "#constants/*": "./src/constants/*",
     "#controllers/*": "./src/controllers/*",
+    "#db/*": "./src/db/*",
     "#utils/*": "./src/utils/*",
     "#services/*": "./src/services/*",
     "#config/*": "./src/config/*",

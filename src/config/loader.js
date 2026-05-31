@@ -161,7 +161,24 @@ function hydrate(c = {}) {
     publicSchema == "http" ? 80 : publicSchema == "https" ? 443 : port;
   const publicPort = process.env.PUBLIC_PORT || c?.public?.port || fallbackPort;
 
+  const dbUrl = process.env.DB_URL || c?.dbUrl || null;
+  const db = {
+    host: process.env.DB_HOST || c?.db?.host || "localhost",
+    port: process.env.DB_PORT || c?.db?.port || "5432",
+    database: process.env.DB_DATABASE || c?.db?.database || "expressjs-blog",
+    user: process.env.DB_USER || c?.db?.user || "expressjs-blog",
+    password: process.env.DB_PASS || c?.db?.password || null,
+    max:
+      process.env.DB_POOL_MAX ||
+      c?.db?.db_pool_max ||
+      parseInt(process.env.PG_POOL_MAX || "6", 10),
+  };
+
   return {
+    dbUrl,
+    db,
+    dbCredentials: dbUrl || db,
+
     views: process.env.HANDLEBARS_VIEWS || c?.handlebars?.views || [],
     meta: {
       node_env: process.env.NODE_ENV || c?.meta?.node_env || "development",
@@ -169,18 +186,6 @@ function hydrate(c = {}) {
       country: process.env.COUNTRY || c?.meta?.country || undefined,
       rootDir,
       content: contentPath,
-    },
-    dbUrl: process.env.DB_URL || c?.dbUrl || null,
-    db: {
-      host: process.env.DB_HOST || c?.db?.host || "localhost",
-      port: process.env.DB_PORT || c?.db?.port || "5432",
-      database: process.env.DB_DATABASE || c?.db?.database || "expressjs-blog",
-      user: process.env.DB_USER || c?.db?.user || "expressjs-blog",
-      password: process.env.DB_PASS || c?.db?.password || null,
-      max:
-        process.env.DB_POOL_MAX ||
-        c?.db?.db_pool_max ||
-        parseInt(process.env.PG_POOL_MAX || "6", 10),
     },
     logging: {
       logDir,
@@ -285,8 +290,10 @@ function loadConfig() {
       const routesModule = include("routes");
 
       if (typeof routesModule === "function") {
-        // should be express.Router
         config.routes = routesModule.bind(config);
+
+        // if config.routes is not express.router then
+        // config.routes = config.routes()
       } else if (typeof routesModule === "object" && routesModule !== null) {
         // Verify all keys are vaild
         const validKeys = [
