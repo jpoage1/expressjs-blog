@@ -1,5 +1,5 @@
 // middleware/authCheck.js
-const config = require("../config/loader.js");
+const config = require("#config");
 
 const crypto = require("crypto");
 function generateNonce() {

@@ -1,16 +1,16 @@
 // src/app.js
 require("dotenv").config();
 
-const { network: c, meta } = require("#config/loader.js");
+const { network: c, meta } = require("#config");
 
 const net = require("net");
-const setupMiddleware = require("./middleware");
+const setupMiddleware = require("#middleware");
 const {
   handleUncaughtException,
   handleUnhandledRejection,
-} = require("#utils/logging/handlers.js");
-const { winstonLogger } = require("#utils/logging/index.js");
-const LogBuffer = require("#utils/logging/LogBuffer.js");
+} = require("#logging/handlers.js");
+const { winstonLogger } = require("#logging");
+const LogBuffer = require("#logging/LogBuffer.js");
 
 const { startTokenCleanup } = require("#utils/tokenCleanup.js");
 const { cleanupOldSessions } = require("#utils/logManager.js");

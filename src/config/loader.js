@@ -7,7 +7,6 @@
  *   - src/config/defaults.js       (fallback values now live in schema.cjs)
  *   - src/config/index.js          (the half-finished class refactor)
  *   - src/config/securityConfig.js (values now in convict schema + config.toml)
- *   - src/config/logging.js        (getLogConfig is now a helper here)
  *
  * Load order (highest priority wins):
  *   1. Environment variables  (BLOG_* / standard names per schema)
@@ -165,6 +164,18 @@ function buildLogConfig(logDir) {
     getDBFile(file = "storage.db") {
       return path.join(cfg.get("logging.db_path"), file);
     },
+    session: {
+      filename: logging.session.filename,
+      datePattern: logging.session.date_pattern,
+      zippedArchive: logging.session.zipped_archive,
+      maxFiles: logging.session.max_files,
+    },
+    dailyRotate: {
+      datePattern: logging.daily_rotate.date_pattern,
+      zippedArchive: logging.daily_rotate.zipped_archive,
+      maxFiles: logging.daily_rotate.max_files,
+      filenameSuffix: logging.daily_rotate.filename_suffix,
+    },
   };
 }
 
@@ -198,6 +209,12 @@ const logDir = ensureLogDirs();
 const baseUrl = buildBaseUrl();
 const logging = buildLogConfig(logDir);
 
+// console.log(`
+// buildLogConfig(logDir): ${JSON.stringify(buildLogConfig(logDir), null, 2)}\n
+// cfg.get("logging"): ${JSON.stringify(cfg.get("logging"), null, 2)}\n
+// `);
+
+// process.exit(1);
 const config = {
   // Raw convict instance — use config.get('some.key') for validated access
   _convict: cfg,

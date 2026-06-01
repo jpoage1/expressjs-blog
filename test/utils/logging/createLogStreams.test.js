@@ -1,8 +1,8 @@
-// test/units/utils/logging/createLogStreams.test.js
+// test/units/#logging/createLogStreams.test.js
 const fs = require("fs");
 const path = require("path");
 const { expect } = require("chai");
-const { createLogStreams } = require("../../../src/utils/logging/streams");
+const { createLogStreams } = require("#logging/streams");
 
 describe("createLogStreams", () => {
   const testDir = path.join(__dirname, "..", "..", "logs");

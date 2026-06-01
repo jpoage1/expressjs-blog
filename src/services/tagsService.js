@@ -2,8 +2,8 @@ const fs = require("fs").promises;
 const path = require("path");
 const matter = require("gray-matter");
 const { glob } = require("glob");
-const createExcerpt = require("../utils/createExcerpt");
-const { winstonLogger } = require("../utils/logging");
+const createExcerpt = require("#utils/createExcerpt.js");
+const { winstonLogger } = require("#logging");
 
 const CONTENT_ROOT = path.resolve(__dirname, "../../content");
 const pattern = `${CONTENT_ROOT}/**/*.md`;

@@ -9,8 +9,8 @@
 
 const fs = require("fs");
 const path = require("path");
-const { winstonLogger } = require("../../utils/logging");
-const { logging } = require("../../config/loader");
+const { winstonLogger } = require("#logging");
+const { logging } = require("#config");
 const { getPool } = require("../../db/pool");
 
 const allowedLevels = [

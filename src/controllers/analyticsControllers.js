@@ -5,7 +5,7 @@
 // the POST to /track itself; this captures the page view it describes.
 
 const { upsertVisitor, recordRequest } = require("../services/visitorService");
-const { winstonLogger } = require("../utils/logging");
+const { winstonLogger } = require("#logging");
 
 module.exports = (context) => (req, res) => {
   const {

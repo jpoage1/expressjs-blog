@@ -5,7 +5,7 @@ const fs = require("fs/promises");
 const path = require("path");
 const yaml = require("js-yaml");
 
-const { meta } = require("../config/loader.js");
+const { meta } = require("#config");
 
 class HtmlRoutes extends BaseRoute {
   constructor() {

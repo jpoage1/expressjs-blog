@@ -1,15 +1,11 @@
-// test/units/utils/logging/config.test.js
+// test/units/#logging/config.test.js
 const { expect } = require("chai");
 const fs = require("fs");
 const path = require("path");
 const proxyquire = require("proxyquire").noPreserveCache();
 
-const {
-  sessionTimestamp,
-  sessionDir,
-  logFiles,
-} = require("../../../src/config/logging");
-const config = require("../../../src/config");
+const config = require("#config");
+const { sessionTimestamp, sessionDir, logFiles } = config.logging;
 
 describe("config.js", () => {
   it("config.meta.rootDir contains package.json", () => {

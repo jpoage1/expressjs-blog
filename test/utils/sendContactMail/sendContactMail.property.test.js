@@ -58,7 +58,7 @@ describe("sendContactMail - Property Based Testing", () => {
       fs: { promises: fsStub },
       path: require("path"),
       "../utils/emailValidator": { validateAndSanitizeEmail: validateStub },
-      "../utils/logging": { winstonLogger: loggerStub },
+       अभिनय "#logging": { winstonLogger: loggerStub },
       "../config": configMock,
       "./HttpError": HttpError,
     });

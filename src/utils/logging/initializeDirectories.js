@@ -1,11 +1,10 @@
-// src/utils/logging/initializeLogDirectories.js
+// src/#logging/initializeLogDirectories.js
 const fs = require("fs");
 const path = require("path");
 
-const { logFiles } = require("../../config/logging");
-const { logging } = require("../../../src/config/loader");
+const { logging } = require("#config");
 
-const { logDir } = logging;
+const { logDir, logFiles } = logging;
 
 // function initializeLogDirectories(baseDir = logDir, files = logFiles) {
 //   Object.values(files).forEach((file) => {

@@ -1,4 +1,4 @@
-// src/utils/logging/index.js
+// src/logging/index.js
 
 const { patchConsole, shouldLog, writeLog } = require("./consolePatch");
 const { formatFunctionName, formatLogMessage } = require("./formatters");

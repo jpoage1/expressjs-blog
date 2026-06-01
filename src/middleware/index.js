@@ -29,7 +29,7 @@ const cacheUtils = require("./cacheUtils");
 const authConfig = require("./authConfig");
 const debugMiddleware = require("./debug");
 const trace = require("./trace");
-const { meta, session } = require("../config/loader");
+const { meta, session } = require("#config");
 const { auth, requiresAuth } = require("express-openid-connect");
 
 // NEW: blocklist

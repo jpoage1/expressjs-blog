@@ -1,7 +1,7 @@
 const fs = require("fs").promises;
 const path = require("path");
-const { diskSpaceMonitor } = require("../../utils/logging");
-const { logging } = require("../../config/loader");
+const { diskSpaceMonitor } = require("#logging");
+const { logging } = require("#config");
 
 exports.requireAdmin = (req, res, next) => {
   if (req.session && req.session.isAdmin) {

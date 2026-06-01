@@ -1,7 +1,7 @@
-// test/units/utils/logging/writeLog.test.js
+// test/units/#logging/writeLog.test.js
 const { expect } = require("chai");
 const sinon = require("sinon");
-const { writeLog } = require("../../../src/utils/logging/consolePatch");
+const { writeLog } = require("#logging/consolePatch");
 
 describe("writeLog - Object Expansion Tests", () => {
   let stream;

@@ -8,8 +8,8 @@ const yaml = require("js-yaml");
 
 const { glob } = require("glob");
 const { qualifySitemapLinks } = require("../utils/qualifyLinks");
-const { winstonLogger } = require("../utils/logging");
-const { meta } = require("../config/loader.js");
+const { winstonLogger } = require("#logging");
+const { meta } = require("#config");
 const { validatePath } = require("../utils/validation.js");
 
 const CONTENT_ROOT = validatePath(meta.content, "Content Root");

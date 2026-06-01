@@ -1,11 +1,11 @@
-// src/utils/logging/winston.js
+// src/#logging/winston.js
 // CHANGED: Removed sqliteTransport from transports array.
 // All other transports (DailyRotateFile per level, session, console) unchanged.
 const util = require("util");
 const { createLogger, format, transports } = require("winston");
 const { SPLAT, LEVEL, MESSAGE } = require("triple-beam");
 
-const { customLevels, LOG_LEVEL } = require("#config/logging.js");
+const { customLevels, LOG_LEVEL } = require("#config").logging;
 
 const { buildTransport } = require("./streams.js");
 

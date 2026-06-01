@@ -1,7 +1,7 @@
-// test/units/utils/logging/formatFunctionName.test.js
+// test/units/#logging/formatFunctionName.test.js
 const { expect } = require("chai");
 const path = require("path");
-const { formatFunctionName } = require("../../../src/utils/logging");
+const { formatFunctionName } = require("#logging");
 
 describe("formatFunctionName", () => {
   it("returns relative path with forward slashes", () => {

@@ -10,8 +10,8 @@ const {
   DEFAULT_LOG_LEVEL,
   ERROR_REDIRECT_PATH,
 } = require("../constants/errorConstants");
-const { winstonLogger } = require("../utils/logging");
-const { meta } = require("../config/loader");
+const { winstonLogger } = require("#logging");
+const { meta } = require("#config");
 
 module.exports = async (err, req, res, next) => {
   const statusCode = err.statusCode ?? DEFAULT_STATUS_CODE;

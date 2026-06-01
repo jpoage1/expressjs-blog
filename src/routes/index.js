@@ -20,7 +20,7 @@ const docs = require("./docs");
 const rssFeedController = require("../controllers/rssFeedController");
 const HttpError = require("../utils/HttpError");
 
-const { meta } = require("../config/loader");
+const { meta } = require("#config");
 
 const favicon = require("serve-favicon");
 const faviconsPath = path.join(__dirname, "..", "..", "public", "favicons");
@@ -30,7 +30,7 @@ router.head("/health", (req, res) => {
   res.sendStatus(200);
 });
 
-const { logger } = require("../utils/logging");
+const { logger } = require("#logging");
 
 router.get("/error/:code", errorPage); // Landing page after error is logged
 

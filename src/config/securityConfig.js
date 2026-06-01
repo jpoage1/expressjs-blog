@@ -1,7 +1,7 @@
 // config/securityConfig.js
 
 const { getBaseUrl } = require("../utils/baseUrl");
-const config = require("#config/loader.js");
+const config = require("#config");
 
 const baseUrl = getBaseUrl(config.public);
 

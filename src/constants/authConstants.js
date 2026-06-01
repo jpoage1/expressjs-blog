@@ -1,5 +1,5 @@
 // constants/authConstants.js
-const { auth } = require("../config/loader");
+const { auth } = require("#config");
 const { verify: verify_url, cache_ttl, timeout_ms } = auth;
 
 const LOG_MESSAGES = {

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/admin/diskSpaceController");
-const { diskSpaceMonitor } = require("../../utils/logging");
+const { diskSpaceMonitor } = require("#logging");
 
 router.use(controller.requireAdmin);
 router.use(diskSpaceMonitor.adminNotificationMiddleware());

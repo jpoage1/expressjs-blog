@@ -15,7 +15,7 @@ const {
   CSP_DIRECTIVES,
 } = require("../config/securityConfig");
 
-const { meta } = require("../config/loader");
+const { meta } = require("#config");
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes

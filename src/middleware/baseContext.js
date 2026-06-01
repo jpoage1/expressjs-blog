@@ -7,7 +7,7 @@ const path = require("path");
 const getPostsMenu = require("#services/postsMenuService.js");
 const { formatMonth } = require("#utils/formatMonth.js");
 const { qualifyNavLinks } = require("#utils/qualifyLinks.js");
-const { meta } = require("#config/loader.js");
+const { meta } = require("#config");
 const navLinks = require("##config/navLinks.json");
 const processMenuLinks = require("#utils/processMenuLinks.js");
 

@@ -1,5 +1,5 @@
 const { getBaseUrl } = require("../utils/baseUrl");
-const config = require("../config/loader");
+const config = require("#config");
 
 const baseUrl = getBaseUrl(config.public);
 

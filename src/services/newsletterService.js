@@ -3,7 +3,7 @@ const fs = require("fs").promises;
 const path = require("path");
 const { FILE_PATH, ERRORS } = require("../constants/newsletterConstants");
 const { validateAndSanitizeEmail } = require("../utils/emailValidator");
-const { winstonLogger } = require("../utils/logging");
+const { winstonLogger } = require("#logging");
 
 let writeLock = Promise.resolve();
 

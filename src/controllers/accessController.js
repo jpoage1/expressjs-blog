@@ -1,4 +1,4 @@
-const { session } = require("../config/loader.js");
+const { session } = require("#config");
 
 /**
  * Handles the GET request from a recruiter clicking the unique link.

@@ -4,10 +4,10 @@ const fs = require("fs/promises");
 const yaml = require("js-yaml");
 
 const { qualifyNavLinks } = require("./qualifyLinks");
-const config = require("#config/loader.js");
+const config = require("#config");
 const generateDocsMenuModel = require("./generateDocsMenuModel");
 const processMenuLinks = require("../utils/processMenuLinks");
-const { meta } = require("../config/loader");
+const { meta } = require("#config");
 const navLinks = require(path.join(meta.content, "config/navLinks.json"));
 
 const getSiteTitle = (owner) => `${owner}'s Software Blog`;

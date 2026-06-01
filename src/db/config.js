@@ -1,5 +1,5 @@
 function buildConfig() {
-  const config = require("#config/loader.js");
+  const config = require("#config");
   // config.dbUrl takes priority; falls back to individual connection fields.
   return config.dbUrl
     ? {

@@ -1,5 +1,5 @@
 // src/utils/baseUrl.js
-const config = require("#config/loader.js");
+const config = require("#config");
 
 function withBasePath(path = "") {
   const basePath = public.basePath;

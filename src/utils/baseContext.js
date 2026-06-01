@@ -7,7 +7,7 @@ const { getBaseUrl } = require("#utils/baseUrl.js");
 
 const processMenuLinks = require("#utils/processMenuLinks.js");
 const { generateToken } = require("#utils/adminToken.js");
-const config = require("#config/loader.js");
+const config = require("#config");
 const { meta } = config;
 const navLinks = require(path.join("##config/navLinks.json"));
 

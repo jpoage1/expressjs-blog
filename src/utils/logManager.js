@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { winstonLogger } = require("./logging/winston.js");
 
-const { meta, logging } = require("../config/loader");
+const { meta, logging } = require("#config");
 const { node_env } = meta;
 const { logDir } = logging;
 

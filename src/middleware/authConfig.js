@@ -23,14 +23,14 @@
  */
 
 const { auth, requiresAuth } = require("express-openid-connect");
-const config = require("#config/loader.js");
+const config = require("#config");
 const { auth: authCfg, session, endpoints } = config;
 const oidc = authCfg.oidc;
 
 const { TRUST_PROXY } = require("#constants/middlewareConstants.js");
 
 const { getBaseUrl } = require("#utils/baseUrl.js");
-const config = require("#config/loader.js");
+const config = require("#config");
 const { meta, session } = config;
 
 // ── Startup guard ────────────────────────────────────────────────────────────

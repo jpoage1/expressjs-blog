@@ -5,7 +5,7 @@ const ConstructionRoutes = require("../utils/ConstructionRoutes");
 const MarkdownRoutes = require("../utils/MarkdownRoutes");
 const HtmlRoutes = require("../utils/htmlRoutes");
 const csrfToken = require("../middleware/csrfToken");
-const { meta, routes } = require("../config/loader");
+const { meta, routes } = require("#config");
 
 const path = require("path");
 const fs = require("fs").promises;

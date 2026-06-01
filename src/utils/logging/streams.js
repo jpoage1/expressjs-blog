@@ -1,38 +1,25 @@
 "use strict";
 
-/**
- * src/utils/logging/streams.js
- *
- * Creates the raw file write streams and DailyRotateFile transports
- * consumed by consolePatch, manualLogger, and winston.
- *
- * Previously this file read logging.session and logging.dailyRotate
- * directly from config, but those keys didn't exist in the convict schema
- * so they were always undefined. They are now explicit schema entries and
- * exposed on config.logging.session / config.logging.dailyRotate.
- */
-
 const fs = require("fs");
 const path = require("path");
 const winston = require("winston");
 const DailyRotateFile = require("winston-daily-rotate-file");
 const { format } = winston;
 
-const { logging } = require("#config/loader.js");
+// Do NOT destructure logging at module load time.
+// loader.js runs buildLogConfig() as part of its module body, but Node's
+// require cache means streams.js can be required BEFORE that body finishes
+// (e.g. via logging/config.js → logging/index.js → streams.js).
+// Reading config.logging inside each function means we access it after
+// the loader module has fully executed.
+const { logging } = require("#config");
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Raw append streams — used by consolePatch and manualLogger
-// ─────────────────────────────────────────────────────────────────────────────
+// ── Raw append streams ────────────────────────────────────────────────────────
 
 function createLogStreams(files) {
-  // Ensure parent directories exist before opening streams.
-  // loader.js creates logDir and dbPath at startup; sub-directories
-  // (info/, warn/, etc.) are created here on first use.
   for (const filePath of Object.values(files)) {
     const dir = path.dirname(filePath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   }
 
   return {
@@ -47,17 +34,12 @@ function createLogStreams(files) {
   };
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Session transport — one DailyRotateFile per server boot
-// Written to logs/sessions/<timestamp>/
-// ─────────────────────────────────────────────────────────────────────────────
+// ── Session transport ─────────────────────────────────────────────────────────
 
 function createSessionTransport(dir) {
-  const s = logging.session; // camelCase block from buildLogConfig()
+  const s = logging.session;
 
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
   return new DailyRotateFile({
     dirname: dir,
@@ -75,17 +57,13 @@ function createSessionTransport(dir) {
   });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Per-level daily rotating transports — used by winston.js
-// ─────────────────────────────────────────────────────────────────────────────
+// ── Per-level daily rotating transports ──────────────────────────────────────
 
 function buildTransport(level, filenamePrefix) {
-  const r = logging.dailyRotate; // camelCase block from buildLogConfig()
+  const r = logging.dailyRotate;
   const dir = path.join(logging.logDir, level);
 
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
   return new DailyRotateFile({
     level,
@@ -104,8 +82,4 @@ function buildTransport(level, filenamePrefix) {
   });
 }
 
-module.exports = {
-  createLogStreams,
-  createSessionTransport,
-  buildTransport,
-};
+module.exports = { createLogStreams, createSessionTransport, buildTransport };

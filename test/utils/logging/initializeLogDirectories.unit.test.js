@@ -2,7 +2,7 @@
 // // const fs = require("fs");
 // // const path = require("path");
 // // const mockFs = require("mock-fs");
-// // const { initializeLogDirectories } = require("../../../src/utils/logging");
+// // const { initializeLogDirectories } = require("#logging");
 
 // // // const { expect } = require("chai");
 // // // const fs = require("fs");
@@ -318,7 +318,7 @@
 // const fs = require("fs");
 // const path = require("path");
 // const sinon = require("sinon");
-// const { initializeLogDirectories } = require("../../../src/utils/logging");
+// const { initializeLogDirectories } = require("#logging");
 
 // describe("initializeLogDirectories", () => {
 //   let fsExistsSyncStub;
@@ -493,7 +493,7 @@ const { expect } = require("chai");
 const fs = require("fs");
 const path = require("path");
 const sinon = require("sinon");
-const { initializeLogDirectories } = require("../../../src/utils/logging");
+const { initializeLogDirectories } = require("#logging");
 
 describe("initializeLogDirectories", () => {
   let fsExistsSyncStub;

@@ -4,7 +4,7 @@ const path = require("path");
 const HttpError = require("./HttpError");
 const { winstonLogger } = require("./logging");
 const { captureSecurityData } = require("./securityForensics");
-const { logging } = require("../config/loader");
+const { logging } = require("#config");
 
 const EVENT_TYPES = {
   // Validation Events

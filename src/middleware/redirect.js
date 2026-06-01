@@ -1,7 +1,7 @@
 // src/middleware/redirect.js
 
-const { winstonLogger } = require("../utils/logging");
-const config = require("#config/loader.js");
+const { winstonLogger } = require("#logging");
+const config = require("#config");
 
 // Generic redirect handler
 function handleRedirect(req, res, targetPath, status = 302) {

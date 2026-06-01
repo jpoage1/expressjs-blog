@@ -6,7 +6,7 @@ const matter = require("gray-matter");
 const { marked } = require("marked");
 const { getProjectDates } = require("../utils/gitDates"); // Import the utility
 
-const { meta } = require("../config/loader.js");
+const { meta } = require("#config");
 
 class MarkdownRoutes extends BaseRoute {
   constructor() {

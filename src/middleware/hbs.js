@@ -3,7 +3,7 @@ const path = require("path");
 const exphbs = require("express-handlebars");
 const Handlebars = require("handlebars");
 
-const config = require("../config/loader.js");
+const config = require("#config");
 const { meta } = config;
 
 const { registerHelpers } = require("../utils/hbsHelpers");

@@ -1,4 +1,4 @@
-const { formatLog } = require("../../../src/utils/logging/consolePatch");
+const { formatLog } = require("#logging/consolePatch");
 const { expect } = require("chai");
 
 describe("Logger Format Function Tests", () => {

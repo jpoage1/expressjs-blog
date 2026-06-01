@@ -1,16 +1,11 @@
-// test/units/utils/logging/config.test.js
+// test/units/#logging/config.test.js
 const { expect } = require("chai");
 const fs = require("fs");
 const path = require("path");
 const proxyquire = require("proxyquire").noPreserveCache();
 
-const { meta, logging } = require("../../../src/config/loader");
-const {
-  sessionTimestamp,
-  sessionDir,
-  logFiles,
-  LOG_LEVELS,
-} = require("../../../src/config/logging");
+const { meta, logging } = require("#config");
+const { sessionTimestamp, sessionDir, logFiles, LOG_LEVELS } = logging;
 
 const { rootDir } = meta;
 const { logDir } = logging;

@@ -2,7 +2,7 @@ const transporter = require("./transporter.js");
 const path = require("path");
 const fs = require("fs").promises;
 const { validateAndSanitizeEmail } = require("#utils/emailValidator.js");
-const { winstonLogger } = require("#utils/logging.js");
+const { winstonLogger } = require("#logging");
 const config = require("#config");
 const { mail } = config;
 

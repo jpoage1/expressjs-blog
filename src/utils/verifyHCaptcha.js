@@ -1,5 +1,5 @@
 const fetch = require("node-fetch");
-const { hcaptcha } = require("../config/loader");
+const { hcaptcha } = require("#config");
 
 async function verifyHCaptcha(token) {
   const secret = hcaptcha.secret; // Your hCaptcha secret key

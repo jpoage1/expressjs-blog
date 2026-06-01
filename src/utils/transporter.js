@@ -1,6 +1,6 @@
 // src/utils/transporter.js
 const nodemailer = require("nodemailer");
-const { mail } = require("../config/loader");
+const { mail } = require("#config");
 
 require("dotenv").config();
 

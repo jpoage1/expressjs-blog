@@ -1,6 +1,6 @@
 // src/setupMiddleware.js
 const express = require("express");
-const { winstonLogger } = require("../utils/logging");
+const { winstonLogger } = require("#logging");
 
 const {
   EXCLUDED_PATHS,

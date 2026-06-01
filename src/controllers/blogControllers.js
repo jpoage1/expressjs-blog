@@ -4,7 +4,7 @@ const fs = require("fs").promises;
 const path = require("path");
 const fsSync = require("fs");
 const crypto = require("crypto");
-const { meta } = require("../config/loader");
+const { meta } = require("#config");
 
 const matter = require("gray-matter");
 const { getAllPosts } = require("../utils/postFileUtils");

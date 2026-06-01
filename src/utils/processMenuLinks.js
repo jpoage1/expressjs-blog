@@ -1,6 +1,6 @@
 // src/utils/processMenuLinks.js
-const { winstonLogger } = require("./logging/index.js");
-const { evaluateRules } = require("../utils/evaluateRules.js");
+const { winstonLogger } = require("#logging");
+const { evaluateRules } = require("#utils/evaluateRules.js");
 
 /**
  * Applies attribute promotion from a child to a parent.

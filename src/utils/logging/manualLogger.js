@@ -1,11 +1,10 @@
-// src/utils/logging/index.js
+// src/logging/index.js
 
 const { patchConsole, writeLog } = require("./consolePatch");
 const { functionLog } = require("./functionLogger");
 
-const { sessionTimestamp, sessionDir } = require("../../config/logging");
-
-const { logStreams, sessionTransport } = require("./config.js");
+const { sessionTimestamp, sessionDir, logStreams, sessionTransport } =
+  require("#config").logging;
 // patchConsole(logStreams, sessionTransport);
 
 // Not used, but good for debugging without winston as a dependency

@@ -2,7 +2,7 @@
 const matter = require("gray-matter");
 const path = require("path");
 const fs = require("fs").promises;
-const { meta } = require("../config/loader");
+const { meta } = require("#config");
 
 const createExcerpt = require("./createExcerpt");
 const hash = require("./hash");

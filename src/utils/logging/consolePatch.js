@@ -1,4 +1,4 @@
-// src/utils/logging/consolePatch.js
+// src/#logging/consolePatch.js
 const util = require("util");
 
 const config = require("#config");

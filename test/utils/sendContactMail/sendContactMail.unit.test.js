@@ -44,7 +44,7 @@ describe("sendContactMail", () => {
     delete require.cache[require.resolve("../../../src/utils/sendContactMail")];
     delete require.cache[require.resolve("../../../src/utils/emailValidator")];
     delete require.cache[require.resolve("../../../src/utils/transporter")];
-    delete require.cache[require.resolve("../../../src/utils/logging")];
+    delete require.cache[require.resolve(#logging)];
 
     // Create stubs
     validateAndSanitizeEmailStub = sinon.stub().returns({
@@ -63,7 +63,7 @@ describe("sendContactMail", () => {
       .withArgs("mail.default_subject")
       .returns("New Contact Form Submission");
     loggerStub = { error: sinon.stub() };
-    require.cache[require.resolve("../../../src/utils/logging")] = {
+    require.cache[require.resolve(#logging)] = {
       exports: { winstonLogger: loggerStub },
     };
 
@@ -84,7 +84,7 @@ describe("sendContactMail", () => {
       exports: transporterStub,
     };
 
-    require.cache[require.resolve("../../../src/utils/logging")] = {
+    require.cache[require.resolve(#logging)] = {
       exports: { winstonLogger: loggerStub },
     };
 

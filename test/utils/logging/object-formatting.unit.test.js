@@ -21,11 +21,8 @@ const mockSessionTransport = {
 };
 
 // Import the modules under test
-const { writeLog } = require("../../../src/utils/logging/consolePatch");
-const {
-  manualLogger,
-  winstonLogger,
-} = require("../../../src/utils/logging/index");
+const { writeLog } = require("#logging/consolePatch");
+const { manualLogger, winstonLogger } = require("#logging");
 
 describe("Logger Object Expansion Tests", () => {
   let streamWriteStubs;
@@ -73,7 +70,7 @@ describe("Logger Object Expansion Tests", () => {
         mockLogStreams.info,
         mockSessionTransport,
         console.log,
-        testObject
+        testObject,
       );
 
       // Check console output
@@ -111,7 +108,7 @@ describe("Logger Object Expansion Tests", () => {
         mockLogStreams.info,
         mockSessionTransport,
         console.log,
-        nestedObject
+        nestedObject,
       );
 
       expect(consoleLogStub.called).to.be.true;
@@ -135,7 +132,7 @@ describe("Logger Object Expansion Tests", () => {
         mockLogStreams.info,
         mockSessionTransport,
         console.log,
-        circularObj
+        circularObj,
       );
 
       expect(consoleLogStub.called).to.be.true;
@@ -160,7 +157,7 @@ describe("Logger Object Expansion Tests", () => {
         mockLogStreams.info,
         mockSessionTransport,
         console.log,
-        arrayWithObjects
+        arrayWithObjects,
       );
 
       expect(consoleLogStub.called).to.be.true;
@@ -188,7 +185,7 @@ describe("Logger Object Expansion Tests", () => {
         mockLogStreams.info,
         mockSessionTransport,
         console.log,
-        ...mixedArgs
+        ...mixedArgs,
       );
 
       expect(consoleLogStub.called).to.be.true;
@@ -215,7 +212,7 @@ describe("Logger Object Expansion Tests", () => {
         mockLogStreams.error,
         mockSessionTransport,
         console.error,
-        error
+        error,
       );
 
       expect(consoleErrorStub.called).to.be.true;
@@ -241,7 +238,7 @@ describe("Logger Object Expansion Tests", () => {
         mockLogStreams.info,
         mockSessionTransport,
         console.log,
-        specialObj
+        specialObj,
       );
 
       expect(consoleLogStub.called).to.be.true;
@@ -270,7 +267,7 @@ describe("Logger Object Expansion Tests", () => {
             if (!manualLogger.streams[level].write.isSinonProxy) {
               manualLoggerStubs[level] = sinon.stub(
                 manualLogger.streams[level],
-                "write"
+                "write",
               );
             }
           }
@@ -376,7 +373,7 @@ describe("Logger Object Expansion Tests", () => {
         mockSessionTransport,
         console.log,
         null,
-        undefined
+        undefined,
       );
 
       expect(consoleLogStub.called).to.be.true;
@@ -397,7 +394,7 @@ describe("Logger Object Expansion Tests", () => {
         mockLogStreams.info,
         mockSessionTransport,
         console.log,
-        nullProtoObj
+        nullProtoObj,
       );
 
       expect(consoleLogStub.called).to.be.true;
@@ -417,7 +414,7 @@ describe("Logger Object Expansion Tests", () => {
         mockLogStreams.info,
         mockSessionTransport,
         console.log,
-        dateObj
+        dateObj,
       );
 
       expect(consoleLogStub.called).to.be.true;
@@ -440,7 +437,7 @@ describe("Logger Object Expansion Tests", () => {
         mockLogStreams.info,
         mockSessionTransport,
         console.log,
-        regexObj
+        regexObj,
       );
 
       expect(consoleLogStub.called).to.be.true;
@@ -468,7 +465,7 @@ describe("Logger Object Expansion Tests", () => {
         mockLogStreams.info,
         mockSessionTransport,
         console.log,
-        deepObj
+        deepObj,
       );
 
       expect(consoleLogStub.called).to.be.true;
@@ -510,7 +507,7 @@ describe("Logger Object Expansion Tests", () => {
           mockLogStreams.info,
           mockSessionTransport,
           console.log,
-          obj
+          obj,
         );
 
         expect(streamWriteStubs.info.called).to.be.true;

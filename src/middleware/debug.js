@@ -2,7 +2,7 @@
 
 const router = require("express").Router();
 const { TRUST_PROXY } = require("../constants/middlewareConstants");
-const { meta, session } = require("../config/loader");
+const { meta, session } = require("#config");
 const { requiresAuth } = require("express-openid-connect");
 
 const cookieParser = require("cookie-parser");
