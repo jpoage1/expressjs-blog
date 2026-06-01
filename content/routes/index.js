@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 
 function getRoutes() {
-  const { getBaseUrl } = require("./../../src/utils/baseUrl.js");
   try {
     // const hexascriptDocs = require(`${meta.content}/docs/hexascript/src/script.js`);
     // logger.info("hexascriptDocs", { hexascriptDocs });
@@ -17,7 +16,7 @@ function getRoutes() {
   }
   const { node_env, content: contentPath } = this.meta;
 
-  const baseUrl = getBaseUrl(this.public);
+  const baseUrl = this.public.baseUrl;
   return {
     constructionRoutes: [
       { path: "/changelog", title: "Changelog" },

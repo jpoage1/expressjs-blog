@@ -56,7 +56,7 @@ module.exports = async function getDocsContext(session, overrides = {}) {
     siteOwner,
     originCountry: meta.country,
     navLinks: qualifiedNavLinks,
-    baseUrl: getBaseUrl(config.public),
+    baseUrl: config.public.baseUrl,
     paths: docsMenu,
     isAuthenticated: session.isAuthenticated,
     showFooter: true,

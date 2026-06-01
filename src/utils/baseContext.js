@@ -18,7 +18,7 @@ const POSTS_DIR = path.join(meta.content, "/posts");
 class BaseContextManager {
   constructor(req, res, next) {
     this.basePath = "";
-    this.baseUrl = getBaseUrl();
+    this.baseUrl = config.public.baseUrl;
     this.req = req;
     this.res = res;
     this.next = next;

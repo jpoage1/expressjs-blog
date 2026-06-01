@@ -7,6 +7,7 @@
  *   - src/config/defaults.js       (fallback values now live in schema.cjs)
  *   - src/config/index.js          (the half-finished class refactor)
  *   - src/config/securityConfig.js (values now in convict schema + config.toml)
+ *   - src/config/logging.js        (getLogConfig is now a helper here)
  *
  * Load order (highest priority wins):
  *   1. Environment variables  (BLOG_* / standard names per schema)
@@ -22,6 +23,7 @@ const convict = require("convict");
 const { parse } = require("smol-toml");
 
 const schema = require("./schema.cjs");
+const { buildBaseUrl } = require("#utils/baseUrl.js");
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. Build convict instance
@@ -98,16 +100,6 @@ try {
 const _pub = cfg.get("public");
 const _net = cfg.get("network");
 
-/** Resolve the canonical public base URL. */
-function buildBaseUrl(pub = _pub) {
-  const omitPort =
-    (pub.port === 80 && pub.schema === "http") ||
-    (pub.port === 443 && pub.schema === "https");
-  const portPart = omitPort ? "" : `:${pub.port}`;
-  const domain = pub.domain.replace(/^https?:\/\//, "").replace(/\/$/, "");
-  return `${pub.schema}://${domain}${portPart}${pub.base_path}`;
-}
-
 /** Build the pg connection config from db.url or individual fields. */
 function buildDbCredentials() {
   const db = cfg.get("db");
@@ -164,6 +156,9 @@ function buildLogConfig(logDir) {
     getDBFile(file = "storage.db") {
       return path.join(cfg.get("logging.db_path"), file);
     },
+    // These two blocks are consumed directly by streams.js.
+    // Key names use camelCase to match what the old defaults.js exported
+    // so streams.js keeps working without changes.
     session: {
       filename: logging.session.filename,
       datePattern: logging.session.date_pattern,
@@ -175,6 +170,12 @@ function buildLogConfig(logDir) {
       zippedArchive: logging.daily_rotate.zipped_archive,
       maxFiles: logging.daily_rotate.max_files,
       filenameSuffix: logging.daily_rotate.filename_suffix,
+    },
+    prettyPrint: {
+      colors: true,
+      depth: null,
+      breakLength: 80,
+      compact: false,
     },
   };
 }
@@ -206,15 +207,9 @@ function buildCspDirectives(baseUrl) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const logDir = ensureLogDirs();
-const baseUrl = buildBaseUrl();
+const baseUrl = buildBaseUrl(_pub);
 const logging = buildLogConfig(logDir);
 
-// console.log(`
-// buildLogConfig(logDir): ${JSON.stringify(buildLogConfig(logDir), null, 2)}\n
-// cfg.get("logging"): ${JSON.stringify(cfg.get("logging"), null, 2)}\n
-// `);
-
-// process.exit(1);
 const config = {
   // Raw convict instance — use config.get('some.key') for validated access
   _convict: cfg,
@@ -243,6 +238,7 @@ const config = {
   },
 
   public: {
+    baseUrl,
     schema: _pub.schema,
     domain: _pub.domain,
     address: _pub.address,
@@ -250,9 +246,6 @@ const config = {
     basePath: _pub.base_path,
     base_path: _pub.base_path,
   },
-
-  // Computed
-  baseUrl,
 
   // Database
   db: cfg.get("db"),
@@ -331,44 +324,7 @@ function include(file) {
   }
 }
 
-function loadRoutes() {
-  try {
-    const routesModule = include("routes");
-    const VALID_KEYS = [
-      "constructionRoutes",
-      "markdownRoutes",
-      "htmlRoutes",
-      "projects",
-      "router",
-    ];
-
-    if (typeof routesModule === "function") {
-      config.routes = routesModule.bind(config);
-    } else if (routesModule && typeof routesModule === "object") {
-      const invalid = Object.keys(routesModule).filter(
-        (k) => !VALID_KEYS.includes(k),
-      );
-      if (invalid.length > 0) {
-        throw new Error(
-          `[config] Invalid keys in routes module: ${invalid.join(", ")}`,
-        );
-      }
-      config.routes = routesModule;
-    } else {
-      throw new Error(
-        `[config] routes module must export a function or plain object, got ${typeof routesModule}`,
-      );
-    }
-  } catch (err) {
-    // Route errors are fatal — the app cannot serve pages without them
-    console.error("[config] Route configuration error:", err.message);
-    if (err.cause) console.error("Caused by:", err.cause.stack);
-    process.exit(1);
-  }
-}
-
 config.include = include;
-loadRoutes();
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 7. Debug dump (mirrors old console.log block, respects log level)

@@ -29,10 +29,6 @@ const oidc = authCfg.oidc;
 
 const { TRUST_PROXY } = require("#constants/middlewareConstants.js");
 
-const { getBaseUrl } = require("#utils/baseUrl.js");
-const config = require("#config");
-const { meta, session } = config;
-
 // ── Startup guard ────────────────────────────────────────────────────────────
 // Catch the common misconfiguration early with an actionable message instead
 // of a cryptic OIDC library error at first request.
@@ -40,15 +36,17 @@ const { meta, session } = config;
 if (authCfg.enabled) {
   if (!oidc.issuer_base_url) {
     throw new Error(
-      '[authConfig] auth is enabled but auth.oidc.issuer_base_url is not set. ' +
-      'Set OIDC_ISSUER_BASE_URL or add issuer_base_url to [auth.oidc] in config.toml.'
+      "[authConfig] auth is enabled but auth.oidc.issuer_base_url is not set. " +
+        "Set OIDC_ISSUER_BASE_URL or add issuer_base_url to [auth.oidc] in config.toml.",
     );
   }
-  if (oidc.secret === 'insecure_default_secret_change_me' &&
-      config.meta.node_env === 'production') {
+  if (
+    oidc.secret === "insecure_default_secret_change_me" &&
+    config.meta.node_env === "production"
+  ) {
     throw new Error(
-      '[authConfig] OIDC_SECRET is still the insecure default. ' +
-      'Set a strong random value in production.'
+      "[authConfig] OIDC_SECRET is still the insecure default. " +
+        "Set a strong random value in production.",
     );
   }
 }
@@ -60,7 +58,7 @@ const oidcConfig = {
   secret: oidc.secret,
   clientID: oidc.client_id,
   clientSecret: oidc.client_secret ?? undefined,
-  baseURL: getBaseUrl(config.public),
+  baseURL: config.public.baseUrl,
   issuerBaseURL: oidc.issuer_base_url,
   authRequired: false,
 
@@ -76,7 +74,7 @@ const oidcConfig = {
     logout: "/auth/logout",
   },
 
-   // Session cookie config flows from the same convict session block
+  // Session cookie config flows from the same convict session block
   // used by express-session elsewhere in the app.
   session,
 
@@ -91,7 +89,7 @@ const oidcConfig = {
     const claims = jose.decodeJwt(sessionData.id_token);
 
     // const userInfo = await req.oidc.fetchUserInfo();
-      req.log.info.("OIDC callback — claims received", { sub: claims.sub });
+    req.log.info("OIDC callback — claims received", { sub: claims.sub });
 
     return {
       ...session,

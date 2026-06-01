@@ -21,15 +21,15 @@ class PrimitiveError extends Error {
     }
   }
   warn() {
-    console.warn(this);
+    console.warn("PRIMITIVE_ERROR: ", this);
     return this;
   }
   error() {
-    console.error(this);
+    console.error("PRIMITIVE_ERROR: ", this);
     return this;
   }
   info() {
-    console.info(this);
+    console.log("PRIMITIVE_ERROR: ", this);
     return this;
   }
   notice() {
@@ -37,7 +37,7 @@ class PrimitiveError extends Error {
     return this;
   }
   log(level = "log") {
-    console["level"](this);
+    console["level"]("PRIMITIVE_ERROR: ", this);
     return this;
   }
 }

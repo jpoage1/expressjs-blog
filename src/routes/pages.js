@@ -10,7 +10,8 @@ const { meta, routes } = require("#config");
 const path = require("path");
 const fs = require("fs").promises;
 const matter = require("gray-matter");
-const HttpError = require("../utils/HttpError");
+const HttpError = require("#utils/HttpError.js");
+const contentRoutes = require("#utils/loadContentRoutes.js");
 
 const construction = new ConstructionRoutes();
 const html = new HtmlRoutes();
@@ -18,70 +19,97 @@ const markdown = new MarkdownRoutes();
 
 const { node_env } = meta;
 
-const { constructionRoutes, markdownRoutes, htmlRoutes, projects } = routes;
+const {
+  constructionRoutes,
+  markdownRoutes,
+  htmlRoutes,
+  projects,
+  router: contentRouter,
+} = contentRoutes;
 
-constructionRoutes?.forEach((route) => {
-  const { path, title } = route;
-  construction.register(path, title);
-});
-markdownRoutes?.forEach((route) => {
-  const { path, file } = route;
-  markdown.register(path, file);
-});
-htmlRoutes?.forEach((route) => {
-  const { path, contentFolder } = route;
-  html.register(path, contentFolder);
-});
-projects?.forEach((route) => {
-  const { path, file, overrides } = route;
-  markdown.register(path, file, {
-    project: true,
-    ...overrides,
+try {
+  if (contentRouter) router.use(contentRouter);
+} catch (e) {
+  console.warn(e);
+}
+
+try {
+  constructionRoutes?.forEach((route) => {
+    const { path, title } = route;
+    construction.register(path, title);
   });
-});
+  router.use(construction.getRouter());
+} catch (e) {
+  console.warn(e);
+}
 
-router.get("/projects", async (req, res, next) => {
-  try {
-    const projectsDir = path.join(meta.content, "/pages/projects");
-    const files = await fs.readdir(projectsDir);
+try {
+  markdownRoutes?.forEach((route) => {
+    const { path, file } = route;
+    markdown.register(path, file);
+  });
+  router.use(markdown.getRouter());
+} catch (e) {
+  console.warn(e);
+}
 
-    const projects = [];
+try {
+  htmlRoutes?.forEach((route) => {
+    const { path, contentFolder } = route;
+    html.register(path, contentFolder);
+  });
+  router.use(html.getRouter());
+} catch (e) {
+  console.warn(e);
+}
 
-    for (const file of files) {
-      if (!file.endsWith(".md")) continue;
+try {
+  projects?.forEach((route) => {
+    const { path, file, overrides } = route;
+    markdown.register(path, file, {
+      project: true,
+      ...overrides,
+    });
+  });
 
-      const filePath = path.join(projectsDir, file);
-      const fileContent = await fs.readFile(filePath, "utf-8");
-      const { data } = matter(fileContent);
+  router.get("/projects", async (req, res, next) => {
+    try {
+      const projectsDir = path.join(meta.content, "/pages/projects");
+      const files = await fs.readdir(projectsDir);
 
-      if (data.published || node_env === "development") {
-        projects.push({
-          title: data.title,
-          status: data.published ? "Active" : "Archived",
-          status_class: data.published ? "active" : "archived",
-          description: data.description || "",
-          target_url: data.repository || `/${data.slug}`,
-          demo_url: data.demo_url,
-          demo_label: data.demo_label,
-          external: !!data.repository,
-          retrospective_url: `/${data.slug}`,
-          repository: data.repository,
-        });
+      const projects = [];
+
+      for (const file of files) {
+        if (!file.endsWith(".md")) continue;
+
+        const filePath = path.join(projectsDir, file);
+        const fileContent = await fs.readFile(filePath, "utf-8");
+        const { data } = matter(fileContent);
+
+        if (data.published || node_env === "development") {
+          projects.push({
+            title: data.title,
+            status: data.published ? "Active" : "Archived",
+            status_class: data.published ? "active" : "archived",
+            description: data.description || "",
+            target_url: data.repository || `/${data.slug}`,
+            demo_url: data.demo_url,
+            demo_label: data.demo_label,
+            external: !!data.repository,
+            retrospective_url: `/${data.slug}`,
+            repository: data.repository,
+          });
+        }
       }
+
+      res.renderWithBaseContext("pages/projects", { projects });
+    } catch (err) {
+      req.log.error(err.stack);
+      next(new HttpError("Could not load projects", 500));
     }
-
-    res.renderWithBaseContext("pages/projects", { projects });
-  } catch (err) {
-    req.log.error(err.stack);
-    next(new HttpError("Could not load projects", 500));
-  }
-});
-
-router.use(construction.getRouter());
-router.use(html.getRouter());
-router.use(markdown.getRouter());
-
-const { router: contentRouter } = routes;
-if (contentRouter) router.use(contentRouter);
+  });
+} catch (e) {
+  console.warn(e);
+}
 
 module.exports = router;

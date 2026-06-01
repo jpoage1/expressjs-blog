@@ -1,11 +1,7 @@
-const { getBaseUrl } = require("../utils/baseUrl");
 const config = require("../utils/baseUrl");
-
-// const baseUrl = getbaseUrl(config.public);
 
 function resolveReturnUrl(req, res, next) {
   const domain = config.public.domain;
-  // const fallbackUrl = baseUrl;
   const fallbackUrl = res.locals.baseUrl;
   const referrer = req.body?.referrer;
 

@@ -33,7 +33,7 @@ function handleRedirect(req, res, targetPath, status = 302) {
 function redirectMiddleware(req, res, next) {
   res.customRedirect = (targetPath, status) =>
     handleRedirect(req, res, targetPath, status);
-  const redirectConfig = config.redirects;
+  const redirectConfig = config.redirects || {};
 
   const targetPath = redirectConfig[req.path];
   if (targetPath) {

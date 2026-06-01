@@ -2,10 +2,32 @@
 const util = require("util");
 
 const config = require("#config");
-const log_levels = config.logging.levels;
+const log_levels = config.logging.LOG_LEVELS;
 
 function shouldLog(level) {
-  return log_levels[level.toLowerCase()] <= log_levels[config.logging.logLevel];
+  try {
+    return (
+      log_levels[level.toLowerCase()] <= log_levels[config.logging.logLevel]
+    );
+  } catch (e) {
+    safeLog({
+      logging: config.logging,
+      log_levels,
+      msg: e.message,
+      stack: e.stack,
+    });
+  }
+}
+
+function safeLog(msg) {
+  unpatchConsole();
+  console.error(`UNPATCHED_CONSOLE:`, msg);
+  process.exit(1);
+}
+function safeLogError(err) {
+  unpatchConsole();
+  console.error(`UNPATCHED_CONSOLE: ${err.message}`, err.stack);
+  process.exit(1);
 }
 
 const originalConsole = { ...console };
