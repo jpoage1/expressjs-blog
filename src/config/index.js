@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { parse } = require("smol-toml");
 const defaults = require("./defaults");
+const { PrimitiveError } = require("#utils/primitiveErrors.js");
 
 class Config {
   constructor() {
@@ -42,7 +43,8 @@ class Config {
   }
   validate(data) {
     if (!data.logging?.log_dir) {
-      throw new Error("Log dir is undefined");
+      console.log(data);
+      throw new PrimitiveError("Log dir is undefined");
     }
   }
   injectHelpers(data) {

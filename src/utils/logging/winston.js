@@ -5,12 +5,12 @@ const util = require("util");
 const { createLogger, format, transports } = require("winston");
 const { SPLAT, LEVEL, MESSAGE } = require("triple-beam");
 
-const { customLevels, LOG_LEVEL } = require("../../config/logging");
+const { customLevels, LOG_LEVEL } = require("#config/logging.js");
 
-const { buildTransport } = require("./streams");
+const { buildTransport } = require("./streams.js");
 
 const { sessionTransport } = require("./config.js");
-const config = require("../../config");
+const config = require("#config");
 
 const formatMessage = (info) => {
   const { timestamp, level, message } = info;

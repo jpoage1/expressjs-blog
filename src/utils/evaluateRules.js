@@ -1,4 +1,4 @@
-const config = require("../config");
+const config = require("#config");
 
 // Production defaults
 const DEFAULT_TEST_USER = config.testing.username;

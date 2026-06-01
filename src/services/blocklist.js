@@ -8,6 +8,7 @@
 // On first boot with no DB, the Set is empty — fail-open by design.
 
 const { getBlockedIPs } = require("#services/visitorService.js");
+const { ApiError } = require("#utils/errors.js");
 
 let blockedSet = new Set();
 let intervalHandle = null;
@@ -16,9 +17,7 @@ async function refresh() {
   try {
     blockedSet = await getBlockedIPs();
   } catch (err) {
-    // Keep the current set. Don't clear it — that would unblock everyone
-    // just because Postgres hiccuped.
-    console.error(`Blocklist refresh failed: ${err.message}\n`, err.stack);
+    ApiError("Blocklist refresh failed", err).log();
   }
 }
 

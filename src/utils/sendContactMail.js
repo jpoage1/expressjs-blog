@@ -1,9 +1,9 @@
-const transporter = require("./transporter");
+const transporter = require("./transporter.js");
 const path = require("path");
 const fs = require("fs").promises;
-const { validateAndSanitizeEmail } = require("../utils/emailValidator");
-const { winstonLogger } = require("../utils/logging");
-const config = require("../config");
+const { validateAndSanitizeEmail } = require("#utils/emailValidator.js");
+const { winstonLogger } = require("#utils/logging.js");
+const config = require("#config");
 const { mail } = config;
 
 // Fixed sanitizeInput function

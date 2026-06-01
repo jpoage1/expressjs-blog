@@ -1,7 +1,7 @@
 // src/utils/logging/consolePatch.js
 const util = require("util");
 
-const config = require("../../config");
+const config = require("#config");
 const log_levels = config.logging.levels;
 
 function shouldLog(level) {

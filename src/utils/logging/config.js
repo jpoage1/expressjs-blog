@@ -6,14 +6,19 @@ const winston = require("winston");
 
 const { patchConsole } = require("./consolePatch");
 
-const { customLevels, sessionDir, logFiles } = require("../../config/logging");
+const { logging } = require("#config");
 
 const { createLogStreams, createSessionTransport } = require("./streams");
+const { PrimitiveError } = require("#utils/primitiveErrors.js");
 
-winston.addColors(customLevels.colors);
+try {
+  winston.addColors(logging.customLevels.colors);
+} catch (e) {
+  PrimitiveError("Custom colors are not available", e).notice;
+}
 
-const logStreams = createLogStreams(logFiles);
-const sessionTransport = createSessionTransport(sessionDir);
+const logStreams = createLogStreams(logging.logFiles);
+const sessionTransport = createSessionTransport(logging.sessionDir);
 patchConsole(logStreams, sessionTransport);
 
 module.exports = {

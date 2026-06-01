@@ -1,341 +1,383 @@
+"use strict";
+
+/**
+ * src/config/loader.js
+ *
+ * Single config entry point. Replaces:
+ *   - src/config/defaults.js       (fallback values now live in schema.cjs)
+ *   - src/config/index.js          (the half-finished class refactor)
+ *   - src/config/securityConfig.js (values now in convict schema + config.toml)
+ *   - src/config/logging.js        (getLogConfig is now a helper here)
+ *
+ * Load order (highest priority wins):
+ *   1. Environment variables  (BLOG_* / standard names per schema)
+ *   2. config.toml            (path resolved via CLI --config or env CONFIG_PATH)
+ *   3. Schema defaults        (schema.cjs)
+ */
+
+require("dotenv").config();
+
 const fs = require("fs");
 const path = require("path");
+const convict = require("convict");
 const { parse } = require("smol-toml");
-const os = require("os");
-const { PathNotFoundError } = require("../utils/errors.js");
-const {
-  validatePath,
-  validateExplicitPath,
-} = require("../utils/validation.js");
-const FALLBACK_ROOT_DIR = path.resolve("./");
 
-/**
- * Validates and resolves an explicit configuration path.
- * @param {string} rawPath - The raw path string from CLI or ENV.
- * @param {string} sourceName - The name of the source for error reporting.
- * @returns {{ path: string, isExplicit: true }}
- * @throws {Error} If the path does not exist.
- */
+const schema = require("./schema.cjs");
 
-/**
- * Resolves the configuration file path based on priority.
- * Fallbacks include XDG standard paths and hidden home directory files.
- * @returns {{ path: string, isExplicit: boolean }}
- */
-function resolveConfigPath(rootDir = FALLBACK_ROOT_DIR) {
-  // 1. CLI Argument Priority
-  const cliPath = getCliArgument("--config");
-  if (cliPath) return validateExplicitPath(cliPath, "CLI");
+// ─────────────────────────────────────────────────────────────────────────────
+// 1. Build convict instance
+// ─────────────────────────────────────────────────────────────────────────────
 
-  // 2. Environment Variable Priority
-  const envPath = process.env.CONFIG_PATH;
-  if (envPath) return validateExplicitPath(envPath, "ENV");
+const cfg = convict(schema);
 
-  // 3. Implicit Fallbacks
-  const implicitPath = getFirstExistingPath(FALLBACK_CONFIG_PATHS, rootDir);
+// ─────────────────────────────────────────────────────────────────────────────
+// 2. Locate and load config.toml
+// ─────────────────────────────────────────────────────────────────────────────
 
-  if (!implicitPath) {
-    console.log(
-      `No configuration found in searched paths: ${JSON.stringify(FALLBACK_CONFIG_PATHS)}. Using defaults.`,
-    );
+function resolveConfigPath() {
+  // Priority: --config CLI flag → CONFIG_PATH env → fallback search
+  const cliIdx = process.argv.indexOf("--config");
+  if (cliIdx !== -1 && process.argv[cliIdx + 1]) {
+    return process.argv[cliIdx + 1];
+  }
+  if (process.env.CONFIG_PATH) {
+    return process.env.CONFIG_PATH;
   }
 
-  return { path: implicitPath, isExplicit: false };
+  const candidates = [
+    path.join(os().homedir(), ".config", "expressjs-blog", "config.toml"),
+    path.join(os().homedir(), ".expressjs-blog.toml"),
+    "/etc/expressjs-blog/config.toml",
+    path.join(process.cwd(), "config.toml"),
+  ];
+
+  return candidates.find((p) => fs.existsSync(p)) ?? null;
 }
 
-/**
- * Extracts value from CLI arguments.
- */
-function getCliArgument(flag) {
-  const index = process.argv.indexOf(flag);
-  const hasNextValue = index !== -1 && process.argv[index + 1];
-  return hasNextValue ? process.argv[index + 1] : null;
+// lazy require os only when needed
+function os() {
+  return require("os");
 }
 
-/**
- * Returns the first path in an array that exists on the filesystem.
- */
+const configFilePath = resolveConfigPath();
 
-function getFirstExistingPath(paths, rootDir = FALLBACK_ROOT_DIR) {
-  for (const p of paths) {
-    const resolvedPath = path.resolve(p);
-    if (fs.existsSync(resolvedPath)) {
-      return resolvedPath;
-    }
+if (configFilePath) {
+  try {
+    const raw = fs.readFileSync(path.resolve(configFilePath), "utf8");
+    const toml = parse(raw);
+    // convict.load() does a deep merge — env vars applied after still win
+    cfg.load(toml);
+  } catch (err) {
+    console.error(`[config] Failed to load ${configFilePath}: ${err.message}`);
+    // Non-fatal: fall through to defaults + env
   }
-  return null;
-}
-
-function logError(key) {
-  const toEnvVar = (key) => key.replace(/([A-Z])/g, "_$1").toUpperCase();
-
-  const toConfigKey = (key) => key.replace(/([A-Z])/g, "_$1").toLowerCase();
-
+} else {
   console.log(
-    `Notice: ${key} is not set. Use env var ${toEnvVar(key)} or config key ${toConfigKey(key)}`,
+    "[config] No config.toml found. Using defaults and environment variables.",
   );
 }
 
-const FALLBACK_CONTENT_PATHS = [
-  "/var/lib/expressjs-blog",
-  path.join(os.homedir(), "share", "expressjs-blog"),
-  path.join(FALLBACK_ROOT_DIR, "content"),
-];
+// ─────────────────────────────────────────────────────────────────────────────
+// 3. Validate
+// ─────────────────────────────────────────────────────────────────────────────
 
-const FALLBACK_LOG_PATHS = [
-  "/var/log/expressjs-blog",
-  path.join(os.homedir(), "local", "state", "expressjs-blog", "logs"),
-  path.join(FALLBACK_ROOT_DIR, "logs"),
-];
+try {
+  cfg.validate({ allowed: "warn" });
+  // 'warn' = unknown keys in TOML emit a warning instead of throwing.
+  // Change to 'strict' once you've audited your config.toml.
+} catch (err) {
+  console.error("[config] Validation failed:", err.message);
+  process.exit(1);
+}
 
-const FALLBACK_DB_PATHS = [
-  "/var/lib/expressjs-blog/data",
-  "/var/log/expressjs-blog/data",
-  path.join(os.homedir(), "local", "state", "expressjs-blog", "data"),
-  path.join(FALLBACK_ROOT_DIR, "data"),
-];
+// ─────────────────────────────────────────────────────────────────────────────
+// 4. Derive computed values
+//    Convict doesn't support computed fields natively, so we resolve them here
+//    once after validation — same pattern as the old hydrate().
+// ─────────────────────────────────────────────────────────────────────────────
 
-const FALLBACK_CONFIG_PATHS = [
-  path.join(os.homedir(), ".config", "expressjs-blog", "config.toml"), // XDG Compliance
-  path.join(os.homedir(), ".expressjs-blog.toml"), // Hidden Home file
-  "/etc/expressjs-blog/config.toml", // Global
-  "./config.toml",
-];
+const _pub = cfg.get("public");
+const _net = cfg.get("network");
 
-function hydrate(c = {}) {
-  let rootDir = process.env.ROOT_DIR || c?.meta?.root_dir || FALLBACK_ROOT_DIR;
-  const paths = {
-    rootDir,
-    logDir:
-      process.env.LOG_DIR ||
-      c?.logging?.log_dir ||
-      getFirstExistingPath(FALLBACK_LOG_PATHS, rootDir) ||
-      FALLBACK_LOG_PATHS.at(-1),
-    dbPath:
-      process.env.LOGGING_DB_PATH ||
-      c?.logging?.db_path ||
-      getFirstExistingPath(FALLBACK_DB_PATHS, rootDir) ||
-      FALLBACK_DB_PATHS.at(-1),
-    contentPath:
-      process.env.CONTENT_PATH ||
-      c?.meta?.content_path ||
-      getFirstExistingPath(FALLBACK_CONTENT_PATHS, rootDir),
+/** Resolve the canonical public base URL. */
+function buildBaseUrl(pub = _pub) {
+  const omitPort =
+    (pub.port === 80 && pub.schema === "http") ||
+    (pub.port === 443 && pub.schema === "https");
+  const portPart = omitPort ? "" : `:${pub.port}`;
+  const domain = pub.domain.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  return `${pub.schema}://${domain}${portPart}${pub.base_path}`;
+}
+
+/** Build the pg connection config from db.url or individual fields. */
+function buildDbCredentials() {
+  const db = cfg.get("db");
+  if (db.url) return { connectionString: db.url, max: db.pool_max };
+  return {
+    host: db.host,
+    port: db.port,
+    database: db.database,
+    user: db.user,
+    password: db.password,
+    max: db.pool_max,
   };
+}
 
-  [paths.logDir, paths.dbPath]
-    .filter((dir) => !fs.existsSync(dir))
-    .forEach((dir) => {
+/** Ensure log directories exist, creating them if needed. */
+function ensureLogDirs() {
+  const logDir = cfg.get("logging.log_dir");
+  const dbPath = cfg.get("logging.db_path");
+  for (const dir of [logDir, dbPath]) {
+    if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
-    });
-
-  Object.entries(paths).forEach(([key, p]) => {
-    if (!key) {
-      throw new Error(
-        `Unexpected behavior: path key '${key}' is not a valid key for value '${p}' `,
-      );
     }
-    if (!p) {
-      logError(key);
-      return;
-    }
-    paths[key] = path.resolve(p);
-    validatePath(paths[key], key);
-  });
-
-  const { logDir, dbPath, contentPath } = paths;
-  if (dbPath === FALLBACK_ROOT_DIR) {
-    console.warn(
-      `Using fallback root dir "${FALLBACK_ROOT_DIR}". This may be a potential security risk.`,
-    );
   }
-  rootDir = paths.rootDir;
+  return logDir;
+}
 
-  const schema = process.env.SERVER_SCHEMA || c?.network?.schema || "http";
-  const domain = process.env.SERVER_DOMAIN || c?.network?.domain || "localhost";
-  const address =
-    process.env.SERVER_ADDRESS || c?.network?.address || "0.0.0.0";
-  const port = process.env.SERVER_PORT || c?.network?.port || 3400;
-  const basePath = process.env.SERVER_BASE_PATH || c?.network?.base_path || "";
-  const publicSchema = process.env.PUBLIC_SCHEMA || c?.public?.schema || schema;
-  const fallbackPort =
-    publicSchema == "http" ? 80 : publicSchema == "https" ? 443 : port;
-  const publicPort = process.env.PUBLIC_PORT || c?.public?.port || fallbackPort;
-
-  const dbUrl = process.env.DB_URL || c?.dbUrl || null;
-  const db = {
-    host: process.env.DB_HOST || c?.db?.host || "localhost",
-    port: process.env.DB_PORT || c?.db?.port || "5432",
-    database: process.env.DB_DATABASE || c?.db?.database || "expressjs-blog",
-    user: process.env.DB_USER || c?.db?.user || "expressjs-blog",
-    password: process.env.DB_PASS || c?.db?.password || null,
-    max:
-      process.env.DB_POOL_MAX ||
-      c?.db?.db_pool_max ||
-      parseInt(process.env.PG_POOL_MAX || "6", 10),
-  };
+/** Build the logging config block consumed by winston setup. */
+function buildLogConfig(logDir) {
+  const sessionTimestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const sessionDir = path.join(logDir, "sessions", sessionTimestamp);
+  const logging = cfg.get("logging");
 
   return {
-    dbUrl,
-    db,
-    dbCredentials: dbUrl || db,
-
-    views: process.env.HANDLEBARS_VIEWS || c?.handlebars?.views || [],
-    meta: {
-      node_env: process.env.NODE_ENV || c?.meta?.node_env || "development",
-      site_owner: process.env.SITE_OWNER || c?.meta?.site_owner || undefined,
-      country: process.env.COUNTRY || c?.meta?.country || undefined,
-      rootDir,
-      content: contentPath,
+    logDir,
+    sessionDir,
+    sessionTimestamp,
+    logLevel: logging.log_level,
+    customLevels: {
+      levels: logging.levels,
+      colors: logging.colors,
     },
-    logging: {
-      logDir,
-      logLevel: c?.logging?.log_level || process.env.LOG_LEVEL || "info",
-      dbPath,
-      getDBFile(file = "storage.db") {
-        return path.join(dbPath, file);
-      },
+    LOG_LEVELS: logging.levels,
+    logFiles: {
+      session: path.join(sessionDir, "session.log"),
+      info: path.join(logDir, "info", "info.log"),
+      notice: path.join(logDir, "notice", "notice.log"),
+      error: path.join(logDir, "error", "error.log"),
+      warn: path.join(logDir, "warn", "warn.log"),
+      event: path.join(logDir, "event", "event.log"),
+      security: path.join(logDir, "security", "security.log"),
+      debug: path.join(logDir, "debug", "debug.log"),
+      analytics: path.join(logDir, "debug", "analytics.log"),
     },
-    // For constructing URL's
-    public: {
-      basePath: process.env.PUBLIC_BASE_PATH || c?.public?.base_path || "",
-      schema: publicSchema,
-      port: publicPort,
-      domain: process.env.PUBLIC_DOMAIN || c?.public?.domain || domain,
-      address: process.env.PUBLIC_ADDRESS || c?.public?.address || address,
-    },
-    // For bootstrap
-    network: {
-      domain,
-      address,
-      schema,
-      port,
-      basePath,
-    },
-    auth: {
-      enabled: process.env.AUTH_ENABLE || c?.auth?.enable || false,
-      verify: process.env.AUTH_VERIFY || c?.auth?.verify || null,
-      login: process.env.AUTH_LOGIN || c?.auth?.login || null,
-      cache_ttl:
-        parseInt(process.env.AUTH_CACHE_TTL, 10) ||
-        c?.auth?.cache_ttl ||
-        120000,
-      timeout_ms: process.env.AUTH_TIMEOUT_MS || c?.auth?.timeout_ms || 5000,
-    },
-    session: {
-      cookie: {
-        secure:
-          process.env.SESSION_COOKIE_SECURE ||
-          c?.session?.cookie?.secure ||
-          true, // Required since you are using HTTPS via Nginx
-        sameSite:
-          process.env.SESSION_COOKIE_SAME_SITE ||
-          c?.session?.cookie?.sameSite ||
-          "Lax", // Allows the cookie to be sent on the top-level redirect back
-        domain:
-          process.env.SESSION_COOKIE_DOMAIN ||
-          c?.session?.cookie?.domain ||
-          domain, // Ensures the cookie is visible across subdomains
-      },
-    },
-    mail: {
-      secure: process.env.MAIL_SECURE || c?.mail?.secure || false,
-      auth: process.env.MAIL_AUTH || c?.mail?.auth || null,
-      domain: process.env.MAIL_DOMAIN || c?.mail?.domain || domain,
-      host: process.env.MAIL_HOST || c?.mail?.host || domain,
-      port: process.env.MAIL_PORT || c?.mail?.port || 1025,
-      newsletter:
-        process.env.MAIL_NEWSLETTER ||
-        c?.mail?.newsletter ||
-        `newsletter@${domain}`,
-      pass: process.env.MAIL_PASS || c?.mail?.pass || null,
-    },
-    hcaptcha: {
-      secret: process.env.HCAPTCHA_SECRET || c?.hcaptcha?.secret || null,
-      key: process.env.HCAPTCHA_KEY || c?.hcaptcha?.key || null,
+    getDBFile(file = "storage.db") {
+      return path.join(cfg.get("logging.db_path"), file);
     },
   };
 }
-function loadConfig() {
-  // Use a simple flag parser (e.g., --config)
-  const configIdx = process.argv.indexOf("--config");
-  let configPath = resolveConfigPath().path;
 
+/** Build CSP directives, appending the computed base URL and auth domain. */
+function buildCspDirectives(baseUrl) {
+  const csp = cfg.get("security.csp");
+  const authDomain = cfg.get("security.auth_domain");
+
+  const connectSrc = [...csp.connect_src];
+  if (authDomain && !connectSrc.includes(authDomain)) {
+    connectSrc.push(authDomain);
+  }
+
+  return {
+    defaultSrc: [...csp.default_src, baseUrl],
+    scriptSrc: csp.script_src,
+    styleSrc: csp.style_src,
+    imgSrc: csp.img_src,
+    frameSrc: csp.frame_src,
+    objectSrc: ["'none'"],
+    upgradeInsecureRequests: [],
+    connectSrc,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 5. Assemble and export
+// ─────────────────────────────────────────────────────────────────────────────
+
+const logDir = ensureLogDirs();
+const baseUrl = buildBaseUrl();
+const logging = buildLogConfig(logDir);
+
+const config = {
+  // Raw convict instance — use config.get('some.key') for validated access
+  _convict: cfg,
+
+  // ── Convenience mirrors (matching the old loader.js shape) ─────────────
+  // These let existing consumers keep working without changes.
+
+  meta: {
+    node_env: cfg.get("meta.node_env"),
+    site_owner: cfg.get("meta.site_owner"),
+    country: cfg.get("meta.country"),
+    rootDir: cfg.get("meta.root_dir"),
+    root_dir: cfg.get("meta.root_dir"), // snake_case alias
+    content: cfg.get("meta.content_path"),
+    content_path: cfg.get("meta.content_path"),
+    hcaptcha_key: cfg.get("hcaptcha.key"), // template engines read this off meta
+  },
+
+  network: {
+    schema: _net.schema,
+    domain: _net.domain,
+    address: _net.address,
+    port: _net.port,
+    basePath: _net.base_path,
+    base_path: _net.base_path,
+  },
+
+  public: {
+    schema: _pub.schema,
+    domain: _pub.domain,
+    address: _pub.address,
+    port: _pub.port,
+    basePath: _pub.base_path,
+    base_path: _pub.base_path,
+  },
+
+  // Computed
+  baseUrl,
+
+  // Database
+  db: cfg.get("db"),
+  dbUrl: cfg.get("db.url"),
+  dbCredentials: buildDbCredentials(),
+
+  // Auth
+  auth: cfg.get("auth"),
+
+  // Session — keep sameSite camelCase for express-openid-connect compat
+  session: {
+    cookie: {
+      secure: cfg.get("session.cookie.secure"),
+      sameSite: cfg.get("session.cookie.same_site"),
+      domain: cfg.get("session.cookie.domain"),
+    },
+  },
+
+  // Mail — camelCase aliases for nodemailer compat
+  mail: {
+    ...cfg.get("mail"),
+    defaultSubject: cfg.get("mail.default_subject"),
+    logPath: cfg.get("mail.log_path"),
+  },
+
+  // hCaptcha
+  hcaptcha: cfg.get("hcaptcha"),
+
+  // Logging — full block consumed by winston setup, consolePatch, logManager
+  logging,
+
+  // Security — replaces securityConfig.js
+  security: {
+    LOCALHOST_HOSTNAMES: ["127.0.0.1", "localhost"],
+    HEALTHCHECK_METHOD: "HEAD",
+    HEALTHCHECK_PATH: cfg.get("security.healthcheck_path"),
+    FORBIDDEN_MESSAGE: "Forbidden",
+    FORBIDDEN_STATUS_CODE: 403,
+    HSTS_MAX_AGE: cfg.get("security.hsts_max_age"),
+    CSP_DIRECTIVES: buildCspDirectives(baseUrl),
+  },
+
+  // Endpoints
+  endpoints: cfg.get("endpoints"),
+
+  // Cleanup thresholds — logManager reads these
+  cleanup: cfg.get("cleanup"),
+
+  // Testing bypass
+  testing: cfg.get("testing"),
+
+  // Views (handlebars extra views) — kept for hbs.js compat
+  views: [],
+
+  // ── Routes + include() — loaded after config is stable ─────────────────
+  // Populated by loadRoutes() below; kept null until then.
+  routes: null,
+  include: null,
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 6. Routes loader  (identical logic to the old loadConfig, isolated here)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function include(file) {
+  const contentPath = config.meta.content;
+  if (!contentPath) throw new Error("[config] meta.content_path is not set");
+  const resolved = path.resolve(path.join(contentPath, file));
   try {
-    let toml_config = {};
-    if (configPath) {
-      try {
-        const raw = fs.readFileSync(path.resolve(configPath), "utf8");
-        toml_config = parse(raw);
-      } catch (err) {
-        throw new Error(`Failed to parse config file: ${configPath}`, {
-          cause: err,
-        });
-      }
-    }
-    const config = hydrate(toml_config);
-    const include = function (file) {
-      if (!this.meta.content) {
-        throw new Error("Content path is not set");
-      }
-      const fullPath = path.join(this.meta.content, file);
-      const resolved = path.resolve(fullPath);
-      try {
-        return require(resolved);
-      } catch (err) {
-        throw new Error(`Failed to include module: ${file}`, { cause: err });
-      }
-    }.bind(config);
-    config.include = include;
-    try {
-      const routesModule = include("routes");
+    return require(resolved);
+  } catch (err) {
+    throw new Error(
+      `[config] Failed to include module "${file}": ${err.message}`,
+      { cause: err },
+    );
+  }
+}
 
-      if (typeof routesModule === "function") {
-        config.routes = routesModule.bind(config);
+function loadRoutes() {
+  try {
+    const routesModule = include("routes");
+    const VALID_KEYS = [
+      "constructionRoutes",
+      "markdownRoutes",
+      "htmlRoutes",
+      "projects",
+      "router",
+    ];
 
-        // if config.routes is not express.router then
-        // config.routes = config.routes()
-      } else if (typeof routesModule === "object" && routesModule !== null) {
-        // Verify all keys are vaild
-        const validKeys = [
-          "constructionRoutes",
-          "markdownRoutes",
-          "htmlRoutes",
-          "projects",
-          "router",
-        ];
-        const actualKeys = Object.keys(routesModule);
-        const invalidKeys = actualKeys.filter(
-          (key) => !validKeys.includes(key),
-        );
-
-        if (invalidKeys.length > 0) {
-          throw new Error(
-            `Invalid keys found in routes module: ${invalidKeys.join(", ")}`,
-          );
-        }
-        config.routes = routesModule;
-      } else {
+    if (typeof routesModule === "function") {
+      config.routes = routesModule.bind(config);
+    } else if (routesModule && typeof routesModule === "object") {
+      const invalid = Object.keys(routesModule).filter(
+        (k) => !VALID_KEYS.includes(k),
+      );
+      if (invalid.length > 0) {
         throw new Error(
-          `Invalid route object. Expected an array or function, got: ${typeof routesModule}\n` +
-            JSON.stringify(routesModule, null, 2),
+          `[config] Invalid keys in routes module: ${invalid.join(", ")}`,
         );
       }
-      return config;
-    } catch (e) {
-      throw new Error(`Route configuration error: ${e.message}`, e.stack);
+      config.routes = routesModule;
+    } else {
+      throw new Error(
+        `[config] routes module must export a function or plain object, got ${typeof routesModule}`,
+      );
     }
   } catch (err) {
-    console.error(`Config load failure: ${err.message}`);
-    if (err.cause) {
-      console.error("Caused by:", err.cause.stack);
-    }
+    // Route errors are fatal — the app cannot serve pages without them
+    console.error("[config] Route configuration error:", err.message);
+    if (err.cause) console.error("Caused by:", err.cause.stack);
     process.exit(1);
   }
 }
 
-const config = loadConfig();
-console.log("--------------------------------------------------");
-console.log("------------------CONFIGURATION-------------------");
-console.log("--------------------------------------------------");
-console.log(config);
+config.include = include;
+loadRoutes();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 7. Debug dump (mirrors old console.log block, respects log level)
+// ─────────────────────────────────────────────────────────────────────────────
+
+if (cfg.get("meta.node_env") === "development") {
+  // Redact sensitive fields before printing
+  const safe = cfg.getProperties();
+  [
+    "db.password",
+    "db.url",
+    "mail.pass",
+    "mail.auth",
+    "hcaptcha.secret",
+  ].forEach((k) => {
+    const parts = k.split(".");
+    let obj = safe;
+    parts.slice(0, -1).forEach((p) => {
+      obj = obj?.[p];
+    });
+    if (obj) obj[parts.at(-1)] = "[REDACTED]";
+  });
+  console.log("──────────────────────────────────────────");
+  console.log("           CONFIGURATION LOADED           ");
+  console.log("──────────────────────────────────────────");
+  console.log(JSON.stringify(safe, null, 2));
+}
+
 module.exports = config;

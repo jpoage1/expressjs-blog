@@ -2,10 +2,10 @@
 const crypto = require("crypto");
 const fs = require("fs").promises;
 const path = require("path");
-const HttpError = require("../utils/HttpError");
+const HttpError = require("#utils/HttpError.js");
 
-const { winstonLogger } = require("../utils/logging");
-const { logging } = require("../config/loader");
+const { winstonLogger } = require("#utils/logging.js");
+const { logging } = require("#config/loader.js");
 
 // Threat detection patterns
 const THREAT_PATTERNS = {

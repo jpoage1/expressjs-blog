@@ -1,4 +1,49 @@
+const fs = require("fs");
+const path = require("path");
+const { parse } = require("smol-toml");
+const os = require("os");
+const { PathNotFoundError } = require("../utils/errors.js");
+const {
+  validatePath,
+  validateExplicitPath,
+} = require("../utils/validation.js");
+
+const FALLBACK_ROOT_DIR = path.resolve("./");
+
+const FALLBACK_CONTENT_PATHS = [
+  "/var/lib/expressjs-blog",
+  path.join(os.homedir(), "share", "expressjs-blog"),
+  path.join(FALLBACK_ROOT_DIR, "content"),
+];
+
+const FALLBACK_LOG_PATHS = [
+  "/var/log/expressjs-blog",
+  path.join(os.homedir(), "local", "state", "expressjs-blog", "logs"),
+  path.join(FALLBACK_ROOT_DIR, "logs"),
+];
+
+const FALLBACK_DB_PATHS = [
+  "/var/lib/expressjs-blog/data",
+  "/var/log/expressjs-blog/data",
+  path.join(os.homedir(), "local", "state", "expressjs-blog", "data"),
+  path.join(FALLBACK_ROOT_DIR, "data"),
+];
+
+const FALLBACK_CONFIG_PATHS = [
+  path.join(os.homedir(), ".config", "expressjs-blog", "config.toml"), // XDG Compliance
+  path.join(os.homedir(), ".expressjs-blog.toml"), // Hidden Home file
+  "/etc/expressjs-blog/config.toml", // Global
+  "./config.toml",
+];
+
 module.exports = {
+  fallbacks: {
+    rootDir: FALLBACK_ROOT_DIR,
+    contentPaths: FALLBACK_CONTENT_PATHS,
+    logPaths: FALLBACK_LOG_PATHS,
+    dbPaths: FALLBACK_DB_PATHS,
+    configPaths: FALLBACK_CONFIG_PATHS,
+  },
   endpoints: {
     revealBase: "https://access.jasonpoage.com/access/",
     authEndpoint: "https://auth.jasonpoage.com/api/firstfactor",
@@ -6,6 +51,13 @@ module.exports = {
     statusEndpoint: "/api/auth/status",
     logoutEndpoint: "/api/auth/logout",
     defaultRedirect: "/guest-access",
+  },
+  public: {
+    schema: "http",
+    domain: "localhost",
+    address: "0.0.0.0",
+    port: 3400,
+    basePath: "/",
   },
   meta: {
     node_env: "development",

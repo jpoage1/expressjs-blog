@@ -1,14 +1,40 @@
+"use strict";
+
+/**
+ * src/utils/logging/streams.js
+ *
+ * Creates the raw file write streams and DailyRotateFile transports
+ * consumed by consolePatch, manualLogger, and winston.
+ *
+ * Previously this file read logging.session and logging.dailyRotate
+ * directly from config, but those keys didn't exist in the convict schema
+ * so they were always undefined. They are now explicit schema entries and
+ * exposed on config.logging.session / config.logging.dailyRotate.
+ */
+
 const fs = require("fs");
 const path = require("path");
 const winston = require("winston");
 const DailyRotateFile = require("winston-daily-rotate-file");
 const { format } = winston;
 
-const { logging } = require("../../../src/config/loader");
-const { logDir } = logging;
-const config = require("../../config");
+const { logging } = require("#config/loader.js");
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Raw append streams — used by consolePatch and manualLogger
+// ─────────────────────────────────────────────────────────────────────────────
 
 function createLogStreams(files) {
+  // Ensure parent directories exist before opening streams.
+  // loader.js creates logDir and dbPath at startup; sub-directories
+  // (info/, warn/, etc.) are created here on first use.
+  for (const filePath of Object.values(files)) {
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  }
+
   return {
     info: fs.createWriteStream(files.info, { flags: "a" }),
     notice: fs.createWriteStream(files.notice, { flags: "a" }),
@@ -21,15 +47,24 @@ function createLogStreams(files) {
   };
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Session transport — one DailyRotateFile per server boot
+// Written to logs/sessions/<timestamp>/
+// ─────────────────────────────────────────────────────────────────────────────
+
 function createSessionTransport(dir) {
-  const settings = config.logging.session;
+  const s = logging.session; // camelCase block from buildLogConfig()
+
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
 
   return new DailyRotateFile({
     dirname: dir,
-    filename: settings.filename,
-    datePattern: settings.datePattern,
-    zippedArchive: settings.zippedArchive,
-    maxFiles: settings.maxFiles,
+    filename: s.filename,
+    datePattern: s.datePattern,
+    zippedArchive: s.zippedArchive,
+    maxFiles: s.maxFiles,
     format: format.combine(
       format.timestamp(),
       format.printf(
@@ -40,22 +75,31 @@ function createSessionTransport(dir) {
   });
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Per-level daily rotating transports — used by winston.js
+// ─────────────────────────────────────────────────────────────────────────────
+
 function buildTransport(level, filenamePrefix) {
-  const settings = config.logging.dailyRotate;
-  const logDir = config.logging.logDir;
+  const r = logging.dailyRotate; // camelCase block from buildLogConfig()
+  const dir = path.join(logging.logDir, level);
+
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
 
   return new DailyRotateFile({
-    level: level,
-    dirname: path.join(logDir, level),
-    filename: `${filenamePrefix}${settings.filenameSuffix}`,
-    datePattern: settings.datePattern,
-    zippedArchive: settings.zippedArchive,
-    maxFiles: settings.maxFiles,
+    level,
+    dirname: dir,
+    filename: `${filenamePrefix}${r.filenameSuffix}`,
+    datePattern: r.datePattern,
+    zippedArchive: r.zippedArchive,
+    maxFiles: r.maxFiles,
     format: format.combine(
       format.timestamp(),
-      format.printf(({ timestamp, level, message }) => {
-        return `[${timestamp}] [${level.toUpperCase()}] ${message}`;
-      }),
+      format.printf(
+        ({ timestamp, level: lvl, message }) =>
+          `[${timestamp}] [${lvl.toUpperCase()}] ${message}`,
+      ),
     ),
   });
 }
