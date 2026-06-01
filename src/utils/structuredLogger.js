@@ -5,7 +5,7 @@
 // If Postgres is unreachable, the observer fails silently and your existing
 // file-based logging continues unaffected.
 
-const { winstonLogger } = require("#logging");
+const { logger } = require("#logging");
 const {
   upsertVisitor,
   recordRequest,
@@ -182,7 +182,7 @@ module.exports = (req, res, next) => {
         ...flatten(body, "body"),
       };
 
-      winstonLogger[logLevel]({
+      logger[logLevel]({
         message: `${method} ${url}`,
         ...meta,
       });

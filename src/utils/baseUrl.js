@@ -1,5 +1,5 @@
 // src/utils/baseUrl.js
-// const { winstonLogger } = require("#logging/winston.js");
+// const { logger } = require("#logging");
 
 /** Resolve the canonical public base URL. */
 function withBasePath(path = "") {
@@ -16,7 +16,7 @@ function getBaseUrl({
 } = {}) {
   const config = require("#config");
   const { public } = config;
-  // winstonLogger.warn("DEBUG_CONFIG", config);
+  // logger.warn("DEBUG_CONFIG", config);
   const finalBasePath = basePath || public?.basePath || "";
   const finalPort = port || public?.port;
   const finalProtocol = schema || public?.schema;

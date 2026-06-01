@@ -8,7 +8,7 @@ const yaml = require("js-yaml");
 
 const { glob } = require("glob");
 const { qualifySitemapLinks } = require("#utils/qualifyLinks.js");
-const { winstonLogger } = require("#logging");
+const { logger } = require("#logging");
 const { meta } = require("#config");
 const { validatePath } = require("#utils/validation.js");
 
@@ -165,7 +165,7 @@ class SitemapService {
       }
 
       entries.push(parentEntry);
-      winstonLogger.debug(
+      logger.debug(
         `Added docs entry: ${parentEntry.loc} with ${parentEntry.children.length} children`,
       );
     }
@@ -233,12 +233,10 @@ class SitemapService {
 
       const extraPages = transform(navLinks);
 
-      winstonLogger.debug(
-        `Generated ${extraPages.length} extra nav link entries`,
-      );
+      logger.debug(`Generated ${extraPages.length} extra nav link entries`);
       return extraPages;
     } catch (err) {
-      winstonLogger.warn("Failed to read navLinks.json:", err);
+      logger.warn("Failed to read navLinks.json:", err);
       return [];
     }
   }
@@ -251,7 +249,7 @@ class SitemapService {
         );
 
         if (index !== -1) {
-          winstonLogger.debug(
+          logger.debug(
             `Found placeholder #inject:${key}, injecting ${items.length} items`,
           );
           // Replace the placeholder with the actual items

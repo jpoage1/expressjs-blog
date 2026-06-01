@@ -9,7 +9,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { winstonLogger } = require("#logging");
+const { logger } = require("#logging");
 const { logging } = require("#config");
 const { getPool } = require("#db/pool.js");
 
@@ -47,7 +47,7 @@ function readLevelFile(level, date) {
   if (date) {
     filePath = path.join(logDir, `${level}-${date}.log`);
   } else {
-    // Active file (winston-daily-rotate-file keeps a symlink-style named file)
+    // Active file (logger-daily-rotate-file keeps a symlink-style named file)
     const active = path.join(logDir, `${level}.log`);
     filePath = fs.existsSync(active) ? active : null;
   }
@@ -127,7 +127,7 @@ exports.fetchLogs = (req, res) => {
     // Stable response shape — matches what a Loki query would return
     res.json({ logs, pagination });
   } catch (err) {
-    winstonLogger.error("fetchLogs error:", err);
+    logger.error("fetchLogs error:", err);
     res.status(500).json({ error: "Failed to read logs" });
   }
 };
@@ -235,7 +235,7 @@ exports.fetchAnalyticsLogs = async (req, res) => {
       },
     });
   } catch (err) {
-    winstonLogger.error("fetchAnalyticsLogs error:", err);
+    logger.error("fetchAnalyticsLogs error:", err);
     res.status(500).json({ error: "Failed to query analytics" });
   }
 };

@@ -35,7 +35,6 @@ const { auth, requiresAuth } = require("express-openid-connect");
 // NEW: blocklist
 const blocklist = require("#services/blocklist.js");
 const blocklistMiddleware = require("./blocklist");
-
 function setupApp(config) {
   const app = express();
 

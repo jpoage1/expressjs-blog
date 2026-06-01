@@ -117,8 +117,11 @@ function buildDbCredentials() {
 /** Ensure log directories exist, creating them if needed. */
 function ensureLogDirs() {
   const logDir = cfg.get("logging.log_dir");
-  const dbPath = cfg.get("logging.db_path");
-  for (const dir of [logDir, dbPath]) {
+  // const dbPath = cfg.get("logging.db_path");
+  for (const dir of [
+    logDir,
+    // dbPath,
+  ]) {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
@@ -153,9 +156,9 @@ function buildLogConfig(logDir) {
       debug: path.join(logDir, "debug", "debug.log"),
       analytics: path.join(logDir, "debug", "analytics.log"),
     },
-    getDBFile(file = "storage.db") {
-      return path.join(cfg.get("logging.db_path"), file);
-    },
+    // getDBFile(file = "storage.db") {
+    //   return path.join(cfg.get("logging.db_path"), file);
+    // },
     // These two blocks are consumed directly by streams.js.
     // Key names use camelCase to match what the old defaults.js exported
     // so streams.js keeps working without changes.

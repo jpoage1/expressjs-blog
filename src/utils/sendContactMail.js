@@ -2,7 +2,7 @@ const transporter = require("./transporter.js");
 const path = require("path");
 const fs = require("fs").promises;
 const { validateAndSanitizeEmail } = require("#utils/emailValidator.js");
-const { winstonLogger } = require("#logging");
+const { logger } = require("#logging");
 const config = require("#config");
 const { mail } = config;
 
@@ -64,7 +64,7 @@ async function sendContactMail({ name, email, subject, message }) {
     logs.push(emailLogEntry);
     await fs.writeFile(mail.logPath, JSON.stringify(logs, null, 2));
   } catch (err) {
-    winstonLogger.error("Failed to log email to file:", err);
+    logger.error("Failed to log email to file:", err);
     throw err;
   }
 

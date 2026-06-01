@@ -3,18 +3,29 @@ const fs = require("fs");
 const path = require("path");
 const util = require("util");
 
-const { formatFunctionName, formatLogMessage } = require("./formatters.js");
-const { functionLog } = require("./functionLogger.js");
+const {
+  formatFunctionName,
+  formatLogMessage,
+} = require("#logging/formatters.js");
+const { functionLog } = require("#logging/functionLogger.js");
 
-const { initializeLogDirectories } = require("./initializeDirectories.js");
+const {
+  initializeLogDirectories,
+} = require("#logging/initializeDirectories.js");
 
-const { winstonLogger } = require("./winston.js");
+const { winstonLogger } = require("#logging/winston.js");
+const { getCallSite } = require("#logging/callSite.js");
+const { customLevels } = require("#config").logging;
 
 class Logger {
   constructor() {
     this.functionsLogDir = initializeLogDirectories();
     this.dynamicStreams = {};
     this.winston = winstonLogger;
+  }
+
+  print(lines) {
+    process.stdout.write(lines + "\n");
   }
 
   log(level, ...args) {
@@ -87,7 +98,23 @@ class Logger {
     }
   }
 }
+const logger = new Logger();
+
+const wrappedLogger = new Proxy(logger, {
+  get(target, prop) {
+    if (
+      typeof target[prop] === "function" &&
+      customLevels.levels[prop] !== undefined
+    ) {
+      return (...args) => {
+        const callSite = getCallSite();
+        return target[prop](...args, { callSite });
+      };
+    }
+    return target[prop];
+  },
+});
 
 module.exports = {
-  logger: new Logger(),
+  logger: wrappedLogger,
 };

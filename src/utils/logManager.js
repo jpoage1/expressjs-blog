@@ -7,6 +7,7 @@ const { node_env } = meta;
 const { logDir } = logging;
 
 const LogBuffer = require("./logging/LogBuffer.js");
+const { logger } = require("#logging/logger.js");
 
 class LogManager {
   constructor(logDir, options = {}) {
@@ -41,15 +42,15 @@ class LogManager {
     this.lastCleanupFile = path.join(logDir, ".last-cleanup");
     this.metricsFile = path.join(logDir, ".cleanup-metrics");
 
-    winstonLogger.info(
+    logger.print(
       `LogManager initialized for ${this.isDevelopment ? "development" : "production"}`,
     );
-    winstonLogger.info(`LogManager Config:`, { config: this.currentConfig });
+    logger.print(`LogManager Config:`, { config: this.currentConfig });
   }
 
   // Main cleanup orchestrator
   cleanup(force = false) {
-    const buffer = new LogBuffer(winstonLogger, "info");
+    const buffer = new LogBuffer(winstonLogger, "info", { raw: true });
 
     return buffer.execute(() => {
       try {

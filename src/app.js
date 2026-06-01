@@ -9,14 +9,14 @@ const {
   handleUncaughtException,
   handleUnhandledRejection,
 } = require("#logging/handlers.js");
-const { winstonLogger } = require("#logging");
+const { logger } = require("#logging");
 const LogBuffer = require("#logging/LogBuffer.js");
 
 const { startTokenCleanup } = require("#utils/tokenCleanup.js");
 const { cleanupOldSessions } = require("#utils/logManager.js");
 const { getExpress5Routes } = require("#utils/routerUtils.js");
 
-const startupBuffer = new LogBuffer(winstonLogger, "info");
+const startupBuffer = new LogBuffer(logger, "info", { raw: true });
 
 /**
  * Centers and pads a method array string to fit a fixed 10-character column width.
@@ -49,7 +49,7 @@ const server = net.createServer();
 server.once("error", (err) => {
   if (err.code === "EADDRINUSE") {
     startupBuffer.flush();
-    winstonLogger.error(`Port ${c.port} is already in use.`);
+    logger.error(`Port ${c.port} is already in use.`);
     process.exit(1);
   } else {
     startupBuffer.flush();

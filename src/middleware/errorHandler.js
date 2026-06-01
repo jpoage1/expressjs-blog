@@ -10,7 +10,7 @@ const {
   DEFAULT_LOG_LEVEL,
   ERROR_REDIRECT_PATH,
 } = require("../constants/errorConstants");
-const { winstonLogger } = require("#logging");
+const { logger } = require("#logging");
 const { meta } = require("#config");
 
 module.exports = async (err, req, res, next) => {
@@ -40,9 +40,9 @@ module.exports = async (err, req, res, next) => {
 
   if (req?.log?.error) {
     req.log.error(logEntry); // fixme, logs arent logging?
-    winstonLogger.error(logEntry);
+    logger.error(logEntry);
   } else {
-    winstonLogger.error(logEntry);
+    logger.error(logEntry);
   }
 
   const errorContext = getErrorContext(code || statusCode);
@@ -86,7 +86,7 @@ module.exports = async (err, req, res, next) => {
     res.status(errorContext.statusCode);
     res.renderGenericMessage(errorPageContext);
   } catch (e) {
-    winstonLogger.error(e, { context });
+    logger.error(e, { context });
     if (meta.node_env == "production") {
       res.send("Critical error.");
     } else {

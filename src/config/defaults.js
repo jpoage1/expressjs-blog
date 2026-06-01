@@ -38,7 +38,7 @@ module.exports = {
     rootDir: FALLBACK_ROOT_DIR,
     contentPaths: FALLBACK_CONTENT_PATHS,
     logPaths: FALLBACK_LOG_PATHS,
-    dbPaths: FALLBACK_DB_PATHS,
+    // dbPaths: FALLBACK_DB_PATHS,
     configPaths: FALLBACK_CONFIG_PATHS,
   },
   endpoints: {
@@ -70,7 +70,7 @@ module.exports = {
   logging: {
     log_dir: "logs",
     log_level: "info",
-    db_path: "logs/logs.sqlite",
+    // db_path: "logs/logs.sqlite",
     levels: {
       error: 0,
       warn: 1,

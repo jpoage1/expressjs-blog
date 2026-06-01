@@ -4,7 +4,7 @@ const fs = require("fs").promises;
 const path = require("path");
 const HttpError = require("#utils/HttpError.js");
 
-const { winstonLogger } = require("#logging");
+const { logger } = require("#logging");
 const { logging } = require("#config");
 
 // Threat detection patterns
@@ -188,7 +188,7 @@ async function logSecurityEvent(data, eventType = "contact_submission") {
     };
 
     // Log security event at custom 'security' level
-    winstonLogger.security(logEntry);
+    logger.security(logEntry);
 
     // Separate high-threat log file
     if (data.threatAnalysis?.level === "high") {
@@ -200,7 +200,7 @@ async function logSecurityEvent(data, eventType = "contact_submission") {
     }
   } catch (err) {
     // Fail silently or log to error log, depending on requirements
-    winstonLogger.error(`Failed to log security event: ${err.message}`);
+    logger.error(`Failed to log security event: ${err.message}`);
   }
 }
 

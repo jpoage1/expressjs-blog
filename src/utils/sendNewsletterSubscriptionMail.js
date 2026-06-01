@@ -1,6 +1,6 @@
 // src/utils/sendNewsletterSubscriptionMail.js
 const transporter = require("./transporter");
-const { winstonLogger } = require("#logging");
+const { logger } = require("#logging");
 const { mail } = require("#config");
 
 const MAIL_SUBJECT = "New Newsletter Subscription";
@@ -24,7 +24,7 @@ async function sendNewsletterSubscriptionMail({ email }) {
   try {
     return await transporter.sendMail(mailData);
   } catch (error) {
-    winstonLogger.error(error);
+    logger.error(error);
   }
 }
 

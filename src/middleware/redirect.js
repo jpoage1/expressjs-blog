@@ -1,12 +1,12 @@
 // src/middleware/redirect.js
 
-const { winstonLogger } = require("#logging");
+const { logger } = require("#logging");
 const config = require("#config");
 
 // Generic redirect handler
 function handleRedirect(req, res, targetPath, status = 302) {
   const redirectUrl = res.locals.qualifyLink(targetPath);
-  winstonLogger.info("Redirect Initiated", {
+  logger.info("Redirect Initiated", {
     from: req.originalUrl,
     // referrer: req.referrer,
     method: req.method,

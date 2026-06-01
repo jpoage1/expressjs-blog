@@ -1,6 +1,6 @@
 // src/setupMiddleware.js
 const express = require("express");
-const { winstonLogger } = require("#logging");
+const { logger } = require("#logging");
 
 const {
   EXCLUDED_PATHS,
@@ -22,49 +22,44 @@ module.exports = (req, res, next) => {
     // Parse JSON with appropriate limit
     express.json({ limit })(req, res, (err) => {
       if (err) {
-        winstonLogger.error("JSON parsing error:", err.message);
+        logger.error("JSON parsing error:", err.message);
         return next(err);
       }
-      // winstonLogger.debug("Parsed JSON body:", req.body);
+      // logger.debug("Parsed JSON body:", req.body);
       next();
     });
   } else if (contentType.includes("application/x-www-form-urlencoded")) {
     // Parse form data with appropriate limit
     express.urlencoded({ extended: false, limit })(req, res, (err) => {
       if (err) {
-        winstonLogger.error("Form parsing error:", err.message);
+        logger.error("Form parsing error:", err.message);
         return next(err);
       }
-      // winstonLogger.debug("Parsed form body:", req.body);
+      // logger.debug("Parsed form body:", req.body);
       next();
     });
   } else if (contentType.includes("multipart/form-data")) {
     // For multipart, we'd need multer or similar, but pass through for now
-    winstonLogger.debug(
-      "Multipart form detected - may need additional handling",
-    );
+    logger.debug("Multipart form detected - may need additional handling");
     next();
   } else {
     // Try form parsing first (most common for HTML forms), then JSON
     express.urlencoded({ extended: false, limit })(req, res, (formErr) => {
       if (formErr) {
-        winstonLogger.warn(
-          "Form parsing failed, trying JSON:",
-          formErr.message,
-        );
+        logger.warn("Form parsing failed, trying JSON:", formErr.message);
         express.json({ limit })(req, res, (jsonErr) => {
           if (jsonErr) {
-            winstonLogger.error("Both parsers failed:", {
+            logger.error("Both parsers failed:", {
               formErr: formErr.message,
               jsonErr: jsonErr.message,
             });
             return next(jsonErr);
           }
-          // winstonLogger.warn("Parsed JSON body (fallback):", req.body);
+          // logger.warn("Parsed JSON body (fallback):", req.body);
           next();
         });
       } else {
-        // winstonLogger.debug("Parsed form body (default):", req.body);
+        // logger.debug("Parsed form body (default):", req.body);
         next();
       }
     });

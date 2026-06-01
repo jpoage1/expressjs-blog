@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const { promisify } = require("util");
 const statvfs = promisify(require("statvfs"));
-const { winstonLogger } = require("#logging");
+const { logger } = require("#logging");
 
 class DiskSpaceMonitor {
   constructor(logDir, options = {}) {
@@ -53,7 +53,7 @@ class DiskSpaceMonitor {
         usedGB: usedBytes / 1024 ** 3,
       };
     } catch (error) {
-      winstonLogger.error("Error getting disk space:", error);
+      logger.error("Error getting disk space:", error);
       return null;
     }
   }
@@ -76,7 +76,7 @@ class DiskSpaceMonitor {
           }
         }
       } catch (error) {
-        winstonLogger.error(`Error calculating size for ${currentDir}:`, error);
+        logger.error(`Error calculating size for ${currentDir}:`, error);
       }
     };
 
@@ -174,14 +174,14 @@ class DiskSpaceMonitor {
     this.lastCleanupTime = new Date().toISOString();
     this.diskSpaceStatus.autoCleanupPerformed = true;
 
-    winstonLogger.warn(
+    logger.warn(
       `Cleanup completed: ${deletedFiles} files/directories deleted, ${freedSpace.toFixed(2)} GB freed`,
     );
     return { deletedFiles, freedSpace };
   }
 
   async performEmergencyCleanup() {
-    winstonLogger.warn("Performing emergency cleanup...");
+    logger.warn("Performing emergency cleanup...");
 
     // More aggressive cleanup - keep only last 24 hours of logs
     const cutoffDate = new Date();

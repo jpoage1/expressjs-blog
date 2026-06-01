@@ -6,6 +6,7 @@
 // (nodemon restarts, SIGINT in dev, etc.)
 const { Pool } = require("pg");
 const { DatabaseError } = require("#utils/errors.js");
+const { logger } = require("#logging");
 const config = require("#db/config.js");
 
 let _pool = null;
@@ -20,7 +21,7 @@ function getPool() {
       // Surface pool-level errors without crashing. The next getPool()
       // call will recreate if the pool has been ended as a result.
       const dbError = new ContextualError("pg pool error", err);
-      winstonLogger.error(dbError);
+      logger.error(dbError);
     });
   }
 

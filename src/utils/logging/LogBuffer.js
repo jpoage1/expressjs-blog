@@ -5,10 +5,12 @@ class LogBuffer {
   #buffer = [];
   #logger;
   #level;
+  #raw;
 
-  constructor(logger = winstonLogger, level = "info") {
+  constructor(logger = winstonLogger, level = "info", { raw = false } = {}) {
     this.#logger = logger;
     this.#level = level;
+    this.#raw = raw;
   }
 
   /**
@@ -22,10 +24,14 @@ class LogBuffer {
    * Commits and flushes the entire buffered payload down a single stream line.
    */
   flush() {
-    if (this.#buffer.length > 0) {
-      this.#logger[this.#level](`\n${this.#buffer.join("\n")}`);
-      this.#buffer = [];
+    if (this.#buffer.length === 0) return;
+    const output = this.#buffer.join("\n");
+    if (this.#raw) {
+      process.stdout.write(output + "\n");
+    } else {
+      this.#logger[this.#level](`\n${output}`);
     }
+    this.#buffer = [];
   }
 
   /**

@@ -1,4 +1,4 @@
-const { winstonLogger } = require("#logging");
+const { logger } = require("#logging");
 const { Client } = require("ldapts");
 
 module.exports.getGroups = async function getGroups(username) {
@@ -24,7 +24,7 @@ module.exports.getGroups = async function getGroups(username) {
       // Extract the 'cn' from each group found
       return searchEntries.map((entry) => entry.cn);
     } catch (err) {
-      winstonLogger.warn("LDAP Search Error:" + err.message);
+      logger.warn("LDAP Search Error:" + err.message);
       throw err;
     } finally {
       await client.unbind();

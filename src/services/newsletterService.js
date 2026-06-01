@@ -3,7 +3,7 @@ const fs = require("fs").promises;
 const path = require("path");
 const { FILE_PATH, ERRORS } = require("#constants/newsletterConstants.js");
 const { validateAndSanitizeEmail } = require("#utils/emailValidator.js");
-const { winstonLogger } = require("#logging");
+const { logger } = require("#logging");
 
 let writeLock = Promise.resolve();
 
@@ -20,7 +20,7 @@ async function saveEmail(rawEmail) {
       data = JSON.parse(file);
     } catch (e) {
       if (e.code !== "ENOENT" && !(e instanceof SyntaxError)) {
-        winstonLogger.error(ERRORS.PARSE_FAILURE, e);
+        logger.error(ERRORS.PARSE_FAILURE, e);
         throw e;
       }
     }
@@ -30,7 +30,7 @@ async function saveEmail(rawEmail) {
       try {
         await fs.writeFile(FILE_PATH, JSON.stringify(data, null, 2));
       } catch (err) {
-        winstonLogger.error(ERRORS.WRITE_FAILURE, err);
+        logger.error(ERRORS.WRITE_FAILURE, err);
         throw err;
       }
     }
@@ -51,7 +51,7 @@ async function unsubscribeEmail(rawEmail) {
     } catch (e) {
       if (e.code === "ENOENT") return;
       if (!(e instanceof SyntaxError)) {
-        winstonLogger.error(ERRORS.PARSE_FAILURE, e);
+        logger.error(ERRORS.PARSE_FAILURE, e);
         throw e;
       }
     }
@@ -62,7 +62,7 @@ async function unsubscribeEmail(rawEmail) {
       try {
         await fs.writeFile(FILE_PATH, JSON.stringify(data, null, 2));
       } catch (err) {
-        winstonLogger.error(ERRORS.WRITE_FAILURE, err);
+        logger.error(ERRORS.WRITE_FAILURE, err);
         throw err;
       }
     }

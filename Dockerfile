@@ -1,5 +1,5 @@
 # ---- Build Stage ----
-FROM node:24-bookworm AS builder
+FROM node:bookworm AS builder
 
 ARG TARGETARCH
 
@@ -16,6 +16,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     g++ \
     libvips-dev \
     git \
+    && npm install -g corepack \
     && rm -rf /var/lib/apt/lists/*
 
 # Clone specific commit/branch
@@ -45,7 +46,7 @@ RUN --mount=type=cache,target=/root/.yarn/berry/cache/$TARGETARCH,sharing=shared
     yarn workspaces focus --production
 
 # ---- Runtime Stage ----
-FROM node:24-bookworm-slim
+FROM node:bookworm-slim
 
 ARG BUILD_SHA
 ENV BUILD_SHA=${BUILD_SHA}
@@ -84,7 +85,9 @@ RUN mkdir -p /var/log/expressjs-blog/data && \
     chmod 755 /var/log/expressjs-blog && \
     chmod 755 /var/log/expressjs-blog/data
 
-RUN corepack enable && corepack prepare yarn@4.9.2 --activate
+RUN npm install -g corepack && \
+    corepack enable && \
+    corepack prepare yarn@4.9.2 --activate
 
 EXPOSE 3000
 CMD ["yarn", "start"]

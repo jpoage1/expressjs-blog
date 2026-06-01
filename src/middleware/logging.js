@@ -1,9 +1,8 @@
-const { winstonLogger } = require("#logging");
-const { logger } = require("#logging/logger.js");
+const { logger } = require("#logging");
 
 // Middleware to inject logger into req
 const loggingMiddleware = (req, res, next) => {
-  req.log = winstonLogger;
+  req.log = logger;
   req.logger = logger;
   next();
 };

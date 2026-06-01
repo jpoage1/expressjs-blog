@@ -1,7 +1,7 @@
 const fs = require("fs/promises");
 const path = require("path");
 const yaml = require("js-yaml");
-const { winstonLogger } = require("#logging");
+const { logger } = require("#logging");
 const { PathNotFoundError } = require("#utils/errors.js");
 const { meta } = require("#config");
 
@@ -24,7 +24,7 @@ async function loadDocFile(filePath) {
     };
     return docsCache[filePath];
   } catch (e) {
-    winstonLogger.error(e.stack);
+    logger.error(e.stack);
     return null;
   }
 }

@@ -2,6 +2,8 @@
 const util = require("util");
 
 const config = require("#config");
+const { getCallSite } = require("#logging/callSite.js");
+const { formatLog } = require("#logging/format.js");
 const log_levels = config.logging.LOG_LEVELS;
 
 function shouldLog(level) {
@@ -95,6 +97,7 @@ function getCircularReplacer() {
     return value;
   };
 }
+
 // function formatArg(arg) {
 //   if (arg instanceof Error) {
 //     return JSON.stringify(
@@ -131,34 +134,20 @@ function formatArg(arg) {
   return String(arg);
 }
 
-// function formatLog(level, ...args) {
-//   const timestamp = new Date().toISOString();
-//   // Using util.format ensures objects are expanded and circular refs are handled
-//   const message = util.format(...args);
-//   const logLine = `[${timestamp}] [${level}] ${message}\n`;
-
-//   return { timestamp, message, logLine };
-// }
-function formatLog(level, ...args) {
-  const timestamp = new Date().toISOString();
-  const safeArgs = args.map(formatArg); // Required by your tests
-  const message = safeArgs.join(" ");
-  const logLine = `[${timestamp}] [${level}] ${message}\n`;
-
-  return { timestamp, safeArgs, message, logLine };
-}
-
 function writeLog(level, stream, sessionTransport, consoleFn, ...args) {
   if (!shouldLog(level)) return;
 
-  const { timestamp, safeArgs, message, logLine } = formatLog(level, ...args);
+  const { timestamp, safeArgs, message, logLine, callSite } = formatLog(
+    level,
+    ...args,
+  );
 
   if (stream) stream.write(logLine);
   if (sessionTransport) {
     sessionTransport.write({ level: level.toLowerCase(), message, timestamp });
   }
   if (consoleFn) {
-    consoleFn(`[${timestamp}] [${level}]`, ...safeArgs);
+    consoleFn(`[${timestamp}] [${level}]  [${callSite}]`, ...safeArgs);
   }
 }
 
@@ -168,4 +157,5 @@ module.exports = {
   shouldLog,
   writeLog,
   formatLog,
+  getCallSite,
 };

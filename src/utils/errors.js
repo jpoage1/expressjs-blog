@@ -1,4 +1,4 @@
-const { winstonLogger } = require("#logging/winston.js");
+const { logger } = require("#logging");
 const {
   PrimitiveError,
   PathNotFoundError,
@@ -6,7 +6,7 @@ const {
 
 class ApiError extends PrimitiveError {
   log() {
-    winstonLogger.error(this);
+    logger.error(this);
     return this;
   }
 }

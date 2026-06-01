@@ -3,7 +3,7 @@ const path = require("path");
 const matter = require("gray-matter");
 const { glob } = require("glob");
 const createExcerpt = require("#utils/createExcerpt.js");
-const { winstonLogger } = require("#logging");
+const { logger } = require("#logging");
 const hash = require("#utils/hash.js");
 const sitemapService = require("#services/sitemapService.js");
 
@@ -51,7 +51,7 @@ const buildTagRegex = (tag) => {
 //       });
 //     } catch (e) {
 //       // Prevent the entire route from going down due to one bad file
-//       winstonLogger.error("File path", filePath, e.stack);
+//       logger.error("File path", filePath, e.stack);
 //     }
 //   }
 
@@ -91,7 +91,7 @@ async function getPostsByTag(tag) {
         excerpt: createExcerpt(content, 200),
       });
     } catch (e) {
-      winstonLogger.error(`Error processing ${filePath}: ${e.message}`);
+      logger.error(`Error processing ${filePath}: ${e.message}`);
     }
   }
 

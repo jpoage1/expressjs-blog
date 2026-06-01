@@ -1,9 +1,9 @@
 // src/utils/SecurityEvent.js
 const fs = require("fs").promises;
 const path = require("path");
-const HttpError = require("./HttpError.js");
-const { winstonLogger } = require("#logging");
-const { captureSecurityData } = require("./securityForensics.js");
+const HttpError = require("#utils/HttpError.js");
+const { logger } = require("#logging");
+const { captureSecurityData } = require("#utils/securityForensics.js");
 const { logging } = require("#config");
 
 const EVENT_TYPES = {
@@ -146,7 +146,7 @@ class SecurityEvent extends HttpError {
       ...additionalContext,
     };
 
-    winstonLogger.security(logData);
+    logger.security(logData);
 
     // Handle high-threat events with special logging
     if (
@@ -190,7 +190,7 @@ class SecurityEvent extends HttpError {
         ...additionalContext,
       };
 
-      winstonLogger.security(logEntry);
+      logger.security(logEntry);
 
       // Handle high-threat events
       if (
@@ -202,7 +202,7 @@ class SecurityEvent extends HttpError {
 
       return logEntry;
     } catch (error) {
-      winstonLogger.error(`Failed to log security event: ${error.message}`);
+      logger.error(`Failed to log security event: ${error.message}`);
     }
   }
 
@@ -306,7 +306,7 @@ class SecurityEvent extends HttpError {
       const message = JSON.stringify(logEntry, null, 2);
       await fs.appendFile(alertFile, message + "\n");
     } catch (error) {
-      winstonLogger.error(`Failed to log high-threat event: ${error.message}`);
+      logger.error(`Failed to log high-threat event: ${error.message}`);
     }
   }
 
