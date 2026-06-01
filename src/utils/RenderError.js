@@ -1,4 +1,4 @@
-const HttpError = require("./HttpError.js");
+const { HttpError } = require("#errors");
 
 class RenderError extends HttpError {
   constructor(message, statusCode = 500, metadata = {}) {

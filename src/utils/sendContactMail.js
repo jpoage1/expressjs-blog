@@ -1,9 +1,11 @@
-const transporter = require("./transporter.js");
+const transporter = require("#utils/transporter.js");
 const path = require("path");
 const fs = require("fs").promises;
 const { validateAndSanitizeEmail } = require("#utils/emailValidator.js");
 const { logger } = require("#logging");
 const config = require("#config");
+const { HttpError } = require("#errors");
+
 const { mail } = config;
 
 // Fixed sanitizeInput function
@@ -28,8 +30,6 @@ function sanitizeInput(input) {
     return "";
   }
 }
-
-const HttpError = require("./HttpError");
 
 async function sendContactMail({ name, email, subject, message }) {
   const cleanName = sanitizeInput(name);

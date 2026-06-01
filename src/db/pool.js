@@ -5,7 +5,7 @@
 // it if not — so callers always get a valid pool regardless of prior state
 // (nodemon restarts, SIGINT in dev, etc.)
 const { Pool } = require("pg");
-const { DatabaseError } = require("#utils/errors.js");
+const { DatabaseError } = require("#errors");
 const { logger } = require("#logging");
 const config = require("#db/config.js");
 

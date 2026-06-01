@@ -29,6 +29,8 @@
     "#controllers/*": "./src/controllers/*",
     "#db/*": "./src/db/*",
     "#utils/*": "./src/utils/*",
+    "#errors": "./src/utils/errors/index.js",
+    "#errors/*": "./src/utils/errors/*",
     "#services/*": "./src/services/*",
     "#config": "./src/config/loader.js",
     "#config/*": "./src/config/*",

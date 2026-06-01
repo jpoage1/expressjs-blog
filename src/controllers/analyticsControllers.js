@@ -4,8 +4,7 @@
 // This is distinct from what structuredLogger records — that captures
 // the POST to /track itself; this captures the page view it describes.
 
-const { upsertVisitor, recordRequest } = require("../services/visitorService");
-const { logger } = require("#logging");
+const { upsertVisitor, recordRequest } = require("#services/visitorService.js");
 
 module.exports = (context) => (req, res) => {
   const {

@@ -1,4 +1,4 @@
-const HttpError = require("#utils/HttpError.js");
+const { HttpError } = require("#errors");
 const {
   saveEmail,
   unsubscribeEmail,

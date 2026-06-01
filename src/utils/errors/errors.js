@@ -2,7 +2,7 @@ const { logger } = require("#logging");
 const {
   PrimitiveError,
   PathNotFoundError,
-} = require("#utils/primitiveErrors.js");
+} = require("#errors/primitiveErrors.js");
 
 class ApiError extends PrimitiveError {
   log() {

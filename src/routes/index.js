@@ -18,7 +18,7 @@ const guestAccess = require("./guestAccessRouter.js");
 const pages = require("./pages.js");
 const docs = require("./docs.js");
 const rssFeedController = require("#controllers/rssFeedController.js");
-const HttpError = require("#utils/HttpError.js");
+const { HttpError } = require("#errors");
 
 const { meta } = require("#config");
 

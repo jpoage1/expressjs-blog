@@ -1,4 +1,4 @@
-const HttpError = require("#utils/HttpError.js");
+const { HttpError } = require("#errors");
 
 module.exports = (req, res, next) => {
   if (!res.locals.session.isAuthenticated) {

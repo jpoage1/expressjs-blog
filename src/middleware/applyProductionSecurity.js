@@ -4,7 +4,7 @@ const rateLimit = require("express-rate-limit");
 console.warn("Hard coded values in applyProductionSecurity");
 
 const xssSanitizer = require("#utils/xssSanitizer.js");
-const HttpError = require("#utils/HttpError.js");
+const { HttpError } = require("#errors");
 const {
   LOCALHOST_HOSTNAMES,
   HEALTHCHECK_METHOD,
