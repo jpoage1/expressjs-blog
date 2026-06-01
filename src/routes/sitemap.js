@@ -1,7 +1,7 @@
 // src/routes/sitemap.
 const express = require("express");
 const router = express.Router();
-const sitemapController = require("../controllers/sitemapControllers");
+const sitemapController = require("#controllers/sitemapControllers.js");
 
 router.get("/sitemap", sitemapController.getSitemapHtml);
 router.get("/sitemap.json", sitemapController.getSitemapJson);

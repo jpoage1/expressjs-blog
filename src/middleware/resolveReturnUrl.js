@@ -1,4 +1,4 @@
-const config = require("../utils/baseUrl");
+const config = require("#utils/baseUrl.js");
 
 function resolveReturnUrl(req, res, next) {
   const domain = config.public.domain;

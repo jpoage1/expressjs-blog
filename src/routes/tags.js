@@ -2,7 +2,7 @@ const express = require("express");
 const {
   renderTagsPage,
   renderTagPostsPage,
-} = require("../controllers/tagsController");
+} = require("#controllers/tagsController.js");
 
 const router = express.Router();
 

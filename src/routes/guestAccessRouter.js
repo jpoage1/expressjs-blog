@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-const logEvent = require("../middleware/analytics.js");
+const logEvent = require("#middleware/analytics.js");
 const { auth, requiresAuth } = require("express-openid-connect");
-const setPolicy = require("../middleware/setPolicy.js");
+const setPolicy = require("#middleware/setPolicy.js");
 
 const {
   handleAccessConsumption,
@@ -13,7 +13,7 @@ const {
   logoutSuccessApiController,
   logoutController,
   userInfoApiController,
-} = require("../controllers/accessController");
+} = require("#controllers/accessController.js");
 
 // -- Generate acccess token
 router.get(

@@ -1,7 +1,7 @@
 const UNCUGHT_EXCEPTION_MSG = "Uncaught Exception:";
 const UNHANDLED_REJECTION_MSG = "Unhandled Rejection:";
 
-const { winstonLogger } = require("./index");
+const { winstonLogger } = require("./index.js");
 
 function handleUncaughtException(err) {
   const msg = err.stack || err;

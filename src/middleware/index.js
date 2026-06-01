@@ -11,20 +11,20 @@ const { applyProductionSecurity } = require("./applyProductionSecurity");
 const validateRequestIntegrity = require("./validateRequestIntegrity");
 const errorHandler = require("./errorHandler");
 const { attachBaseContextGetter, buildBaseContext } = require("./baseContext");
-const BaseContext = require("../utils/baseContext");
+const BaseContext = require("#utils/baseContext.js");
 const { withBasePath } = require("./withBasePath");
 const hbs = require("./hbs");
 const authCheck = require("./authCheck");
 const { redirectMiddleware } = require("./redirect");
 
-const { TRUST_PROXY } = require("../constants/middlewareConstants");
+const { TRUST_PROXY } = require("#constants/middlewareConstants.js");
 
 const { loggingMiddleware } = require("./logging");
 const securedMiddleware = require("./secured");
-const securedRoutes = require("../routes/secured");
+const securedRoutes = require("#routes/secured.js");
 const adaptiveBodyParser = require("./adaptiveBodyParser");
-const analytics = require("../controllers/analyticsControllers");
-const httpLogger = require("../utils/structuredLogger");
+const analytics = require("#controllers/analyticsControllers.js");
+const httpLogger = require("#utils/structuredLogger.js");
 const cacheUtils = require("./cacheUtils");
 const authConfig = require("./authConfig");
 const debugMiddleware = require("./debug");
@@ -33,7 +33,7 @@ const { meta, session } = require("#config");
 const { auth, requiresAuth } = require("express-openid-connect");
 
 // NEW: blocklist
-const blocklist = require("../services/blocklist");
+const blocklist = require("#services/blocklist.js");
 const blocklistMiddleware = require("./blocklist");
 
 function setupApp(config) {

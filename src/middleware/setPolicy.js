@@ -1,4 +1,4 @@
-const { evaluateRules } = require("../utils/evaluateRules.js");
+const { evaluateRules } = require("#utils/evaluateRules.js");
 const { handleRedirect } = require("./redirect.js");
 
 /**

@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const { PathNotFoundError } = require("../utils/errors.js");
+const { PathNotFoundError } = require("#utils/errors.js");
 
 function validatePath(rawPath, sourceName) {
   if (rawPath === undefined || rawPath === null) {

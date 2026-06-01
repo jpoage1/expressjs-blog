@@ -1,5 +1,5 @@
 // src/#logging/LogBuffer.js
-const { winstonLogger } = require("./winston");
+const { winstonLogger } = require("./winston.js");
 
 class LogBuffer {
   #buffer = [];

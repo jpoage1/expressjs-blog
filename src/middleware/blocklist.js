@@ -2,7 +2,7 @@
 // Checks the in-memory blocklist before any processing. Runs after
 // trust proxy is set so req.ip is resolved correctly, but before body
 // parsing, auth, templating — no resources wasted on blocked visitors.
-const { isBlocked } = require("../services/blocklist");
+const { isBlocked } = require("#services/blocklist.js");
 
 module.exports = (req, res, next) => {
   if (isBlocked(req.ip)) {

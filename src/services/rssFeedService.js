@@ -1,11 +1,11 @@
 // src/services/rssFeedService.js
 const RSS = require("rss");
-const { getAllPosts } = require("../utils/postFileUtils");
+const { getAllPosts } = require("#utils/postFileUtils.js");
 const {
   FEED_TITLE,
   FEED_DESCRIPTION,
   FEED_LANGUAGE,
-} = require("../constants/rssConstants");
+} = require("#constants/rssConstants.js");
 
 async function generateRSSFeed(baseDir, siteUrl) {
   const allPosts = await getAllPosts(baseDir);

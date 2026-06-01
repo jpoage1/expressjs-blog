@@ -3,22 +3,22 @@ const express = require("express");
 const router = express.Router();
 const path = require("path");
 
-const robots = require("../controllers/robotsController");
-const csrfToken = require("../middleware/csrfToken");
-const errorPage = require("../controllers/errorPageController");
-const admin = require("./admin");
-const tags = require("./tags");
+const robots = require("#controllers/robotsController.js");
+const csrfToken = require("#middleware/csrfToken.js");
+const errorPage = require("#controllers/errorPageController.js");
+const admin = require("./admin.js");
+const tags = require("./tags.js");
 
-const contact = require("./contact");
-const sitemap = require("./sitemap");
-const { blogPost, blogIndex } = require("../controllers/blogControllers");
-const newsletter = require("./newsletter");
+const contact = require("./contact.js");
+const sitemap = require("./sitemap.js");
+const { blogPost, blogIndex } = require("#controllers/blogControllers.js");
+const newsletter = require("./newsletter.js");
 
-const guestAccess = require("./guestAccessRouter");
-const pages = require("./pages");
-const docs = require("./docs");
-const rssFeedController = require("../controllers/rssFeedController");
-const HttpError = require("../utils/HttpError");
+const guestAccess = require("./guestAccessRouter.js");
+const pages = require("./pages.js");
+const docs = require("./docs.js");
+const rssFeedController = require("#controllers/rssFeedController.js");
+const HttpError = require("#utils/HttpError.js");
 
 const { meta } = require("#config");
 

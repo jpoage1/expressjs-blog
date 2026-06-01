@@ -1,6 +1,6 @@
 // src/utils/sendNewsletterSubscriptionMail.js
 const transporter = require("./transporter");
-const { winstonLogger } = require("./logging");
+const { winstonLogger } = require("#logging");
 const { mail } = require("#config");
 
 const MAIL_SUBJECT = "New Newsletter Subscription";

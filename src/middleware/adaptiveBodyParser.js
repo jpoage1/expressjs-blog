@@ -9,7 +9,7 @@ const {
   RAW_BODY_TYPE,
   FALLBACK_ENCODING,
   FALLBACK_BODY,
-} = require("../constants/middlewareConstants");
+} = require("#constants/middlewareConstants.js");
 
 // Body parsing with different limits for excluded vs normal paths
 module.exports = (req, res, next) => {
@@ -41,7 +41,7 @@ module.exports = (req, res, next) => {
   } else if (contentType.includes("multipart/form-data")) {
     // For multipart, we'd need multer or similar, but pass through for now
     winstonLogger.debug(
-      "Multipart form detected - may need additional handling"
+      "Multipart form detected - may need additional handling",
     );
     next();
   } else {
@@ -50,7 +50,7 @@ module.exports = (req, res, next) => {
       if (formErr) {
         winstonLogger.warn(
           "Form parsing failed, trying JSON:",
-          formErr.message
+          formErr.message,
         );
         express.json({ limit })(req, res, (jsonErr) => {
           if (jsonErr) {

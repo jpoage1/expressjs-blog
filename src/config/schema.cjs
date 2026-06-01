@@ -81,16 +81,22 @@ const schema = {
       env: "BLOG_COUNTRY",
     },
     root_dir: {
-      doc: "Absolute path to the project root. Defaults to cwd().",
+      doc: "Absolute path to the project root.",
       format: String,
-      default: process.cwd(),
+      default: path.join(__dirname, "..", ".."),
       env: "ROOT_DIR",
     },
     content_path: {
       doc: "Path to the content directory (markdown, pages, routes module).",
       format: String,
-      default: path.join(process.cwd(), "content"),
+      default: path.join(__dirname, "..", "..", "content"),
       env: "CONTENT_PATH",
+    },
+    health_check: {
+      doc: "Path that bypasses localhost block for health checks",
+      format: String,
+      default: "/health",
+      env: "HEALTHCHECK_PATH",
     },
   },
 
@@ -204,7 +210,7 @@ const schema = {
       format: String,
       default: null,
       nullable: true,
-      env: "DB_PASS",
+      env: "DB_PASSWORD",
       sensitive: true,
     },
     pool_max: {
@@ -221,7 +227,7 @@ const schema = {
     log_dir: {
       doc: "Directory where log files are written",
       format: String,
-      default: path.join(process.cwd(), "logs"),
+      default: path.join(__dirname, "..", "..", "logs"),
       env: "LOG_DIR",
     },
     log_level: {
@@ -229,12 +235,6 @@ const schema = {
       format: "log-level",
       default: "info",
       env: "LOG_LEVEL",
-    },
-    db_path: {
-      doc: "Directory for SQLite log database",
-      format: String,
-      default: path.join(process.cwd(), "logs", "data"),
-      env: "LOGGING_DB_PATH",
     },
     // These are static and intentionally not env-configurable —
     // they define the winston level/color map, not user-facing behavior.
@@ -456,6 +456,13 @@ const schema = {
       default: "newsletter@localhost",
       env: "MAIL_NEWSLETTER",
     },
+    user: {
+      doc: "SMTP user",
+      format: String,
+      default: null,
+      nullable: true,
+      env: "MAIL_USER",
+    },
     pass: {
       doc: "SMTP password",
       format: String,
@@ -481,7 +488,7 @@ const schema = {
     log_path: {
       doc: "Path to email log JSON file",
       format: String,
-      default: path.join(process.cwd(), "data", "emails.json"),
+      default: path.join(__dirname, "..", "..", "data", "emails.json"),
       env: "MAIL_LOG_PATH",
     },
   },
@@ -515,12 +522,6 @@ const schema = {
       format: "nat",
       default: 63072000, // 2 years
       env: "SECURITY_HSTS_MAX_AGE",
-    },
-    healthcheck_path: {
-      doc: "Path that bypasses localhost block for health checks",
-      format: String,
-      default: "/health",
-      env: "SECURITY_HEALTHCHECK_PATH",
     },
     // CSP is split into arrays so each directive can be extended per-environment
     // without touching source code.
@@ -588,6 +589,12 @@ const schema = {
       nullable: true,
       env: "SECURITY_AUTH_DOMAIN",
     },
+  },
+
+  redirection: {
+    doc: "Key-value dictionary mapping source paths to destination paths",
+    format: Object,
+    default: {},
   },
 
   // ── Endpoints (OIDC / reveal links) ──────────────────────────────────────
@@ -708,6 +715,13 @@ const schema = {
       format: String,
       default: "test",
       env: "TEST_USERNAME",
+    },
+    password: {
+      doc: "Bypass password for development/testing",
+      format: String,
+      default: "test",
+      env: "TEST_PASSWORD",
+      sensitive: true,
     },
     group: {
       doc: "Bypass group for development/testing",

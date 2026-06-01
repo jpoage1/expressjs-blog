@@ -4,8 +4,8 @@ const path = require("path");
 const fs = require("fs").promises;
 const { meta } = require("#config");
 
-const createExcerpt = require("./createExcerpt");
-const hash = require("./hash");
+const createExcerpt = require("./createExcerpt.js");
+const hash = require("./hash.js");
 
 const { node_env } = meta;
 

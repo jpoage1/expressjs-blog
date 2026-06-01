@@ -1,5 +1,5 @@
-const { validateToken, cleanupTokens } = require("../utils/adminToken");
-const SecurityEvent = require("../utils/SecurityEvent");
+const { validateToken, cleanupTokens } = require("#utils/adminToken.js");
+const SecurityEvent = require("#utils/SecurityEvent.js");
 const { auth } = require("#config");
 
 exports.cleanupTokensMiddleware = (req, res, next) => {

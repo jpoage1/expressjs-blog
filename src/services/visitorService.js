@@ -2,7 +2,7 @@
 // All database operations for visitor tracking and security flagging.
 // Uses raw pg prepared statements — no ORM, no query builder.
 // Every write is fire-and-forget: a failed insert must never reject a request.
-const { getPool } = require("../db/pool");
+const { getPool } = require("#db/pool.js");
 
 // --- Prepared SQL ---
 

@@ -1,10 +1,10 @@
 // src/utils/MarkdownRoutes.js
-const BaseRoute = require("./BaseRoute");
+const BaseRoute = require("./BaseRoute.js");
 const fs = require("fs/promises");
 const path = require("path");
 const matter = require("gray-matter");
 const { marked } = require("marked");
-const { getProjectDates } = require("../utils/gitDates"); // Import the utility
+const { getProjectDates } = require("#utils/gitDates.js"); // Import the utility
 
 const { meta } = require("#config");
 

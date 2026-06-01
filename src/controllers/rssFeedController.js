@@ -1,5 +1,5 @@
 // routes/rss.js
-const generateRSSFeed = require("../services/rssFeedService");
+const generateRSSFeed = require("#services/rssFeedService.js");
 const { public } = require("#config");
 
 module.exports = async (req, res) => {

@@ -1,6 +1,6 @@
 const fs = require("fs");
-const { getExcludeRoutes, shouldExclude } = require("../lib/routeFilter");
-const { parseLogLine } = require("../lib/logParser");
+const { getExcludeRoutes, shouldExclude } = require("#lib/routeFilter.js");
+const { parseLogLine } = require("#lib/logParser.js");
 
 function getFilteredLogs(req, res) {
   const excludeRoutes = getExcludeRoutes(req.app._router);

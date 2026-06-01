@@ -49,7 +49,7 @@ function resolveConfigPath() {
     path.join(os().homedir(), ".config", "expressjs-blog", "config.toml"),
     path.join(os().homedir(), ".expressjs-blog.toml"),
     "/etc/expressjs-blog/config.toml",
-    path.join(process.cwd(), "config.toml"),
+    path.join(__dirname, "..", "..", "config.toml"),
   ];
 
   return candidates.find((p) => fs.existsSync(p)) ?? null;
@@ -281,7 +281,7 @@ const config = {
   security: {
     LOCALHOST_HOSTNAMES: ["127.0.0.1", "localhost"],
     HEALTHCHECK_METHOD: "HEAD",
-    HEALTHCHECK_PATH: cfg.get("security.healthcheck_path"),
+    HEALTHCHECK_PATH: cfg.get("meta.health_check"),
     FORBIDDEN_MESSAGE: "Forbidden",
     FORBIDDEN_STATUS_CODE: 403,
     HSTS_MAX_AGE: cfg.get("security.hsts_max_age"),

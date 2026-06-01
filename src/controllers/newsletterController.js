@@ -1,11 +1,11 @@
-const HttpError = require("../utils/HttpError");
+const HttpError = require("#utils/HttpError.js");
 const {
   saveEmail,
   unsubscribeEmail,
-} = require("../services/newsletterService");
-const sendNewsletterSubscriptionMail = require("../utils/sendNewsletterSubscriptionMail");
-const { validateAndSanitizeEmail } = require("../utils/emailValidator");
-const { ERRORS } = require("../constants/newsletterConstants");
+} = require("#services/newsletterService.js");
+const sendNewsletterSubscriptionMail = require("#utils/sendNewsletterSubscriptionMail.js");
+const { validateAndSanitizeEmail } = require("#utils/emailValidator.js");
+const { ERRORS } = require("#constants/newsletterConstants.js");
 
 exports.renderNewsletterForm = async (req, res) => {
   res.renderWithBaseContext("pages/newsletter.handlebars", {

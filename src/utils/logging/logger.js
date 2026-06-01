@@ -3,8 +3,8 @@ const fs = require("fs");
 const path = require("path");
 const util = require("util");
 
-const { formatFunctionName, formatLogMessage } = require("./formatters");
-const { functionLog } = require("./functionLogger");
+const { formatFunctionName, formatLogMessage } = require("./formatters.js");
+const { functionLog } = require("./functionLogger.js");
 
 const { initializeLogDirectories } = require("./initializeDirectories.js");
 

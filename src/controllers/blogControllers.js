@@ -7,9 +7,9 @@ const crypto = require("crypto");
 const { meta } = require("#config");
 
 const matter = require("gray-matter");
-const { getAllPosts } = require("../utils/postFileUtils");
+const { getAllPosts } = require("#utils/postFileUtils.js");
 
-const HttpError = require("../utils/HttpError");
+const HttpError = require("#utils/HttpError.js");
 
 const { node_env } = meta;
 

@@ -1,6 +1,6 @@
 // src/middleware/baseContext.js
-const { qualifyLink } = require("../utils/qualifyLinks");
-const { generateToken } = require("../utils/adminToken");
+const { qualifyLink } = require("#utils/qualifyLinks.js");
+const { generateToken } = require("#utils/adminToken.js");
 
 // src/utils/baseContext.js
 const path = require("path");

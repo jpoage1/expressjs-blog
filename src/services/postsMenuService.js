@@ -1,6 +1,6 @@
 // src/services/postsMenuService.js
-const { getAllPosts } = require("../utils/postFileUtils");
-const { qualifyLink } = require("../utils/qualifyLinks");
+const { getAllPosts } = require("#utils/postFileUtils.js");
+const { qualifyLink } = require("#utils/qualifyLinks.js");
 
 async function getPostsMenu(baseDir, baseUri = "") {
   const allPosts = await getAllPosts(baseDir);

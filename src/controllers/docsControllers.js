@@ -1,14 +1,14 @@
 const fs = require("fs/promises");
 const path = require("path");
 const { createHash } = require("crypto");
-const HttpError = require("../utils/HttpError");
-const docsContext = require("../utils/docsContext");
+const HttpError = require("#utils/HttpError.js");
+const docsContext = require("#utils/docsContext.js");
 const {
   loadDocFile,
   filterModuleSecurityKeys,
   getYamlFileNames,
   docsDir,
-} = require("../services/docsService");
+} = require("#services/docsService.js");
 
 function computeHash(input) {
   return createHash("sha1").update(input).digest("hex");

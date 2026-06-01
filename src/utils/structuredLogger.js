@@ -5,13 +5,13 @@
 // If Postgres is unreachable, the observer fails silently and your existing
 // file-based logging continues unaffected.
 
-const { winstonLogger } = require("./logging");
+const { winstonLogger } = require("#logging");
 const {
   upsertVisitor,
   recordRequest,
   createFlag,
-} = require("../services/visitorService");
-const repeatDetector = require("../services/repeatDetector");
+} = require("#services/visitorService.js");
+const repeatDetector = require("#services/repeatDetector.js");
 
 // --- Configuration ---
 

@@ -11,7 +11,7 @@ const fs = require("fs");
 const path = require("path");
 const { winstonLogger } = require("#logging");
 const { logging } = require("#config");
-const { getPool } = require("../../db/pool");
+const { getPool } = require("#db/pool.js");
 
 const allowedLevels = [
   "error",

@@ -1,12 +1,12 @@
 // middleware/validateHttpRequest.js
-const HttpError = require("../utils/HttpError");
+const HttpError = require("#utils/HttpError.js");
 const {
   ALLOWED_HTTP_METHODS,
   MAX_HEADER_COUNT,
   DISALLOWED_CONTENT_TYPE_SUBSTRINGS,
   MAX_CONTENT_LENGTH,
-} = require("../constants/httpLimits");
-const { HTTP_ERRORS } = require("../constants/httpMessages");
+} = require("#constants/httpLimits.js");
+const { HTTP_ERRORS } = require("#constants/httpMessages.js");
 
 module.exports = (req, res, next) => {
   const contentLength = parseInt(req.get("content-length") || "0", 10);
@@ -17,7 +17,7 @@ module.exports = (req, res, next) => {
     return next(
       new HttpError(HTTP_ERRORS.METHOD_NOT_ALLOWED(req.method), 405, {
         method: req.method,
-      })
+      }),
     );
   }
 
@@ -25,7 +25,7 @@ module.exports = (req, res, next) => {
     return next(
       new HttpError(HTTP_ERRORS.PAYLOAD_TOO_LARGE, 413, {
         payloadSize: contentLength,
-      })
+      }),
     );
   }
 
@@ -33,13 +33,13 @@ module.exports = (req, res, next) => {
     return next(
       new HttpError(HTTP_ERRORS.FILE_UPLOADS_NOT_ALLOWED, 400, {
         contentType: contentType,
-      })
+      }),
     );
   }
 
   if (headerCount > MAX_HEADER_COUNT) {
     return next(
-      new HttpError(HTTP_ERRORS.TOO_MANY_HEADERS, 400, { headerCount })
+      new HttpError(HTTP_ERRORS.TOO_MANY_HEADERS, 400, { headerCount }),
     );
   }
 

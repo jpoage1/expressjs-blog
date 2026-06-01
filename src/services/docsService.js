@@ -2,7 +2,7 @@ const fs = require("fs/promises");
 const path = require("path");
 const yaml = require("js-yaml");
 const { winstonLogger } = require("#logging");
-const { PathNotFoundError } = require("../utils/errors");
+const { PathNotFoundError } = require("#utils/errors.js");
 const { meta } = require("#config");
 
 const docsDir = path.join(meta.content, "/docs");

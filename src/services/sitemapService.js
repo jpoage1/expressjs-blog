@@ -2,15 +2,15 @@
 const path = require("path");
 const matter = require("gray-matter");
 const fs = require("fs").promises;
-const { getAllPosts } = require("../utils/postFileUtils");
-const hash = require("../utils/hash");
+const { getAllPosts } = require("#utils/postFileUtils.js");
+const hash = require("#utils/hash.js");
 const yaml = require("js-yaml");
 
 const { glob } = require("glob");
-const { qualifySitemapLinks } = require("../utils/qualifyLinks");
+const { qualifySitemapLinks } = require("#utils/qualifyLinks.js");
 const { winstonLogger } = require("#logging");
 const { meta } = require("#config");
-const { validatePath } = require("../utils/validation.js");
+const { validatePath } = require("#utils/validation.js");
 
 const CONTENT_ROOT = validatePath(meta.content, "Content Root");
 const NAVLINKS_PATH = validatePath(

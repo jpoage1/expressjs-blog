@@ -1,5 +1,5 @@
 // src/utils/ConstructionRoutes.js
-const BaseRoute = require("./BaseRoute");
+const BaseRoute = require("./BaseRoute.js");
 
 class ConstructionRoutes extends BaseRoute {
   constructor() {

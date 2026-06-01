@@ -1,8 +1,8 @@
 // src/services/newsletterService.js
 const fs = require("fs").promises;
 const path = require("path");
-const { FILE_PATH, ERRORS } = require("../constants/newsletterConstants");
-const { validateAndSanitizeEmail } = require("../utils/emailValidator");
+const { FILE_PATH, ERRORS } = require("#constants/newsletterConstants.js");
+const { validateAndSanitizeEmail } = require("#utils/emailValidator.js");
 const { winstonLogger } = require("#logging");
 
 let writeLock = Promise.resolve();

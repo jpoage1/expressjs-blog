@@ -6,7 +6,7 @@ const {
   renderDocsSummary,
   renderDocsByType,
   renderDocsModule,
-} = require("../controllers/docsControllers");
+} = require("#controllers/docsControllers.js");
 
 router.get("/", renderDocsIndex);
 router.get("/summary", renderDocsSummary);

@@ -1,9 +1,9 @@
 // src/utils/SecurityEvent.js
 const fs = require("fs").promises;
 const path = require("path");
-const HttpError = require("./HttpError");
-const { winstonLogger } = require("./logging");
-const { captureSecurityData } = require("./securityForensics");
+const HttpError = require("./HttpError.js");
+const { winstonLogger } = require("#logging");
+const { captureSecurityData } = require("./securityForensics.js");
 const { logging } = require("#config");
 
 const EVENT_TYPES = {

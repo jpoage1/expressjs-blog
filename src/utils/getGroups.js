@@ -1,4 +1,4 @@
-const { winstonLogger } = require("./logging");
+const { winstonLogger } = require("#logging");
 const { Client } = require("ldapts");
 
 module.exports.getGroups = async function getGroups(username) {

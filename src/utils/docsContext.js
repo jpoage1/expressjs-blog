@@ -3,12 +3,14 @@ const path = require("path");
 const fs = require("fs/promises");
 const yaml = require("js-yaml");
 
-const { qualifyNavLinks } = require("./qualifyLinks");
+const { qualifyNavLinks } = require("./qualifyLinks.js");
 const config = require("#config");
-const generateDocsMenuModel = require("./generateDocsMenuModel");
-const processMenuLinks = require("../utils/processMenuLinks");
+const generateDocsMenuModel = require("./generateDocsMenuModel.js");
+const processMenuLinks = require("../utils/processMenuLinks.js");
 const { meta } = require("#config");
-const navLinks = require(path.join(meta.content, "config/navLinks.json"));
+const navLinks = require(
+  path.resolve(path.join(meta.content, "config/navLinks.json")),
+);
 
 const getSiteTitle = (owner) => `${owner}'s Software Blog`;
 

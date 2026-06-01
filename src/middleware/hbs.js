@@ -6,7 +6,7 @@ const Handlebars = require("handlebars");
 const config = require("#config");
 const { meta } = config;
 
-const { registerHelpers } = require("../utils/hbsHelpers");
+const { registerHelpers } = require("#utils/hbsHelpers.js");
 const {
   VIEW_ENGINE,
   LAYOUTS_DIR,
@@ -14,7 +14,7 @@ const {
   DEFAULT_LAYOUT,
   EXTENSION,
   RUNTIME_OPTIONS,
-} = require("../constants/hbsConstants");
+} = require("#constants/hbsConstants.js");
 // const renderObject = (obj) => {
 //   if (typeof obj !== "object" || obj === null) {
 //     return new Handlebars.SafeString(`<span>${String(obj)}</span>`);

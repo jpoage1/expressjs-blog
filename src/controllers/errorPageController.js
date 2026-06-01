@@ -1,5 +1,5 @@
 // src/routes/errorPage
-const { getErrorContext } = require("../utils/errorContext");
+const { getErrorContext } = require("#utils/errorContext.js");
 
 module.exports = async (req, res) => {
   const code = req.params.code || parseInt(req.query.code, 10) || 500;

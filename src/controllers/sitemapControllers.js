@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const Handlebars = require("handlebars");
-const sitemapService = require("../services/sitemapService");
+const sitemapService = require("#services/sitemapService.js");
 
 // Precompile XML template once
 const xmlTplSrc = fs.readFileSync(

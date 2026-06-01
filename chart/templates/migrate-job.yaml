@@ -44,4 +44,27 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.dbSecret }}
                   key: DB_PASSWORD
+          volumeMounts:
+            {{- if .Values.configFile.enabled | default true }}
+            - name: config-file
+              mountPath: /app/config.toml
+              readOnly: true
+            {{- end }}
+            {{- if .Values.sourceConfig.enabled | default false }}
+            - name: source
+              mountPath: "/app"
+            {{- end }}
+      volumes:
+        {{- if .Values.configFile.enabled | default true }}
+        - name: config-file
+          hostPath:
+            path: {{ .Values.configFile.hostPath }}
+            type: File
+        {{- end }}
+        {{- if .Values.sourceConfig.enabled | default false }}
+        - name: source
+          hostPath:
+            path: {{ .Values.sourceConfig.hostPath }}
+            type: Directory
+        {{- end }}
 {{- end }}

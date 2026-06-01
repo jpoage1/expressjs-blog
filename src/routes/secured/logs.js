@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const controller = require("../../controllers/secured/logsController");
+const controller = require("#controllers/secured/logsController.js");
 
 router.get("/logs", controller.renderLogsPage);
 router.post("/logs", controller.fetchLogs);

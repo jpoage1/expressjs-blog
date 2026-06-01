@@ -1,7 +1,7 @@
 // src/setupMiddleware.js
 
 const router = require("express").Router();
-const { TRUST_PROXY } = require("../constants/middlewareConstants");
+const { TRUST_PROXY } = require("#constants/middlewareConstants.js");
 const { meta, session } = require("#config");
 const { requiresAuth } = require("express-openid-connect");
 

@@ -8,7 +8,7 @@
 
 const winston = require("winston");
 const { logging } = require("#config/loader.js");
-const { patchConsole } = require("./consolePatch");
+const { patchConsole } = require("./consolePatch.js");
 const {
   createLogStreams,
   createSessionTransport,

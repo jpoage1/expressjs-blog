@@ -1,6 +1,6 @@
 // src/utils/HtmlRoutes.js
 const express = require("express");
-const BaseRoute = require("./BaseRoute");
+const BaseRoute = require("./BaseRoute.js");
 const fs = require("fs/promises");
 const path = require("path");
 const yaml = require("js-yaml");

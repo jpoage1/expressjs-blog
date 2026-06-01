@@ -3,7 +3,7 @@ const beautify = require("js-beautify").html;
 const {
   BEAUTIFY_OPTIONS,
   ERROR_MESSAGES,
-} = require("../constants/htmlFormatConstants");
+} = require("#constants/htmlFormatConstants.js");
 
 module.exports = function (req, res, next) {
   const originalSend = res.send;

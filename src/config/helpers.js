@@ -2,11 +2,8 @@ const fs = require("fs");
 const path = require("path");
 const { parse } = require("smol-toml");
 const os = require("os");
-const { PathNotFoundError } = require("../utils/errors.js");
-const {
-  validatePath,
-  validateExplicitPath,
-} = require("../utils/validation.js");
+const { PathNotFoundError } = require("#utils/errors.js");
+const { validatePath, validateExplicitPath } = require("#utils/validation.js");
 
 const { fallbacks } = require("./defaults");
 

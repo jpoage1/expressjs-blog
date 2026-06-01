@@ -1,7 +1,7 @@
-const { getPostsByTag } = require("../services/tagsService");
-const { getAllTags } = require("../services/sitemapService");
-const HttpError = require("../utils/HttpError");
-const { normalizeTag } = require("../utils/normalize");
+const { getPostsByTag } = require("#services/tagsService.js");
+const { getAllTags } = require("#services/sitemapService.js");
+const HttpError = require("#utils/HttpError.js");
+const { normalizeTag } = require("#utils/normalize.js");
 
 exports.renderTagsPage = async (req, res, next) => {
   try {

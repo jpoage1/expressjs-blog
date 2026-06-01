@@ -1,7 +1,7 @@
 // src/logging/index.js
 
-const { patchConsole, writeLog } = require("./consolePatch");
-const { functionLog } = require("./functionLogger");
+const { patchConsole, writeLog } = require("./consolePatch.js");
+const { functionLog } = require("./functionLogger.js");
 
 const { sessionTimestamp, sessionDir, logStreams, sessionTransport } =
   require("#config").logging;

@@ -1,10 +1,10 @@
 // src/routes/pages.js
 const express = require("express");
 const router = express.Router();
-const ConstructionRoutes = require("../utils/ConstructionRoutes");
-const MarkdownRoutes = require("../utils/MarkdownRoutes");
-const HtmlRoutes = require("../utils/htmlRoutes");
-const csrfToken = require("../middleware/csrfToken");
+const ConstructionRoutes = require("#utils/ConstructionRoutes.js");
+const MarkdownRoutes = require("#utils/MarkdownRoutes.js");
+const HtmlRoutes = require("#utils/htmlRoutes.js");
+const csrfToken = require("#middleware/csrfToken.js");
 const { meta, routes } = require("#config");
 
 const path = require("path");

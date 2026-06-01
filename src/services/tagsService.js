@@ -4,6 +4,8 @@ const matter = require("gray-matter");
 const { glob } = require("glob");
 const createExcerpt = require("#utils/createExcerpt.js");
 const { winstonLogger } = require("#logging");
+const hash = require("#utils/hash.js");
+const sitemapService = require("#services/sitemapService.js");
 
 const CONTENT_ROOT = path.resolve(__dirname, "../../content");
 const pattern = `${CONTENT_ROOT}/**/*.md`;
@@ -22,9 +24,6 @@ const buildTagRegex = (tag) => {
 
   return new RegExp(`^${flexible}$`, "i");
 };
-
-const hash = require("../utils/hash");
-const sitemapService = require("../services/sitemapService");
 
 // async function getPostsByTag(tag) {
 //   const allUrls = await sitemapService.getAllUrls();
