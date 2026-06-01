@@ -1,0 +1,73 @@
+image:
+  repository: jpoage1/expressjs-blog
+  tag: latest
+  pullPolicy: IfNotPresent
+replicaCount: 1
+command: ["yarn", "start"]
+tls:
+  enabled: false
+  cert: "" # injected via Terraform set_sensitive
+  key: "" # injected via Terraform set_sensitive
+  bundle: "" # leave empty — unused for this chart
+vault:
+  enabled: false
+env:
+  NODE_ENV: development
+  PUBLIC_SCHEMA: http
+  PUBLIC_PORT: "80"
+  PUBLIC_DOMAIN: localhost
+  PUBLIC_BASE_PATH: ""
+dbSecret: "expressjs-postgresql"
+createDbSecret: true
+db:
+  host: "postgresql-service.postgresql.svc.cluster.local"
+  port: "5432"
+  name: "expressjs-blog"
+  user: "expressjs-blog"
+  password: ""
+migrations:
+  enabled: true
+service:
+  port: 80
+  targetPort: 3400
+ingress:
+  annotations: {}
+  enabled: true
+  tls:
+    enabled: true
+    secretName: ""
+  className: nginx
+  hosts:
+    - host: localhost
+      paths:
+        - path: /
+          pathType: Prefix
+configFile:
+  enabled: false
+  hostPath: "" # absolute path on the host node
+  mountPath: "/etc/expressjs-blog" # where it appears inside the container
+  filename: "config.toml"
+sourceConfig:
+  enabled: false
+  hostPath: ""
+  mountPath: "/var/lib/expressjs-blog"
+contentPath:
+  enabled: false
+  hostPath: ""
+  mountPath: "/var/lib/expressjs-blog/content"
+logs:
+  enabled: true
+  server: ""
+  path: ""
+  size: 1Gi
+  storageClass: "local-path"
+  accessMode: ReadWriteOnce
+  existingClaim: ""
+  hostPath: ""
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

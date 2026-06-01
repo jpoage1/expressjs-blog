@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.nameOverride | default .Chart.Name }}
+  labels:
+    app: {{ .Values.nameOverride | default .Chart.Name }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ .Values.nameOverride | default .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.nameOverride | default .Chart.Name }}
+    spec:
+      containers:
+        - name: blog
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+          command: {{ .Values.command | toJson }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort | default 3000 }}
+          env:
+            {{- range $key, $val := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+            {{- end }}
+            {{- if .Values.dbSecret }}
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.dbSecret }}
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.dbSecret }}
+                  key: DB_PORT
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.dbSecret }}
+                  key: DB_DATABASE
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.dbSecret }}
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.dbSecret }}
+                  key: DB_PASSWORD
+            {{- end }}
+          volumeMounts:
+            {{- if .Values.config.enabled }}
+            - name: config
+              mountPath: /app/config.toml
+              subPath: config.toml
+              readOnly: true
+            {{- end }}
+            {{- if .Values.contentPath.enabled }}
+            - name: content
+              mountPath: /app/content
+              readOnly: true
+            {{- end }}
+            {{- if .Values.logs.hostPath }}
+            - name: logs
+              mountPath: /var/log/expressjs-blog
+            {{- end }}
+            {{- if .Values.sourceConfig.enabled }}
+            - name: source
+              mountPath: /app
+            {{- end }}
+            {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        {{- if .Values.config.enabled }}
+        - name: config
+          configMap:
+            name: {{ .Values.nameOverride | default .Chart.Name }}-config
+        {{- end }}
+        {{- if .Values.contentPath.enabled }}
+        - name: content
+          hostPath:
+            path: {{ .Values.contentPath.hostPath }}
+            type: Directory
+        {{- end }}
+        {{- if .Values.logs.hostPath }}
+        - name: logs
+          hostPath:
+            path: {{ .Values.logs.hostPath }}
+            type: DirectoryOrCreate
+        {{- end }}
+        {{- if .Values.sourceConfig.enabled }}
+        - name: source
+          hostPath:
+            path: {{ .Values.sourceConfig.hostPath }}
+            type: Directory
+        {{- end }}

@@ -1,0 +1,11 @@
+apiVersion: v2
+name: expressjs-blog
+# description: A Helm chart
+type: application
+version: 0.1.0
+appVersion: "5.1.1"
+keywords:
+  - blog
+maintainers:
+  - name: Jason Poage
+    email: jason@jasonpoage.com
