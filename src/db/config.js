@@ -3,7 +3,7 @@ function buildConfig() {
   // config.dbUrl takes priority; falls back to individual connection fields.
 
   const { db } = config;
-  const max = db.max || 6;
+  const max = db.pool_max || db.max || 6;
 
   const dbUrl = config.dbUrl || db.url;
 

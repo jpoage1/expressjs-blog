@@ -314,7 +314,7 @@ const config = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function include(file) {
-  const contentPath = config.meta.content;
+  const contentPath = this.meta.content;
   if (!contentPath) throw new Error("[config] meta.content_path is not set");
   const resolved = path.resolve(path.join(contentPath, file));
   try {
@@ -327,7 +327,7 @@ function include(file) {
   }
 }
 
-config.include = include;
+config.include = include.bind(config);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 7. Debug dump (mirrors old console.log block, respects log level)

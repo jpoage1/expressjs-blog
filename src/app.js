@@ -1,7 +1,7 @@
 // src/app.js
 require("dotenv").config();
 
-const { network: c, meta } = require("#config");
+const { public: p, network: c, meta } = require("#config");
 
 const net = require("net");
 const setupMiddleware = require("#middleware");
@@ -64,7 +64,7 @@ server.once("listening", () => {
   startupBuffer.push("API SERVER CONFIGURATION");
   startupBuffer.push("==================================================");
   startupBuffer.push(
-    `[*] Domain Endpoint: ${c.schema}://${c.domain}:${c.port}`,
+    `[*] Domain Endpoint: ${p.schema}://${p.domain}:${p.port}`,
   );
   startupBuffer.push(
     `[*] Local Interface: ${c.schema}://${c.address}:${c.port}`,

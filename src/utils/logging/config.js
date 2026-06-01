@@ -7,7 +7,6 @@ const {
   createSessionTransport,
   buildTransport,
 } = require("./streams");
-const { PrimitiveError } = require("#errors");
 
 let _logStreams = null;
 let _sessionTransport = null;
@@ -19,7 +18,7 @@ function initialize() {
   try {
     winston.addColors(logging.customLevels.colors);
   } catch (e) {
-    PrimitiveError("Custom colors are not available", e).notice;
+    logger.notice("Custom colors are not available", e).notice;
   }
   _logStreams = createLogStreams(logging.logFiles);
   _sessionTransport = createSessionTransport(
