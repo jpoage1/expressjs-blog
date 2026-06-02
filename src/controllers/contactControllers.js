@@ -1,15 +1,14 @@
 // src/routes/contact.js
-const { sendContactMail } = require("#utils/sendContactMail.js");
-const verifyHCaptcha = require("#utils/verifyHCaptcha.js");
-const { analyzeThreatLevel } = require("#utils/securityForensics.js");
-const { validateAndSanitizeEmail } = require("#utils/emailValidator.js");
+const { sendContactMail, verifyHCaptcha } = require("#mailer");
+const { analyzeThreatLevel } = require("@jpoage1/security");
+const { validateAndSanitizeEmail } = require("@jpoage1/mailer");
+const { SecurityEvent } = require("#security");
 
 const {
   isValidInput,
   buildSecurityData,
   prepareEmail,
 } = require("./helpers/contactHelpers");
-const SecurityEvent = require("#utils/SecurityEvent.js");
 
 module.exports.handleContactFormPost = async (req, res, next) => {
   try {

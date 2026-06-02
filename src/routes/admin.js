@@ -1,7 +1,7 @@
 // src/routes/admin.
 const express = require("express");
 const router = express.Router();
-const controller = require("#controllers/adminTokenController.js");
+const controller = require("@jpoage1/auth");
 
 router.get(
   "/:token",

@@ -12,9 +12,8 @@ const {
   handleUnhandledRejection,
 } = require("#logging");
 
-const { startTokenCleanup } = require("#utils/tokenCleanup.js");
 const { cleanupOldSessions } = require("#utils/logManager.js");
-const { getExpress5Routes } = require("#utils/routerUtils.js");
+const { getExpress5Routes } = require("@jpoage1/middleware");
 
 const startupBuffer = new LogBuffer(logger, "info", { raw: true });
 
@@ -41,7 +40,6 @@ function formatRoutesToBuffer(routes, buffer) {
 }
 
 cleanupOldSessions();
-startTokenCleanup();
 
 const app = setupMiddleware();
 

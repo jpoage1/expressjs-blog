@@ -1,6 +1,6 @@
 // src/routes/helpers/contactHelpers.js
-const SecurityEvent = require("#src/utils/SecurityEvent.js");
-const { captureSecurityData } = require("../../utils/securityForensics");
+const { SecurityEvent } = require("#security");
+const { captureSecurityData } = require("@jpoage1/security");
 
 function isReasonableLength(str, maxLen) {
   return (
@@ -25,7 +25,7 @@ async function handleInvalidInput(req, next, formData, emailResult) {
     req,
     formData,
     emailResult.message || "invalid_input",
-    next
+    next,
   );
 }
 
@@ -34,7 +34,7 @@ async function handleInvalidInput(req, next, formData, emailResult) {
  */
 function buildSecurityData(
   req,
-  { formData, captchaProvided, clientData, step }
+  { formData, captchaProvided, clientData, step },
 ) {
   return captureSecurityData(req, {
     formData,

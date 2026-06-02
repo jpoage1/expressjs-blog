@@ -1,7 +1,7 @@
 // src/middleware/errorHandler
 const crypto = require("crypto");
-const { getErrorContext } = require("../utils/errorContext");
-const { buildErrorRenderContext } = require("../utils/buildErrorRenderContext");
+const { getErrorContext } = require("@jpoage1/middleware");
+const { buildErrorRenderContext } = require("@jpoage1/middleware");
 const { isDev } = require("../utils/env");
 const {
   DEFAULT_ERROR_MESSAGE,

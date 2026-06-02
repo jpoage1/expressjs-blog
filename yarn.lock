@@ -413,6 +413,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jpoage1/base-context@file:../node_modules/@jpoage1/base-context::locator=expressjs-blog%40workspace%3A.":
+  version: 1.0.0
+  resolution: "@jpoage1/base-context@file:../node_modules/@jpoage1/base-context#../node_modules/@jpoage1/base-context::hash=965cc0&locator=expressjs-blog%40workspace%3A."
+  dependencies:
+    "@jpoage1/views": "file:../views"
+    express-handlebars: "npm:^8.0.0"
+    gray-matter: "npm:^4.0.3"
+    handlebars: "npm:^4.7.0"
+    js-yaml: "npm:^4.1.0"
+    marked: "npm:^16.0.0"
+  checksum: 10c0/36f8dea26a7e30bb0b9ca0dc26f3b94cda467ce67c18bf6430fe7d842fb24acec0dce31f1b25a1fe90d25fc1b2e1390d22265ccff75248bbba5330629aa9660c
+  languageName: node
+  linkType: hard
+
+"@jpoage1/config@file:../node_modules/@jpoage1/config::locator=expressjs-blog%40workspace%3A.":
+  version: 1.0.0
+  resolution: "@jpoage1/config@file:../node_modules/@jpoage1/config#../node_modules/@jpoage1/config::hash=4932e1&locator=expressjs-blog%40workspace%3A."
+  dependencies:
+    convict: "npm:^6.2.5"
+    smol-toml: "npm:^1.6.0"
+  checksum: 10c0/04077fc0ae9c382a0852691f8458db9d48ffc721a7761d80b8a68dd53342b0320a757520d9da770ce4e0823fe2de0fe644a13ed0a1c7713420a1dc0f189ba3b8
+  languageName: node
+  linkType: hard
+
 "@jpoage1/errors@file:../node_modules/@jpoage1/errors::locator=expressjs-blog%40workspace%3A.":
   version: 1.0.0
   resolution: "@jpoage1/errors@file:../node_modules/@jpoage1/errors#../node_modules/@jpoage1/errors::hash=14aa8f&locator=expressjs-blog%40workspace%3A."
@@ -431,15 +455,57 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jpoage1/mailer@file:../node_modules/@jpoage1/mailer::locator=expressjs-blog%40workspace%3A.":
+  version: 1.0.0
+  resolution: "@jpoage1/mailer@file:../node_modules/@jpoage1/mailer#../node_modules/@jpoage1/mailer::hash=2e42a2&locator=expressjs-blog%40workspace%3A."
+  dependencies:
+    node-fetch: "npm:^3.0.0"
+    nodemailer: "npm:^7.0.0"
+    validator: "npm:^13.0.0"
+  checksum: 10c0/a5ea14fc15c843228d0aa3caf7cc341e31ed1f59380565ad0f31db31c152be2cd21dbebedacd0cc58de6ad65a7ea4ed0332310d381ab13f8b96524b0c81d2546
+  languageName: node
+  linkType: hard
+
+"@jpoage1/middleware@file:../node_modules/@jpoage1/middleware::locator=expressjs-blog%40workspace%3A.":
+  version: 1.0.0
+  resolution: "@jpoage1/middleware@file:../node_modules/@jpoage1/middleware#../node_modules/@jpoage1/middleware::hash=056d23&locator=expressjs-blog%40workspace%3A."
+  dependencies:
+    cookie-parser: "npm:^1.4.7"
+    csurf: "npm:^1.11.0"
+    js-beautify: "npm:^1.15.0"
+  checksum: 10c0/47e547da50821fb3d98bc4204d0700a9d96ec86a1b0eb85c6be363818c801691691b79df1c4b285cc369c04fc0807040fc72338d2a47b3b983e2a0d557013d8a
+  languageName: node
+  linkType: hard
+
 "@jpoage1/security@file:../node_modules/@jpoage1/security::locator=expressjs-blog%40workspace%3A.":
   version: 1.0.0
-  resolution: "@jpoage1/security@file:../node_modules/@jpoage1/security#../node_modules/@jpoage1/security::hash=e115b9&locator=expressjs-blog%40workspace%3A."
+  resolution: "@jpoage1/security@file:../node_modules/@jpoage1/security#../node_modules/@jpoage1/security::hash=3fab4b&locator=expressjs-blog%40workspace%3A."
   dependencies:
     express-rate-limit: "npm:^7.0.0"
     helmet: "npm:^7.0.0"
     hpp: "npm:^0.2.3"
     xss: "npm:^1.0.0"
-  checksum: 10c0/f578ec50c606532d0c707d468921ab2681f54c935808713c52bbecb9b985b1c0724743e0100949a69a69b5b580e25998766145f3b2913c6b65b1471075b14e44
+  checksum: 10c0/98e8667a5337b21f7baa85ada4d057361dd998ad3398b578b856a2713ff406b1276783025578a4de9dcebc3215820549032d8c5f878b0f0094894b4c5d4b4052
+  languageName: node
+  linkType: hard
+
+"@jpoage1/views@file:../node_modules/@jpoage1/views::locator=expressjs-blog%40workspace%3A.":
+  version: 1.0.0
+  resolution: "@jpoage1/views@file:../node_modules/@jpoage1/views#../node_modules/@jpoage1/views::hash=d0d492&locator=expressjs-blog%40workspace%3A."
+  dependencies:
+    express-handlebars: "npm:^8.0.0"
+    handlebars: "npm:^4.7.0"
+  checksum: 10c0/eeee60152b8b45b2071ab35e6331e87976a4d185c1f6a6db3923a337ba743603517c05ffd5dcd5cd9a174242eb34d10066e3ab3babc99f9dcce771a0a387e2e4
+  languageName: node
+  linkType: hard
+
+"@jpoage1/views@file:../views::locator=%40jpoage1%2Fbase-context%40file%3A..%2Fnode_modules%2F%40jpoage1%2Fbase-context%23..%2Fnode_modules%2F%40jpoage1%2Fbase-context%3A%3Ahash%3D965cc0%26locator%3Dexpressjs-blog%2540workspace%253A.":
+  version: 1.0.0
+  resolution: "@jpoage1/views@file:../views#../views::hash=d0d492&locator=%40jpoage1%2Fbase-context%40file%3A..%2Fnode_modules%2F%40jpoage1%2Fbase-context%23..%2Fnode_modules%2F%40jpoage1%2Fbase-context%3A%3Ahash%3D965cc0%26locator%3Dexpressjs-blog%2540workspace%253A."
+  dependencies:
+    express-handlebars: "npm:^8.0.0"
+    handlebars: "npm:^4.7.0"
+  checksum: 10c0/eeee60152b8b45b2071ab35e6331e87976a4d185c1f6a6db3923a337ba743603517c05ffd5dcd5cd9a174242eb34d10066e3ab3babc99f9dcce771a0a387e2e4
   languageName: node
   linkType: hard
 
@@ -2231,7 +2297,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-handlebars@npm:^8.0.3":
+"express-handlebars@npm:^8.0.0, express-handlebars@npm:^8.0.3":
   version: 8.0.7
   resolution: "express-handlebars@npm:8.0.7"
   dependencies:
@@ -2335,9 +2401,14 @@ __metadata:
     "@glint/core": "npm:^1.5.2"
     "@jpoage1/analytics": "file:../node_modules/@jpoage1/analytics"
     "@jpoage1/auth": "file:../node_modules/@jpoage1/auth"
+    "@jpoage1/base-context": "file:../node_modules/@jpoage1/base-context"
+    "@jpoage1/config": "file:../node_modules/@jpoage1/config"
     "@jpoage1/errors": "file:../node_modules/@jpoage1/errors"
     "@jpoage1/logger": "file:../node_modules/@jpoage1/logger"
+    "@jpoage1/mailer": "file:../node_modules/@jpoage1/mailer"
+    "@jpoage1/middleware": "file:../node_modules/@jpoage1/middleware"
     "@jpoage1/security": "file:../node_modules/@jpoage1/security"
+    "@jpoage1/views": "file:../node_modules/@jpoage1/views"
     body-parser: "npm:^2.2.0"
     c8: "npm:^11.0.0"
     chai: "npm:^6.2.2"
@@ -2951,7 +3022,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"handlebars@npm:4.7.9, handlebars@npm:^4.7.8, handlebars@npm:^4.7.9":
+"handlebars@npm:4.7.9, handlebars@npm:^4.7.0, handlebars@npm:^4.7.8, handlebars@npm:^4.7.9":
   version: 4.7.9
   resolution: "handlebars@npm:4.7.9"
   dependencies:
@@ -3754,7 +3825,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-beautify@npm:^1.15.4":
+"js-beautify@npm:^1.15.0, js-beautify@npm:^1.15.4":
   version: 1.15.4
   resolution: "js-beautify@npm:1.15.4"
   dependencies:
@@ -4069,7 +4140,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:^16.1.1":
+"marked@npm:^16.0.0, marked@npm:^16.1.1":
   version: 16.4.2
   resolution: "marked@npm:16.4.2"
   bin:
@@ -4442,7 +4513,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^3.3.2":
+"node-fetch@npm:^3.0.0, node-fetch@npm:^3.3.2":
   version: 3.3.2
   resolution: "node-fetch@npm:3.3.2"
   dependencies:
@@ -4473,7 +4544,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:^7.0.5":
+"nodemailer@npm:^7.0.0, nodemailer@npm:^7.0.5":
   version: 7.0.13
   resolution: "nodemailer@npm:7.0.13"
   checksum: 10c0/b26aa5b9fa4a033bbc1e1c16ef75ee2a9c8641fd290c00a8361d6a251b3c1b8bad545a23efa627f59cb266340a448891ea8aa49d8a9307c767b8505219d95079
@@ -6771,7 +6842,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"validator@npm:^13.15.15":
+"validator@npm:^13.0.0, validator@npm:^13.15.15":
   version: 13.15.35
   resolution: "validator@npm:13.15.35"
   checksum: 10c0/1958ebcad578128d154853a2b9bf5b95e7738dcc7d1d065e50a969812272312ec379dcaf375b9d7545e04a71de6755f60f5a4b49c1405737a9c80e11da297eef

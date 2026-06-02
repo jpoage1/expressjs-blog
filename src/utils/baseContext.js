@@ -1,12 +1,12 @@
 // src/utils/baseContext.js
 const path = require("path");
 const getPostsMenu = require("#services/postsMenuService.js");
-const { formatMonth } = require("#utils/formatMonth.js");
-const { qualifyNavLinks, qualifyLink } = require("#utils/qualifyLinks.js");
+const { formatMonth } = require("@jpoage1/base-context");
+const { qualifyNavLinks, qualifyLink } = require("@jpoage1/base-context");
 const { getBaseUrl } = require("#utils/baseUrl.js");
 
-const processMenuLinks = require("#utils/processMenuLinks.js");
-const { generateToken } = require("#utils/adminToken.js");
+const processMenuLinks = require("@jpoage1/base-context");
+const { generateToken } = require("@jpoage1/auth");
 const config = require("#config");
 const { meta } = config;
 const navLinks = require(path.join("#utils/navLinks.js"));

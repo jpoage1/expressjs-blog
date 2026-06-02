@@ -7,7 +7,7 @@ const {
   createAnalyticsController,
   createAnalyticsQueryService,
 } = require("@jpoage1/analytics");
-const { logger } = require("./logging");
+const { logger } = require("#logging");
 const config = require("#config");
 
 const { getPool, shutdown } = createPool(config.dbCredentials, logger);

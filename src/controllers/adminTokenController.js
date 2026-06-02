@@ -1,5 +1,5 @@
-const { validateToken, cleanupTokens } = require("#utils/adminToken.js");
-const SecurityEvent = require("#utils/SecurityEvent.js");
+const { validateToken, cleanupTokens } = require("@jpoage1/auth");
+const { SecurityEvent } = require("#security");
 const { auth } = require("#config");
 
 exports.cleanupTokensMiddleware = (req, res, next) => {

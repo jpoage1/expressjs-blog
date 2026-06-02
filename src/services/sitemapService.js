@@ -7,7 +7,8 @@ const hash = require("#utils/hash.js");
 const yaml = require("js-yaml");
 
 const { glob } = require("glob");
-const { qualifySitemapLinks } = require("#utils/qualifyLinks.js");
+const { qualifySitemapLinks } = require("@jpoage1/base-context");
+
 const { logger } = require("#logging");
 const { meta } = require("#config");
 const { validatePath } = require("#utils/validation.js");

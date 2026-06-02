@@ -1,109 +1,117 @@
-// src/middleware/index.js
-// CHANGED: Added blocklist middleware (runs before body parsing) and
-// blocklist.start() to begin periodic refresh from Postgres.
 const express = require("express");
 const compression = require("compression");
-
-const routes = require("../routes");
-const formatHtml = require("./formatHtml");
-const logEvent = require("./analytics.js");
-const { applyProductionSecurity } = require("./applyProductionSecurity");
-const validateRequestIntegrity = require("./validateRequestIntegrity");
-const errorHandler = require("./errorHandler");
-const { attachBaseContextGetter, buildBaseContext } = require("./baseContext");
-const BaseContext = require("#utils/baseContext.js");
-const { withBasePath } = require("./withBasePath");
-const hbs = require("./hbs");
-const authCheck = require("./authCheck");
-const { redirectMiddleware } = require("./redirect");
-
 const { TRUST_PROXY } = require("#constants/middlewareConstants.js");
 
-const { loggingMiddleware } = require("./logging");
+// ── Wiring files ──────────────────────────────────────────────────────────────
+const { logger } = require("#logging");
+const {
+  httpLogger,
+  analyticsController,
+  visitorService,
+} = require("#analytics");
+const {
+  applyProductionSecurity,
+  blocklist,
+  validateRequestIntegrity,
+  xssSanitizer,
+  SecurityEvent,
+} = require("#security");
+const { hbs, baseContextMiddleware, applyHbsToApp } = require("#base-context");
+
+// ── Package imports ───────────────────────────────────────────────────────────
+const {
+  createOidcMiddleware,
+  createAuthCheck,
+  startTokenCleanup,
+} = require("@jpoage1/auth");
+const {
+  createRedirectMiddleware,
+  createAdaptiveBodyParser,
+  createErrorHandler,
+  csrfToken,
+  trace,
+  cacheUtils,
+} = require("@jpoage1/middleware");
+
+// ── Blog-specific middleware ──────────────────────────────────────────────────
+const routes = require("../routes");
 const securedMiddleware = require("./secured");
 const securedRoutes = require("#routes/secured.js");
-const adaptiveBodyParser = require("./adaptiveBodyParser");
-const analytics = require("#controllers/analyticsControllers.js");
-const httpLogger = require("#utils/structuredLogger.js");
-const cacheUtils = require("./cacheUtils");
+const logEvent = require("./analytics.js");
+const authCheck = require("./authCheck");
 const authConfig = require("./authConfig");
 const debugMiddleware = require("./debug");
-const trace = require("./trace");
-const config = require("#config");
-const { meta, session } = config;
-const { auth, requiresAuth } = require("express-openid-connect");
+const { loggingMiddleware } = require("./logging");
 
-// NEW: blocklist
-const blocklist = require("#services/blocklist.js");
-const blocklistMiddleware = require("./blocklist");
-function setupApp(config) {
+const config = require("#config");
+const { meta } = config;
+
+function setupApp() {
   const app = express();
 
-  app.use((req, res, next) => {
-    res.locals.config = config;
-    next();
-  });
-
-  // Start the blocklist refresh cycle. Loads blocked IPs from Postgres
-  // into an in-memory Set, refreshed every 5 minutes. If Postgres is
-  // unreachable on boot, the set starts empty (fail-open).
+  // Start services
   blocklist.start();
+  startTokenCleanup(5 * 60 * 1000, logger);
 
   app.disable("x-powered-by");
   app.set("trust proxy", TRUST_PROXY);
 
-  // Blocklist runs first — before body parsing, before auth, before
-  // anything. req.ip is available because trust proxy is set above.
-  app.use(blocklistMiddleware);
+  // Register handlebars engine
+  applyHbsToApp(app, hbs, [require("path").join(__dirname, "../views")]);
 
-  app.use(adaptiveBodyParser);
+  // ── Middleware stack ──────────────────────────────────────────────────────
+  app.use(blocklist.middleware);
 
-  app.use(hbs);
-  // Setup logging
+  const bodyParser = createAdaptiveBodyParser({ logger });
+  app.use(bodyParser);
+
   app.use(httpLogger, loggingMiddleware);
 
   app.use(authConfig);
   app.use(authCheck);
-
   app.use(debugMiddleware);
+  app.use(baseContextMiddleware);
 
-  // Setup handlebars
-  app.use(BaseContext);
-  // app.use(attachBaseContextGetter, buildBaseContext);
-
-  // Setup production environment
   if (meta.node_env === "production" || meta.node_env === "testing") {
-    app.use(applyProductionSecurity);
+    app.use(xssSanitizer, ...applyProductionSecurity);
   }
 
   app.use(compression());
   app.use(trace);
   app.use(validateRequestIntegrity);
-  app.use(formatHtml);
+
+  const redirectMiddleware = createRedirectMiddleware({
+    logger,
+    redirects: config.redirects || {},
+  });
   app.use(redirectMiddleware);
   app.use(cacheUtils);
 
+  // ── Router ────────────────────────────────────────────────────────────────
   const router = express.Router();
 
   router.use((req, res, next) => {
     if (req.method === "HEAD") {
       req.method = "GET";
-      res.removeHeader = res.removeHeader || function () {};
-      // suppress body on the way out
       const originalSend = res.send.bind(res);
       res.send = (body) => originalSend("");
     }
     next();
   });
 
+  const analytics = analyticsController("analytics");
   router.post("/track", logEvent("analytics"), analytics);
   router.post("/analytics", logEvent("analytics"), analytics);
   router.use("/admin", logEvent("admin"), securedMiddleware, securedRoutes);
   router.use(logEvent("public"), routes);
 
+  const errorHandler = createErrorHandler({
+    logger,
+    isProd: meta.node_env === "production",
+  });
   router.use(errorHandler);
 
-  return app.use(withBasePath, router);
+  return app.use(router);
 }
 
 module.exports = setupApp;

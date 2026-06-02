@@ -3,8 +3,11 @@ const {
   saveEmail,
   unsubscribeEmail,
 } = require("#services/newsletterService.js");
-const sendNewsletterSubscriptionMail = require("#utils/sendNewsletterSubscriptionMail.js");
-const { validateAndSanitizeEmail } = require("#utils/emailValidator.js");
+const {
+  sendNewsletterSubscriptionMail,
+  validateAndSanitizeEmail,
+} = require("#mailer");
+
 const { ERRORS } = require("#constants/newsletterConstants.js");
 
 exports.renderNewsletterForm = async (req, res) => {

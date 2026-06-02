@@ -1,5 +1,5 @@
 // src/routes/errorPage
-const { getErrorContext } = require("#utils/errorContext.js");
+const { getErrorContext } = require("@jpoage1/middleware");
 
 module.exports = async (req, res) => {
   const code = req.params.code || parseInt(req.query.code, 10) || 500;

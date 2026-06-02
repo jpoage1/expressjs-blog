@@ -1,4 +1,4 @@
-const { evaluateRules } = require("#utils/evaluateRules.js");
+const { evaluateRules } = require("@jpoage1/auth");
 const { handleRedirect } = require("./redirect.js");
 
 /**

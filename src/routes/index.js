@@ -6,7 +6,6 @@ const path = require("path");
 const robots = require("#controllers/robotsController.js");
 const csrfToken = require("#middleware/csrfToken.js");
 const errorPage = require("#controllers/errorPageController.js");
-const admin = require("./admin.js");
 const tags = require("./tags.js");
 
 const contact = require("./contact.js");
@@ -36,7 +35,6 @@ router.get("/error/:code", errorPage); // Landing page after error is logged
 
 router.get("/error", errorPage); // Landing page after error is logged
 
-router.use(admin);
 router.use(guestAccess);
 
 router.use(

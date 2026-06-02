@@ -3,7 +3,7 @@ const hpp = require("hpp");
 const rateLimit = require("express-rate-limit");
 console.warn("Hard coded values in applyProductionSecurity");
 
-const xssSanitizer = require("#utils/xssSanitizer.js");
+const xssSanitizer = require("@jpoage1/security");
 const { HttpError } = require("@jpoage1/errors");
 const {
   LOCALHOST_HOSTNAMES,

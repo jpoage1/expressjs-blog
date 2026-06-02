@@ -7,8 +7,8 @@ const {
   xssSanitizer,
 } = require("@jpoage1/security");
 const { HttpError } = require("@jpoage1/errors");
-const { logger, logging } = require("./logging");
-const { getBlockedIPs } = require("./services/visitorService");
+const { logger } = require("#logging");
+const { getBlockedIPs } = require("@jpoage1/security");
 const config = require("#config");
 
 const { applyProductionSecurity, securityPolicy } = createProductionSecurity({
@@ -25,7 +25,7 @@ const validateRequestIntegrity = createRequestValidator(HttpError);
 
 const SecurityEvent = createSecurityEvent({
   logger,
-  logDir: logging.logDir,
+  logDir: config.logging.logDir,
   HttpError,
 });
 
