@@ -8,9 +8,7 @@ const generateDocsMenuModel = require("./generateDocsMenuModel.js");
 const { qualifyNavLinks, processMenuLinks } = require("@jpoage1/base-context");
 
 const { meta } = require("#config");
-const navLinks = require(
-  path.resolve(path.join(meta.content, "config/navLinks.json")),
-);
+const navLinks = require("#utils/navLinks.js");
 
 const getSiteTitle = (owner) => `${owner}'s Software Blog`;
 

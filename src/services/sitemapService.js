@@ -13,13 +13,7 @@ const { logger } = require("#logging");
 const { meta } = require("#config");
 const { validatePath } = require("#utils/validation.js");
 
-const CONTENT_ROOT = validatePath(meta.content, "Content Root");
-const NAVLINKS_PATH = validatePath(
-  path.join(meta.content, "config/navLinks.json"),
-  "navLinks",
-);
-
-const pattern = `${CONTENT_ROOT}/**/*.md`;
+const pattern = `${meta.content}/**/*.md`;
 
 function slugifyTag(tag) {
   return tag.toLowerCase().replace(/\s+/g, "-");
@@ -35,11 +29,27 @@ const {
   BLOG_POST_PRIORITY,
 } = require("../constants/sitemapConstants");
 
+const staticSitemapPath = path.resolve(__dirname, STATIC_SITEMAP_PATH);
+const pagesPath = path.join(__dirname, PAGES_PATH);
+const postsPath = path.join(__dirname, POSTS_PATH);
+
+function getNavLinks() {
+  return require("#utils/navLinks.js");
+}
+
 class SitemapService {
-  constructor() {
-    this.staticSitemapPath = path.resolve(__dirname, STATIC_SITEMAP_PATH);
-    this.pagesPath = path.join(__dirname, PAGES_PATH);
-    this.postsPath = path.join(__dirname, POSTS_PATH);
+  constructor(params = {}) {
+    const {
+      staticSitemapPath: _staticSitemapPath,
+      pagesPath: _pagesPath,
+      postsPath: _postsPath,
+    } = params;
+    const navLinks = params.navLinks ?? getNavLinks();
+
+    this.staticSitemapPath = staticSitemapPath;
+    this.pagesPath = pagesPath;
+    this.postsPath = postsPath;
+    this.navLinks = navLinks;
   }
 
   async getStaticPages() {
@@ -232,12 +242,12 @@ class SitemapService {
         return result;
       };
 
-      const extraPages = transform(navLinks);
+      const extraPages = transform(this.navLinks);
 
       logger.debug(`Generated ${extraPages.length} extra nav link entries`);
       return extraPages;
     } catch (err) {
-      logger.warn("Failed to read navLinks.json:", err);
+      logger.warn("Failed to parse navLinks", err);
       return [];
     }
   }
