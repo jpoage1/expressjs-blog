@@ -2,6 +2,7 @@
 src
 content
 public
+tests
 
 # Build files
 package.json

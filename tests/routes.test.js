@@ -4,7 +4,7 @@ const { expect } = require("chai");
 const http = require("http");
 const https = require("https");
 const AuthSession = require("./fixtures/AuthSession");
-const config = require("../src/config");
+const config = require("#config");
 const fs = require("fs");
 
 // Create a proper HTTP agent

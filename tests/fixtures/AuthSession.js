@@ -1,5 +1,5 @@
 const fetch = require("node-fetch").default;
-const config = require("../../src/config");
+const config = require("#config");
 
 class TestSession {
   constructor() {
