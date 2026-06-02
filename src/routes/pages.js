@@ -10,7 +10,7 @@ const { meta, routes } = require("#config");
 const path = require("path");
 const fs = require("fs").promises;
 const matter = require("gray-matter");
-const { HttpError } = require("#errors");
+const { HttpError } = require("@jpoage1/errors");
 const contentRoutes = require("#utils/loadContentRoutes.js");
 
 const construction = new ConstructionRoutes();

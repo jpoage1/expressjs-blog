@@ -1,8 +1,8 @@
 // src/utils/SecurityEvent.js
 const fs = require("fs").promises;
 const path = require("path");
-const { HttpError } = require("#errors");
-const { logger } = require("#logging");
+const { HttpError } = require("@jpoage1/errors");
+const { logger } = require("@jpoage1/logger");
 const { captureSecurityData } = require("#utils/securityForensics.js");
 const { logging } = require("#config");
 

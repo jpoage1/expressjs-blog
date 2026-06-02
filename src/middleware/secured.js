@@ -1,4 +1,4 @@
-const { HttpError } = require("#errors");
+const { HttpError } = require("@jpoage1/errors");
 
 module.exports = (req, res, next) => {
   if (!res.locals.session.isAuthenticated) {

@@ -1,8 +1,8 @@
 const fs = require("fs/promises");
 const path = require("path");
 const yaml = require("js-yaml");
-const { logger } = require("#logging");
-const { PathNotFoundError } = require("#errors");
+const { logger } = require("@jpoage1/logger");
+const { PathNotFoundError } = require("@jpoage1/errors");
 const { meta } = require("#config");
 
 const docsDir = path.join(meta.content, "/docs");

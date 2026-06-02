@@ -1,4 +1,4 @@
-const { logger } = require("#logging");
+const { logger } = require("@jpoage1/logger");
 
 // Middleware to inject logger into req
 const loggingMiddleware = (req, res, next) => {

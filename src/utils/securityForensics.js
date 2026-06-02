@@ -2,9 +2,9 @@
 const crypto = require("crypto");
 const fs = require("fs").promises;
 const path = require("path");
-const { HttpError } = require("#errors");
+const { HttpError } = require("@jpoage1/errors");
 
-const { logger } = require("#logging");
+const { logger } = require("@jpoage1/logger");
 const { logging } = require("#config");
 
 // Threat detection patterns

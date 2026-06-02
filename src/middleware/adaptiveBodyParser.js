@@ -1,6 +1,6 @@
 // src/setupMiddleware.js
 const express = require("express");
-const { logger } = require("#logging");
+const { logger } = require("@jpoage1/logger");
 
 const {
   EXCLUDED_PATHS,

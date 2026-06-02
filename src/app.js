@@ -9,7 +9,7 @@ const {
   handleUncaughtException,
   handleUnhandledRejection,
 } = require("#logging/handlers.js");
-const { logger } = require("#logging");
+const { logger } = require("@jpoage1/logger");
 const LogBuffer = require("#logging/LogBuffer.js");
 
 const { startTokenCleanup } = require("#utils/tokenCleanup.js");

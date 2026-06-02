@@ -10,7 +10,7 @@ const {
   DEFAULT_LOG_LEVEL,
   ERROR_REDIRECT_PATH,
 } = require("../constants/errorConstants");
-const { logger } = require("#logging");
+const { logger } = require("@jpoage1/logger");
 const { meta } = require("#config");
 
 module.exports = async (err, req, res, next) => {

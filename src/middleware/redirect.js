@@ -1,6 +1,6 @@
 // src/middleware/redirect.js
 
-const { logger } = require("#logging");
+const { logger } = require("@jpoage1/logger");
 const config = require("#config");
 
 // Generic redirect handler

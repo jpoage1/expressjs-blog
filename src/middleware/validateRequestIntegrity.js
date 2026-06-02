@@ -1,5 +1,5 @@
 // middleware/validateHttpRequest.js
-const { HttpError } = require("#errors");
+const { HttpError } = require("@jpoage1/errors");
 const {
   ALLOWED_HTTP_METHODS,
   MAX_HEADER_COUNT,

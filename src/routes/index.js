@@ -18,7 +18,7 @@ const guestAccess = require("./guestAccessRouter.js");
 const pages = require("./pages.js");
 const docs = require("./docs.js");
 const rssFeedController = require("#controllers/rssFeedController.js");
-const { HttpError } = require("#errors");
+const { HttpError } = require("@jpoage1/errors");
 
 const { meta } = require("#config");
 
@@ -30,7 +30,7 @@ router.head("/health", (req, res) => {
   res.sendStatus(200);
 });
 
-const { logger } = require("#logging");
+const { logger } = require("@jpoage1/logger");
 
 router.get("/error/:code", errorPage); // Landing page after error is logged
 

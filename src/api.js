@@ -1,7 +1,7 @@
 const exports = {
   // Namespaces
-  errors: require("#errors"),
-  logging: require("#logging"),
+  errors: require("@jpoage1/errors"),
+  logging: require("@jpoage1/logging"),
   utils: require("#utils"),
 
   CSP_DIRECTIVES: require("#config/securityConfig.js").CSP_DIRECTIVES,

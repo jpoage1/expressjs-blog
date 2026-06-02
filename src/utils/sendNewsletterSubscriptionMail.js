@@ -1,6 +1,6 @@
 // src/utils/sendNewsletterSubscriptionMail.js
 const transporter = require("./transporter");
-const { logger } = require("#logging");
+const { logger } = require("@jpoage1/logger");
 const { mail } = require("#config");
 
 const MAIL_SUBJECT = "New Newsletter Subscription";

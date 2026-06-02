@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { parse } = require("smol-toml");
 const os = require("os");
-const { PathNotFoundError } = require("#errors");
+const { PathNotFoundError } = require("@jpoage1/errors");
 const { validatePath, validateExplicitPath } = require("#utils/validation.js");
 
 const { fallbacks } = require("./defaults");

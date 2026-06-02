@@ -1,6 +1,6 @@
 const fs = require("fs").promises;
 const path = require("path");
-const { diskSpaceMonitor } = require("#logging");
+const { diskSpaceMonitor } = require("@jpoage1/logger");
 const { logging } = require("#config");
 
 exports.requireAdmin = (req, res, next) => {

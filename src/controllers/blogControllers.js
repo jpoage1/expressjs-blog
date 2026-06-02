@@ -9,7 +9,7 @@ const { meta } = require("#config");
 const matter = require("gray-matter");
 const { getAllPosts } = require("#utils/postFileUtils.js");
 
-const { HttpError } = require("#errors");
+const { HttpError } = require("@jpoage1/errors");
 
 const { node_env } = meta;
 

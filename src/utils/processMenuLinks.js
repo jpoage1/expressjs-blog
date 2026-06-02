@@ -1,5 +1,5 @@
 // src/utils/processMenuLinks.js
-const { winstonLogger } = require("#logging");
+const { winstonLogger } = require("@jpoage1/logger");
 const { evaluateRules } = require("#utils/evaluateRules.js");
 
 /**

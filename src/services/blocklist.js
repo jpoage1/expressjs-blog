@@ -8,7 +8,7 @@
 // On first boot with no DB, the Set is empty — fail-open by design.
 
 const { getBlockedIPs } = require("#services/visitorService.js");
-const { ApiError } = require("#errors");
+const { ApiError } = require("@jpoage1/errors");
 
 let blockedSet = new Set();
 let intervalHandle = null;

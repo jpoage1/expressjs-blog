@@ -6,7 +6,7 @@ const crypto = require("crypto");
 const matter = require("gray-matter");
 const { marked } = require("marked");
 const { getAllPosts } = require("#utils/postFileUtils.js");
-const { HttpError } = require("#errors");
+const { HttpError } = require("@jpoage1/errors");
 
 function createBlogService({ contentPath, node_env }) {
   const postsDir = path.join(contentPath, "posts");

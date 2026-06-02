@@ -1,7 +1,7 @@
 const fs = require("fs/promises");
 const path = require("path");
 const { createHash } = require("crypto");
-const { HttpError } = require("#errors");
+const { HttpError } = require("@jpoage1/errors");
 const docsContext = require("#utils/docsContext.js");
 const {
   loadDocFile,

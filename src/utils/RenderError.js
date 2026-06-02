@@ -1,4 +1,4 @@
-const { HttpError } = require("#errors");
+const { HttpError } = require("@jpoage1/errors");
 
 class RenderError extends HttpError {
   constructor(message, statusCode = 500, metadata = {}) {

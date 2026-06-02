@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const { PathNotFoundError } = require("#errors");
+const { PathNotFoundError } = require("@jpoage1/errors");
 
 function validatePath(rawPath, sourceName) {
   if (rawPath === undefined || rawPath === null) {

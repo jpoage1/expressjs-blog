@@ -8,7 +8,7 @@ const yaml = require("js-yaml");
 
 const { glob } = require("glob");
 const { qualifySitemapLinks } = require("#utils/qualifyLinks.js");
-const { logger } = require("#logging");
+const { logger } = require("@jpoage1/logger");
 const { meta } = require("#config");
 const { validatePath } = require("#utils/validation.js");
 
