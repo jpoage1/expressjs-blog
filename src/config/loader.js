@@ -23,7 +23,7 @@ const convict = require("convict");
 const { parse } = require("smol-toml");
 
 const schema = require("./schema.cjs");
-const { buildBaseUrl } = require("#utils/baseUrl.js");
+const { buildBaseUrl } = require("@jpoage1/config");
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. Build convict instance

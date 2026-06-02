@@ -1,4 +1,4 @@
-const config = require("#utils/baseUrl.js");
+const config = require("@jpoage1/config");
 
 function resolveReturnUrl(req, res, next) {
   const domain = config.public.domain;
