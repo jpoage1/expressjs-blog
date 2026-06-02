@@ -12,15 +12,23 @@ const hbs = createHbsEngine({
   partialsDirs: [path.join(__dirname, "../views/partials")],
 });
 
-const navLinksPath = path.join(
-  config.meta.content ?? "",
+const navLinksPath = path.resolve(
+  config.meta.root_dir || process.cwd(),
   "config/navLinks.json",
 );
 let navLinks;
 try {
   navLinks = require(navLinksPath);
 } catch (e) {
-  console.warn(`navLink.js or navLinks.json not found at: ${navLinksPath}`);
+  try {
+    const jsPath = path.resolve(
+      config.meta.root_dir || process.cwd(),
+      "config/navLinks.js",
+    );
+    navLinks = require(jsPath);
+  } catch (e2) {
+    console.warn(`navLinks.js or navLinks.json not found at: ${navLinksPath}`);
+  }
 }
 const baseContextMiddleware = createBaseContext({
   navLinks: navLinks,

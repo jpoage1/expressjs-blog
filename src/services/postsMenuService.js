@@ -41,4 +41,4 @@ async function getPostsMenu(baseDir, baseUri = "") {
   return menu;
 }
 
-module.exports = getPostsMenu;
+module.exports = { getPostsMenu };

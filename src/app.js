@@ -88,6 +88,7 @@ server.once("listening", () => {
 server.listen(c.port);
 
 const wrapFatalHandler = (handler) => (err) => {
+  console.log(err);
   startupBuffer.flush();
   handler(err);
 };
