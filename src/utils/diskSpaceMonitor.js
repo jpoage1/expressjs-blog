@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const { promisify } = require("util");
 const statvfs = promisify(require("statvfs"));
-const { logger } = require("@jpoage1/logger");
+const { logger } = require("#logging");
 
 class DiskSpaceMonitor {
   constructor(logDir, options = {}) {

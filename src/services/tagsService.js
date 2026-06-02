@@ -3,7 +3,7 @@ const path = require("path");
 const matter = require("gray-matter");
 const { glob } = require("glob");
 const createExcerpt = require("#utils/createExcerpt.js");
-const { logger } = require("@jpoage1/logger");
+const { logger } = require("#logging");
 const hash = require("#utils/hash.js");
 const sitemapService = require("#services/sitemapService.js");
 

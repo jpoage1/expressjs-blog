@@ -1,4 +1,4 @@
-const { logger } = require("@jpoage1/logger");
+const { logger } = require("#logging");
 const { Client } = require("ldapts");
 
 module.exports.getGroups = async function getGroups(username) {

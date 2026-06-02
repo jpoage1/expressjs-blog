@@ -4,7 +4,7 @@ const fs = require("fs").promises;
 const path = require("path");
 const { HttpError } = require("@jpoage1/errors");
 
-const { logger } = require("@jpoage1/logger");
+const { logger } = require("#logging");
 const { logging } = require("#config");
 
 // Threat detection patterns

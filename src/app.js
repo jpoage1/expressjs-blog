@@ -6,11 +6,11 @@ const { public: p, network: c, meta } = require("#config");
 const net = require("net");
 const setupMiddleware = require("#middleware");
 const {
+  logger,
+  LogBuffer,
   handleUncaughtException,
   handleUnhandledRejection,
-} = require("#logging/handlers.js");
-const { logger } = require("@jpoage1/logger");
-const LogBuffer = require("#logging/LogBuffer.js");
+} = require("#logging");
 
 const { startTokenCleanup } = require("#utils/tokenCleanup.js");
 const { cleanupOldSessions } = require("#utils/logManager.js");

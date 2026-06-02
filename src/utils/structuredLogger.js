@@ -5,7 +5,7 @@
 // If Postgres is unreachable, the observer fails silently and your existing
 // file-based logging continues unaffected.
 
-const { logger } = require("@jpoage1/logger");
+const { logger } = require("#logging");
 const {
   upsertVisitor,
   recordRequest,

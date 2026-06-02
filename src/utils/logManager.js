@@ -1,13 +1,10 @@
 const fs = require("fs");
 const path = require("path");
-const { winstonLogger } = require("./logging/winston.js");
+const { logger, winstonLogger, LogBuffer } = require("#logging");
 
 const { meta, logging } = require("#config");
 const { node_env } = meta;
 const { logDir } = logging;
-
-const LogBuffer = require("./logging/LogBuffer.js");
-const { logger } = require("#logging/logger.js");
 
 class LogManager {
   constructor(logDir, options = {}) {

@@ -1,5 +1,5 @@
 // src/utils/baseUrl.js
-// const { logger } = require("@jpoage1/logger");
+// const { logger } = require("#logging");
 
 /** Resolve the canonical public base URL. */
 function withBasePath(path = "") {

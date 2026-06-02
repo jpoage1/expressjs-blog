@@ -6,7 +6,7 @@
 // (nodemon restarts, SIGINT in dev, etc.)
 const { Pool } = require("pg");
 const { DatabaseError } = require("@jpoage1/errors");
-const { logger } = require("@jpoage1/logger");
+const { logger } = require("#logging");
 const config = require("#db/config.js");
 
 let _pool = null;

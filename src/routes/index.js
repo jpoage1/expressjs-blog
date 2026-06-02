@@ -30,7 +30,7 @@ router.head("/health", (req, res) => {
   res.sendStatus(200);
 });
 
-const { logger } = require("@jpoage1/logger");
+const { logger } = require("#logging");
 
 router.get("/error/:code", errorPage); // Landing page after error is logged
 

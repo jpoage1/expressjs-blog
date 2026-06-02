@@ -1,6 +1,6 @@
 // src/utils/tokenCleanup.js
 const { cleanupTokens } = require("./adminToken.js");
-const { logger } = require("@jpoage1/logger");
+const { logger } = require("#logging");
 
 // Set up periodic cleanup (run every 5 minutes)
 const CLEANUP_INTERVAL = 5 * 60 * 1000; // 5 minutes
