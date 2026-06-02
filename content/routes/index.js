@@ -1,14 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
+const { presentation } = require("../../src/api.js");
+
+const stack = require("#controllers/techStackController.js").bind(this);
+
 function getRoutes() {
   try {
-    // const hexascriptDocs = require(`${meta.content}/docs/hexascript/src/script.js`);
-    // logger.info("hexascriptDocs", { hexascriptDocs });
-    // router.use("/hexa-docs", hexascriptDocs);
-    const stack = require("#controllers/techStackController.js").bind(this);
-    const presentation = require("#controllers/presentationController.js");
-
     router.get("/stack", stack);
     router.use("/projects/website-presentation", presentation);
   } catch (e) {

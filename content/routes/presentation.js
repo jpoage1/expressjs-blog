@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const { renderPresentation } = require("../controllers/presentationController");
-const resolveReturnUrl = require("../middleware/resolveReturnUrl");
-const { securityPolicy } = require("../middleware/applyProductionSecurity");
-const { CSP_DIRECTIVES } = require("../config/securityConfig");
+const {
+  renderPresentation,
+  resolveReturnUrl,
+  securityPolicy,
+  CSP_DIRECTIVES,
+} = require("../../src/api.js");
 
 router.get(
   "/",
@@ -13,7 +15,7 @@ router.get(
     scriptSrc: [...CSP_DIRECTIVES.scriptSrc, "'unsafe-eval'"],
     styleSrc: [...CSP_DIRECTIVES.styleSrc, "'unsafe-inline'"],
   }),
-  renderPresentation
+  renderPresentation,
 );
 
 module.exports = router;

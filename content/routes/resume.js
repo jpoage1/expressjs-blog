@@ -3,7 +3,7 @@ const router = express.Router();
 const path = require("path");
 const fs = require("fs").promises;
 
-const { HttpError } = require("#errors");
+const { HttpError } = require("../../src/api.js");
 
 function filterByProfile(data, profile) {
   const inProfile = (item) => !item.profiles || item.profiles.includes(profile);

@@ -54,6 +54,11 @@
   "license": "ISC",
   "dependencies": {
     "@glint/core": "^1.5.2",
+    "@jpoage1/analytics": "file:../node_modules/@jpoage1/analytics",
+    "@jpoage1/auth": "file:../node_modules/@jpoage1/auth",
+    "@jpoage1/errors": "file:../node_modules/@jpoage1/errors",
+    "@jpoage1/logger": "file:../node_modules/@jpoage1/logger",
+    "@jpoage1/security": "file:../node_modules/@jpoage1/security",
     "body-parser": "^2.2.0",
     "compression": "^1.8.1",
     "convict": "^6.2.5",

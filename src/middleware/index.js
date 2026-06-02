@@ -29,7 +29,8 @@ const cacheUtils = require("./cacheUtils");
 const authConfig = require("./authConfig");
 const debugMiddleware = require("./debug");
 const trace = require("./trace");
-const { meta, session } = require("#config");
+const config = require("#config");
+const { meta, session } = config;
 const { auth, requiresAuth } = require("express-openid-connect");
 
 // NEW: blocklist
@@ -37,6 +38,11 @@ const blocklist = require("#services/blocklist.js");
 const blocklistMiddleware = require("./blocklist");
 function setupApp(config) {
   const app = express();
+
+  app.use((req, res, next) => {
+    res.locals.config = config;
+    next();
+  });
 
   // Start the blocklist refresh cycle. Loads blocked IPs from Postgres
   // into an in-memory Set, refreshed every 5 minutes. If Postgres is

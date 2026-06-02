@@ -41,6 +41,7 @@ function processMenuLinks(
   if (!links) return [];
   if (!session)
     throw new Error(`Session is undefined: ${JSON.stringify(session)}`);
+  console.log(links);
 
   return links
     .map((link) => {

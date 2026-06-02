@@ -394,6 +394,55 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jpoage1/analytics@file:../node_modules/@jpoage1/analytics::locator=expressjs-blog%40workspace%3A.":
+  version: 1.0.0
+  resolution: "@jpoage1/analytics@file:../node_modules/@jpoage1/analytics#../node_modules/@jpoage1/analytics::hash=c9d734&locator=expressjs-blog%40workspace%3A."
+  dependencies:
+    knex: "npm:^3.0.0"
+    pg: "npm:^8.0.0"
+  checksum: 10c0/b6f7aec172b817ca41033923c9b881e4e4e1ae6071ed3372b3457835e815f3e5f46a1e6ba1635455acfd0f9ca4e8193181be208f7291e669d66d51bd45ce4088
+  languageName: node
+  linkType: hard
+
+"@jpoage1/auth@file:../node_modules/@jpoage1/auth::locator=expressjs-blog%40workspace%3A.":
+  version: 1.0.0
+  resolution: "@jpoage1/auth@file:../node_modules/@jpoage1/auth#../node_modules/@jpoage1/auth::hash=9e815e&locator=expressjs-blog%40workspace%3A."
+  dependencies:
+    express-openid-connect: "npm:^2.0.0"
+  checksum: 10c0/0c5b7c4e1bb4f9a704cacc5e22098373e5f80ba44727327fe0a664f6b58474ac52c8e29c974c18f9eead781455dcf476a0f8dabd650015b84c23a738ed17761c
+  languageName: node
+  linkType: hard
+
+"@jpoage1/errors@file:../node_modules/@jpoage1/errors::locator=expressjs-blog%40workspace%3A.":
+  version: 1.0.0
+  resolution: "@jpoage1/errors@file:../node_modules/@jpoage1/errors#../node_modules/@jpoage1/errors::hash=14aa8f&locator=expressjs-blog%40workspace%3A."
+  checksum: 10c0/94d5e1b75cb2471b60532f7a2053ae4114783a8410065e3f5544be4f1e611cc531ac72deb83ea5721b330f8493c31ca4bec0314d385ee3e3b0f1b01a80422560
+  languageName: node
+  linkType: hard
+
+"@jpoage1/logger@file:../node_modules/@jpoage1/logger::locator=expressjs-blog%40workspace%3A.":
+  version: 1.0.0
+  resolution: "@jpoage1/logger@file:../node_modules/@jpoage1/logger#../node_modules/@jpoage1/logger::hash=4bac79&locator=expressjs-blog%40workspace%3A."
+  dependencies:
+    triple-beam: "npm:^1.3.0"
+    winston: "npm:^3.0.0"
+    winston-daily-rotate-file: "npm:^4.0.0"
+  checksum: 10c0/f08e47c1fb285d4702d93d6690c5d653e1d26f55003caf30224da0b439b404d8dac0cbccfefb2633c2e15a7e691215aa44c1933d49c82a4ee371fdd86af24edc
+  languageName: node
+  linkType: hard
+
+"@jpoage1/security@file:../node_modules/@jpoage1/security::locator=expressjs-blog%40workspace%3A.":
+  version: 1.0.0
+  resolution: "@jpoage1/security@file:../node_modules/@jpoage1/security#../node_modules/@jpoage1/security::hash=e115b9&locator=expressjs-blog%40workspace%3A."
+  dependencies:
+    express-rate-limit: "npm:^7.0.0"
+    helmet: "npm:^7.0.0"
+    hpp: "npm:^0.2.3"
+    xss: "npm:^1.0.0"
+  checksum: 10c0/f578ec50c606532d0c707d468921ab2681f54c935808713c52bbecb9b985b1c0724743e0100949a69a69b5b580e25998766145f3b2913c6b65b1471075b14e44
+  languageName: node
+  linkType: hard
+
 "@jridgewell/resolve-uri@npm:^3.1.0":
   version: 3.1.2
   resolution: "@jridgewell/resolve-uri@npm:3.1.2"
@@ -2200,7 +2249,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-openid-connect@npm:^2.19.4":
+"express-openid-connect@npm:^2.0.0, express-openid-connect@npm:^2.19.4":
   version: 2.20.2
   resolution: "express-openid-connect@npm:2.20.2"
   dependencies:
@@ -2219,6 +2268,15 @@ __metadata:
   peerDependencies:
     express: ">= 4.17.0"
   checksum: 10c0/cf4a2e99d046f21020dfa2e5ca1dbd2a9641ea62d14720fd8156b0dbf408816a60b75d3f8e33697117dc0b87683b1f9ac91456d5bc05c72c9d463980a685702d
+  languageName: node
+  linkType: hard
+
+"express-rate-limit@npm:^7.0.0":
+  version: 7.5.1
+  resolution: "express-rate-limit@npm:7.5.1"
+  peerDependencies:
+    express: ">= 4.11"
+  checksum: 10c0/b07de84d700a2c07c4bf2f040e7558ed5a1f660f03ed5f30bf8ff7b51e98ba7a85215640e70fc48cbbb9151066ea51239d9a1b41febc9b84d98c7915b0186161
   languageName: node
   linkType: hard
 
@@ -2275,6 +2333,11 @@ __metadata:
   dependencies:
     "@faker-js/faker": "npm:^9.9.0"
     "@glint/core": "npm:^1.5.2"
+    "@jpoage1/analytics": "file:../node_modules/@jpoage1/analytics"
+    "@jpoage1/auth": "file:../node_modules/@jpoage1/auth"
+    "@jpoage1/errors": "file:../node_modules/@jpoage1/errors"
+    "@jpoage1/logger": "file:../node_modules/@jpoage1/logger"
+    "@jpoage1/security": "file:../node_modules/@jpoage1/security"
     body-parser: "npm:^2.2.0"
     c8: "npm:^11.0.0"
     chai: "npm:^6.2.2"
@@ -3003,6 +3066,13 @@ __metadata:
   bin:
     he: bin/he
   checksum: 10c0/a27d478befe3c8192f006cdd0639a66798979dfa6e2125c6ac582a19a5ebfec62ad83e8382e6036170d873f46e4536a7e795bf8b95bf7c247f4cc0825ccc8c17
+  languageName: node
+  linkType: hard
+
+"helmet@npm:^7.0.0":
+  version: 7.2.0
+  resolution: "helmet@npm:7.2.0"
+  checksum: 10c0/7ba8503519cabc1d6410330b710da3ac01a4ff66e7e10cb68c4d73c96803a2e86ce45c71f3127dfb8ef3ea2e91c7b8316726191873f80d0572f8826878b2854e
   languageName: node
   linkType: hard
 
@@ -3817,7 +3887,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex@npm:^3.2.10":
+"knex@npm:^3.0.0, knex@npm:^3.2.10":
   version: 3.2.10
   resolution: "knex@npm:3.2.10"
   dependencies:
@@ -4847,7 +4917,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg@npm:^8.21.0":
+"pg@npm:^8.0.0, pg@npm:^8.21.0":
   version: 8.21.0
   resolution: "pg@npm:8.21.0"
   dependencies:
@@ -6893,6 +6963,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"winston-daily-rotate-file@npm:^4.0.0":
+  version: 4.7.1
+  resolution: "winston-daily-rotate-file@npm:4.7.1"
+  dependencies:
+    file-stream-rotator: "npm:^0.6.1"
+    object-hash: "npm:^2.0.1"
+    triple-beam: "npm:^1.3.0"
+    winston-transport: "npm:^4.4.0"
+  peerDependencies:
+    winston: ^3
+  checksum: 10c0/1fb6a6fc16a9f3b20caceea4b841f9966b7a38b429b3e16b4cdbbdfcc3bbf923e7c6a105dde552f78352045137cc1e5206040c2152fe50cd6850327e4a56cb6d
+  languageName: node
+  linkType: hard
+
 "winston-daily-rotate-file@npm:^5.0.0":
   version: 5.0.0
   resolution: "winston-daily-rotate-file@npm:5.0.0"
@@ -6907,7 +6991,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston-transport@npm:^4.7.0, winston-transport@npm:^4.9.0":
+"winston-transport@npm:^4.4.0, winston-transport@npm:^4.7.0, winston-transport@npm:^4.9.0":
   version: 4.9.0
   resolution: "winston-transport@npm:4.9.0"
   dependencies:
@@ -6918,7 +7002,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston@npm:^3.17.0":
+"winston@npm:^3.0.0, winston@npm:^3.17.0":
   version: 3.19.0
   resolution: "winston@npm:3.19.0"
   dependencies:
@@ -7053,7 +7137,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xss@npm:^1.0.15":
+"xss@npm:^1.0.0, xss@npm:^1.0.15":
   version: 1.0.15
   resolution: "xss@npm:1.0.15"
   dependencies:

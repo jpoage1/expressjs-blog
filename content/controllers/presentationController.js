@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs/promises");
 const yaml = require("js-yaml");
 
-const { HttpError } = require("../../src/utils/errors");
+const { HttpError } = require("../../src/api");
 
 const yamlPath = path.resolve("content/presentation.yaml");
 
