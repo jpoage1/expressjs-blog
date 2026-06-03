@@ -11,7 +11,7 @@ const {
 const { ERRORS } = require("#constants/newsletterConstants.js");
 
 exports.renderNewsletterForm = async (req, res) => {
-  res.renderWithBaseContext("pages/newsletter.handlebars", {
+  res.locals.renderWithBaseContext("pages/newsletter.handlebars", {
     csrfToken: res.locals.csrfToken,
     title: "Newsletter",
     formAction: res.locals.qualifyLink("/newsletter"),
@@ -20,7 +20,7 @@ exports.renderNewsletterForm = async (req, res) => {
 };
 
 exports.renderSubscriptionSuccess = async (req, res) => {
-  res.renderWithBaseContext("pages/newsletter-success.handlebars", {
+  res.locals.renderWithBaseContext("pages/newsletter-success.handlebars", {
     title: "Unsubscribed",
     message:
       "You’ve successfully subscribed to my newsletter. Stay tuned for updates.",
@@ -59,7 +59,7 @@ exports.handleUnsubscribe = async (req, res, next) => {
 
   try {
     await unsubscribeEmail(email);
-    res.renderGenericMessage({
+    res.locals.renderGenericMessage({
       title: "Thank You",
       message:
         "You’ve been successfully removed from the newsletter mailing list.",

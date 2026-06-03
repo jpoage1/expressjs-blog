@@ -24,7 +24,7 @@ function handleRedirect(req, res, targetPath, status = 302) {
   // For browsers, render the redirect page
   res.status(301);
   res.set("Location", redirectUrl);
-  res.renderWithBaseContext("pages/redirect", {
+  res.locals.renderWithBaseContext("pages/redirect", {
     redirectUrl: redirectUrl,
     originalUrl: req.originalUrl,
   });

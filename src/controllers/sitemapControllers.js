@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const Handlebars = require("handlebars");
-const sitemapService = require("#services/sitemapService.js");
+const sitemapService = require("#services/sitemapService.js").default;
 
 // Precompile XML template once
 const xmlTplSrc = fs.readFileSync(
@@ -17,7 +17,7 @@ async function getSitemapHtml(req, res, next) {
       title: "Site Map",
       sitemap,
     };
-    res.renderWithBaseContext("pages/sitemap", context);
+    res.locals.renderWithBaseContext("pages/sitemap", context);
   } catch (err) {
     next(err);
   }

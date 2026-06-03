@@ -93,7 +93,7 @@ function paginate(items, page, limit) {
 // ---------------------------------------------------------------------------
 
 exports.renderLogsPage = (req, res) => {
-  res.renderWithBaseContext("admin-pages/logs", {
+  res.locals.renderWithBaseContext("admin-pages/logs", {
     showSidebar: false,
     showFooter: false,
   });

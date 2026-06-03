@@ -55,7 +55,7 @@ router.get("/", async (req, res, next) => {
       },
     );
 
-    res.renderWithBaseContext(
+    res.locals.renderWithBaseContext(
       "pages/resume",
       {
         ...filtered,

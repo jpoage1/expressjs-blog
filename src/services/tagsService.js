@@ -5,10 +5,10 @@ const { glob } = require("glob");
 const createExcerpt = require("#utils/createExcerpt.js");
 const { logger } = require("#logging");
 const hash = require("#utils/hash.js");
-const sitemapService = require("#services/sitemapService.js");
+const sitemapService = require("#services/sitemapService.js").default;
 
-const CONTENT_ROOT = path.resolve(__dirname, "../../content");
-const pattern = `${CONTENT_ROOT}/**/*.md`;
+const { meta } = require("#config");
+const pattern = `${meta.content}/**/*.md`;
 
 /**
  * Escapes special characters and handles flexible hyphen/space matching

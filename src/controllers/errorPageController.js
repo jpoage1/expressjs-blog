@@ -15,5 +15,5 @@ module.exports = async (req, res) => {
   };
 
   res.status(errorContext.statusCode);
-  res.renderGenericMessage(context);
+  res.locals.renderGenericMessage(context);
 };

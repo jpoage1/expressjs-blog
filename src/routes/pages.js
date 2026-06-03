@@ -30,7 +30,7 @@ const {
 try {
   if (contentRouter) router.use(contentRouter);
 } catch (e) {
-  console.warn(e);
+  console.warn("loadContentRoutes failed:", e.message, e.stack);
 }
 
 try {
@@ -102,7 +102,7 @@ try {
         }
       }
 
-      res.renderWithBaseContext("pages/projects", { projects });
+      res.locals.renderWithBaseContext("pages/projects", { projects });
     } catch (err) {
       req.log.error(err.stack);
       next(new HttpError("Could not load projects", 500));

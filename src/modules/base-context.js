@@ -16,20 +16,8 @@ const navLinksPath = path.resolve(
   config.meta.root_dir || process.cwd(),
   "config/navLinks.json",
 );
-let navLinks;
-try {
-  navLinks = require(navLinksPath);
-} catch (e) {
-  try {
-    const jsPath = path.resolve(
-      config.meta.root_dir || process.cwd(),
-      "config/navLinks.js",
-    );
-    navLinks = require(jsPath);
-  } catch (e2) {
-    console.warn(`navLinks.js or navLinks.json not found at: ${navLinksPath}`);
-  }
-}
+const navLinks = require("#utils/navLinks.js");
+
 const baseContextMiddleware = createBaseContext({
   navLinks: navLinks,
   baseUrl: config.public.baseUrl,

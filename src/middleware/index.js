@@ -49,8 +49,6 @@ const { meta } = config;
 function setupApp() {
   const app = express();
 
-  // Start services
-  blocklist.start();
   startTokenCleanup(5 * 60 * 1000, logger);
 
   app.disable("x-powered-by");

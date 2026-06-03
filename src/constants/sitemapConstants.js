@@ -1,7 +1,7 @@
 // constants/sitemapConstants.js
 const path = require("path");
 const { meta } = require("#config");
-const STATIC_SITEMAP_PATH = path.join(meta.content, "/sitemap.json");
+const STATIC_SITEMAP_PATH = path.join(meta.content, "config", "sitemap.json");
 const POSTS_PATH = path.join(meta.content, "posts");
 const PAGES_PATH = path.join(meta.content, "pages");
 

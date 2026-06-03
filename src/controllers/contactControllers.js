@@ -159,7 +159,7 @@ module.exports.renderContactForm = async (req, res) => {
     formMethod: "POST",
   };
 
-  res.renderWithBaseContext("pages/contact.handlebars", context);
+  res.locals.renderWithBaseContext("pages/contact.handlebars", context);
 };
 
 module.exports.renderThankYouPage = async (req, res) => {
@@ -170,7 +170,7 @@ module.exports.renderThankYouPage = async (req, res) => {
     referrer: req.get("Referrer"),
   });
 
-  res.renderGenericMessage({
+  res.locals.renderGenericMessage({
     title: "Thank You",
     message:
       "Your message has been sent successfully. We will get back to you shortly.",

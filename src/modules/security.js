@@ -8,8 +8,9 @@ const {
 } = require("@jpoage1/security");
 const { HttpError } = require("@jpoage1/errors");
 const { logger } = require("#logging");
-const { getBlockedIPs } = require("@jpoage1/security");
 const config = require("#config");
+
+const { visitorService } = require("#analytics");
 
 const { applyProductionSecurity, securityPolicy } = createProductionSecurity({
   cspDirectives: config.security.CSP_DIRECTIVES,
@@ -18,7 +19,9 @@ const { applyProductionSecurity, securityPolicy } = createProductionSecurity({
   HttpError,
 });
 
-const blocklist = createBlocklist({ getBlockedIPs });
+const blocklist = createBlocklist({
+  getBlockedIPs: () => visitorService.getBlockedIPs(),
+});
 blocklist.start();
 
 const validateRequestIntegrity = createRequestValidator(HttpError);

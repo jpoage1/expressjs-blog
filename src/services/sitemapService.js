@@ -29,9 +29,9 @@ const {
   BLOG_POST_PRIORITY,
 } = require("../constants/sitemapConstants");
 
-const staticSitemapPath = path.resolve(__dirname, STATIC_SITEMAP_PATH);
-const pagesPath = path.join(__dirname, PAGES_PATH);
-const postsPath = path.join(__dirname, POSTS_PATH);
+const staticSitemapPath = path.resolve(STATIC_SITEMAP_PATH);
+const pagesPath = path.resolve(PAGES_PATH);
+const postsPath = path.resolve(POSTS_PATH);
 
 function getNavLinks() {
   return require("#utils/navLinks.js");
@@ -39,11 +39,17 @@ function getNavLinks() {
 
 class SitemapService {
   constructor(params = {}) {
+    this.init(params);
+  }
+  init(params = {}) {
     const {
       staticSitemapPath: _staticSitemapPath,
       pagesPath: _pagesPath,
       postsPath: _postsPath,
+      baseUrl,
     } = params;
+    if (baseUrl) this.baseUrl = baseUrl;
+    if (!this.baseUrl) this.baseUrl = "";
     const navLinks = params.navLinks ?? getNavLinks();
 
     this.staticSitemapPath = staticSitemapPath;
@@ -341,7 +347,7 @@ class SitemapService {
     // Inject the extra nav pages last
     this.injectPlaceholder(staticPagesJsonTree, "extra-pages", extraNavPages);
 
-    return qualifySitemapLinks(staticPagesJsonTree);
+    return qualifySitemapLinks(staticPagesJsonTree, this.baseUrl);
   }
 
   async getAllUrls({ excludeNavLinks = false } = {}) {
@@ -367,4 +373,7 @@ class SitemapService {
     return out;
   }
 }
-module.exports = new SitemapService();
+module.exports = {
+  default: new SitemapService(),
+  SitemapService,
+};

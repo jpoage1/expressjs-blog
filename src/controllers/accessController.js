@@ -7,7 +7,7 @@ exports.handleAccessConsumption = async (req, res, next) => {
   const { token } = req.params;
 
   try {
-    res.renderWithBaseContext("pages/credentials.handlebars", {
+    res.locals.renderWithBaseContext("pages/credentials.handlebars", {
       title: "Guest Access",
       token: token ?? "",
     });
@@ -17,7 +17,7 @@ exports.handleAccessConsumption = async (req, res, next) => {
 };
 
 exports.renderPortal = async (req, res, next) => {
-  res.renderWithBaseContext("admin-pages/accessManager.handlebars", {
+  res.locals.renderWithBaseContext("admin-pages/accessManager.handlebars", {
     title: "Access Management",
     // Base context handles user/session data
   });

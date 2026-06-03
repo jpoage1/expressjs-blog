@@ -1,12 +1,12 @@
 const { getPostsByTag } = require("#services/tagsService.js");
-const { getAllTags } = require("#services/sitemapService.js");
+const { getAllTags } = require("#services/sitemapService.js").default;
 const { HttpError } = require("@jpoage1/errors");
 const { normalizeTag } = require("#utils/normalize.js");
 
 exports.renderTagsPage = async (req, res, next) => {
   try {
     const tags = await getAllTags();
-    res.renderWithBaseContext("pages/tags", { tags });
+    res.locals.renderWithBaseContext("pages/tags", { tags });
   } catch (err) {
     next(err);
   }
@@ -22,7 +22,7 @@ exports.renderTagPostsPage = async (req, res, next) => {
       return next(new HttpError("No posts found for this tag.", 404));
     }
 
-    res.renderWithBaseContext("pages/tag-posts", {
+    res.locals.renderWithBaseContext("pages/tag-posts", {
       tag: normalizedTag,
       posts,
     });

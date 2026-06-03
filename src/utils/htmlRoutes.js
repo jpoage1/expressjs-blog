@@ -37,7 +37,7 @@ class HtmlRoutes extends BaseRoute {
       try {
         // Return cached version if enabled and exists
         if (this.shouldCache && this.cache.has(routePath)) {
-          return res.renderWithBaseContext(
+          return res.locals.renderWithBaseContext(
             this.cache.get(routePath).template,
             this.cache.get(routePath).context,
             this.cache.get(routePath).cssOverrides,
@@ -82,7 +82,7 @@ class HtmlRoutes extends BaseRoute {
         if (this.shouldCache) {
           this.cache.set(routePath, { template, context, cssOverrides });
         }
-        res.renderWithBaseContext(template, context, cssOverrides);
+        res.locals.renderWithBaseContext(template, context, cssOverrides);
       } catch (err) {
         err.statusCode = 500;
         next(err);

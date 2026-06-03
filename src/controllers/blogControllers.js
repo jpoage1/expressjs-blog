@@ -77,7 +77,7 @@ exports.blogPost = async (req, res, next) => {
       author: frontmatter.author,
       content: htmlContent,
     };
-    res.renderWithBaseContext("pages/post", context);
+    res.locals.renderWithBaseContext("pages/post", context);
   } catch (err) {
     next(new HttpError("The requested blog post could not be found.", 404));
   }
@@ -122,7 +122,7 @@ exports.blogIndex = async (req, res) => {
     templateContent: post.excerpt || "",
   }));
 
-  res.renderWithBaseContext("pages/blog_index", {
+  res.locals.renderWithBaseContext("pages/blog_index", {
     showSidebar: !res.locals.isPaper,
     collections: { posts },
   });

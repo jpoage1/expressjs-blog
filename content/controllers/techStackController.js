@@ -10,7 +10,7 @@ module.exports = (req, res, next) => {
       png: req.locals.baseUrl + item.png,
       svg: req.locals.baseUrl + item.svg,
     }));
-    res.renderWithBaseContext("pages/stack", {
+    res.locals.renderWithBaseContext("pages/stack", {
       tech: techWithBase,
     });
   } catch (err) {
