@@ -1,86 +1,96 @@
 // src/app.js
-require("dotenv").config();
+//
+// Bootstrap order:
+//   1. Schema composition  — mergeSchemas() before anything else loads
+//   2. Config load         — createLoader() validates and resolves all values
+//   3. Infrastructure      — logger, mailer, security, auth built from cfg
+//   4. Blog engine         — createBlog() receives infra as injected deps
+//   5. Express             — middleware, mount, listen
 
-const { public: p, network: c, meta } = require("#config");
+import express from "express";
 
-const net = require("net");
-const setupMiddleware = require("#middleware");
-const {
-  LogBuffer,
-  handleUncaughtException,
-  handleUnhandledRejection,
-} = require("#logging");
-const {
-  formatMethodString,
-  formatRoutesToBuffer,
-} = require("#utils/formatting.js");
+import {
+  baseSchema,
+  mergeSchemas,
+  createLoader,
+  buildBaseUrl,
+} from "@jpoage1/config";
+import { securitySchema } from "@jpoage1/security/schema.js";
+import { authSchema } from "@jpoage1/auth/schema.js";
+import { mailerSchema } from "@jpoage1/mailer/schema.js";
 
-const { cleanupOldSessions } = require("#utils/logManager.js");
-const { getExpress5Routes } = require("@jpoage1/middleware");
+const appSchema = mergeSchemas(baseSchema, securitySchema, authSchema, mailerSchema);
 
-cleanupOldSessions();
+const cfg = createLoader(appSchema);
 
-class App {
-  constructor(app, logger = console) {
-    this.startupBuffer = new LogBuffer(logger, "info", { raw: true });
-    this.app = app;
-    this.server = net.createServer();
-  }
-  wrapFatalHandler = (handler) => (err) => {
-    console.log(err);
-    this.startupBuffer.flush();
-    handler(err);
-  };
-  handleError() {
-    this.server.once("error", (err) => {
-      if (err.code === "EADDRINUSE") {
-        this.startupBuffer.flush();
-        logger.error(`Port ${c.port} is already in use.`);
-        process.exit(1);
-      } else {
-        this.startupBuffer.flush();
-        throw err;
-      }
-    });
-  }
-}
+const meta = cfg.get("meta");
+const network = cfg.get("network");
+const logging = cfg.get("logging");
+const baseUrl = buildBaseUrl(cfg.get("public"));
 
-server.once("listening", () => {
-  server.close();
+import { createInfrastructure } from "./modules/infrastructure.js";
+const infra = createInfrastructure(cfg, baseUrl);
 
-  this.startupBuffer.push("==================================================");
-  this.startupBuffer.push("API SERVER CONFIGURATION");
-  this.startupBuffer.push("==================================================");
-  this.startupBuffer.push(
-    `[*] Domain Endpoint: ${p.schema}://${p.domain}:${p.port}`,
-  );
-  startupBuffer.push(
-    `[*] Local Interface: ${c.schema}://${c.address}:${c.port}`,
-  );
-  startupBuffer.push(`[*] NODE_ENV: ${meta.node_env}`);
-
-  if (app.router && app.router.stack) {
-    const allRoutes = getExpress5Routes(app.router.stack);
-    formatRoutesToBuffer(allRoutes, startupBuffer);
-  } else {
-    startupBuffer.push(
-      "Express router implementation has changed. Route information is currently unavailable.",
-    );
-  }
-
-  startupBuffer.push("==================================================");
-
-  app.listen(c.port, () => {
-    startupBuffer.flush();
-  });
+import { createContentRouter } from "./modules/contentRouter.js";
+const contentRouter = createContentRouter({
+  cspDirectives: infra.cspDirectives,
+  securityPolicy: infra.securityPolicy,
+  domain: cfg.get("public").domain,
 });
 
-server.listen(c.port);
+import { createBlog, createStaticAssets } from "@jpoage1/expressjs-blog";
 
-process.on("uncaughtException", this.wrapFatalHandler(handleUncaughtException));
-process.on(
-  "unhandledRejection",
-  this.wrapFatalHandler(handleUnhandledRejection),
-);
+const blog = createBlog({
+  contentPath: meta.content_path,
+  baseUrl,
+  node_env: meta.node_env,
+  siteOwner: meta.site_owner,
+  country: meta.country,
+  endpoints: cfg.get("endpoints"),
+  hcaptchaKey: cfg.get("hcaptcha").key,
 
-module.exports = { getExpress5Routes, formatRoutesToBuffer, startupBuffer };
+  verbose: logging.verbose,
+  _oidcIssuer: cfg.get("auth").enabled
+    ? cfg.get("auth").oidc.issuer_base_url
+    : null,
+
+  logger: infra.logger,
+  mailer: infra.mailer,
+  security: infra.security,
+  generateToken: infra.generateToken,
+  evaluateRules: infra.evaluateRules,
+
+  features: {
+    docs: true,
+  },
+
+  contentRoutes: {
+    constructionRoutes: [
+      { path: "/changelog", title: "Changelog" },
+      { path: "/archive", title: "Archive" },
+      { path: "/", title: "Home" },
+    ],
+    markdownRoutes: [{ path: "/about/blog", file: "projects/about-blog" }],
+    htmlRoutes: [],
+    router: contentRouter,
+    redirects: cfg.get("redirection"),
+  },
+});
+
+const app = express();
+
+app.use(createStaticAssets());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
+if (meta.node_env === "production" || meta.node_env === "testing") {
+  app.use(infra.applyProductionSecurity);
+}
+app.use(infra.oidcMiddleware);
+app.use(infra.authCheck);
+
+blog.mount(app);
+
+app.listen(network.port, network.address, () => {
+  infra.logger.info(`Blog listening on ${baseUrl} (${meta.node_env})`);
+});
