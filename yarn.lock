@@ -469,12 +469,12 @@ __metadata:
 
 "@jpoage1/middleware@file:../node_packages/@jpoage1/middleware::locator=expressjs-blog%40workspace%3A.":
   version: 1.0.0
-  resolution: "@jpoage1/middleware@file:../node_packages/@jpoage1/middleware#../node_packages/@jpoage1/middleware::hash=c91a8d&locator=expressjs-blog%40workspace%3A."
+  resolution: "@jpoage1/middleware@file:../node_packages/@jpoage1/middleware#../node_packages/@jpoage1/middleware::hash=b2ffd1&locator=expressjs-blog%40workspace%3A."
   dependencies:
     cookie-parser: "npm:^1.4.7"
     csurf: "npm:^1.11.0"
     js-beautify: "npm:^1.15.0"
-  checksum: 10c0/aa13151868937104b37353c3b5ee9c0a506aeb2e80683895855dcfb9bd133d43aef958e7fa17af82e746de9beba2d86673f86bafed3f91a55e0146af6c5448d3
+  checksum: 10c0/68da0120e7ad7bae62c300ed2ff5e0f3b88038260b8c833ccdac969598d6cece3e662d5fafb9efbf355af0e8708500ea3684f448cae8ec570c9d8c46b03ea4e4
   languageName: node
   linkType: hard
 

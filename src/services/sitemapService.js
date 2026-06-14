@@ -154,45 +154,52 @@ class SitemapService {
     const entries = [];
 
     for (const file of files) {
-      if (!file.endsWith(".yaml")) continue;
+      try {
+        if (!file.endsWith(".yaml")) continue;
 
-      const moduleType = file.replace(/\.yaml$/, "");
-      const filePath = path.join(docsDir, file);
-      const raw = await fs.readFile(filePath, "utf8");
-      const parsed = yaml.load(raw);
+        const moduleType = file.replace(/\.yaml$/, "");
+        const filePath = path.join(docsDir, file);
+        const raw = await fs.readFile(filePath, "utf8");
+        const parsed = yaml.load(raw);
 
-      // Parent entry: /docs/:moduleType
-      const parentEntry = {
-        loc: `/docs/${moduleType}`,
-        label: moduleType, // Use 'label' to match your JSON structure
-        changefreq: "monthly",
-        priority: 0.7,
-        children: [],
-      };
-
-      // For each module inside modules, create child entries
-      const modules = parsed || {};
-      for (const [moduleKey, moduleData] of Object.entries(modules)) {
-        parentEntry.children.push({
-          loc: `/docs/${moduleType}/${moduleKey}`,
-          label: (moduleData && moduleData.title) || moduleKey, // Use 'label' to match structure
+        // Parent entry: /docs/:moduleType
+        const parentEntry = {
+          loc: `/docs/${moduleType}`,
+          label: moduleType, // Use 'label' to match your JSON structure
           changefreq: "monthly",
-          priority: 0.5,
-        });
-      }
+          priority: 0.7,
+          children: [],
+        };
 
-      entries.push(parentEntry);
-      logger.debug(
-        `Added docs entry: ${parentEntry.loc} with ${parentEntry.children.length} children`,
-      );
+        // For each module inside modules, create child entries
+        const modules = parsed || {};
+        for (const [moduleKey, moduleData] of Object.entries(modules)) {
+          try {
+            parentEntry.children.push({
+              loc: `/docs/${moduleType}/${moduleKey}`,
+              label: (moduleData && moduleData.title) || moduleKey, // Use 'label' to match structure
+              changefreq: "monthly",
+              priority: 0.5,
+            });
+          } catch (e) {
+            logger.warn(e.message, e.stack);
+          }
+        }
+
+        entries.push(parentEntry);
+        logger.debug(
+          `Added docs entry: ${parentEntry.loc} with ${parentEntry.children.length} children`,
+        );
+      } catch (e) {
+        logger.warn(e.message, e.stack);
+      }
     }
 
     return entries;
   }
   async getNavLinksPages(existingUrls = null) {
     try {
-      const raw = await fs.readFile(NAVLINKS_PATH, "utf8");
-      const navLinks = JSON.parse(raw);
+      const navLinks = getNavLinks();
 
       // If existingUrls not provided, get them (fallback for backward compatibility)
       let existingSet;
@@ -211,37 +218,41 @@ class SitemapService {
         const result = [];
 
         for (const item of items) {
-          // Skip external links (not starting with "/")
-          const isInternal = item.href && item.href.startsWith("/");
-          const isMissing = isInternal && !existingSet.has(item.href);
+          try {
+            // Skip external links (not starting with "/")
+            const isInternal = item.href && item.href.startsWith("/");
+            const isMissing = isInternal && !existingSet.has(item.href);
 
-          const node = {};
+            const node = {};
 
-          // If this item has a missing internal href, add it as a leaf
-          if (isMissing) {
-            node.loc = item.href;
-            node.title = item.label || "";
-            node.changefreq = "monthly";
-            node.priority = 0.6;
-            node.id = hash(item.href);
-          }
-
-          // Process submenu if it exists
-          if (item.submenu && Array.isArray(item.submenu)) {
-            const children = transform(item.submenu);
-            if (children.length > 0) {
-              // If we have children, we need to include this node in the hierarchy
-              if (!node.loc) {
-                // This is a parent node with no direct URL but has children
-                node.label = item.label || "";
-              }
-              node.children = children;
+            // If this item has a missing internal href, add it as a leaf
+            if (isMissing) {
+              node.loc = item.href;
+              node.title = item.label || "";
+              node.changefreq = "monthly";
+              node.priority = 0.6;
+              node.id = hash(item.href);
             }
-          }
 
-          // Only include nodes that either have a loc (missing page) or have children
-          if (node.loc || (node.children && node.children.length > 0)) {
-            result.push(node);
+            // Process submenu if it exists
+            if (item.submenu && Array.isArray(item.submenu)) {
+              const children = transform(item.submenu);
+              if (children.length > 0) {
+                // If we have children, we need to include this node in the hierarchy
+                if (!node.loc) {
+                  // This is a parent node with no direct URL but has children
+                  node.label = item.label || "";
+                }
+                node.children = children;
+              }
+            }
+
+            // Only include nodes that either have a loc (missing page) or have children
+            if (node.loc || (node.children && node.children.length > 0)) {
+              result.push(node);
+            }
+          } catch (e) {
+            logger.warn(e.message, e.stack);
           }
         }
 
@@ -260,23 +271,27 @@ class SitemapService {
 
   injectPlaceholder(tree, key, items) {
     for (const node of tree) {
-      if (Array.isArray(node.children)) {
-        const index = node.children.findIndex(
-          (child) => child.loc === `#inject:${key}`,
-        );
-
-        if (index !== -1) {
-          logger.debug(
-            `Found placeholder #inject:${key}, injecting ${items.length} items`,
+      try {
+        if (Array.isArray(node.children)) {
+          const index = node.children.findIndex(
+            (child) => child.loc === `#inject:${key}`,
           );
-          // Replace the placeholder with the actual items
-          node.children.splice(index, 1, ...items);
-          return true;
-        }
 
-        if (this.injectPlaceholder(node.children, key, items)) {
-          return true;
+          if (index !== -1) {
+            logger.debug(
+              `Found placeholder #inject:${key}, injecting ${items.length} items`,
+            );
+            // Replace the placeholder with the actual items
+            node.children.splice(index, 1, ...items);
+            return true;
+          }
+
+          if (this.injectPlaceholder(node.children, key, items)) {
+            return true;
+          }
         }
+      } catch (e) {
+        logger.warn(e.message, e.stack);
       }
     }
     return false;
@@ -357,17 +372,21 @@ class SitemapService {
 
   flatten(entries, out = []) {
     for (const entry of entries) {
-      if (entry.loc) {
-        out.push({
-          id: entry.id,
-          loc: entry.loc,
-          lastmod: entry.lastmod,
-          changefreq: entry.changefreq || DEFAULT_CHANGEFREQ,
-          priority: entry.priority || DEFAULT_PRIORITY,
-        });
-      }
-      if (Array.isArray(entry.children)) {
-        this.flatten(entry.children, out);
+      try {
+        if (entry.loc) {
+          out.push({
+            id: entry.id,
+            loc: entry.loc,
+            lastmod: entry.lastmod,
+            changefreq: entry.changefreq || DEFAULT_CHANGEFREQ,
+            priority: entry.priority || DEFAULT_PRIORITY,
+          });
+        }
+        if (Array.isArray(entry.children)) {
+          this.flatten(entry.children, out);
+        }
+      } catch (e) {
+        logger.warn(e.message, e.stack);
       }
     }
     return out;

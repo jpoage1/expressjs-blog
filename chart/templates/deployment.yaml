@@ -15,6 +15,8 @@ spec:
       labels:
         app: {{ .Values.nameOverride | default .Chart.Name }}
     spec:
+      imagePullSecrets:
+        - name: registry-credentials
       containers:
         - name: blog
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"

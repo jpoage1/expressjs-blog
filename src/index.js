@@ -1,10 +1,7 @@
 const exports = {
+  App: require("./app.js"),
   // Namespaces
-  errors: require("@jpoage1/errors"),
-  logging: require("@jpoage1/logging"),
   utils: require("#utils"),
-
-  CSP_DIRECTIVES: require("#config/securityConfig.js").CSP_DIRECTIVES,
 
   // Middleware
   resolveReturnUrl: require("#middleware/resolveReturnUrl.js"),

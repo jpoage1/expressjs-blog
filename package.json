@@ -5,6 +5,12 @@
   "packageManager": "yarn@4.9.2",
   "main": "index.js",
   "type": "commonjs",
+  "files": [
+    "src/",
+    "public/",
+    "index.js",
+    "package.json"
+  ],
   "scripts": {
     "push:all": "scripts/push-all.sh",
     "combine:css": "node scripts/combine-css.js",
@@ -39,15 +45,11 @@
     "#services/*": "./src/services/*",
     "#config": "./src/config/loader.js",
     "#config/*": "./src/config/*",
-    "#content/*": "./content/*",
     "#routes": "./src/routes/index.js",
     "#routes/secured.js": "./src/routes/secured/index.js",
     "#routes/*": "./src/utils/routes/*",
     "#middleware": "./src/middleware/index.js",
-    "#middleware/*": "./src/middleware/*",
-    "##controllers/*": "./content/controllers/*",
-    "##utils/*": "./content/utils/*",
-    "##config/*": "./content/config/*"
+    "#middleware/*": "./src/middleware/*"
   },
   "puppeteer": {
     "cacheDirectory": "./.custom-cache/puppeteer"
@@ -57,16 +59,16 @@
   "license": "ISC",
   "dependencies": {
     "@glint/core": "^1.5.2",
-    "@jpoage1/analytics": "file:../node_packages/@jpoage1/analytics",
-    "@jpoage1/auth": "file:../node_packages/@jpoage1/auth",
-    "@jpoage1/base-context": "file:../node_packages/@jpoage1/base-context",
-    "@jpoage1/config": "file:../node_packages/@jpoage1/config",
-    "@jpoage1/errors": "file:../node_packages/@jpoage1/errors",
-    "@jpoage1/logger": "file:../node_packages/@jpoage1/logger",
-    "@jpoage1/mailer": "file:../node_packages/@jpoage1/mailer",
-    "@jpoage1/middleware": "file:../node_packages/@jpoage1/middleware",
-    "@jpoage1/security": "file:../node_packages/@jpoage1/security",
-    "@jpoage1/views": "file:../node_packages/@jpoage1/views",
+    "@jpoage1/analytics": "file:/srv/projects/jasonpoage.com/node_packages/@jpoage1/analytics",
+    "@jpoage1/auth": "file:/srv/projects/jasonpoage.com/node_packages/@jpoage1/auth",
+    "@jpoage1/base-context": "file:/srv/projects/jasonpoage.com/node_packages/@jpoage1/base-context",
+    "@jpoage1/config": "file:/srv/projects/jasonpoage.com/node_packages/@jpoage1/config",
+    "@jpoage1/errors": "file:/srv/projects/jasonpoage.com/node_packages/@jpoage1/errors",
+    "@jpoage1/logger": "file:/srv/projects/jasonpoage.com/node_packages/@jpoage1/logger",
+    "@jpoage1/mailer": "file:/srv/projects/jasonpoage.com/node_packages/@jpoage1/mailer",
+    "@jpoage1/middleware": "file:/srv/projects/jasonpoage.com/node_packages/@jpoage1/middleware",
+    "@jpoage1/security": "file:/srv/projects/jasonpoage.com/node_packages/@jpoage1/security",
+    "@jpoage1/views": "file:/srv/projects/jasonpoage.com/node_packages/@jpoage1/views",
     "body-parser": "^2.2.0",
     "compression": "^1.8.1",
     "convict": "^6.2.5",

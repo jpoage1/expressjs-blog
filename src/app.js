@@ -6,62 +6,52 @@ const { public: p, network: c, meta } = require("#config");
 const net = require("net");
 const setupMiddleware = require("#middleware");
 const {
-  logger,
   LogBuffer,
   handleUncaughtException,
   handleUnhandledRejection,
 } = require("#logging");
+const {
+  formatMethodString,
+  formatRoutesToBuffer,
+} = require("#utils/formatting.js");
 
 const { cleanupOldSessions } = require("#utils/logManager.js");
 const { getExpress5Routes } = require("@jpoage1/middleware");
 
-const startupBuffer = new LogBuffer(logger, "info", { raw: true });
-
-/**
- * Centers and pads a method array string to fit a fixed 10-character column width.
- */
-function formatMethodString(methods) {
-  const methodString = methods.join(", ");
-  const totalWidth = 10;
-  const leftPadding = Math.floor((totalWidth - methodString.length) / 2);
-  const rightPadding = totalWidth - methodString.length - leftPadding;
-
-  return " ".repeat(leftPadding) + methodString + " ".repeat(rightPadding);
-}
-
-/**
- * Formats and maps collected routes directly into the designated LogBuffer.
- */
-function formatRoutesToBuffer(routes, buffer) {
-  routes.forEach(({ methods, path }) => {
-    const paddedMethods = formatMethodString(methods);
-    buffer.push(`[${paddedMethods}] |      API      | ${path}`);
-  });
-}
-
 cleanupOldSessions();
 
-const app = setupMiddleware();
-
-const server = net.createServer();
-server.once("error", (err) => {
-  if (err.code === "EADDRINUSE") {
-    startupBuffer.flush();
-    logger.error(`Port ${c.port} is already in use.`);
-    process.exit(1);
-  } else {
-    startupBuffer.flush();
-    throw err;
+class App {
+  constructor(app, logger = console) {
+    this.startupBuffer = new LogBuffer(logger, "info", { raw: true });
+    this.app = app;
+    this.server = net.createServer();
   }
-});
+  wrapFatalHandler = (handler) => (err) => {
+    console.log(err);
+    this.startupBuffer.flush();
+    handler(err);
+  };
+  handleError() {
+    this.server.once("error", (err) => {
+      if (err.code === "EADDRINUSE") {
+        this.startupBuffer.flush();
+        logger.error(`Port ${c.port} is already in use.`);
+        process.exit(1);
+      } else {
+        this.startupBuffer.flush();
+        throw err;
+      }
+    });
+  }
+}
 
 server.once("listening", () => {
   server.close();
 
-  startupBuffer.push("==================================================");
-  startupBuffer.push("API SERVER CONFIGURATION");
-  startupBuffer.push("==================================================");
-  startupBuffer.push(
+  this.startupBuffer.push("==================================================");
+  this.startupBuffer.push("API SERVER CONFIGURATION");
+  this.startupBuffer.push("==================================================");
+  this.startupBuffer.push(
     `[*] Domain Endpoint: ${p.schema}://${p.domain}:${p.port}`,
   );
   startupBuffer.push(
@@ -87,13 +77,10 @@ server.once("listening", () => {
 
 server.listen(c.port);
 
-const wrapFatalHandler = (handler) => (err) => {
-  console.log(err);
-  startupBuffer.flush();
-  handler(err);
-};
-
-process.on("uncaughtException", wrapFatalHandler(handleUncaughtException));
-process.on("unhandledRejection", wrapFatalHandler(handleUnhandledRejection));
+process.on("uncaughtException", this.wrapFatalHandler(handleUncaughtException));
+process.on(
+  "unhandledRejection",
+  this.wrapFatalHandler(handleUnhandledRejection),
+);
 
 module.exports = { getExpress5Routes, formatRoutesToBuffer, startupBuffer };
