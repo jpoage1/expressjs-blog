@@ -1,0 +1,49 @@
+[
+  {
+    "html": "algorithm",
+    "label": "Algorithm"
+  },
+  {
+    "html": "hierarchy",
+    "label": "Hierarchy"
+  },
+  {
+    "label": "UML",
+    "submenu": [
+      {
+        "frame": "/core/index.html",
+        "label": "Compiler"
+      },
+      {
+        "label": "Frontend",
+        "submenu": [
+          {
+            "mermaid": "diagrams/frontend_logic",
+            "label": "Frontend Logic"
+          },
+          {
+            "mermaid": "diagrams/frontend_classes",
+            "label": "Classes"
+          }
+        ]
+      },
+      {
+        "label": "Backend",
+        "submenu": [
+          {
+            "mermaid": "/diagrams/backend_api",
+            "label": "Api"
+          },
+          {
+            "mermaid": "/diagrams/backend_db",
+            "label": "Database"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "html": "testing_plans",
+    "label": "Testing Plans"
+  }
+]

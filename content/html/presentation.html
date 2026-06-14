@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Final Website Project Presentation</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/dist/reveal.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/dist/theme/black.css" />
+  <style>
+    img { max-width: 80%; margin: 0.5em 0; }
+    section p { max-width: 700px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <section>
+        <h1>Final Website Project Presentation</h1>
+      </section>
+
+        <section>
+        <h2>1. Website Showcase</h2>
+        <ul>
+            <li>The homepage displaying introductory content and layout structure.<br><img src="home.png" alt="Homepage Screenshot" /></li>
+            <li>A sample blog post showing the article format and typographic consistency.<br><img src="logging.png" alt="Blog Post Screenshot" /></li>
+            <li>The main site navigation demonstrating menu behavior and accessibility.<br><img src="nav-bar.png" alt="Navigation Bar Screenshot" /></li>
+            <li>The admin or tools interface, if applicable, illustrating gated features.<br><img src="logging.png" alt="Admin Interface Screenshot" /></li>
+        </ul>
+        </section>
+
+      <section>
+        <h2>2. Website Purpose</h2>
+        <p>This site functions as a personal publishing platform aimed at technical professionals, including developers, employers, and engineering peers. It operates as both a portfolio and a continuously expanding knowledge base. The blog posts and custom tools are designed to demonstrate software architecture skills, clear communication, and practical development experience.</p>
+      </section>
+
+      <section>
+        <h2>3. Design Overview</h2>
+        <ul>
+          <li><strong>Layout:</strong> The site uses a clean two-column layout, with the sidebar on the left (&lt;aside&gt;) and the main content area on the right (&lt;main&gt;). This layout prioritizes legibility and provides quick access to categorized topics.</li>
+          <li><strong>Color Scheme:</strong> The color palette consists of neutral grayscale tones, with accent colors used selectively for links and interactive elements. Both light and dark modes are supported to ensure readability across user preferences.</li>
+          <li><strong>Navigation:</strong> A top-level horizontal menu provides access to major site sections, including a dropdown under the “About” section. The sidebar enables chronological and tag-based browsing of blog posts.</li>
+          <li><strong>Forms:</strong> The site includes contact, comment, and newsletter subscription forms that allow for user interaction. These forms are designed to be unobtrusive but easy to find and use.</li>
+          <li><strong>Device Support:</strong> The site’s layout and scripts have been tested in Chrome, Firefox, and Edge. The responsive design ensures proper rendering on both desktop and mobile devices.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>4. Technical Implementation</h2>
+        <ul>
+          <li><strong>Frontend:</strong> The site uses HTML5 and CSS3 for structure and styling, rendered server-side. Dynamic content is populated using Handlebars templates.</li>
+          <li><strong>Backend:</strong> The backend is built with Node.js and Express, with Markdown files used for storing content that is converted at runtime into structured HTML.</li>
+          <li><strong>Security and Proxy Layer:</strong> An NGINX reverse proxy handles incoming requests and routes them to the application. Optional authentication for admin tools is managed through Authelia.</li>
+          <li><strong>Content System:</strong> Blog posts are automatically indexed by tag, topic, and publication date. Archive pages and an RSS feed are generated dynamically based on metadata extracted from the content files.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>5. Challenges and Resolutions</h2>
+        <ul>
+          <li><strong>Challenge:</strong> The original assignment required static HTML and CSS, but my implementation includes a full backend stack with routing and templating.<br />
+              <strong>Resolution:</strong> I ensured that all output HTML and CSS remain clean, standards-compliant, and semantically structured.</li>
+
+          <li><strong>Challenge:</strong> Configuring the reverse proxy and integrating upstream authentication required careful coordination between multiple layers.<br />
+              <strong>Resolution:</strong> I isolated session management through Authelia and maintained a stateless design in the application itself to avoid session coupling.</li>
+
+          <li><strong>Challenge:</strong> Avoiding unnecessary complexity in the design and implementation was essential to preserve clarity and maintainability.<br />
+              <strong>Resolution:</strong> I used semantic HTML, modular templates, and clear component boundaries to support future scalability.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>6. Summary</h2>
+        <p>This project exceeds the base assignment requirements by delivering a functional, extensible web platform with full backend integration, secure routing, and dynamic content generation. It demonstrates foundational HTML and CSS practices while incorporating modern development tooling. The site is tailored to a technical audience that values performance, clarity, and real-world applicability.</p>
+      </section>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/dist/reveal.js"></script>
+  <script>
+    Reveal.initialize({
+      controls: true,
+      progress: true,
+      slideNumber: true,
+      history: true,
+      center: true,
+      transition: 'slide'
+    });
+  </script>
+</body>
+</html>

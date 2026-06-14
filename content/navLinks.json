@@ -1,0 +1,155 @@
+[
+  {
+    "href": "/",
+    "label": "Home"
+  },
+  {
+    "label": "About",
+    "submenu": [
+      {
+        "href": "/about/me",
+        "label": "About Me"
+      },
+      {
+        "href": "/about/blog",
+        "label": "About This Blog"
+      }
+    ]
+  },
+  {
+    "href": "/blog",
+    "label": "Blog"
+  },
+  {
+    "href": "/newsletter",
+    "label": "Newsletter"
+  },
+  {
+    "label": "Tools I use",
+    "submenu": [
+      {
+        "href": "/tools",
+        "label": "How I Use Them"
+      },
+      {
+        "href": "/stack",
+        "label": "Tech Stack Overview"
+      }
+    ]
+  },
+  {
+    "label": "Projects",
+    "href": "/projects",
+    "submenu": [
+      {
+        "href": "/projects/word-guesser",
+        "label": "A Word Guessing Game",
+        "submenu": [
+          {
+            "href": "/games/word-guesser",
+            "label": "The Game"
+          }
+        ]
+      },
+      {
+        "href": "/projects/telemetry",
+        "label": "C++ Telemetry Poller"
+      },
+      {
+        "href": "/projects/pipeline-runner",
+        "label": "Pipeline Runner"
+      },
+      {
+        "href": "/projects/xmonad",
+        "label": "XMonad"
+      },
+      {
+        "href": "/projects/lisp-interpreter",
+        "label": "Lisp Interpreter"
+      },
+      {
+        "label": "Express Blog",
+        "submenu": [
+          {
+            "href": "/about/blog",
+            "label": "About This Blog"
+          },
+          {
+            "href": "https://github.com/jpoage1/expressjs-blog",
+            "label": "Source Code",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "disabled": true,
+            "href": "/docs",
+            "label": "Documentation"
+          },
+          {
+            "href": "/projects/website-presentation",
+            "label": "Website Project Presentation"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "href": "/contact",
+    "label": "Contact"
+  },
+  {
+    "label": "Account",
+    "policy": "deny-children",
+    "submenu": [
+      {
+        "promote": "href",
+        "label": "Account Home",
+        "href": "/guest-access"
+      },
+      {
+        "href": "https://hex.jasonpoage.com",
+        "label": "Hex Logic Lab",
+        "rules": [["user:jason"], ["group:guests"]]
+      },
+      {
+        "href": "/access/manager",
+        "label": "Access Manager",
+        "rules": [["user:jason"]]
+      },
+      {
+        "href": "/admin/logs",
+        "label": "Logs",
+        "rules": [["user:jason"]]
+      },
+      {
+        "href": "https://jasonpoage.com",
+        "label": "Production",
+        "appendCurrentPath": "True",
+        "rules": [["user:jason"]]
+      },
+      {
+        "href": "https://test.jasonpoage.com",
+        "label": "Testing",
+        "appendCurrentPath": "True",
+        "rules": [["user:jason"]]
+      },
+      {
+        "href": "https://dev.jasonpoage.com",
+        "label": "Development",
+        "appendCurrentPath": "True",
+        "rules": [["user:jason"]]
+      },
+      {
+        "href": "https://jenkins.jasonpoage.com",
+        "label": "Jenkins",
+        "rules": [["user:jason"]]
+      },
+      {
+        "href": "https://jasonpoage.com/auth/logout",
+        "method": "post",
+        "label": "Logout",
+        "rules": [["user:jason"], ["group:guests"], ["group:people"]]
+      }
+    ]
+  }
+]

@@ -1,0 +1,463 @@
+[
+  {
+    "name": "Arch Linux",
+    "description": "Lightweight and flexible Linux distribution that tries to Keep It Simple.",
+    "png": "/media/logos/Arch-Linux.png",
+    "svg": "/media/logos/Arch-Linux.png",
+    "url": "https://archlinux.org/"
+  },
+  {
+    "name": "Authelia",
+    "description": "Authelia provides two-factor authentication and single sign-on for private routes on the blog, securing administrative access.",
+    "usage": "My authelia server is backed my Open LDAP to protect private end points on my home server",
+    "png": "/media/logos/Authelia.png",
+    "svg": "/media/logos/Authelia.svg",
+    "url": "https://www.authelia.com/"
+  },
+  {
+    "name": "AWS",
+    "description": "Comprehensive cloud computing platform provided by Amazon with a wide range of services.",
+    "png": "/media/logos/AWS.png",
+    "svg": "/media/logos/AWS.png",
+    "url": "https://aws.amazon.com/"
+  },
+  {
+    "name": "Bash",
+    "description": "Unix shell and command language used for scripting and command execution.",
+    "experience": "Being a linux user my whole life, I have no fear of writing shell script's",
+    "png": "/media/logos/Bash.png",
+    "svg": "/media/logos/Bash.png",
+    "url": "https://www.gnu.org/software/bash/"
+  },
+  {
+    "name": "Bootstrap",
+    "description": "Bootstrap is a popular open-source CSS framework directed at responsive, mobile-first front-end web development.",
+    "png": "/media/logos/Bootstrap.png",
+    "svg": "/media/logos/Bootstrap.svg",
+    "url": "https://getbootstrap.com/"
+  },
+  {
+    "name": "C++",
+    "description": "General-purpose programming language with low-level memory manipulation features.",
+    "experience": "",
+    "png": "/media/logos/C++-(CPlusPlus).png",
+    "svg": "/media/logos/C++-(CPlusPlus).png",
+    "url": "https://isocpp.org/"
+  },
+  {
+    "name": "Chrome",
+    "description": "Google's cross-platform web browser based on the Chromium project.",
+    "png": "/media/logos/Chrome.png",
+    "svg": "/media/logos/Chrome.svg",
+    "url": "https://www.google.com/chrome/"
+  },
+  {
+    "name": "Clojure",
+    "description": "Dynamic, functional programming language targeting the JVM with emphasis on immutability.",
+    "png": "/media/logos/Clojure.png",
+    "svg": "/media/logos/Clojure.png",
+    "url": "https://clojure.org/"
+  },
+  {
+    "name": "CSS3",
+    "description": "Style sheet language used for describing the presentation of a document written in HTML or XML.",
+    "experience": "I've spent more time fighting with Flexbox than I care to admit, but I've finally reached a point where I can make a layout stay put.",
+    "png": "/media/logos/CSS3.png",
+    "svg": "/media/logos/CSS3.svg",
+    "url": "https://www.w3.org/Style/CSS/"
+  },
+  {
+    "name": "Debian",
+    "description": "Debian is the base operating system that runs the server hosting the blog, offering stability and security.",
+    "usage": "Powers my home servers",
+    "experience": "When I need a stable operating system, this is my go-to.",
+    "png": "/media/logos/Debian.png",
+    "svg": "/media/logos/Debian.svg",
+    "url": "https://www.debian.org/"
+  },
+  {
+    "name": "Docker",
+    "description": "Docker containerizes blog components for consistent deployment across environments.",
+    "png": "/media/logos/Docker.png",
+    "svg": "/media/logos/Docker.svg",
+    "url": "https://www.docker.com/"
+  },
+  {
+    "name": "Electron",
+    "description": "Framework for building cross-platform desktop applications using web technologies.",
+    "png": "/media/logos/Electron.png",
+    "svg": "/media/logos/Electron.svg",
+    "url": "https://www.electronjs.org/"
+  },
+  {
+    "name": "ESLint",
+    "description": "ESLint is a pluggable and configurable linter tool for identifying and fixing problems in JavaScript and TypeScript code.",
+    "usage": "I could not live without a linter; it saves time by providing error messages in-line with my code",
+    "png": "/media/logos/ESLint.png",
+    "svg": "/media/logos/ESLint.svg",
+    "url": "https://eslint.org/"
+  },
+  {
+    "name": "Express",
+    "description": "Express.js is the core HTTP server that powers the blog's routing, middleware, and response handling.",
+    "usage": "While there are plenty of other good options out there, an express server is sometimes the only choice that makes sense.",
+    "png": "/media/logos/Express.png",
+    "svg": "/media/logos/Express.svg",
+    "url": "https://expressjs.com/"
+  },
+  {
+    "name": "Fedora",
+    "description": "Community-driven Linux distribution sponsored by Red Hat, focusing on innovation and upstream contributions.",
+    "experience": "Fedora is an Linux distribution that I've previously used and feel comfortable with.",
+    "png": "/media/logos/Fedora.png",
+    "svg": "/media/logos/Fedora.png",
+    "url": "https://getfedora.org/"
+  },
+  {
+    "name": "Firefox",
+    "description": "Open-source web browser developed by Mozilla, focused on privacy and customization.",
+    "png": "/media/logos/Firefox.png",
+    "svg": "/media/logos/Firefox.svg",
+    "url": "https://www.mozilla.org/firefox/"
+  },
+  {
+    "name": "Flask",
+    "description": "A lightweight WSGI web application framework in Python, designed for quick development and flexible deployment.",
+    "png": "/media/logos/Flask.png",
+    "svg": "/media/logos/Flask.svg",
+    "url": "https://flask.palletsprojects.com/"
+  },
+  {
+    "name": "Git",
+    "description": "Distributed version control system designed to handle everything from small to very large projects.",
+    "usage": "This is my daily tool for managing projects of all types. I host my own git server.",
+    "experience": "After using git for a while, I discovered git hooks and have found them useful in managing CI/CD pipelines",
+    "png": "/media/logos/Git.png",
+    "svg": "/media/logos/Git.png",
+    "url": "https://git-scm.com/"
+  },
+  {
+    "name": "Github",
+    "description": "GitHub is used for version control, source code hosting, and collaboration on the blog engine and its related components.",
+    "usage": "While I do keep private repos here, my primary usage for this is to share open source code",
+    "png": "/media/logos/GitHub.png",
+    "svg": "/media/logos/GitHub.svg",
+    "url": "https://github.com/"
+  },
+  {
+    "name": "Grafana",
+    "description": "Open-source platform for monitoring and observability with support for multiple data sources.",
+    "png": "/media/logos/Grafana.png",
+    "svg": "/media/logos/Grafana.png",
+    "url": "https://grafana.com/"
+  },
+
+  {
+    "name": "Handlebars",
+    "description": "Handlebars is the templating engine used to render HTML pages for the blog dynamically on the server side.",
+    "usage": "Handlebars powers the pages in my custom blog engine",
+    "png": "/media/logos/Handlebars.png",
+    "svg": "/media/logos/Handlebars.svg",
+    "url": "https://handlebarsjs.com/"
+  },
+  {
+    "name": "Helm",
+    "description": "Helm is a package manager for Kubernetes that helps you define, install, and upgrade complex Kubernetes applications.",
+    "png": "/media/logos/Helm.png",
+    "svg": "/media/logos/Helm.svg",
+    "url": "https://helm.sh/"
+  },
+  {
+    "name": "Heroku",
+    "description": "Heroku is a cloud platform as a service (PaaS) supporting several programming languages, used to deploy, manage, and scale applications.",
+    "png": "/media/logos/Heroku.png",
+    "svg": "/media/logos/Heroku.svg",
+    "url": "https://www.heroku.com/"
+  },
+  {
+    "name": "HTML5",
+    "description": "Latest version of the Hypertext Markup Language, the standard language for creating web pages.",
+    "experience": "I still remember the days when HTML4 was still new",
+    "png": "/media/logos/HTML5.png",
+    "svg": "/media/logos/HTML5.png",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5"
+  },
+  {
+    "name": "Java",
+    "description": "General-purpose, object-oriented programming language designed to have as few implementation dependencies as possible.",
+    "experience": "I've taken Java in college. I've always been comfortable with OOP, however something about this class just made everything click better ",
+    "png": "/media/logos/Java.png",
+    "svg": "/media/logos/Java.svg",
+    "url": "https://www.oracle.com/java/"
+  },
+  {
+    "name": "JavaScript",
+    "description": "JavaScript powers the client-side interactivity of the blog, including dynamic behaviors and navigation enhancements.",
+    "usage": "When started a new project, the question is, \"Which language do I use, JavaScript, or something else?\" ",
+    "experience": "Javascript is scripting for coffee, am I right?",
+    "png": "/media/logos/JavaScript.png",
+    "svg": "/media/logos/JavaScript.svg",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript"
+  },
+  {
+    "name": "Jenkins",
+    "description": "Open-source automation server used for continuous integration and continuous delivery (CI/CD).",
+    "experience": "I've got a working pipeline, but I wouldn't write a book about it.",
+    "usage": "While Groovy is a weird language, I enjoy using it to help me manage my pipelines",
+    "png": "/media/logos/Jenkins.png",
+    "svg": "/media/logos/Jenkins.svg",
+    "url": "https://www.jenkins.io/"
+  },
+  {
+    "name": "Jest",
+    "description": "Jest is a JavaScript testing framework maintained by Meta, designed to ensure correctness of any JavaScript codebase.",
+    "png": "/media/logos/Jest.png",
+    "svg": "/media/logos/Jest.svg",
+    "url": "https://jestjs.io/"
+  },
+  {
+    "name": "JSON",
+    "description": "JSON is used for internal configuration and structured data interchange between components of the blog engine.",
+    "usage": "I couldn't live without it at this point.",
+    "experience": "It's basically a static javascript object",
+    "png": "/media/logos/JSON.png",
+    "svg": "/media/logos/JSON.svg",
+    "url": "https://www.json.org/"
+  },
+  {
+    "name": "jQuery",
+    "description": "A fast, small, and feature-rich JavaScript library that simplifies HTML document traversal, event handling, and animation.",
+    "usage": "Hardly ever anymore, but any time there's a use case for it",
+    "experience": "I used it when it was new",
+    "png": "/media/logos/jQuery.png",
+    "svg": "/media/logos/jQuery.svg",
+    "url": "https://jquery.com/"
+  },
+  {
+    "name": "Knex.js",
+    "description": "Knex.js is a SQL query builder for Node.js, supporting multiple database engines like PostgreSQL, MySQL, and SQLite3.",
+    "usage": "Primarily for migrations and seeds.",
+    "png": "/media/logos/Knex.js.png",
+    "svg": "/media/logos/Knex.js.svg",
+    "url": "https://knexjs.org/"
+  },
+  {
+    "name": "Kubernetes",
+    "description": "Open-source platform for automating deployment, scaling, and management of containerized applications.",
+    "png": "/media/logos/Kubernetes.png",
+    "svg": "/media/logos/Kubernetes.svg",
+    "url": "https://kubernetes.io/"
+  },
+  {
+    "name": "Linux",
+    "description": "Linux is the kernel layer supporting the Debian OS on which the blog stack operates.",
+    "usage": "My daily driver",
+    "experience": "I have not met any pengiuns yet, unfortunately.",
+    "png": "/media/logos/Linux.png",
+    "svg": "/media/logos/Linux.svg",
+    "url": "https://www.kernel.org/"
+  },
+  {
+    "name": "Markdown",
+    "description": "Markdown is used as the primary format for authoring blog posts, allowing clean content separation from presentation logic.",
+    "usage": "I used markdown for writing documentation",
+    "png": "/media/logos/Markdown.png",
+    "svg": "/media/logos/Markdown.svg",
+    "url": "https://daringfireball.net/projects/markdown/"
+  },
+  {
+    "name": "Material UI",
+    "description": "Material UI is a React component library implementing Google's Material Design system.",
+    "png": "/media/logos/Material-UI.png",
+    "svg": "/media/logos/Material-UI.svg",
+    "url": "https://mui.com/"
+  },
+  {
+    "name": "Mocha",
+    "description": "Mocha is used to test backend logic and ensure the reliability of the blog's JavaScript codebase.",
+    "png": "/media/logos/Mocha.png",
+    "svg": "/media/logos/Mocha.svg",
+    "url": "https://mochajs.org/"
+  },
+  {
+    "name": "MySQL",
+    "description": "Advanced open-source relational database management system with extensibility and standards compliance.",
+    "png": "/media/logos/MySQL.png",
+    "svg": "/media/logos/MySQL.svg",
+    "url": "https://www.mysql.com/"
+  },
+  {
+    "name": "NGINX",
+    "description": "NGINX acts as a reverse proxy to serve the blog and handle HTTPS traffic termination.",
+    "png": "/media/logos/NGINX.png",
+    "svg": "/media/logos/NGINX.svg",
+    "url": "https://nginx.org/"
+  },
+  {
+    "name": "NixOS",
+    "description": "NixOS is used as a secondary development environment for testing reproducible builds of the blog stack.",
+    "experience": "Roughly one year. I'm comfortable with the nix language, and enjoy writing creating derivations and flakes to manage my project dependencies",
+    "usage": "It’s my primary dev environment. I use flakes to ensure my projects are reproducible and have exactly the dependencies they need.",
+    "png": "/media/logos/NixOS.png",
+    "svg": "/media/logos/NixOS.svg",
+    "url": "https://nixos.org/"
+  },
+  {
+    "name": "Node.js",
+    "description": "Node.js is the runtime environment executing the blog's backend JavaScript code.",
+    "usage": "It's a non-negotiable tool for my javascript projects",
+    "png": "/media/logos/Node.js.png",
+    "svg": "/media/logos/Node.js.svg",
+    "url": "https://nodejs.org/"
+  },
+  {
+    "name": "Nodemon",
+    "description": "Nodemon automatically restarts the Express server during development when code changes are detected.",
+    "png": "/media/logos/Nodemon.png",
+    "svg": "/media/logos/Nodemon.svg",
+    "url": "https://github.com/remy/nodemon"
+  },
+  {
+    "name": "NPM",
+    "description": "NPM manages the dependencies for all backend and tooling packages used in the blog engine.",
+    "png": "/media/logos/NPM.png",
+    "svg": "/media/logos/NPM.svg",
+    "url": "https://www.npmjs.com/"
+  },
+  {
+    "name": "Oh My Zsh",
+    "description": "Oh My Zsh enhances the development terminal with plugins and themes used to manage and deploy the blog.",
+    "png": "/media/logos/Oh-my-zsh.png",
+    "svg": "/media/logos/Oh-my-zsh.svg",
+    "url": "https://ohmyz.sh/"
+  },
+  {
+    "name": "PHP",
+    "description": "Server-side scripting language designed for web development and general-purpose programming.",
+    "png": "/media/logos/PHP.png",
+    "svg": "/media/logos/PHP.svg",
+    "url": "https://www.php.net/"
+  },
+  {
+    "name": "PostgreSQL",
+    "description": "Advanced open-source relational database management system with extensibility and standards compliance.",
+    "png": "/media/logos/PostgresSQL.png",
+    "svg": "/media/logos/PostgresSQL.svg",
+    "url": "https://www.postgresql.org/"
+  },
+  {
+    "name": "Postman",
+    "description": "API development and testing environment for building, testing, and documenting APIs.",
+    "png": "/media/logos/Postman.png",
+    "svg": "/media/logos/Postman.svg",
+    "url": "https://www.postman.com/"
+  },
+  {
+    "name": "Python",
+    "description": "High-level, interpreted programming language known for its readability and broad library support.",
+    "experience": "I wasn't sure I'd like python, but it's grown on me.",
+    "usage": "It's my tool when I need to write an application quickly",
+    "png": "/media/logos/Python.png",
+    "svg": "/media/logos/Python.svg",
+    "url": "https://www.python.org/"
+  },
+  {
+    "name": "Raspberry Pi",
+    "description": "Raspberry Pi is used as a self-hosted hardware platform for testing deployments of the blog on ARM architecture.",
+    "experience": "I have taken an IOT class in college and experimented with creating IOT circuits",
+    "usage": "Primarily, I use it for my home-based server",
+    "png": "/media/logos/Raspberry-Pi.png",
+    "svg": "/media/logos/Raspberry-Pi.svg",
+    "url": "https://www.raspberrypi.com/"
+  },
+  {
+    "name": "React",
+    "description": "A JavaScript library for building user interfaces, maintained by Meta and a community of developers.",
+    "png": "/media/logos/React.png",
+    "svg": "/media/logos/React.svg",
+    "url": "https://reactjs.org"
+  },
+  {
+    "name": "Slack",
+    "description": "A messaging platform for teams that supports real-time communication, file sharing, and third-party integrations.",
+    "png": "/media/logos/Slack.png",
+    "svg": "/media/logos/Slack.svg",
+    "url": "https://slack.com/"
+  },
+  {
+    "name": "SQLite",
+    "description": "SQLite is the embedded database used to store blog content, metadata, and configuration data.",
+    "png": "/media/logos/SQLite.png",
+    "svg": "/media/logos/SQLite.svg",
+    "url": "https://www.sqlite.org/"
+  },
+  {
+    "name": "Sequelize",
+    "description": "Promise-based Node.js ORM for Postgres, MySQL, MariaDB, SQLite, and Microsoft SQL Server.",
+    "usage": "I prefer to use Sequelize to manage sql databases and validation",
+    "png": "/media/logos/Sequelize.png",
+    "svg": "/media/logos/Sequelize.png",
+    "url": "https://sequelize.org/"
+  },
+  {
+    "name": "SSH",
+    "description": "SSH provides secure access to the remote server that hosts and maintains the blog.",
+    "png": "/media/logos/SSH.png",
+    "svg": "/media/logos/SSH.svg",
+    "url": "https://www.openssh.com/"
+  },
+  {
+    "name": "Tailwind",
+    "description": "Tailwind CSS is a utility-first CSS framework for rapidly building custom user interfaces.",
+    "png": "/media/logos/Tailwind-CSS.png",
+    "svg": "/media/logos/Tailwind-CSS.svg",
+    "url": "https://tailwindcss.com/"
+  },
+  {
+    "name": "Tmux",
+    "description": "Tmux is a terminal multiplexer that allows multiple terminal sessions to be accessed and controlled from a single window. It is used during development and maintenance of the blog engine to persist long-running processes like the Express.js server, run concurrent tools like Nodemon and Mocha, and manage SSH sessions without interruption.",
+    "experience": "",
+    "usage": "My daily driver.",
+    "svg": "/media/logos/tmux-logomark.svg",
+    "url": "https://github.com/tmux/tmux/wiki"
+  },
+  {
+    "name": "VIM",
+    "description": "Vim is one of the editors used for writing and maintaining the blog engine and related tooling, alongside Visual Studio Code.",
+    "experience": "",
+    "usage": "Vim was my preferred IDE for a good length of time, but one day I tried neovim and never went back",
+    "png": "/media/logos/Vim.png",
+    "svg": "/media/logos/Vim.svg",
+    "url": "https://www.vim.org/"
+  },
+  {
+    "name": "Visual Studio",
+    "description": "Visual Studio is the integrated development environment used to build and debug the blog’s backend.",
+    "usage": "VSCode makes it really easy to install plugins and provides a full GUI, but after a while it just gets in the way",
+    "experience": "Too much",
+    "png": "/media/logos/Visual-Studio.png",
+    "svg": "/media/logos/Visual-Studio.svg",
+    "url": "https://visualstudio.microsoft.com/"
+  },
+  {
+    "name": "XML",
+    "description": "XML is used to generate the sitemap for the blog, enabling search engines to effectively index all published content.",
+    "png": "/media/logos/XML.png",
+    "svg": "/media/logos/XML.svg",
+    "url": "https://www.w3.org/XML/"
+  },
+  {
+    "name": "YAML",
+    "description": "YAML is used for site metadata and environment configuration, offering a more human-readable alternative to JSON where appropriate.",
+    "png": "/media/logos/YAML.png",
+    "svg": "/media/logos/YAML.svg",
+    "url": "https://yaml.org/"
+  },
+  {
+    "name": "Yarn",
+    "description": "Fast, reliable, and secure dependency management tool for JavaScript projects.",
+    "png": "/media/logos/Yarn.png",
+    "svg": "/media/logos/Yarn.png",
+    "url": "https://yarnpkg.com/"
+  }
+]

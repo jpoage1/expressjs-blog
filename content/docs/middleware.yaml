@@ -1,0 +1,212 @@
+logEvent:
+  Purpose: Records HTTP GET requests accepting HTML by inserting analytics data into SQLite.
+  "Lifecycle Role": Early middleware; logs request details asynchronously before route handlers.
+  Dependencies:
+    Upstream: []
+    Downstream::
+      - setupMiddleware
+      - Downstream modules using analytics data
+  "Data Flow":
+    Inputs:
+      - req.method
+      - req.accepts()
+      - req.ip
+      - req.connection.remoteAddress
+      - req.originalUrl
+      - headers: Referer, User-Agent
+    Outputs: Inserts new row in analytics SQLite table
+    "Side Effects": Database writes with potential I/O latency
+  "Performance and Scalability":
+    Bottlenecks:
+      - SQLite insert failures (DB locked, disk issues)
+      - DB write contention under high traffic
+      - Missing error handling around db.run
+      - No rate limiting or batching of analytics writes
+    Concurrency: None
+  "Security and Stability":
+    Validation: None
+    Vulnerabilities:
+      - Logging IP addresses raises privacy and GDPR concerns
+      - Direct DB writes without async error handling risks silent failures
+      - Lack of batching or async queue risks performance degradation
+  "Architecture Assessment":
+    Coupling: Direct DB interaction; no synchronous middleware communication
+    Abstraction: Simple logging middleware, no abstraction layers
+    Recommendations:
+      - Add async/await or callback error handling for db.run
+      - Implement event queue and batch inserts
+      - Anonymize or hash IP addresses
+      - Offload analytics to dedicated service/process
+      - Add rate limiting to middleware
+
+applyProductionSecurity:
+  Purpose: Sets HTTP security headers and middleware to harden production environment.
+  "Lifecycle Role": Early middleware; applies security headers and request filtering before routes.
+  Dependencies:
+    Upstream: []
+    Downstream:
+      - setupMiddleware
+  "Data Flow":
+    Inputs:
+      - HTTP request metadata: method, path, hostname
+    Outputs:
+      - Modified HTTP response headers
+      - Potential HTTP error responses blocking localhost access
+    "Side Effects": Blocks requests to localhost hostnames in production
+  "Performance and Scalability":
+    Bottlenecks:
+      - Incorrect hostname matching blocking valid traffic
+      - Misconfigured CSP breaking front-end resources
+      - No rate limiting reduces DoS protection
+    Concurrency: None
+  "Security and Stability":
+    Validation: CSP directives require careful maintenance
+    Vulnerabilities:
+      - Missing rate limiting middleware
+      - Potential issues blocking localhost in container or proxy setups
+  "Architecture Assessment":
+    Coupling: Integrates external modules helmet, hpp, custom xssSanitizer
+    Abstraction: Middleware chain with composable security layers
+    Recommendations:
+      - Add rate limiting middleware
+      - Validate CSP directives continuously
+      - Log blocked requests for monitoring
+      - Consider dynamic CSP based on environment or route
+
+authCheck:
+  Purpose: Verifies request authentication using cached tokens or external verification; IP whitelist bypass.
+  "Lifecycle Role": Early middleware before route handlers; sets req.isAuthenticated flag.
+  Dependencies:
+    Upstream: []
+    Downstream:
+      - baseContext
+      - controllers and route handlers using req.isAuthenticated
+  "Data Flow":
+    Inputs:
+      - req.headers.cookie
+      - req.headers.authorization
+      - req.ip
+    Outputs:
+      - req.isAuthenticated boolean
+    "Side Effects":
+      - External network request for verification
+      - In-memory cache eviction timer
+  "Performance and Scalability":
+    Bottlenecks:
+      - External auth service downtime causes auth failures
+      - Cache eviction may cause stale or excessive cache usage
+      - IP-based bypass vulnerable to spoofing
+    Concurrency: None
+  "Security and Stability":
+    Validation: Token and IP checks applied
+    Vulnerabilities:
+      - IP bypass risks unauthorized access
+      - No retry or fallback on auth service calls
+      - In-memory cache not scalable across instances
+  "Architecture Assessment":
+    Coupling: External auth endpoint, in-memory cache dependency
+    Abstraction: Auth verification abstracted via external service and cache
+    Recommendations:
+      - Remove or harden IP bypass mechanism
+      - Use distributed caching (Redis) for multi-instance
+      - Add retries and fallback for auth requests
+      - Log auth failures and suspicious IP bypass attempts
+
+baseContext:
+  Purpose: Builds base rendering context including authentication status and admin login URL.
+  "Lifecycle Role": Runs after auth middleware, before route handlers; prepares data for views.
+  Dependencies:
+    Upstream:
+      - authCheck
+      - utilities: getBaseContext, generateToken, qualifyLink
+    Downstream:
+      - route handlers and views using renderWithBaseContext or renderGenericMessage
+  "Data Flow":
+    Inputs:
+      - req.isAuthenticated
+      - request URL for links
+    Outputs:
+      - Sets res.locals.baseContext
+      - Extends res with custom render methods
+    "Side Effects": Prepares common template context for downstream rendering
+  "Performance and Scalability":
+    Bottlenecks:
+      - Potential token generation failure
+      - Possible async failure in getBaseContext
+    Concurrency: None
+  "Security and Stability":
+    Validation: Secure token generation required
+    Vulnerabilities:
+      - Risk of leaking sensitive info in base context
+  "Architecture Assessment":
+    Coupling: Depends on authCheck and utility functions
+    Abstraction: Centralized context builder for views
+    Recommendations:
+      - Validate cryptographic strength of token generator
+      - Cache static parts of base context to reduce async overhead
+
+csrfToken:
+  Purpose: Provides CSRF protection by setting token cookie and exposing token to templates.
+  "Lifecycle Role": Early middleware before state-changing routes requiring CSRF protection.
+  Dependencies:
+    Upstream: cookie-parser, csurf package
+    Downstream: POST or state-changing route handlers
+  "Data Flow":
+    Inputs:
+      - Request cookies and headers
+    Outputs:
+      - CSRF token cookie
+      - res.locals.csrfToken
+    "Side Effects": Blocks requests missing valid CSRF tokens
+  "Performance and Scalability":
+    Bottlenecks:
+      - Cookie parsing failure disables protection
+      - Incorrect token handling breaks forms
+    Concurrency: None
+  "Security and Stability":
+    Validation: Tokens verified on requests
+    Vulnerabilities:
+      - Requires secure cookie flags in production
+      - Tokens must be unguessable
+  "Architecture Assessment":
+    Coupling: Middleware integrating third-party packages
+    Abstraction: Standard CSRF protection abstraction
+    Recommendations:
+      - Ensure HttpOnly, Secure flags on cookies in production
+      - Handle token expiration gracefully
+
+errorHandler:
+  Purpose: Catches errors, logs them, and renders error pages or messages.
+  "Lifecycle Role": Final middleware in chain; handles errors from all prior middleware.
+  Dependencies:
+    Upstream: all routes and middleware
+    Downstream: none
+  "Data Flow":
+    Inputs: Error objects from previous middleware
+    Outputs: HTTP error responses with rendered error pages
+    "Side Effects": Logs errors to console or persistent logs
+  "Performance and Scalability":
+    Bottlenecks:
+      - Overly generic error messages
+      - Missing stack trace logging in production
+    Concurrency: None
+  "Security and Stability":
+    Validation: Sanitizes error output to avoid sensitive info leakage
+    Vulnerabilities:
+      - Potential info leakage if error messages expose internals
+  "Architecture Assessment":
+    Coupling: Last middleware, no downstream Dependencies
+    Abstraction: Centralized error handling abstraction
+    Recommendations:
+      - Log errors persistently with context
+      - Customize error messages to balance info and security
+
+"Cross Cutting Summary":
+  Themes:
+    - Most middleware operate early in the lifecycle before route handlers.
+    - "Common risk: lack of proper async error handling and logging."
+    - Security concerns include IP logging, token management, and bypass risks.
+    - Scalability limited by in-memory caches and direct DB writes without batching.
+    - Recommendations focus on adding async error handling, queuing, rate limiting, and using distributed caches.
+    - Coupling generally low to moderate; dynamic loading and external services introduce risks.
+    - Architectural improvements include abstraction of logging, centralized security controls, and fallback strategies for external Dependencies.

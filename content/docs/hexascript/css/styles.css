@@ -1,0 +1,99 @@
+body {
+  background-color: #111111;
+  color: var(--accent-primary);
+  font-family: Consolas, "Courier New", monospace;
+  line-height: 1.5;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+h1 {
+  color: #ffffff;
+  border-bottom: 2px solid #ffffff;
+  padding-bottom: 5px;
+}
+
+h2 {
+  color: #ffaa00;
+  border-bottom: 1px solid var(--accent-primary);
+  padding-bottom: 5px;
+  margin-top: 0;
+}
+
+h3 {
+  color: #00aaff;
+}
+h4 {
+  color: #00ffaa;
+}
+h5 {
+  color: #aaaaaa;
+}
+
+b {
+  color: #ffffff;
+}
+small {
+  color: var(--text-muted-alt)777;
+  font-style: normal;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0 0 0 2em;
+}
+
+/* Strip formatting from the absolute top level lists */
+main > ul,
+main > h1 + ul {
+  padding-left: 0;
+  list-style: none;
+}
+
+/* Box styling for top level items */
+main > ul > li {
+  background: #1a1a1a;
+  border: 1px solid var(--accent-primary);
+  padding: 2em;
+  margin-bottom: 2em;
+}
+
+/* Tree structure lines */
+li > ul,
+li > ol {
+  border-left: 1px solid #444444;
+  margin-left: -1em;
+  padding-left: 2em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+/* Hover tracking for the tree lines */
+li:hover > ul,
+li:hover > ol {
+  border-left: 1px solid #ffaa00;
+}
+
+li {
+  margin-bottom: 0.5em;
+}
+
+/* Dim the bullet points and numbers */
+li::marker {
+  color: var(--accent-primary);
+}

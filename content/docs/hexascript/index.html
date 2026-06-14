@@ -1,0 +1,977 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css" />
+    <title>Hexascript Design Documents</title>
+  </head>
+  <body>
+    <header>
+      <h1>Hexascript Design Documents</h1>
+    </header>
+    <nav class="nav-bar">
+      <div class="nav-link">
+        <a href="#/hierarchy">Hierarchy</a>
+      </div>
+      <div class="nav-link">
+        <a href="#/algorithm">Algorithm</a>
+      </div>
+      <div class="nav-menu">
+        <label>UML</label>
+        <nav>
+          <div class="nav-link">
+            <a href="#/uml/compiler">Compiler</a>
+          </div>
+          <div class="nav-link">
+            <a href="#/uml/frontend/classes">Frontend Classes</a>
+          </div>
+          <div class="nav-link">
+            <a href="#/uml/frontend/logic">Frontend Logic</a>
+          </div>
+          <div class="nav-link">
+            <a href="#/uml/backend">Backend</a>
+          </div>
+          <div class="nav-link">
+            <a href="#/uml/database">Database</a>
+          </div>
+        </nav>
+      </div>
+      <div class="nav-link">
+        <a href="#/testing_plans">Testing Plans</a>
+      </div>
+    </nav>
+    <main>
+      <ul>
+        <li>
+          <h2>Frontend</h2>
+          <ul>
+            <li>
+              <h3>Libraries</h3>
+              <ul>
+                <li>Typescript</li>
+                <li>Zodios</li>
+                <li>Svelte</li>
+                <li>NodeJS</li>
+              </ul>
+            </li>
+            <li>
+              <h3>Layout</h3>
+              <ul>
+                <li>
+                  <h4>Side pane</h4>
+                  <p><small>Research Modes</small></p>
+                  <ul>
+                    <li>Server Configuration</li>
+                    <li>
+                      <h5>Compiler</h5>
+                      <ul>
+                        <li>Compiler Configuration</li>
+                        <li>Abstract Syntax Tree</li>
+                        <li>Dataset Builder</li>
+                      </ul>
+                    </li>
+                    <li>
+                      <h5>Prompting</h5>
+                      <ul>
+                        <li>Research Modes</li>
+                        <li>Prompts</li>
+                        <li>Prompt Configuration</li>
+                        <li>Prompt Relations</li>
+                        <li>Inference Window</li>
+                      </ul>
+                    </li>
+                    <li>
+                      <h5>Trace</h5>
+                      <ul>
+                        <li>Logs</li>
+                      </ul>
+                    </li>
+                    <li>
+                      <h5>WBS</h5>
+                      <ul>
+                        <li>Tasks</li>
+                        <li>Phases</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <h4>Status Bar</h4>
+                  <ul>
+                    <li>Compile</li>
+                    <li>Prompt</li>
+                    <li>WBS</li>
+                    <li>UML</li>
+                  </ul>
+                </li>
+                <li>
+                  <h4>Content area</h4>
+                  <ul>
+                    <li>Terminal</li>
+                    <li>LLM Prompt</li>
+                    <li>WBS</li>
+                  </ul>
+                </li>
+                <li>Notifications</li>
+              </ul>
+            </li>
+            <li>
+              <h3>Classes</h3>
+              <ul>
+                <li>
+                  <h4>Base Classes</h4>
+                  <ul>
+                    <li>BaseState</li>
+                    <li>BaseLibrary</li>
+                    <li>BaseCRUD</li>
+                  </ul>
+                </li>
+                <li>
+                  <h4>Data Classes</h4>
+                  <ul>
+                    <li>Prompt / PromptLibrary</li>
+                    <li>PromptConfig / PromptConfigLibrary</li>
+                    <li>PromptPair / PromptPairLibrary</li>
+                    <li>ResearchTier / ResearchTierLibrary</li>
+                    <li>LLMModel / LLMModelLibrary</li>
+                    <li>LLMServer / LLMServerLibrary</li>
+                    <li>Server / ServerLibrary</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <h3>UI Components</h3>
+              <ul>
+                <li>DynamicField</li>
+                <li>CrudModelView</li>
+                <li>GenericForm</li>
+                <li>TaskEditorModal</li>
+                <li>GenericListView</li>
+                <li>CollapsablePane</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <h2>Backend</h2>
+          <ul>
+            <li>
+              <h3>Libraries</h3>
+              <ul>
+                <li>PyDantic</li>
+                <li>SQL Alchemy</li>
+                <li>PyDantic</li>
+                <li>FastAPI</li>
+                <li>Unicorn</li>
+                <li>SQLLite</li>
+              </ul>
+            </li>
+            <li>
+              <h3>Components</h3>
+              <ul>
+                <li>Engine</li>
+                <li>ASTSerializer</li>
+                <li>Controllers</li>
+                <li>Router / Endpoints</li>
+                <li>Database</li>
+                <li>
+                  <h4>API Schema</h4>
+                  <ul>
+                    <li>Create</li>
+                    <li>Read</li>
+                    <li>Update</li>
+                    <li>Delete</li>
+                  </ul>
+                </li>
+                <li>Migrations &amp; Seeds</li>
+              </ul>
+            </li>
+            <li>
+              <h3>Database Models & API Endpoints</h3>
+              <ul>
+                <li>ResearchMode</li>
+                <li>Prompt</li>
+                <li>PromptConfig</li>
+                <li>PromptPair</li>
+                <li>CompilerConfig</li>
+                <li>Manifest</li>
+                <li>BatchJob</li>
+                <li>CompilerJob</li>
+                <li>LLMModel</li>
+                <li>LLMServer</li>
+                <li>WBSPhase</li>
+                <li>WBSTask</li>
+              </ul>
+            </li>
+            <li>
+              <h3>Payloads</h3>
+              <ul>
+                <li>CommandPayload</li>
+                <li>DispatchContext</li>
+              </ul>
+            </li>
+            <li>
+              <h3>Artifacts &amp; Persistent storage</h3>
+              <ul>
+                <li>CompileJobs</li>
+                <li>BatchJobs</li>
+                <li>AST / Source Code</li>
+                <li>Binary Code</li>
+                <li>BuildRegistry</li>
+              </ul>
+            </li>
+            <li>
+              <h3>Functionality</h3>
+              <ul>
+                <li>API Server</li>
+                <li>Database Storage</li>
+                <li>Compiler Interface</li>
+                <li>Data Generation</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <h2>Compiler</h2>
+          <ul>
+            <li>
+              <h3>5 Step Pipeline</h3>
+              <ol>
+                <li>
+                  Frontend Lex/Parse (JSON AST to `ILanguageProvider`
+                  validation).
+                </li>
+                <li>
+                  Seeded Interning (Function/Object to Base 38 Macro mapping).
+                </li>
+                <li>Linearization (AST to 1D token stream).</li>
+                <li>Logic Squeeze (SSA reduction, constant folding, DCE).</li>
+                <li>
+                  Tier 0 Emission (.hex binary generation and Shadow Alias
+                  Registry mapping).
+                </li>
+              </ol>
+            </li>
+            <li>
+              <h3>Components</h3>
+              <ul>
+                <li>DocumentWriter</li>
+                <li>Artifacts</li>
+                <li>Driver</li>
+                <li>RunConfig</li>
+                <li>CompilationResult/Manifest</li>
+                <li>ISRMap</li>
+                <li>Interner</li>
+                <li>ConfigProxy</li>
+                <li>Optimizer</li>
+                <li>SchemaBuilder</li>
+                <li>OptionDef</li>
+                <li>ILanguageProvider</li>
+                <li>SymbolRegistry</li>
+                <li>RotatingFileSink</li>
+                <li>TokenRegistry</li>
+                <li>VM</li>
+              </ul>
+            </li>
+            <li>
+              <h3>C++ Pybindings</h3>
+              <ul>
+                <li>Manifest</li>
+                <li>RunConfig</li>
+                <li>process_single_mission</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <h1>UML</h1>
+      <ul>
+        <li>
+          <h2>Frontend</h2>
+          <pre class="mermaid">
+classDiagram
+    class App {
+        +TerminalController ctrl
+        +String researchMode
+    }
+
+    class TerminalController {
+        +Dataset dataset
+        +CompilerConfig compilerConfig
+        +String apiUri
+        +Object systemStatus
+        +executeCommand(commandName)
+        +pollForResult(build_id)
+        +handleMutation()
+        +syncSystemLogs()
+    }
+
+    class Terminal {
+        +String terminalInput
+        +dispatchMutation()
+    }
+
+    class ASTViewer {
+        +Object data
+        +renderTree()
+    }
+
+    class RegisterGrid {
+        +Object registers
+        +Array gridData
+    }
+
+    class SystemLog {
+        +Array logs
+        +autoScroll()
+    }
+
+    class DatasetBuilder {
+        +startBuild(count, depth)
+        +pollDataset()
+        +stopBuild()
+    }
+
+    App *-- TerminalController
+    App *-- Terminal
+    App *-- ASTViewer
+    App *-- RegisterGrid
+    App *-- SystemLog
+    TerminalController *-- DatasetBuilder
+        </pre
+          >
+        </li>
+        <li>
+          <h2>Backend</h2>
+          <pre class="mermaid">
+classDiagram
+    direction TB
+
+    class BaseRouter {
+        &lt;&lt;Gateway&gt;&gt;
+        +handler
+        +setup_routes()
+    }
+
+    class CommandPayload {
+        &lt;&lt;Pydantic&gt;&gt;
+        +String command
+        +Dict selections
+        +String code
+        +DispatchContext context
+    }
+
+    class HexaCore {
+        &lt;&lt;Service&gt;&gt;
+        +compile_and_run(model_type, code, seed)
+        +create_job(payload, db)
+        +run_saved_job(build_id)
+        +get_compiler_capabilities()
+    }
+
+    class BaseController {
+        &lt;&lt;Generic&gt;&gt;
+        +get_all()
+        +get_by_id(id)
+        +create(payload)
+        +update(payload)
+        +delete(id)
+    }
+
+    class CompileJobController {
+        &lt;&lt;Controller&gt;&gt;
+    }
+
+    class ManifestController {
+        &lt;&lt;Controller&gt;&gt;
+    }
+
+    class ASTController {
+        &lt;&lt;Controller&gt;&gt;
+    }
+
+    class CompileJob {
+        &lt;&lt;ORM&gt;&gt;
+        +int id
+        +String status
+        +int ast_id
+        +int config_id
+        +int manifest_id
+    }
+
+    class BuildRegistry {
+        &lt;&lt;ORM&gt;&gt;
+        +int id
+        +String label
+        +int compiler_config_id
+        +int ast_id
+        +from_payload()
+    }
+
+    class Manifest {
+        &lt;&lt;ORM&gt;&gt;
+        +int id
+        +JSON vm_state
+        +JSON integrity
+        +JSON return_status
+    }
+
+    class AST {
+        &lt;&lt;ORM&gt;&gt;
+        +int id
+        +String file_hash
+        +String file_path
+        +String code()
+        +JSON ast_json()
+        +create_from_code()
+    }
+
+    class CompilerConfig {
+        &lt;&lt;ORM&gt;&gt;
+        +int id
+        +String name
+        +Boolean is_active
+        +inject_columns()
+    }
+
+    BaseRouter --&gt; BaseController : Routes to
+    BaseController &lt;|-- CompileJobController
+    BaseController &lt;|-- ManifestController
+    BaseController &lt;|-- ASTController
+
+    CommandPayload --&gt; HexaCore : Validates &amp; Ingests
+    HexaCore ..&gt; CompileJob : Initializes
+    HexaCore ..&gt; Manifest : Hydrates from C++
+
+    CompileJob "1" --&gt; "1" AST : Requires
+    CompileJob "1" --&gt; "1" CompilerConfig : Requires
+    CompileJob "1" --&gt; "1" Manifest : Produces
+
+    BuildRegistry "1" --&gt; "1" AST : Tracks
+    BuildRegistry "1" --&gt; "1" CompilerConfig : Tracks
+    BuildRegistry "1" --&gt; "1" Manifest : Links
+        </pre
+          >
+        </li>
+        <li>
+          <h2>Compiler</h2>
+          <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    participant FE as Frontend (Svelte)
+    participant API as FastAPI (Backend)
+    participant DB as SQLite (BuildRegistry)
+    participant PYB as Pybind11 (libhexacore)
+    participant CFG as hexa::RunConfig
+    participant DRV as hexa::Driver
+    participant VM as hexa::VM (Proprietary Engine)
+    participant DW as hexa::DocumentWriter
+
+    FE->>API: POST /dispatch (Source, CompilerConfig)
+    API->>DB: Insert CompileJob (Status: PENDING)
+    API->>PYB: process_single_mission(config_dict, ast_json)
+
+    rect rgb(30, 30, 30)
+        Note over PYB, DW: C++ Core Execution Subsystem
+        PYB->>CFG: RunConfig::from_json(config_dict)
+        PYB->>DRV: process_single_mission(config, ast)
+        DRV->>VM: Initialize CompilerContext & Execute Pipeline
+        Note over VM: Pass 1-5 Execution (Black Box)
+        VM-->>DRV: Execution Complete (VMState, Registers)
+        DRV->>DW: generate_report(status)
+        DW-->>DRV: Telemetry & Artifacts JSON
+        DRV-->>PYB: CompilationResult
+    end
+
+    PYB-->>API: Native Python Dict (Manifest Data)
+    API->>DB: Update CompileJob (COMPLETED) & Insert Manifest
+    API-->>FE: Return Execution Telemetry & Artifacts
+
+        </pre
+          >
+        </li>
+        <li>
+          <h2>Integration</h2>
+          <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    participant FE as Frontend (Svelte 5)
+    participant API as FastAPI (Backend)
+    participant DB as SQLite (Registry)
+    participant CPP as C++ Core (LibHexa)
+    participant FS as Git-Backed Filesystem
+
+    FE->>API: POST /dispatch (Source + Config)
+    API->>DB: Hash Check (Idempotency Guard)
+    alt Unique Hash
+        API->>FS: Write Source & Git Commit
+    end
+    API->>DB: Initialize CompileJob (Status: PENDING)
+    API-->>FE: Return build_id
+    loop Telemetry Synchronization
+        FE->>API: GET /task/{build_id}
+    end
+    API->>CPP: process_single_mission(AST, ConfigProxy)
+    CPP->>CPP: 5-Pass Compile & VM Execution
+    CPP-->>API: CompilationResult (Manifest, VMState)
+    API->>DB: Update CompileJob (Status: COMPLETED)
+    API-->>FE: Task Status: SUCCESS + Payload
+    FE->>FE: Hydrate State (ASTViewer, RegisterGrid)
+        </pre
+          >
+        </li>
+      </ul>
+      <h1>Pipeline Algorithm</h1>
+      <ul>
+        <li>
+          <h3>Basic CRUD Operations</h3>
+          <ol>
+            <li>
+              <h4>Create</h4>
+              <ol>
+                <li>
+                  <b>The frontend</b>
+                  <ul>
+                    <li>Opens the Prompt Registry pane</li>
+                    <li>
+                      Validates the payload before sending it to the server
+                    </li>
+                    <li>Sends a POST request to the backend</li>
+                  </ul>
+                </li>
+                <li>
+                  <b>The backend</b>
+                  <ul>
+                    <li>receives the request</li>
+                    <li>Validates the payload</li>
+                    <li>Stores the record in the database</li>
+                    <li>Sends a response to the frontend</li>
+                  </ul>
+                </li>
+                <li>
+                  <b>The frontend</b>
+                  <ul>
+                    <li>Receives the response from the backend</li>
+                    <li>Notifies the user of succes or failure</li>
+                  </ul>
+                </li>
+              </ol>
+            </li>
+            <li>
+              <h4>Read</h4>
+              <ol>
+                <li>
+                  <b>The frontend</b>
+                  <ul>
+                    <li>Opens the Prompt Registry pane</li>
+                    <li>Sends a GET request to the backend, requesting data</li>
+                  </ul>
+                </li>
+                <li>
+                  <b>The backend</b>
+                  <ul>
+                    <li>Receives the request</li>
+                    <li>Validates the payload</li>
+                    <li>Fetches the record from the database</li>
+                    <li>Sends a response to the frontend</li>
+                  </ul>
+                </li>
+                <li>
+                  <b>The frontend</b>
+                  <ul>
+                    <li>Receives the response from the backend</li>
+                    <li>Hydrates the Promp Registry</li>
+                  </ul>
+                </li>
+              </ol>
+            </li>
+            <li>
+              <h4>Update</h4>
+              <ol>
+                <li>
+                  <b>The frontend</b>
+                  <ul>
+                    <li>Opens the Prompt Registry pane</li>
+                    <li>Makes local changes to an existing record</li>
+                    <li>
+                      Validates the payload before sending it to the server
+                    </li>
+                    <li>Sends an UPDATE request to the backend</li>
+                  </ul>
+                </li>
+                <li>
+                  <b>The backend</b>
+                  <ul>
+                    <li>Receives the request</li>
+                    <li>Validates the payload</li>
+                    <li>Updates the record in the database</li>
+                    <li>Sends a response to the frontend</li>
+                  </ul>
+                </li>
+                <li>
+                  <b>The frontend</b>
+                  <ul>
+                    <li>Receives the response from the backend</li>
+                    <li>Notifies the user of success or failure</li>
+                  </ul>
+                </li>
+              </ol>
+            </li>
+            <li>
+              <h4>Delete</h4>
+              <ol>
+                <li>
+                  <b>The frontend</b>
+                  <ul>
+                    <li>Opens the Prompt Registry pane</li>
+                    <li>Locates an existing record</li>
+                    <li>
+                      Validates the payload before sending it to the server
+                    </li>
+                    <li>Sends a DELETE request to the backend</li>
+                  </ul>
+                </li>
+                <li>
+                  <b>The backend</b>
+                  <ul>
+                    <li>Receives the request</li>
+                    <li>Validates the payload</li>
+                    <li>Deletes the record from the database</li>
+                    <li>Sends a response to the frontend</li>
+                  </ul>
+                </li>
+                <li>
+                  <b>The frontend</b>
+                  <ul>
+                    <li>Receives the response from the backend</li>
+                    <li>Notifies the user of success or failure</li>
+                  </ul>
+                </li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+        <li>
+          <h3>Compiler Job</h3>
+          <ol>
+            <li>
+              <h4>Frontend Initialization</h4>
+              <ul>
+                <li>
+                  Opens the compiler configuration pane and establishes
+                  settings.
+                </li>
+                <li>Opens the terminal and selects the target script.</li>
+                <li>Validates the payload data structure.</li>
+              </ul>
+            </li>
+            <li>
+              <h4>Job Dispatch</h4>
+              <ul>
+                <li>
+                  Frontend transmits the payload to the server via HTTP POST.
+                </li>
+                <li>Server receives and validates the incoming payload.</li>
+                <li>
+                  Server responds with a unique Job ID and begins asynchronous
+                  execution.
+                </li>
+                <li>
+                  Frontend subscribes to the task by initiating a polling loop
+                  (HTTP GET) using the Job ID.
+                </li>
+              </ul>
+            </li>
+            <li>
+              <h4>Native Compilation</h4>
+              <ul>
+                <li>
+                  Server passes the validated payload to the C++ compiler via
+                  Pybind11.
+                </li>
+                <li>
+                  Compiler executes the pipeline and saves output artifacts to
+                  disk.
+                </li>
+                <li>
+                  Compiler returns the execution manifest back across the
+                  Pybind11 boundary.
+                </li>
+              </ul>
+            </li>
+            <li>
+              <h4>State Synchronization</h4>
+              <ul>
+                <li>
+                  Backend receives the manifest and persists it to the database.
+                </li>
+                <li>
+                  Frontend polling loop detects the job status transition from
+                  "building" to "success".
+                </li>
+                <li>
+                  Frontend issues a final GET request to fetch the manifest and
+                  hydrate the interface.
+                </li>
+              </ul>
+            </li>
+          </ol>
+        </li>
+        <li>
+          <h3>Neural Request</h3>
+          <ol>
+            <li>
+              <h4>Frontend Initialization</h4>
+              <ul>
+                <li>Opens the prompt dashboard.</li>
+                <li>
+                  Selects a designated PromptPair and target Python script.
+                </li>
+                <li>Validates the payload data structure.</li>
+              </ul>
+            </li>
+            <li>
+              <h4>Backend Dispatch</h4>
+              <ul>
+                <li>
+                  Frontend transmits the payload to the server via HTTP POST.
+                </li>
+                <li>Backend receives and validates the incoming request.</li>
+                <li>
+                  Backend persists the initial payload state in the database.
+                </li>
+              </ul>
+            </li>
+            <li>
+              <h4>LLM Execution & Persistence</h4>
+              <ul>
+                <li>
+                  Backend routes the payload to the designated local LLM server
+                  via HTTP POST.
+                </li>
+                <li>
+                  LLM server processes the prompt and returns the generated
+                  inference.
+                </li>
+                <li>
+                  Backend receives the inference result and updates the database
+                  record.
+                </li>
+              </ul>
+            </li>
+            <li>
+              <h4>State Synchronization</h4>
+              <ul>
+                <li>
+                  Backend returns the final inference response to the frontend.
+                </li>
+                <li>
+                  Frontend renders the comparative results within the dual-pane
+                  Inference Window.
+                </li>
+              </ul>
+            </li>
+          </ol>
+        </li>
+      </ul>
+      <h1>Testing Plan</h1>
+      <ul>
+        <li>
+          <h2>1. C++ Pybindings Validation (GTest &amp; Pytest)</h2>
+          <ul>
+            <li>
+              <b>Test Cases:</b>
+              <ul>
+                <li>
+                  <code>test_safe_assign_binding_integrity</code>: Pass Boolean,
+                  Integer, and Enum string types from Python dictionaries into
+                  C++ <code>hexa::RunConfig</code> via Pybind11.
+                </li>
+                <li>
+                  <code>TestManifestBridge</code>: Validate C++
+                  <code>hexa::CompilationResult</code> properties correctly
+                  reflect into Python <code>ManifestModel</code> schema.
+                </li>
+                <li>
+                  <code>ConfigSafetyTest.HandlesMalformedJSONInjection</code>:
+                  Inject deeply nested or malformed JSON payloads into
+                  <code>RunConfig::from_json</code>.
+                </li>
+              </ul>
+            </li>
+            <li>
+              <b>Expected Outcomes:</b> C++ layer extracts Python variables
+              without segmentation faults. Type mismatches or overflows trigger
+              controlled fallbacks or raise caught
+              <code>std::invalid_argument</code> exceptions passed back to
+              Python. <code>Manifest</code> generation strictly enforces
+              mandatory fields.
+            </li>
+            <li>
+              <b>Verification Methods:</b> Pytest assertions on data type
+              mapping (<code>isinstance</code>). GTest
+              <code>EXPECT_NO_THROW</code> and <code>EXPECT_EQ</code> ensuring
+              safe fallback values (e.g., <code>SEEDLESS_VALUE</code>).
+            </li>
+          </ul>
+        </li>
+        <li>
+          <h2>2. Class Object Integrity (C++, Python, TypeScript)</h2>
+          <ul>
+            <li>
+              <b>Test Cases:</b>
+              <ul>
+                <li>
+                  <i>C++ Core:</i> <code>OptimizerLogicTest</code> for dead code
+                  elimination and constant folding;
+                  <code>LinearizerTest</code> for nested math AST translation;
+                  <code>VMTest</code> for memory bound checks
+                  (<code>HighRegisterPressure</code>), loop termination, and
+                  stack underflow logic.
+                </li>
+                <li>
+                  <i>Python Backend:</i> <code>TestOracle</code> and
+                  <code>HexaASTSerializer</code> for validating accurate
+                  translation of native Python <code>ast</code> nodes to JSON.
+                </li>
+                <li>
+                  <i>TypeScript Frontend:</i> <code>BaseCRUD</code> memento
+                  pattern tests (<code>isDirty</code> flag logic).
+                  <code>BaseLibrary</code> collection hydration.
+                </li>
+              </ul>
+            </li>
+            <li>
+              <b>Expected Outcomes:</b> Optimizer reduces AST complexity without
+              altering deterministic output. VM halts predictably on stack
+              underflow or type mismatch (<code>ThrowsOnTypeMismatch</code>). TS
+              models track local state mutations and revert cleanly.
+            </li>
+            <li>
+              <b>Verification Methods:</b> GTest executing bytecode and
+              validating literal extraction (<code>get_double</code>). Pytest
+              validating dictionary structure of serialized AST. Vitest
+              verifying Svelte <code>$state</code> reactivity and dirty flags.
+            </li>
+          </ul>
+        </li>
+        <li>
+          <h2>3. Backend Endpoint &amp; Pydantic Structure Validation</h2>
+          <ul>
+            <li>
+              <b>Test Cases:</b>
+              <ul>
+                <li>
+                  <code>TestCompilerConfigDynamicOrchestration</code>: Verify
+                  FastAPI endpoint schema matches the dynamically generated C++
+                  <code>SchemaBuilder</code> payload.
+                </li>
+                <li>
+                  <code>test_dispatch_pipeline_success</code>: Post
+                  <code>CommandPayload</code> to
+                  <code>/api/dispatch</code> triggering database entry and
+                  background worker queue.
+                </li>
+                <li>
+                  <code>TestCompileJobOrchestration</code>: Validate DB
+                  integrity and cascading foreign keys across <code>AST</code>,
+                  <code>CompilerConfig</code>, and <code>CompileJob</code>.
+                </li>
+              </ul>
+            </li>
+            <li>
+              <b>Expected Outcomes:</b> API endpoints correctly enforce
+              <code>BatchConfig</code> and <code>CommandPayload</code> Pydantic
+              contracts. Missing required fields yield
+              <code>422 Unprocessable Entity</code>. Authorized requests insert
+              SQLite records and spawn multiprocessing tasks successfully.
+            </li>
+            <li>
+              <b>Verification Methods:</b> Pytest
+              <code>TestClient</code> executing HTTP requests. SQLAlchemy
+              <code>inspect(CompilerConfig)</code> asserting exact column parity
+              with C++ configuration definitions.
+            </li>
+          </ul>
+        </li>
+        <li>
+          <h2>4. Frontend Data Dispatch Accuracy</h2>
+          <ul>
+            <li>
+              <b>Test Cases:</b>
+              <ul>
+                <li>
+                  <code>BaseCRUD.Validation</code>: Pass invalid/incomplete
+                  forms into TS model before dispatch.
+                </li>
+                <li>
+                  <code>getValidPayload</code>: Verify stripping of UI-only
+                  properties (e.g., <code>isEditing</code>) before network
+                  transmission.
+                </li>
+              </ul>
+            </li>
+            <li>
+              <b>Expected Outcomes:</b> Zod schemas intercept malformed data
+              client-side, throwing <code>ValidationError</code> and halting
+              <code>fetch</code>. Generated payloads strictly match the
+              backend's expected JSON format.
+            </li>
+            <li>
+              <b>Verification Methods:</b> Vitest
+              <code>expect(() =&gt; getValidPayload(true)).toThrow()</code>.
+              Spying on internal <code>apiFetch</code> calls to assert the shape
+              of the intercepted HTTP body.
+            </li>
+          </ul>
+        </li>
+        <li>
+          <h2>5. End-to-End API Integration &amp; Telemetry Synchronization</h2>
+          <ul>
+            <li>
+              <b>Test Cases:</b>
+              <ul>
+                <li>
+                  <code>runIntegrationSuite</code>: Execute chained sequence
+                  creating <code>ResearchTier</code> -&gt;
+                  <code>LLMServer</code> -&gt; <code>Prompt</code> -&gt;
+                  <code>LLMModel</code> -&gt; <code>PromptConfig</code>.
+                </li>
+                <li>
+                  <code>FullChainTest</code>: Inject Python AST payload, execute
+                  compiler pass, and await trace result.
+                </li>
+              </ul>
+            </li>
+            <li>
+              <b>Expected Outcomes:</b> System maintains state synchronization
+              across the network boundary. C++ execution yields physical
+              <code>.hex</code> and <code>.meta.json</code> files. Database
+              accurately links execution <code>Manifest</code> to the original
+              <code>CompileJob</code>. WebSocket/Polling loops hydrate the UI
+              <code>RegisterGrid</code> and <code>ASTViewer</code> with zero
+              data mutation.
+            </li>
+            <li>
+              <b>Verification Methods:</b> Vitest polling tests resolving
+              simulated backend responses. GTest
+              <code>fs::exists</code> verifying absolute file paths of generated
+              artifacts in the scoped temporary workspace.
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </main>
+    <footer>
+      <p><!-- Placeholder --></p>
+    </footer>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "dark", // Matches your custom CSS theme
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,38 @@
+The Word Guesser Enhanced
+Objective:
+In this project, you will build an enhanced version of your word guessing game. This version allows for words and phrases, multiple rounds, tracks performance, and includes a scoreboard.
+
+Requirements:
+Once the player chooses to stop display their results on a scoreboard
+Guess button
+Display number of incorrect guesses
+Display Scoreboard
+Functionality:
+Create a function guessLetter(letter)
+Display the lettered guessed
+if correct update the word they are guessing
+if incorrect update the letters guessed
+Increase guess count ONLY for incorrect guesses
+Set the limit of guesses not to exceed 3 times the number of letters in the word/phrase
+Win Condition:
+When word/phrase is correct:
+
+Show success message
+Display performance rating - same as in project #1
+Ask the user if they want to play again
+Scoreboard:
+Total words completed
+Total incorrect guesses
+Average guesses per word
+Average time per word
+Extra Credit (7.5 Points):
+Store the score board information in an external file in the following format:
+Player Name, Total Words Completed, Total incorrect guesses, Average guesses per word, Average time per word.
+Each time a player finishes a session, their results should be appended to the file rather than overwriting existing data. This ensures the file maintains a history of all players’ performance over time.
+
+
+Main Project Folder - in the following format - LastNameProject2 such as PayneProject2
+At the top of each file, include a block comment with:
+Your name
+Assignment name (Lab Chapter #)
+Date

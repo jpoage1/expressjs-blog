@@ -1,0 +1,31 @@
+{{!-- hexascript_docs.hbs --}}
+<div class="content-container">
+    {{#if type}}
+        {{!-- CASE: HTML Injection --}}
+        {{#if (eq type "html")}}
+            <div class="html_content">
+                {{{content}}}
+            </div>
+        {{/if}}
+
+        {{!-- CASE: Mermaid Diagram Injection --}}
+        {{#if (eq type "mermaid")}}
+            <pre class="mermaid">
+{{{content}}}
+            </pre>
+        {{/if}}
+
+        {{!-- CASE: Iframe Injection --}}
+        {{#if (eq type "frame")}}
+            <div class="iframe_wrapper">
+                <iframe src="{{route}}" frameborder="0" style="width:100%; height:80vh;"></iframe>
+            </div>
+        {{/if}}
+    {{else}}
+        {{!-- CASE: No Context (Index Page) --}}
+        <div class="index_content">
+            <h1>Documentation Index</h1>
+            <p>Select a topic from the navigation to begin.</p>
+        </div>
+    {{/if}}
+</div>

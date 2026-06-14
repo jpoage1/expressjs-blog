@@ -1,0 +1,559 @@
+{
+  "meta": {
+    "active_profile": "swe",
+    "profiles": {
+      "swe": { "label": "Software Engineer" },
+      "systems": { "label": "Systems Engineer" },
+      "backend": { "label": "Backend Engineer" },
+      "fullstack": { "label": "Full-Stack Engineer" },
+      "internal": { "label": "Internal Transfer" },
+      "internal-tech": { "label": "Internal (Technical)" },
+      "internal-lateral": { "label": "Internal (Lateral)" }
+    }
+  },
+  "name": "JASON POAGE",
+  "website": "https://jasonpoage.com",
+  "demographics": {
+    "city": "Panama City",
+    "state": "FL",
+    "zip": "32401"
+  },
+  "contact_information": {
+    "cell": "813-624-8092",
+    "email": "jason.poage91@gmail.com"
+  },
+  "education": [
+    {
+      "from": "August 2026",
+      "to": "Expected 2028",
+      "degree": "Bachelor of Science",
+      "program": "Computer Science",
+      "institution": "University of Florida",
+      "city": "Panama City",
+      "state": "FL"
+    },
+    {
+      "from": "June 2024",
+      "to": "May 2026",
+      "degree": "Associate of Science",
+      "program": "Software and Database Developer",
+      "institution": "Gulf Coast State College",
+      "city": "Panama City",
+      "state": "FL"
+    },
+    {
+      "from": "",
+      "to": "May 2017",
+      "degree": "Associate of Arts",
+      "program": "Business",
+      "institution": "State College of Florida",
+      "city": "Bradenton",
+      "state": "FL"
+    }
+  ],
+  "work_history": [
+    {
+      "from": "October 2025",
+      "to": "Present",
+      "position": "Medicare Tier 2 CSR",
+      "company": "Maximus",
+      "profiles": ["swe", "systems", "backend", "fullstack", "internal"],
+      "responsibilities": [
+        {
+          "text": "Managed advanced escalations requiring precise regulatory interpretation, structured decision trees, and strict compliance with CMS policy frameworks.",
+          "profiles": ["swe", "systems", "backend", "fullstack"]
+        },
+        {
+          "text": "Handle advanced escalations including HICS complaints, mismarketing and misrepresentation cases, and suspected Original Medicare fraud referrals to Medicare Administrative Contractors.",
+          "profiles": ["internal"]
+        },
+        {
+          "text": "Process disenrollments and submit retroactive enrollment requests for beneficiaries affected by plan misrepresentation.",
+          "profiles": ["internal"]
+        },
+        {
+          "text": "Resolve complex inquiries involving denied claims, pharmacy and DME benefit disputes, and eligibility issues by applying Medicare Part A/B/D regulations.",
+          "profiles": ["internal"]
+        },
+        {
+          "text": "Perform authorizations and maintain strict compliance with HIPAA requirements governing PHI and PII disclosure.",
+          "profiles": ["swe", "systems", "backend", "fullstack", "internal"]
+        }
+      ]
+    },
+    {
+      "from": "March 2025",
+      "to": "September 2025",
+      "position": "Medicare Claims CSR",
+      "company": "Maximus",
+      "profiles": ["swe", "systems", "backend", "fullstack", "internal"],
+      "responsibilities": [
+        {
+          "text": "Received transfers from senior CSRs for complex claims requiring additional regulatory expertise.",
+          "profiles": ["swe", "systems", "backend", "fullstack", "internal"]
+        },
+        {
+          "text": "Conducted three-way calls with pharmacies to investigate and resolve Medicare coverage issues for durable medical equipment and diabetic supplies including CGMs.",
+          "profiles": ["internal"]
+        },
+        {
+          "text": "Guided beneficiaries through the five-step appeals process for denied hospital and medical claims.",
+          "profiles": ["internal"]
+        },
+        {
+          "text": "Updated Medicare Secondary Payer records and escalated provider issues when Medicare assignment agreement violations were identified.",
+          "profiles": ["internal"]
+        }
+      ]
+    },
+    {
+      "from": "August 2023",
+      "to": "December 2023",
+      "position": "Dual Nesting CSR (Temporary Assignment)",
+      "company": "Maximus",
+      "profiles": ["swe", "systems", "backend", "fullstack", "internal"],
+      "responsibilities": [
+        {
+          "text": "Selected as an in-person support resource for newly trained agents, demonstrating trust and expertise recognized by management.",
+          "profiles": ["swe", "systems", "backend", "fullstack"]
+        },
+        {
+          "text": "Served as an in-person support resource for newly trained agents during their four-week nesting period following classroom training.",
+          "profiles": ["internal"]
+        },
+        {
+          "text": "Coached agents toward independent escalation routing; primary success metric was agent self-sufficiency rather than reliance on direct assistance.",
+          "profiles": ["swe", "systems", "backend", "fullstack", "internal"]
+        }
+      ]
+    },
+    {
+      "from": "December 2022",
+      "to": "August 2023",
+      "position": "Dual Marketplace/Medicare CSR",
+      "company": "Maximus",
+      "profiles": ["internal"],
+      "responsibilities": [
+        {
+          "text": "Handled calls across both the Federal Marketplace and 1-800-MEDICARE programs, applying the applicable regulations and CMS database systems for each.",
+          "profiles": ["internal"]
+        },
+        {
+          "text": "Maintained HIPAA compliance for all interactions involving PHI and PII, including performing beneficiary authorizations.",
+          "profiles": ["internal"]
+        }
+      ]
+    },
+    {
+      "from": "August 2022",
+      "to": "December 2022",
+      "position": "Marketplace I CSR",
+      "company": "Maximus",
+      "profiles": ["internal"],
+      "responsibilities": [
+        {
+          "text": "Assisted consumers with completing Federal Marketplace applications, assessing Premium Tax Credit eligibility, and selecting health plans.",
+          "profiles": ["internal"]
+        },
+        {
+          "text": "Identified and reported potential Marketplace fraud per program guidelines.",
+          "profiles": ["internal"]
+        }
+      ]
+    }
+  ],
+  "technical_projects": [
+    {
+      "name": "Neural Logic Lab (Capstone)",
+      "profiles": ["swe", "systems", "backend", "fullstack"],
+      "featured": ["swe", "systems", "backend", "fullstack"],
+      "technologies": [
+        "C++20",
+        "Python",
+        "Svelte 5",
+        "TypeScript",
+        "FastAPI",
+        "WebSockets",
+        "SQLAlchemy",
+        "Pybind11",
+        "Nix",
+        "Docker",
+        "LLVM"
+      ],
+      "summary": "A high-performance research environment for transpiling Python logic into high-density bytecode (Hexascript IR) for LLM token-efficiency research and supervised fine-tuning dataset generation.",
+      "features": [
+        {
+          "text": "Architected a modular 5-pass compiler (Lex/Parse, Interning, Linearization, Logic Squeeze, DCE) and custom Tier-0 Virtual Machine with Instruction Set Randomization (ISR) via entropy seeding.",
+          "profiles": ["swe", "systems", "backend", "fullstack"]
+        },
+        {
+          "text": "Engineered a reactive Svelte 5 N-IDE with real-time WebSocket telemetry, side-by-side bytecode visualization, and dynamic CRUD forms auto-generated from Zod schemas.",
+          "profiles": ["swe", "fullstack"]
+        },
+        {
+          "text": "Built a Python FastAPI gateway using Pybind11 bindings to the C++ core, eliminating subprocess overhead and enabling live compilation telemetry streaming.",
+          "profiles": ["swe", "backend", "fullstack"]
+        },
+        {
+          "text": "Established end-to-end type normalization across C++, Python, SQLite, and TypeScript via Pydantic, SQLAlchemy, and Zod, driving the frontend UI directly from shared API contracts.",
+          "profiles": ["swe", "backend", "fullstack"]
+        },
+        {
+          "text": "Utilized surgical JSON patching for persistent UI state and themed dashboard management.",
+          "profiles": ["fullstack"]
+        }
+      ]
+    },
+    {
+      "name": "RootWars",
+      "profiles": ["swe", "systems"],
+      "featured": ["systems"],
+      "technologies": ["C++", "Qt/QML", "spdlog", "GTest"],
+      "summary": "A cyber-warfare RTS simulator built on a custom kernel architecture, featuring a Brainfuck-based bytecode compiler, hardware virtualization, and autonomous NPC agents with distinct AI behaviors.",
+      "features": [
+        {
+          "text": "Implemented a 3-pass Brainfuck compiler (tokenization, optimization, jump resolution) with peephole rewrites for OP_CLEAR and OP_MOVE_VAL patterns, and a MacroEngine supporting disk-based macro expansion.",
+          "profiles": ["swe", "systems"]
+        },
+        {
+          "text": "Designed a hierarchical BaseKernel with 10+ subsystems (CronDaemon, Firewall, NetworkManager, OrganizationManager, etc.) and a 42-syscall dispatch table mapping CLI commands to a virtual process execution model.",
+          "profiles": ["swe", "systems"]
+        },
+        {
+          "text": "Engineered autonomous BotKernel agents (Script Kiddie, Turtle, Sysadmin) with skill-based loadout shuffling, reaction timers, credit economies, and packet-based attack vectors.",
+          "profiles": ["swe", "systems"]
+        },
+        {
+          "text": "Virtualized /proc and /sys filesystem nodes using runtime lambda generators, syncing VFS state to host storage for live telemetry and forensic inspection.",
+          "profiles": ["systems"]
+        }
+      ]
+    },
+    {
+      "name": "Real-Time Telemetry Engine",
+      "profiles": ["swe", "systems", "backend"],
+      "featured": ["systems"],
+      "technologies": [
+        "C++20",
+        "CMake",
+        "Nix Flakes",
+        "WebSockets",
+        "Lua",
+        "sol2",
+        "nlohmann::json"
+      ],
+      "summary": "A multi-source systems performance monitor with sub-second polling resolution and a pluggable output ecosystem supporting desktop widgets, status bars, and remote WebSocket streams.",
+      "features": [
+        {
+          "text": "Architected a DataStreamProvider model using std::unique_ptr and a PIMPL pipeline pattern to isolate data acquisition (CPU, memory, disk, network, process) from presentation logic.",
+          "profiles": ["swe", "systems", "backend"]
+        },
+        {
+          "text": "Implemented jiffies-based delta polling for per-core CPU utilization and bytes-per-second network rates, with SSH-based remote collection via libssh.",
+          "profiles": ["swe", "systems"]
+        },
+        {
+          "text": "Delivered structured output to multiple frontends simultaneously: Eww/Yuck desktop widgets, Waybar JSON tooltips, gtkmm widgets, and raw WebSocket/TCP streams.",
+          "profiles": ["swe", "systems", "backend"]
+        },
+        {
+          "text": "Managed build and dependency graph via Nix Flakes for deterministic library versions across development and deployment environments.",
+          "profiles": ["systems"]
+        }
+      ]
+    },
+    {
+      "name": "Distributed Identity & Kerberos Pipeline",
+      "profiles": ["swe", "systems", "backend"],
+      "featured": ["systems"],
+      "technologies": [
+        "Python",
+        "OpenLDAP",
+        "Kerberos",
+        "bonsai",
+        "pytest",
+        "Hypothesis"
+      ],
+      "summary": "An idempotent automation pipeline for synchronizing a distributed OpenLDAP directory and Kerberos KDC from a central manifest, supporting full RBAC and SSO infrastructure.",
+      "features": [
+        {
+          "text": "Engineered an LDAPTask framework with idempotent ensure_entry/delete_entry operations, applying modifications only when live state diverges from the manifest.",
+          "profiles": ["swe", "systems", "backend"]
+        },
+        {
+          "text": "Implemented fine-grained ACLs securing Kerberos principal keys, and bootstrapped the KDC database within LDAP using kdb5_ldap_util.",
+          "profiles": ["swe", "systems"]
+        },
+        {
+          "text": "Built an isolated slapd test harness that spawns and tears down ephemeral LDAP instances for CI/CD validation with full test purity.",
+          "profiles": ["swe", "systems", "backend"]
+        },
+        {
+          "text": "Developed an LDAPVisualizer with an integrated fuzzer generating 500+ iterations of malformed DN strings to verify recursive tree-parsing stability.",
+          "profiles": ["swe", "systems", "backend"]
+        }
+      ]
+    },
+    {
+      "name": "Self-Hosted Infrastructure & Blog Engine",
+      "profiles": ["swe", "systems", "backend", "fullstack"],
+      "featured": ["systems"],
+      "technologies": [
+        "Node.js",
+        "Express.js",
+        "NGINX",
+        "OpenLDAP",
+        "Authelia",
+        "Kerberos",
+        "SSSD",
+        "OpenVPN",
+        "NixOS"
+      ],
+      "summary": "A fully self-hosted personal infrastructure spanning a Markdown-driven blog engine, centralized SSO identity stack, and hardened multi-node server environment.",
+      "features": [
+        {
+          "text": "Engineered a Markdown-driven blog engine using Express.js and Handlebars, decoupling content from presentation and serving static-like delivery from a dynamic Node.js backend.",
+          "profiles": ["swe", "backend", "fullstack"]
+        },
+        {
+          "text": "Implemented centralized identity management via OpenLDAP and Authelia with MFA-backed SSO, integrating SSSD and Kerberos across heterogeneous Debian and NixOS nodes.",
+          "profiles": ["swe", "systems"]
+        },
+        {
+          "text": "Administered self-hosted Git, NGINX reverse proxy, and Nextcloud under a unified domain with Let's Encrypt wildcard TLS and mTLS enforcement on sensitive subdomains.",
+          "profiles": ["swe", "systems"]
+        },
+        {
+          "text": "Managed client-side environment reproducibility via NixOS Flakes with remote access hardened through OpenVPN and SSH gateways.",
+          "profiles": ["systems"]
+        }
+      ]
+    },
+    {
+      "name": "Modular Pipeline Runner",
+      "profiles": ["swe", "systems", "backend"],
+      "featured": ["backend"],
+      "technologies": ["Python", "Nix Flakes", "Bash", "pytest", "Hypothesis"],
+      "summary": "A task-orchestration engine that replaces shell-based build scripts with zero-subprocess overhead for Python-native coordination across cross-language build and test pipelines.",
+      "features": [
+        {
+          "text": "Designed a registry-based task hierarchy (SuiteTask/SuiteSubTask) with singleton initialization, dependency resolution, dry-run support, and staged execution lifecycle.",
+          "profiles": ["swe", "systems", "backend"]
+        },
+        {
+          "text": "Implemented sh() and sh_thread() shell helpers with real-time I/O streaming, ANSI stripping, and structured ShellOutput for consistent cross-language error handling.",
+          "profiles": ["swe", "systems", "backend"]
+        },
+        {
+          "text": "Validated task registry uniqueness, printer state, and bootstrap logic using property-based fuzzing via Hypothesis alongside standard pytest coverage.",
+          "profiles": ["swe", "backend"]
+        }
+      ]
+    },
+    {
+      "name": "Command Orchestration TUI",
+      "profiles": ["systems", "backend"],
+      "featured": [],
+      "technologies": ["Python", "prompt_toolkit", "asyncio", "Nix"],
+      "summary": "A terminal-based command browser and execution environment with a modular plugin architecture for workspace discovery, filtering, and multi-mode subprocess launching.",
+      "features": [
+        {
+          "text": "Engineered an interactive TUI using prompt_toolkit with custom dialog logic, modal screens for command editing, and asyncio-driven non-blocking execution loops.",
+          "profiles": ["swe", "systems", "backend"]
+        },
+        {
+          "text": "Architected a plugin-based workspace engine supporting Python, Nix, Node.js, and Shell strategies with a filtering pipeline of regex, gitignore, and extension-based rules.",
+          "profiles": ["swe", "systems", "backend"]
+        },
+        {
+          "text": "Implemented a PTYManager for raw terminal forking and I/O streaming, with a CommandExecutor that auto-detects terminal emulators and handles PTY allocation for interactive processes.",
+          "profiles": ["swe", "systems"]
+        },
+        {
+          "text": "Integrated a SafeHelpDiscovery layer providing multi-tier command introspection via man pages, Python AST inspection, and Firejail sandboxing.",
+          "profiles": ["systems"]
+        }
+      ]
+    },
+    {
+      "name": "Multi-Environment Proxy Redirection Layer",
+      "profiles": ["backend", "fullstack"],
+      "featured": ["backend"],
+      "technologies": ["Python", "FastAPI", "CGI"],
+      "summary": "A framework-agnostic HTTP proxy redirect system with a shared core logic layer and specialized adapters for both modern FastAPI and legacy CGI execution environments.",
+      "features": [
+        {
+          "text": "Architected a ProxyRedirectBase orchestrator encapsulating redirect state transitions and health-check logic independently of the execution environment.",
+          "profiles": ["swe", "backend", "fullstack"]
+        },
+        {
+          "text": "Developed FastAPI and CGI subclass adapters that normalize divergent request/response models into a shared input contract without modifying core logic.",
+          "profiles": ["swe", "backend", "fullstack"]
+        },
+        {
+          "text": "Engineered dynamic 301/302 redirect responses with HTML meta-refresh bodies, standardized CGI headers, and custom 503 error templates for unreachable backends.",
+          "profiles": ["swe", "backend"]
+        },
+        {
+          "text": "Integrated a contextual debug logger targeting both a rotating log file and stderr fallback for tracing redirect flows across complex routing paths.",
+          "profiles": ["backend"]
+        }
+      ]
+    },
+    {
+      "name": "Infrastructure Health & Availability Pipeline",
+      "profiles": ["swe", "systems", "backend"],
+      "featured": [],
+      "technologies": ["Python", "pytest", "SMTP", "systemd"],
+      "summary": "A dependency-aware service health monitor with automated restart recovery, SMTP failure alerting, and a mock-heavy test suite validating multi-point failure scenarios.",
+      "features": [
+        {
+          "text": "Engineered a sequential dependency chain (slapd → SSSD → Authelia → NGINX) ensuring root-cause isolation before checking dependent application layers.",
+          "profiles": ["swe", "systems", "backend"]
+        },
+        {
+          "text": "Implemented ServiceTask, PortTask, and ServicePortTask primitives combining systemctl status checks, TCP socket probes, and journalctl forensics on retry exhaustion.",
+          "profiles": ["swe", "systems", "backend"]
+        },
+        {
+          "text": "Built a pluggable SMTP notification engine using Python dataclasses for clean separation of operational config from the core diagnostic logic.",
+          "profiles": ["swe", "backend"]
+        },
+        {
+          "text": "Validated retry loops, socket failure simulation, and pipeline composition using unittest with heavy patch/Mock coverage across multi-point failure scenarios.",
+          "profiles": ["swe", "backend"]
+        }
+      ]
+    },
+    {
+      "name": "Full-Stack Accounting & Budgeting Engine",
+      "profiles": ["swe", "backend", "fullstack"],
+      "featured": ["fullstack"],
+      "technologies": [
+        "Node.js",
+        "Express.js",
+        "React",
+        "SQL",
+        "Puppeteer",
+        "Mocha"
+      ],
+      "summary": "A hierarchical budget and transaction management system built on recursive SQL logic and the double-entry accounting equation, currently being revived with a modernized backend and API-as-a-service architecture.",
+      "features": [
+        {
+          "text": "Architected a recursive CTE-based budget model resolving complex parent-child hierarchies with dynamic property inheritance across nested budget categories.",
+          "profiles": ["swe", "backend", "fullstack"]
+        },
+        {
+          "text": "Enforced the double-entry accounting equation (Assets = Liabilities + Equity) at the data model level to guarantee structural financial integrity across all system nodes.",
+          "profiles": ["swe", "backend", "fullstack"]
+        },
+        {
+          "text": "Built automated bank data ingestion via Puppeteer request interception, and a RESTful API with dedicated endpoints for full transaction lifecycle management.",
+          "profiles": ["swe", "backend", "fullstack"]
+        },
+        {
+          "text": "Validated endpoint security and logic accuracy with a Mocha and Axios integration test suite covering GET/POST/DELETE cycles.",
+          "profiles": ["swe", "backend"]
+        }
+      ]
+    },
+    {
+      "name": "Lisp-Style Interpreter",
+      "profiles": ["systems"],
+      "featured": [],
+      "technologies": ["C", "AST Manipulation", "Recursive Descent Parsing"],
+      "summary": "A lightweight, deterministic state engine and internal DSL built to explore language design, recursive descent parsing, and manual memory management in C.",
+      "features": [
+        {
+          "text": "Implemented a recursive descent parser producing a structured AST for a Lisp-style grammar.",
+          "profiles": ["swe", "systems"]
+        },
+        {
+          "text": "Managed all memory allocation and deallocation manually, enforcing strict ownership and deallocation discipline.",
+          "profiles": ["systems"]
+        },
+        {
+          "text": "Designed the interpreter as a deterministic state machine to explore minimal language runtime semantics.",
+          "profiles": ["swe", "systems"]
+        }
+      ]
+    }
+  ],
+  "skills": {
+    "languages": [
+      "C++",
+      "C",
+      "Python",
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "TypeScript",
+      "Bash",
+      "Nix",
+      "SQL",
+      "MySQL",
+      "PostgreSQL",
+      "Haskell",
+      "PHP",
+      "Lua",
+      "Git",
+      "SSH",
+      "TOML"
+    ],
+    "tools": [
+      "git",
+      "yarn",
+      "npm",
+      "tmux",
+      "zsh",
+      "fish",
+      "corepack",
+      "storybook",
+      "cmake",
+      "ninja",
+      "ollama",
+      "Uvicorn",
+      "Helm"
+    ],
+    "frameworks": [
+      "Svelte",
+      "React",
+      "Prompt Toolkit",
+      "Sequelize",
+      "SQLAlchemy",
+      "Knex.js",
+      "pypind11",
+      "FastApi",
+      "Pydantic",
+      "Zod",
+      "Node.js"
+    ],
+    "operating_systems": [
+      "NixOS (Primary)",
+      "Arch Linux",
+      "Debian",
+      "Fedora",
+      "Windows 10",
+      "Windows 11"
+    ],
+    "infrastructure_and_admin": [
+      "Kerberos",
+      "LDAP",
+      "SSSD",
+      "Raspberry Pi Hosting",
+      "Docker",
+      "Kubernetes",
+      "NGINX",
+      "Tailscale",
+      "Jenkins"
+    ],
+    "methodologies": [
+      "Agile Development",
+      "Test-Driven Development (TDD)",
+      "Automated Fuzzing",
+      "5-Pass Compiler Design",
+      "Systematic Debugging",
+      "Atomic Deployment"
+    ]
+  }
+}

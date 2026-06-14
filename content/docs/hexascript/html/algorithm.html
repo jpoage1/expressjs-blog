@@ -1,0 +1,234 @@
+<h1>Pipeline Algorithm</h1>
+<ul>
+  <li>
+    <h3>Basic CRUD Operations</h3>
+    <ol>
+      <li>
+        <h4>Create</h4>
+        <ol>
+          <li>
+            <b>The frontend</b>
+            <ul>
+              <li>Opens the Prompt Registry pane</li>
+              <li>Validates the payload before sending it to the server</li>
+              <li>Sends a POST request to the backend</li>
+            </ul>
+          </li>
+          <li>
+            <b>The backend</b>
+            <ul>
+              <li>receives the request</li>
+              <li>Validates the payload</li>
+              <li>Stores the record in the database</li>
+              <li>Sends a response to the frontend</li>
+            </ul>
+          </li>
+          <li>
+            <b>The frontend</b>
+            <ul>
+              <li>Receives the response from the backend</li>
+              <li>Notifies the user of succes or failure</li>
+            </ul>
+          </li>
+        </ol>
+      </li>
+      <li>
+        <h4>Read</h4>
+        <ol>
+          <li>
+            <b>The frontend</b>
+            <ul>
+              <li>Opens the Prompt Registry pane</li>
+              <li>Sends a GET request to the backend, requesting data</li>
+            </ul>
+          </li>
+          <li>
+            <b>The backend</b>
+            <ul>
+              <li>Receives the request</li>
+              <li>Validates the payload</li>
+              <li>Fetches the record from the database</li>
+              <li>Sends a response to the frontend</li>
+            </ul>
+          </li>
+          <li>
+            <b>The frontend</b>
+            <ul>
+              <li>Receives the response from the backend</li>
+              <li>Hydrates the Promp Registry</li>
+            </ul>
+          </li>
+        </ol>
+      </li>
+      <li>
+        <h4>Update</h4>
+        <ol>
+          <li>
+            <b>The frontend</b>
+            <ul>
+              <li>Opens the Prompt Registry pane</li>
+              <li>Makes local changes to an existing record</li>
+              <li>Validates the payload before sending it to the server</li>
+              <li>Sends an UPDATE request to the backend</li>
+            </ul>
+          </li>
+          <li>
+            <b>The backend</b>
+            <ul>
+              <li>Receives the request</li>
+              <li>Validates the payload</li>
+              <li>Updates the record in the database</li>
+              <li>Sends a response to the frontend</li>
+            </ul>
+          </li>
+          <li>
+            <b>The frontend</b>
+            <ul>
+              <li>Receives the response from the backend</li>
+              <li>Notifies the user of success or failure</li>
+            </ul>
+          </li>
+        </ol>
+      </li>
+      <li>
+        <h4>Delete</h4>
+        <ol>
+          <li>
+            <b>The frontend</b>
+            <ul>
+              <li>Opens the Prompt Registry pane</li>
+              <li>Locates an existing record</li>
+              <li>Validates the payload before sending it to the server</li>
+              <li>Sends a DELETE request to the backend</li>
+            </ul>
+          </li>
+          <li>
+            <b>The backend</b>
+            <ul>
+              <li>Receives the request</li>
+              <li>Validates the payload</li>
+              <li>Deletes the record from the database</li>
+              <li>Sends a response to the frontend</li>
+            </ul>
+          </li>
+          <li>
+            <b>The frontend</b>
+            <ul>
+              <li>Receives the response from the backend</li>
+              <li>Notifies the user of success or failure</li>
+            </ul>
+          </li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <h3>Compiler Job</h3>
+    <ol>
+      <li>
+        <h4>Frontend Initialization</h4>
+        <ul>
+          <li>
+            Opens the compiler configuration pane and establishes settings.
+          </li>
+          <li>Opens the terminal and selects the target script.</li>
+          <li>Validates the payload data structure.</li>
+        </ul>
+      </li>
+      <li>
+        <h4>Job Dispatch</h4>
+        <ul>
+          <li>Frontend transmits the payload to the server via HTTP POST.</li>
+          <li>Server receives and validates the incoming payload.</li>
+          <li>
+            Server responds with a unique Job ID and begins asynchronous
+            execution.
+          </li>
+          <li>
+            Frontend subscribes to the task by initiating a polling loop (HTTP
+            GET) using the Job ID.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <h4>Native Compilation</h4>
+        <ul>
+          <li>
+            Server passes the validated payload to the C++ compiler via
+            Pybind11.
+          </li>
+          <li>
+            Compiler executes the pipeline and saves output artifacts to disk.
+          </li>
+          <li>
+            Compiler returns the execution manifest back across the Pybind11
+            boundary.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <h4>State Synchronization</h4>
+        <ul>
+          <li>
+            Backend receives the manifest and persists it to the database.
+          </li>
+          <li>
+            Frontend polling loop detects the job status transition from
+            "building" to "success".
+          </li>
+          <li>
+            Frontend issues a final GET request to fetch the manifest and
+            hydrate the interface.
+          </li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <h3>Neural Request</h3>
+    <ol>
+      <li>
+        <h4>Frontend Initialization</h4>
+        <ul>
+          <li>Opens the prompt dashboard.</li>
+          <li>Selects a designated PromptPair and target Python script.</li>
+          <li>Validates the payload data structure.</li>
+        </ul>
+      </li>
+      <li>
+        <h4>Backend Dispatch</h4>
+        <ul>
+          <li>Frontend transmits the payload to the server via HTTP POST.</li>
+          <li>Backend receives and validates the incoming request.</li>
+          <li>Backend persists the initial payload state in the database.</li>
+        </ul>
+      </li>
+      <li>
+        <h4>LLM Execution & Persistence</h4>
+        <ul>
+          <li>
+            Backend routes the payload to the designated local LLM server via
+            HTTP POST.
+          </li>
+          <li>
+            LLM server processes the prompt and returns the generated inference.
+          </li>
+          <li>
+            Backend receives the inference result and updates the database
+            record.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <h4>State Synchronization</h4>
+        <ul>
+          <li>Backend returns the final inference response to the frontend.</li>
+          <li>
+            Frontend renders the comparative results within the dual-pane
+            Inference Window.
+          </li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+</ul>

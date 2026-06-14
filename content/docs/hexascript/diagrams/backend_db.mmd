@@ -1,0 +1,145 @@
+erDiagram
+    prompts {
+        INTEGER id PK
+        DATETIME created_at
+        DATETIME updated_at
+        DATETIME deleted_at
+        VARCHAR name
+        VARCHAR system_prompt
+    }
+    prompt_config {
+        INTEGER id PK
+        DATETIME created_at
+        DATETIME updated_at
+        DATETIME deleted_at
+        VARCHAR name
+        INTEGER prompt_id FK
+        INTEGER model_id FK
+        INTEGER research_tier_id FK
+        VARCHAR research_tier
+    }
+    prompt_pair {
+        INTEGER id PK
+        DATETIME created_at
+        DATETIME updated_at
+        DATETIME deleted_at
+        VARCHAR name
+        INTEGER prompt_a_id FK
+        INTEGER prompt_b_id FK
+    }
+    llm_models {
+        INTEGER id PK
+        DATETIME created_at
+        DATETIME updated_at
+        DATETIME deleted_at
+        VARCHAR name
+        VARCHAR nickname
+        VARCHAR description
+        VARCHAR prompts
+    }
+    research_tiers {
+        INTEGER id PK
+        DATETIME created_at
+        DATETIME updated_at
+        DATETIME deleted_at
+        VARCHAR name
+        VARCHAR prompts
+    }
+    llm_servers {
+        INTEGER id PK
+        DATETIME created_at
+        DATETIME updated_at
+        DATETIME deleted_at
+        VARCHAR name
+        VARCHAR address
+        INTEGER port
+        VARCHAR proto
+    }
+    wbs_tasks {
+        INTEGER id PK
+        DATETIME created_at
+        DATETIME updated_at
+        DATETIME deleted_at
+        VARCHAR component
+        VARCHAR name
+        VARCHAR status
+        BOOLEAN is_breaking
+        INTEGER estimated_hours
+        VARCHAR started_at
+        VARCHAR completed_at
+        INTEGER phase_id FK
+        INTEGER dependency_id FK
+    }
+    wbs_phases {
+        INTEGER id PK
+        DATETIME created_at
+        DATETIME updated_at
+        DATETIME deleted_at
+        VARCHAR name
+        INTEGER sequence
+    }
+    ast {
+        INTEGER id PK
+        DATETIME created_at
+        DATETIME updated_at
+        DATETIME deleted_at
+        VARCHAR name
+        VARCHAR file_path
+        VARCHAR file_hash
+    }
+    compiler_config {
+        INTEGER id PK
+        DATETIME created_at
+        DATETIME updated_at
+        DATETIME deleted_at
+        INTEGER id PK
+        VARCHAR name
+        BOOLEAN is_active
+    }
+    compilation_queue {
+        INTEGER id PK
+        DATETIME created_at
+        DATETIME updated_at
+        DATETIME deleted_at
+        INTEGER id PK
+        TEXT code_content
+        VARCHAR status
+        TEXT result_log
+        BLOB bytecode_output
+        DATETIME created_at
+    }
+    build_history {
+        INTEGER id PK
+        DATETIME created_at
+        DATETIME updated_at
+        DATETIME deleted_at
+        INTEGER id PK
+        VARCHAR label
+        DATETIME created_at
+        INTEGER compiler_config_id FK
+        INTEGER ast_id FK
+    }
+    compile_jobs {
+        INTEGER id PK
+        DATETIME created_at
+        DATETIME updated_at
+        DATETIME deleted_at
+        VARCHAR description
+        VARCHAR status
+        INTEGER ast_id FK
+        INTEGER config_id FK
+        INTEGER manifest_id FK
+        VARCHAR ast
+    }
+    prompt_config ||--o{ prompts : references
+    prompt_config ||--o{ llm_models : references
+    prompt_config ||--o{ research_tiers : references
+    prompt_pair ||--o{ prompt_config : references
+    prompt_pair ||--o{ prompt_config : references
+    wbs_tasks ||--o{ wbs_phases : references
+    wbs_tasks ||--o{ wbs_tasks : references
+    build_history ||--o{ compiler_config : references
+    build_history ||--o{ ast : references
+    compile_jobs ||--o{ ast : references
+    compile_jobs ||--o{ compiler_config : references
+    compile_jobs ||--o{ manifests : references

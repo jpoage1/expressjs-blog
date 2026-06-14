@@ -1,0 +1,957 @@
+baseContext:
+  Purpose:
+    - Asynchronously build base context object with site-wide data for rendering views.
+    - Construct rendering context and helpers for templates.
+  "Lifecycle Role": Prepare shared context before rendering templates.
+  Dependencies:
+    Upstream:
+      - postMenuService
+      - utilityFunctions (formatMonths, filterSecureLinks)
+      - environmentVariables
+      - jsonContentFiles
+      - getBaseContext
+      - qualifyLink
+      - generateToken
+    Downstream:
+      - routeHandlers
+      - controllers rendering pages with standard site context
+      - view renderers
+  "Data Flow":
+    Inputs:
+      - isAuthenticated boolean
+      - optional context overrides
+      - req.isAuthenticated
+    Outputs:
+      - context object with UI state, navigation, menus, environment-configured values
+      - res.locals.baseContext
+      - custom render functions
+    "Side Effects":
+      - Token generation
+      - async file reads
+  "Performance and Scalability":
+    Bottlenecks:
+      - async file reads (getPostsMenu) delay on slow IO
+      - reliance on correct environment variable settings
+      - possible navLinks JSON file read failures or malformed data
+      - Token generation per request
+    Concurrency: None
+  "Security and Stability":
+    Validation:
+      - Filters secure links based on authentication
+      - Requires validation of dynamic environment variables
+      - Dynamic content used in views must be escaped
+    Vulnerabilities:
+      - Risk of environment variable injection if unvalidated
+      - Token misuse via URLs
+  "Architecture Assessment":
+    Coupling: Moderate coupling to post menu service, utilities, environment, token logic
+    Abstraction:
+      - Centralizes context building to promote DRY templates
+      - Rendering context injection
+    Recommendations:
+      - Cache menu and navLinks to reduce IO per request
+      - Validate environment variables at startup
+      - Memoize within request lifecycle to avoid repeated calls
+      - Cache static context
+      - Sanitize dynamic content
+
+BaseRoute:
+  Purpose: Define base class encapsulating Express Router instance for modular route classes.
+  "Lifecycle Role": Used during route setup to organize route handlers and middleware.
+  Dependencies:
+    Upstream: []
+    Downstream:
+      - routeClasses extending BaseRoute (e.g., ConstructionRoutes)
+  "Data Flow":
+    Inputs: none beyond instantiation
+    Outputs: Express Router object
+    "Side Effects": None
+  "Performance and Scalability":
+    Bottlenecks: None inherent
+    Concurrency: None
+  "Security and Stability":
+    Validation: None inherent
+    Vulnerabilities: None inherent
+  "Architecture Assessment":
+    Coupling: Low, promotes modular route design
+    Abstraction: Base abstraction for route management
+    Recommendations: None; minimalistic and functional
+
+baseUrl:
+  Purpose: Construct and export base application URL considering environment variables and overrides.
+  "Lifecycle Role": Used in context building, link generation, and canonical URL formation.
+  Dependencies:
+    Upstream:
+      - environmentVariables
+    Downstream:
+      - baseContext
+      - routeHandlers
+      - API modules needing URL consistency
+  "Data Flow":
+    Inputs: environment variables or parameters for schema, host, port
+    Outputs: constructed base URL string
+    "Side Effects": None
+  "Performance and Scalability":
+    Bottlenecks: None significant; possible environment misconfiguration
+    Concurrency: None
+  "Security and Stability":
+    Validation: Strips protocol and trailing slash correctly; hardcoded default port/protocol logic
+    Vulnerabilities: None significant
+  "Architecture Assessment":
+    Coupling: Low coupling, utility for URL construction
+    Abstraction: Encapsulates base URL logic
+    Recommendations:
+      - include port in output if non-default ports used
+      - cache computed URL if environment variables are static
+
+ConstructionRoutes:
+  Purpose: Extend BaseRoute to provide "under construction" placeholder pages for specified routes.
+  "Lifecycle Role": Handle GET requests for unimplemented routes with construction page response.
+  Dependencies:
+    Upstream:
+      - BaseRoute
+    Downstream:
+      - main route registration logic mounting ConstructionRoutes
+  "Data Flow":
+    Inputs: HTTP GET requests on registered paths
+    Outputs: rendered HTML construction page
+    "Side Effects": None
+  "Performance and Scalability":
+    Bottlenecks:
+      - potential failures if view template missing or broken
+    Concurrency: None
+  "Security and Stability":
+    Validation: None explicit; minimal risk due to static content
+    Vulnerabilities: Minimal
+  "Architecture Assessment":
+    Coupling: Depends on BaseRoute and template engine
+    Abstraction: Modular route for placeholder handling
+    Recommendations:
+      - add error handling middleware for render failures
+      - log access to construction pages for prioritization
+createExcerpt:
+  Purpose: Generate plain-text excerpt from markdown content by stripping syntax and truncating.
+  "Lifecycle Role": Used during post content processing and metadata creation for previews or summaries.
+  Dependencies:
+    Upstream: markdown content
+    Downstream:
+      - post rendering logic
+      - summary generation modules
+      - UI components needing brief previews
+      - post metadata
+  "Data Flow":
+    Inputs: markdown content string, optional character limit (default ~200 chars)
+    Outputs: truncated plain-text excerpt substring
+    "Side Effects": None
+  "Performance and Scalability":
+    Bottlenecks: None; pure function
+    Concurrency: None
+  "Security and Stability":
+    Validation:
+      - Basic regex or parsing to strip markdown syntax
+    Vulnerabilities:
+      - incomplete markdown parsing risks malformed excerpts
+      - truncation may cut mid-word
+  "Architecture Assessment":
+    Coupling: Low; standalone utility
+    Abstraction: Markdown to plain text excerpt converter
+    Recommendations:
+      - Use dedicated markdown parser for accuracy if precision required
+      - Truncate cleanly at word or sentence boundaries
+      - Cache excerpts for static content to reduce recomputation
+
+diskSpaceMonitor:
+  Purpose: Monitor disk space usage of log directory, auto-clean old logs/session data per thresholds.
+  "Lifecycle Role": Runs asynchronously independent of request/response; provides middleware and API endpoints.
+  Dependencies:
+    Upstream: []
+    Downstream:
+      - admin routes/middleware needing disk space status
+      - API handlers for status and cleanup
+      - main app initialization
+  "Data Flow":
+    Inputs:
+      - configured log directory path
+      - cleanup thresholds and retention policies
+      - HTTP requests for status/manual cleanup
+      - admin route requests for middleware
+    Outputs:
+      - JSON responses with disk status or cleanup results
+    "Side Effects":
+      - reads filesystem stats
+      - deletes old log files and session data
+      - logs cleanup actions
+      - sets timers for periodic monitoring
+  "Performance and Scalability":
+    Bottlenecks:
+      - slow filesystem access or permission errors
+      - recursive directory size calc and deletion overhead on large/deep dirs
+      - potential race conditions if multiple cleanups overlap
+    Concurrency: None; no explicit Concurrency control
+  "Security and Stability":
+    Validation: Deletes based on mod date; config must prevent unintended data loss
+    Vulnerabilities:
+      - risk of deleting critical data if misconfigured
+      - needs correct permissions without excessive privileges
+      - long async ops may block event loop if unmanaged
+      - lacks Concurrency control risking inconsistencies
+  "Architecture Assessment":
+    Coupling: Low; internal fs dependency, exposed middleware and API
+    Abstraction: Encapsulates disk space monitoring and cleanup
+    Recommendations:
+      - add Concurrency controls (mutex/flags)
+      - optimize size calc with caching or sampling
+      - enhance logging for audits
+      - expose config via env or external files
+      - add alerting/integration for admin notifications
+      - validate directory paths to prevent injection
+      - limit cleanup scope to safe dirs/file types
+      - offload heavy IO to worker threads/processes
+
+emailValidator:
+  Purpose: Validate and sanitize emails per RFC 5321 and common formatting rules; returns structured validation.
+  "Lifecycle Role": Used during input validation for email fields.
+  Dependencies:
+    Upstream: []
+    Downstream: []
+  "Data Flow":
+    Inputs: raw email string
+    Outputs: validation results including errors or normalized email
+    "Side Effects": None
+  "Performance and Scalability":
+    Bottlenecks: None
+    Concurrency: None
+  "Security and Stability":
+    Validation: Strict email format and RFC compliance checks
+    Vulnerabilities: Potential failure on edge-case email formats if regex incomplete
+  "Architecture Assessment":
+    Coupling: Low; utility function
+    Abstraction: Input validation component
+    Recommendations:
+      - maintain regex patterns to cover RFC edge cases
+      - sanitize inputs to avoid injection
+
+logging:
+  Purpose: Implements a logging system combining Winston, file logs, SQLite transport, and console patching with a custom 'security' level.
+  "Lifecycle Role": Global utility during request/response lifecycle and runtime.
+  Dependencies:
+    Upstream:
+      - winston
+      - daily rotating file logs
+      - SQLite transport
+      - console patch
+    Downstream:
+      - all modules requiring logging
+  "Data Flow":
+    Inputs: Log calls from application modules.
+    Outputs: Persisted logs to disk, database, console.
+    "Side Effects": Disk and DB I/O operations.
+  "Performance and Scalability":
+    Bottlenecks:
+      - Disk full or permission issues
+      - Synchronous or heavy logging load
+      - Log flooding under high volume
+    Concurrency: None
+  "Security and Stability":
+    Validation: Log content must be sanitized to avoid secret leaks.
+    Vulnerabilities:
+      - Logging sensitive information
+  "Architecture Assessment":
+    Coupling: Loosely coupled via shared utility usage.
+    Abstraction: Provides centralized logging abstraction.
+    Recommendations:
+      - Use asynchronous or buffered logging
+      - Add sensitive data redaction
+      - Enforce aggressive log rotation
+      - Secure log file permissions
+
+adminToken:
+  Purpose: Manages short-lived in-memory admin pre-authentication tokens.
+  "Lifecycle Role": Authentication/authorization phase.
+  Dependencies:
+    Upstream: None
+    Downstream:
+      - admin route handlers
+      - auth middleware
+      - security check modules
+  "Data Flow":
+    Inputs: Token generation, validation, revocation requests.
+    Outputs: Token strings, boolean validation results.
+    "Side Effects": Updates in-memory Map, token cleanup.
+  "Performance and Scalability":
+    Bottlenecks:
+      - Tokens lost on app restart
+      - Memory bloat without cleanup
+      - Time sync issues affecting token validity
+    Concurrency: None
+  "Security and Stability":
+    Validation: Token format checked, stored with expiration.
+    Vulnerabilities:
+      - No multi-instance sync
+      - No brute force prevention
+      - Low entropy in token encoding
+  "Architecture Assessment":
+    Coupling: Minimal coupling, internal state.
+    Abstraction: Encapsulated token lifecycle management.
+    Recommendations:
+      - Add scheduled cleanup
+      - Use centralized cache for persistence
+      - Harden token generation
+      - Add validation logging and rate limits
+
+errorContext:
+  Purpose: Maps HTTP status codes to error page metadata.
+  "Lifecycle Role": Used by errorPage route during error rendering.
+  Dependencies:
+    Upstream: None
+    Downstream:
+      - errorPage route
+  "Data Flow":
+    Inputs: HTTP status codes.
+    Outputs: Metadata for error page.
+    "Side Effects": None
+  "Performance and Scalability":
+    Bottlenecks: None
+    Concurrency: None
+  "Security and Stability":
+    Validation: Static mapping.
+    Vulnerabilities: None
+  "Architecture Assessment":
+    Coupling: Low.
+    Abstraction: Simple mapping utility.
+    Recommendations: None
+
+formLimiter:
+  Purpose: Express middleware for rate limiting form submissions.
+  "Lifecycle Role": Applied to POST `/contact` route.
+  Dependencies:
+    Upstream: None
+    Downstream:
+      - contact form route
+  "Data Flow":
+    Inputs: Form POST requests.
+    Outputs: HTTP responses with possible rate limit errors.
+    "Side Effects": Rate limit counters.
+  "Performance and Scalability":
+    Bottlenecks: Rate limiter state accumulation.
+    Concurrency: None
+  "Security and Stability":
+    Validation: IP or session-based rate check.
+    Vulnerabilities:
+      - Bypass via IP spoofing
+  "Architecture Assessment":
+    Coupling: Middleware-specific.
+    Abstraction: Applied at route level.
+    Recommendations:
+      - Use distributed rate limit store for scaling
+
+hcaptcha:
+  Purpose: Verifies hCaptcha tokens using external API.
+  "Lifecycle Role": Used in contact form POST route.
+  Dependencies:
+    Upstream: hCaptcha API
+    Downstream:
+      - contact form validation logic
+  "Data Flow":
+    Inputs: hCaptcha response token.
+    Outputs: Verification result.
+    "Side Effects": External API call.
+  "Performance and Scalability":
+    Bottlenecks:
+      - External API latency
+    Concurrency: None
+  "Security and Stability":
+    Validation: Validates token via hCaptcha API.
+    Vulnerabilities:
+      - Reliance on external service availability
+  "Architecture Assessment":
+    Coupling: External service dependent.
+    Abstraction: API wrapper.
+    Recommendations:
+      - Add retry logic and fallback handling
+
+mail:
+  Purpose: Sends contact form submission emails.
+  "Lifecycle Role": Triggered after successful form submission.
+  Dependencies:
+    Upstream: Email provider or SMTP
+    Downstream:
+      - contact form success handler
+  "Data Flow":
+    Inputs: Form data.
+    Outputs: Outgoing email.
+    "Side Effects": Sends email via transport.
+  "Performance and Scalability":
+    Bottlenecks:
+      - SMTP failures or delays
+    Concurrency: None
+  "Security and Stability":
+    Validation: Email fields sanitized.
+    Vulnerabilities:
+      - Email injection
+  "Architecture Assessment":
+    Coupling: Tied to email transport.
+    Abstraction: Mail utility.
+    Recommendations:
+      - Validate inputs strictly
+      - Handle email delivery errors
+postFileUtils:
+  Purpose:
+    - Reads blog post files and metadata.
+    - Parses frontmatter, excerpts, and metadata from markdown files.
+  "Lifecycle Role": Used by blog routes and post retrieval during page rendering.
+  Dependencies:
+    Upstream:
+      - Filesystem
+      - gray-matter
+      - createExcerpt
+      - hash util
+      - fs, path
+    Downstream:
+      - blog route handlers
+      - blog services
+      - menu/rss/sitemap generators
+  "Data Flow":
+    Inputs:
+      - Blog file paths
+      - directory and options tags/sort
+    Outputs:
+      - Parsed content and metadata
+      - array of post metadata objects
+    "Side Effects":
+      - File reads
+  "Performance and Scalability":
+    Bottlenecks:
+      - Disk I/O, including recursive reads
+      - in-memory sorting
+    Concurrency: None
+  "Security and Stability":
+    Validation:
+      - File name sanitation required
+      - Validate slug/tags/title/date
+    Vulnerabilities:
+      - Path traversal
+      - malformed frontmatter
+      - unsanitized metadata
+  "Architecture Assessment":
+    Coupling: Moderate coupling; filepath handling tightly linked
+    Abstraction: Content loader and parser utility
+    Recommendations:
+      - Sanitize paths
+      - Cache parsed content using LRU or indexed cache
+      - Implement indexing and depth limits for recursive reads
+
+forensics:
+  Purpose: Performs security analysis on form data to detect abuse.
+  "Lifecycle Role": Used during form submission processing.
+  Dependencies:
+    Upstream: None
+    Downstream:
+      - contact form route
+  "Data Flow":
+    Inputs: Form data.
+    Outputs: Spam/abuse detection results.
+    "Side Effects": None
+  "Performance and Scalability":
+    Bottlenecks: Complex rule sets.
+    Concurrency: None
+  "Security and Stability":
+    Validation: Heuristic or rule-based checks.
+    Vulnerabilities:
+      - False positives/negatives
+  "Architecture Assessment":
+    Coupling: Route logic dependent.
+    Abstraction: Validation helper.
+    Recommendations:
+      - Tune detection rules
+      - Log detection results
+
+linkUtils:
+  Purpose: Identifies URLs and emails in strings.
+  "Lifecycle Role": Used in text processing.
+  Dependencies:
+    Upstream: None
+    Downstream:
+      - text rendering components
+  "Data Flow":
+    Inputs: Arbitrary strings.
+    Outputs: Detected links or email addresses.
+    "Side Effects": None
+  "Performance and Scalability":
+    Bottlenecks: Regex overhead.
+    Concurrency: None
+  "Security and Stability":
+    Validation: None.
+    Vulnerabilities:
+      - Regex denial-of-service
+  "Architecture Assessment":
+    Coupling: Utility.
+    Abstraction: String analysis helper.
+    Recommendations:
+      - Use optimized regex
+      - Add input length limits
+
+analytics:
+  Purpose: Logs GET requests for HTML to SQLite for analytics.
+  "Lifecycle Role": Early middleware on HTML GET routes.
+  Dependencies:
+    Upstream:
+      - ../utils/sqlite3
+    Downstream:
+      - main Express app
+  "Data Flow":
+    Inputs: Request metadata (URL, headers, IP).
+    Outputs: DB record insertions.
+    "Side Effects": Database writes.
+  "Performance and Scalability":
+    Bottlenecks:
+      - SQLite write contention
+      - Silent DB failures
+    Concurrency: None
+  "Security and Stability":
+    Validation: None
+    Vulnerabilities:
+      - Unsanitized inputs to DB
+  "Architecture Assessment":
+    Coupling: Database dependent.
+    Abstraction: Logging middleware.
+    Recommendations:
+      - Add input sanitization
+      - Use async writes or queuing
+      - Handle DB write errors
+
+applyProductionSecurity:
+  Purpose: Aggregates multiple middleware to enforce security in production.
+  "Lifecycle Role": Early middleware after parsing.
+  Dependencies:
+    Upstream:
+      - helmet
+      - hpp
+      - xssSanitizer
+      - HttpError
+      - ../constants/securityConstants
+    Downstream:
+      - all route handlers
+  "Data Flow":
+    Inputs: HTTP request headers, method, hostname.
+    Outputs: Response security headers or early errors.
+    "Side Effects": Middleware effects.
+  "Performance and Scalability":
+    Bottlenecks:
+      - Middleware misconfiguration
+    Concurrency: None
+  "Security and Stability":
+    Validation: Sanitizes inputs, enforces security headers.
+    Vulnerabilities:
+      - Potential XSS bypass
+      - Localhost block may misfire
+  "Architecture Assessment":
+    Coupling: Moderate.
+    Abstraction: Security enforcement wrapper.
+    Recommendations:
+      - Add rate limiter
+      - Improve logging for rejections
+      - Review CSP rules
+
+authCheck:
+  Purpose: Verifies authentication using external service and caching.
+  "Lifecycle Role": Early middleware before protected routes.
+  Dependencies:
+    Upstream:
+      - node-fetch
+      - ../constants/authConstants
+    Downstream:
+      - all auth-required routes
+  "Data Flow":
+    Inputs: Request headers, IP.
+    Outputs: req.isAuthenticated flag.
+    "Side Effects": Logs and in-memory cache update.
+  "Performance and Scalability":
+    Bottlenecks:
+      - External service timeout
+      - Cache staleness
+    Concurrency: None
+  "Security and Stability":
+    Validation: Token check via external service.
+    Vulnerabilities:
+      - IP spoofing
+      - Cache poisoning
+  "Architecture Assessment":
+    Coupling: Tied to auth service.
+    Abstraction: Caching middleware.
+    Recommendations:
+      - Harden cache keys
+      - Remove IP bypass
+      - Consider JWT-based approach
+
+csrfToken:
+  Purpose: Provides CSRF protection using cookie tokens.
+  "Lifecycle Role": Before routes rendering or processing forms.
+  Dependencies:
+    Upstream:
+      - csurf
+      - cookie-parser
+    Downstream:
+      - form routes
+  "Data Flow":
+    Inputs: Cookies, form requests.
+    Outputs: CSRF token in res.locals and cookies.
+    "Side Effects": Token set in cookies.
+  "Performance and Scalability":
+    Bottlenecks:
+      - Cookie parsing overhead
+    Concurrency: None
+  "Security and Stability":
+    Validation: Token validated on submission.
+    Vulnerabilities:
+      - Token exposure
+  "Architecture Assessment":
+    Coupling: Standard middleware.
+    Abstraction: CSRF protection layer.
+    Recommendations:
+      - Use secure cookie flags
+      - Automate token injection in templates
+
+errorHandler:
+  Purpose: Centralized application error logging and rendering.
+  "Lifecycle Role": Final Express error handler.
+  Dependencies:
+    Upstream:
+      - error rendering utils
+      - constants
+    Downstream: None
+  "Data Flow":
+    Inputs: Error object, request context.
+    Outputs: Rendered error page or redirect.
+    "Side Effects": Logging.
+  "Performance and Scalability":
+    Bottlenecks:
+      - Logging failure
+    Concurrency: None
+  "Security and Stability":
+    Validation: Renders user-safe errors.
+    Vulnerabilities:
+      - Stack trace exposure
+  "Architecture Assessment":
+    Coupling: High with error path.
+    Abstraction: Final middleware.
+    Recommendations:
+      - Escape rendered messages
+      - Monitor error frequency
+
+formatHtml:
+  Purpose: Beautifies outgoing HTML using js-beautify.
+  "Lifecycle Role": After HTML generation, before response send.
+  Dependencies:
+    Upstream:
+      - js-beautify
+    Downstream: None
+  "Data Flow":
+    Inputs: HTML response.
+    Outputs: Beautified HTML.
+    "Side Effects": Response body modified.
+  "Performance and Scalability":
+    Bottlenecks:
+      - Large HTML processing
+    Concurrency: None
+  "Security and Stability":
+    Validation: Operates on safe content.
+    Vulnerabilities:
+      - Response inflation
+  "Architecture Assessment":
+    Coupling: Tied to response pipeline.
+    Abstraction: Optional middleware.
+    Recommendations:
+      - Disable in production
+      - Use conditional execution
+
+logger:
+  Purpose: Logs HTTP request metadata to console.
+  "Lifecycle Role": Early middleware.
+  Dependencies:
+    Upstream:
+      - console
+    Downstream: None
+  "Data Flow":
+    Inputs: Request info.
+    Outputs: Console log entry.
+    "Side Effects": Console I/O.
+  "Performance and Scalability":
+    Bottlenecks:
+      - Synchronous logging
+    Concurrency: None
+  "Security and Stability":
+    Validation: None
+    Vulnerabilities:
+      - Logging sensitive data
+  "Architecture Assessment":
+    Coupling: Minimal.
+    Abstraction: Simple middleware.
+    Recommendations:
+      - Use async logger
+      - Add log level filtering
+
+utils:
+  Purpose: Collection of support functions for middleware and app logic.
+  "Lifecycle Role": Used across app lifecycle to abstract functionality.
+  Dependencies:
+    Upstream:
+      - sqlite3.js wraps SQLite3 DB
+      - logger utility
+      - context utilities
+    Downstream:
+      - middleware
+      - controllers
+      - route handlers
+  "Data Flow":
+    Inputs: Varies by utility (DB operations, logging calls, context)
+    Outputs: DB responses, logs, context objects
+    "Side Effects": File or DB I/O
+  "Performance and Scalability":
+    Bottlenecks:
+      - Sync file or DB access
+    Concurrency: None
+  "Security and Stability":
+    Validation: Varies; e.g., logger sanitizes messages
+    Vulnerabilities:
+      - Unsanitized inputs passed to DB or logs
+  "Architecture Assessment":
+    Coupling: Low-cross utility calls
+    Abstraction: Centralized support functions
+    Recommendations:
+      - Standardize validation
+      - Switch to async db/log I/O
+
+newsletterService:
+  Purpose: Manage subscriber emails in JSON file.
+  "Lifecycle Role": Handles newsletter subscription endpoints.
+  Dependencies:
+    Upstream:
+      - validateAndSanitizeEmail
+      - filesystem
+    Downstream:
+      - newsletter API controllers
+  "Data Flow":
+    Inputs: raw email strings
+    Outputs: promise results or errors
+    "Side Effects": reads/writes JSON file
+  "Performance and Scalability":
+    Bottlenecks:
+      - writeLock contention
+      - filesystem latency
+    Concurrency: None
+  "Security and Stability":
+    Validation: Email sanitation and validation
+    Vulnerabilities:
+      - JSON file exposed if misconfigured
+      - No spam/rate limiting
+  "Architecture Assessment":
+    Coupling: Tight with filesystem and validation util
+    Abstraction: File-based subscriber storage
+    Recommendations:
+      - Move to database
+      - Rate limit subscription
+      - Encrypt subscriber data
+      - Use atomic writes
+
+postsMenuService:
+  Purpose: Build chronological menu of blog posts.
+  "Lifecycle Role": Used when rendering blog navigation UI.
+  Dependencies:
+    Upstream:
+      - getAllPosts
+      - qualifyLink
+    Downstream:
+      - view templates
+      - controllers
+  "Data Flow":
+    Inputs: baseDir of posts
+    Outputs: grouped year/month menu array
+    "Side Effects": None
+  "Performance and Scalability":
+    Bottlenecks:
+      - disk I/O reading posts
+    Concurrency: None
+  "Security and Stability":
+    Validation: None
+    Vulnerabilities:
+      - unsanitized metadata rendering
+  "Architecture Assessment":
+    Coupling: Moderate to post data util
+    Abstraction: Pure data formatter
+    Recommendations:
+      - Add caching
+      - Validate metadata
+      - Optimize grouping logic
+
+rssFeedService:
+  Purpose: Generate RSS XML from blog posts.
+  "Lifecycle Role": Responds to RSS feed endpoint.
+  Dependencies:
+    Upstream:
+      - getAllPosts
+      - rss package
+    Downstream:
+      - RSS route handler
+  "Data Flow":
+    Inputs: post baseDir and site URL
+    Outputs: RSS XML string
+    "Side Effects": None
+  "Performance and Scalability":
+    Bottlenecks:
+      - fetching and parsing posts each request
+    Concurrency: None
+  "Security and Stability":
+    Validation: Internal data only
+    Vulnerabilities:
+      - Uncached generation under high load
+  "Architecture Assessment":
+    Coupling: Moderate with post retrieval util
+    Abstraction: Feed generator
+    Recommendations:
+      - Cache RSS output
+      - Paginate or limit feed entries
+
+sitemapService:
+  Purpose: Build site sitemap including static pages, posts, tags.
+  "Lifecycle Role": Handles sitemap endpoint generation.
+  Dependencies:
+    Upstream:
+      - static JSON file
+      - filesystem frontmatter parsing
+      - getAllPosts
+      - fast‑glob
+      - slugify, link utils, hashing
+    Downstream:
+      - sitemap route handler
+      - SEO tools
+  "Data Flow":
+    Inputs: various content directories
+    Outputs: hierarchical sitemap + flattened URL list
+    "Side Effects": filesystem reads
+  "Performance and Scalability":
+    Bottlenecks:
+      - extensive file I/O and parsing
+    Concurrency: None
+  "Security and Stability":
+    Validation: frontmatter validation missing
+    Vulnerabilities:
+      - may include unpublished pages
+  "Architecture Assessment":
+    Coupling: Broad across content modules
+    Abstraction: Sitemap aggregator
+    Recommendations:
+      - Add caching
+      - Limit Concurrency on file reads
+      - Validate frontmatter
+      - Separate static vs dynamic parts
+
+MarkdownRoutes:
+  Purpose: Serve markdown-based pages as HTML.
+  "Lifecycle Role": GET request route handler.
+  Dependencies:
+    Upstream:
+      - BaseRoute
+      - filesystem
+      - gray-matter
+      - marked parser
+    Downstream:
+      - Express app
+  "Data Flow":
+    Inputs: request path
+    Outputs: HTML response
+    "Side Effects": None
+  "Performance and Scalability":
+    Bottlenecks:
+      - disk read per request
+    Concurrency: None
+  "Security and Stability":
+    Validation: None
+    Vulnerabilities:
+      - path traversal via request
+      - unsanitized markdown content
+  "Architecture Assessment":
+    Coupling: Moderate to filesystem and parsing utils
+    Abstraction: Router extension
+    Recommendations:
+      - Add caching layer
+      - 404 missing files
+      - Sanitize markdown output
+      - Restrict source directories
+
+parseMarkdownFile:
+  Purpose: Read and parse markdown file frontmatter and content.
+  "Lifecycle Role": Called during post parsing.
+  Dependencies:
+    Upstream:
+      - fs.readFileSync
+      - gray-matter
+    Downstream:
+      - postFileUtils
+  "Data Flow":
+    Inputs: file path
+    Outputs: { data, content }
+    "Side Effects": None
+  "Performance and Scalability":
+    Bottlenecks: sync disk read
+    Concurrency: None
+  "Security and Stability":
+    Validation: None
+    Vulnerabilities:
+      - malformed frontmatter
+  "Architecture Assessment":
+    Coupling: Low
+    Abstraction: Basic parser
+    Recommendations:
+      - Add error handling
+      - Validate data schema
+
+"Cross Cutting Summary":
+  "Common Themes":
+    - Heavy synchronous file I/O across services; slows responses.
+    - No caching on computed Outputs (menu/rss/sitemap/markdown), causing redundant work.
+    - Validation and sanitization missing for metadata, markdown, user input.
+    - File‑based storage used where DB would scale better.
+    - Utilities assume trusted environment; risk in public apps.
+    - Logging is synchronous in several modules, needs async or buffered approach.
+    - In-memory structures (adminToken, authCheck, CSRF) lack persistence for distributed deployment.
+    - Lack of input validation and sanitization (analytics, mail, hcaptcha).
+    - Middleware ordering and isolation are critical for performance and correctness.
+    - Token-based modules should add entropy and expiry control.
+    - Error and logging modules must sanitize output and handle I/O failures gracefully.
+    - Several modules depend on external services (auth, hcaptcha, SMTP) with no retry or fallback logic.
+    - Emphasis on caching to reduce repeated IO and improve performance.
+    - Need for improved error handling and logging across modules.
+    - Security focus on input validation, environment variable checks, and safe file operations.
+    - Architectural preference for modular, loosely coupled utilities and route abstractions.
+    - Performance concerns center on async file IO, recursive directory scanning, and potential event loop blocking.
+  "Shared Risks":
+    - Exposure of sensitive data through logs or tokens.
+    - Performance Bottlenecks from synchronous operations.
+    - Security risks from lack of validation, unsanitized inputs, weak tokens.
+    - Architectural fragility due to tight coupling in dynamic loaders and hardcoded configurations.
+    - Data corruption under concurrent writes (newsletter JSON).
+    - Path traversal or content injection via markdown routes.
+    - Performance degradation under load.
+  "General Recommendations":
+    - Centralize validation and sanitization.
+    - Use distributed cache where persistence is needed.
+    - Refactor logging to be async and non-blocking.
+    - Harden security in token, cookie, and middleware interactions.
+    - Monitor and test all middleware under load.
+    - Introduce caching for computed Outputs.
+    - Move persistent data to database.
+    - Add validation/sanitization across all parsing and input.
+    - Use async I/O.
+    - Secure file paths and sanitize content before rendering.
+  "Recurrent Issues":
+    - Lack of Concurrency controls in async cleanup or context building.
+    - Potential injection risks via unvalidated environment variables or input data.
+    - Incomplete validation risking malformed data or security exposures.
+    - Limited error handling that may cause silent failures or degraded UX.
+    - Absence of configuration management consistency for thresholds, paths, and operational parameters.
+    - Centralize validation and sanitization.
+    - Use distributed cache where persistence is needed.
+    - Refactor logging to be async and non-blocking.
+    - Harden security in token, cookie, and middleware interactions.
+    - Monitor and test all middleware under load.

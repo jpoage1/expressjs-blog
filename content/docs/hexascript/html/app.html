@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%sveltekit.assets%/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="/css/styles.css" />
+    %sveltekit.head%
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <header>
+      <h1>Hexascript Design Documents</h1>
+    </header>
+    <nav class="nav-bar">
+      <div class="nav-link">
+        <a href="#/hierarchy">Hierarchy</a>
+      </div>
+      <div class="nav-link">
+        <a href="#/algorithm">Algorithm</a>
+      </div>
+      <div class="nav-menu">
+        <label>UML</label>
+        <nav>
+          <div class="nav-link">
+            <a href="#/uml/compiler">Compiler</a>
+          </div>
+          <div class="nav-link">
+            <a href="#/uml/frontend/classes">Frontend Classes</a>
+          </div>
+          <div class="nav-link">
+            <a href="#/uml/frontend/logic">Frontend Logic</a>
+          </div>
+          <div class="nav-link">
+            <a href="#/uml/backend">Backend</a>
+          </div>
+          <div class="nav-link">
+            <a href="#/uml/database">Database</a>
+          </div>
+        </nav>
+      </div>
+      <div class="nav-link">
+        <a href="#/testing_plans">Testing Plans</a>
+      </div>
+    </nav>
+    <div style="display: contents">%sveltekit.body%</div>
+  </body>
+</html>

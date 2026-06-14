@@ -1,0 +1,242 @@
+<h1>Hierarchy</h1>
+<ul>
+  <li>
+    <h2>Frontend</h2>
+    <ul>
+      <li>
+        <h3>Libraries</h3>
+        <ul>
+          <li>Typescript</li>
+          <li>Zodios</li>
+          <li>Svelte</li>
+          <li>NodeJS</li>
+        </ul>
+      </li>
+      <li>
+        <h3>Layout</h3>
+        <ul>
+          <li>
+            <h4>Side pane</h4>
+            <p><small>Research Modes</small></p>
+            <ul>
+              <li>Server Configuration</li>
+              <li>
+                <h5>Compiler</h5>
+                <ul>
+                  <li>Compiler Configuration</li>
+                  <li>Abstract Syntax Tree</li>
+                  <li>Dataset Builder</li>
+                </ul>
+              </li>
+              <li>
+                <h5>Prompting</h5>
+                <ul>
+                  <li>Research Modes</li>
+                  <li>Prompts</li>
+                  <li>Prompt Configuration</li>
+                  <li>Prompt Relations</li>
+                  <li>Inference Window</li>
+                </ul>
+              </li>
+              <li>
+                <h5>Trace</h5>
+                <ul>
+                  <li>Logs</li>
+                </ul>
+              </li>
+              <li>
+                <h5>WBS</h5>
+                <ul>
+                  <li>Tasks</li>
+                  <li>Phases</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <h4>Status Bar</h4>
+            <ul>
+              <li>Compile</li>
+              <li>Prompt</li>
+              <li>WBS</li>
+              <li>UML</li>
+            </ul>
+          </li>
+          <li>
+            <h4>Content area</h4>
+            <ul>
+              <li>Terminal</li>
+              <li>LLM Prompt</li>
+              <li>WBS</li>
+            </ul>
+          </li>
+          <li>Notifications</li>
+        </ul>
+      </li>
+      <li>
+        <h3>Classes</h3>
+        <ul>
+          <li>
+            <h4>Base Classes</h4>
+            <ul>
+              <li>BaseState</li>
+              <li>BaseLibrary</li>
+              <li>BaseCRUD</li>
+            </ul>
+          </li>
+          <li>
+            <h4>Data Classes</h4>
+            <ul>
+              <li>Prompt / PromptLibrary</li>
+              <li>PromptConfig / PromptConfigLibrary</li>
+              <li>PromptPair / PromptPairLibrary</li>
+              <li>ResearchTier / ResearchTierLibrary</li>
+              <li>LLMModel / LLMModelLibrary</li>
+              <li>LLMServer / LLMServerLibrary</li>
+              <li>Server / ServerLibrary</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <h3>UI Components</h3>
+        <ul>
+          <li>DynamicField</li>
+          <li>CrudModelView</li>
+          <li>GenericForm</li>
+          <li>TaskEditorModal</li>
+          <li>GenericListView</li>
+          <li>CollapsablePane</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <h2>Backend</h2>
+    <ul>
+      <li>
+        <h3>Libraries</h3>
+        <ul>
+          <li>PyDantic</li>
+          <li>SQL Alchemy</li>
+          <li>PyDantic</li>
+          <li>FastAPI</li>
+          <li>Unicorn</li>
+          <li>SQLLite</li>
+        </ul>
+      </li>
+      <li>
+        <h3>Components</h3>
+        <ul>
+          <li>Engine</li>
+          <li>ASTSerializer</li>
+          <li>Controllers</li>
+          <li>Router / Endpoints</li>
+          <li>Database</li>
+          <li>
+            <h4>API Schema</h4>
+            <ul>
+              <li>Create</li>
+              <li>Read</li>
+              <li>Update</li>
+              <li>Delete</li>
+            </ul>
+          </li>
+          <li>Migrations &amp; Seeds</li>
+        </ul>
+      </li>
+      <li>
+        <h3>Database Models & API Endpoints</h3>
+        <ul>
+          <li>ResearchMode</li>
+          <li>Prompt</li>
+          <li>PromptConfig</li>
+          <li>PromptPair</li>
+          <li>CompilerConfig</li>
+          <li>Manifest</li>
+          <li>BatchJob</li>
+          <li>CompilerJob</li>
+          <li>LLMModel</li>
+          <li>LLMServer</li>
+          <li>WBSPhase</li>
+          <li>WBSTask</li>
+        </ul>
+      </li>
+      <li>
+        <h3>Payloads</h3>
+        <ul>
+          <li>CommandPayload</li>
+          <li>DispatchContext</li>
+        </ul>
+      </li>
+      <li>
+        <h3>Artifacts &amp; Persistent storage</h3>
+        <ul>
+          <li>CompileJobs</li>
+          <li>BatchJobs</li>
+          <li>AST / Source Code</li>
+          <li>Binary Code</li>
+          <li>BuildRegistry</li>
+        </ul>
+      </li>
+      <li>
+        <h3>Functionality</h3>
+        <ul>
+          <li>API Server</li>
+          <li>Database Storage</li>
+          <li>Compiler Interface</li>
+          <li>Data Generation</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <h2>Compiler</h2>
+    <ul>
+      <li>
+        <h3>5 Step Pipeline</h3>
+        <ol>
+          <li>
+            Frontend Lex/Parse (JSON AST to `ILanguageProvider` validation).
+          </li>
+          <li>Seeded Interning (Function/Object to Base 38 Macro mapping).</li>
+          <li>Linearization (AST to 1D token stream).</li>
+          <li>Logic Squeeze (SSA reduction, constant folding, DCE).</li>
+          <li>
+            Tier 0 Emission (.hex binary generation and Shadow Alias Registry
+            mapping).
+          </li>
+        </ol>
+      </li>
+      <li>
+        <h3>Components</h3>
+        <ul>
+          <li>DocumentWriter</li>
+          <li>Artifacts</li>
+          <li>Driver</li>
+          <li>RunConfig</li>
+          <li>CompilationResult/Manifest</li>
+          <li>ISRMap</li>
+          <li>Interner</li>
+          <li>ConfigProxy</li>
+          <li>Optimizer</li>
+          <li>SchemaBuilder</li>
+          <li>OptionDef</li>
+          <li>ILanguageProvider</li>
+          <li>SymbolRegistry</li>
+          <li>RotatingFileSink</li>
+          <li>TokenRegistry</li>
+          <li>VM</li>
+        </ul>
+      </li>
+      <li>
+        <h3>C++ Pybindings</h3>
+        <ul>
+          <li>Manifest</li>
+          <li>RunConfig</li>
+          <li>process_single_mission</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>

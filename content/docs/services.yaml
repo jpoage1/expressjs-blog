@@ -1,0 +1,140 @@
+newsletterService:
+  "Purpose": "Manage newsletter subscription/unsubscription by validating, sanitizing, and persisting emails."
+  "Lifecycle Role": "Handles subscription HTTP requests; persists email data asynchronously."
+  "Dependencies":
+    "Upstream":
+      - emailValidator
+    Downstream:
+      - newsletter route handlers/controllers
+      - user-facing newsletter API controllers
+  "Data Flow":
+    "Inputs": "Raw email string from HTTP request."
+    "Outputs": "Promise resolving on save/remove success or rejecting on errors."
+    "Side Effects": "Asynchronous JSON file read/write for email storage."
+  "Performance and Scalability":
+    "Bottlenecks":
+      - "Serialized writeLock causing Concurrency bottleneck."
+      - "Disk IO latency and potential blocking."
+    Concurrency: "Write serialization to prevent race conditions."
+  "Security and Stability":
+    Validation: "Email Validation applied."
+    Vulnerabilities:
+      - "No rate limiting/throttling."
+      - "Plaintext JSON storage risks data exposure."
+      - "No input sanitation beyond email format."
+      - "Single-file storage is single point of failure."
+  "Architecture Assessment":
+    "Coupling": "Tightly coupled to filesystem persistence."
+    "Abstraction": "No database or caching layer."
+  "Recommendations":
+    - "Migrate persistence to database or key-value store."
+    - "Add rate limiting on endpoints."
+    - "Encrypt stored emails or restrict file access."
+    - "Use write queues or batch processing."
+    - "Add structured logging for audit/debug."
+
+postsMenuService:
+  "Purpose": "Generate hierarchical blog post menu grouped by year and month."
+  "Lifecycle Role": "Used in route handlers or middleware to prepare navigation data."
+  "Dependencies":
+    "Upstream":
+      - getAllPosts utility
+      - qualifyLink utility
+    Downstream:
+      - blog listing route handlers
+      - UI rendering templates or API endpoints
+  "Data Flow":
+    "Inputs": "Base directory path of posts."
+    "Outputs": "Nested array representing menu structure."
+    "Side Effects": "None."
+  "Performance and Scalability":
+    "Bottlenecks":
+      - "File system scans expensive with many posts."
+      - "No caching leading to repeated expensive IO."
+    Concurrency: "No explicit Concurrency concerns."
+  "Security and Stability":
+    Validation: "No input Validation on base directory."
+    Vulnerabilities: "Potential malformed post metadata."
+  "Architecture Assessment":
+    "Coupling": "Depends heavily on file IO utilities."
+    "Abstraction": "No caching or memoization abstraction.
+  "Recommendations":
+    - "Add caching or memoization."
+    - "Validate input parameters."
+    - "Consider background processing for large data."
+
+rssFeedService:
+  "Purpose": "Generate RSS feed XML for all published blog posts."
+  "Lifecycle Role": "Triggered on `/rss.xml` requests."
+  "Dependencies":
+    "Upstream":
+      - getAllPosts utility
+      - rss XML builder library
+    Downstream:
+      - RSS feed route handlers
+  "Data Flow":
+    "Inputs": "Post base directory and site URL."
+    "Outputs": "RSS XML string."
+    "Side Effects": "None."
+  "Performance and Scalability":
+    "Bottlenecks":
+      - "File IO delays and XML generation cost proportional to post count."
+      - "No caching causes redundant regeneration."
+    Concurrency: "Potential performance degradation under high load."
+  "Security and Stability":
+    Validation: "No sanitization of post content for XML compliance."
+    Vulnerabilities: "Malformed XML risk if post data is invalid."
+  "Architecture Assessment":
+    "Coupling": "Tied to file IO and external XML library."
+    "Abstraction": "No caching or streaming implementation."
+  "Recommendations":
+    - "Implement caching and regenerate on content changes."
+    - "Sanitize post content for XML."
+    - "Stream RSS output for large feeds."
+
+sitemapService:
+  "Purpose": "Build comprehensive sitemap combining static pages, posts, and tags."
+  "Lifecycle Role": "Handles `/sitemap.xml` or sitemap API requests."
+  "Dependencies":
+    "Upstream":
+      - getAllPosts utility
+      - gray-matter markdown parser
+      - fast-glob file locator
+      - internal aggregation methods
+    Downstream:
+      - sitemap route handlers
+      - SEO utilities or build scripts
+  "Data Flow":
+    "Inputs": "Content directories and static sitemap JSON."
+    "Outputs": "Structured sitemap tree and flattened arrays."
+    "Side Effects": "Filesystem reads; console warnings on errors."
+  "Performance and Scalability":
+    "Bottlenecks":
+      - "Multiple async file reads and JSON parsing."
+      - "No caching causes repeated heavy IO."
+    Concurrency: "High IO load under concurrent requests."
+  "Security and Stability":
+    Validation: "No Validation of frontmatter; risk of sensitive metadata exposure."
+    Vulnerabilities: "File read scope risks."
+  "Architecture Assessment":
+    "Coupling": "Heavy dependency on multiple IO and parsing utilities."
+    "Abstraction": "No persistent caching or pre-generation."
+  "Recommendations":
+    - "Add persistent caching refreshed on content changes."
+    - "Validate and sanitize frontmatter."
+    - "Restrict file reads to safe directories."
+    - "Pre-generate sitemap at build/deploy time."
+
+"Cross Cutting Summary":
+  Themes:
+    - "Excessive file IO and parsing affecting performance."
+    - "Lack of caching across all services."
+    - "Minimal error handling and Validation."
+    - "Single points of failure in persistence methods."
+    - "Security gaps in input sanitization and data storage."
+  "System Recommendations":
+    - "Migrate persistent data from flat files to databases or cache layers."
+    - "Implement caching mechanisms to reduce IO overhead."
+    - "Add robust Validation, sanitization, and error handling."
+    - "Decouple expensive computations from request lifecycle."
+    - "Secure storage and access to sensitive data."

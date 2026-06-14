@@ -1,0 +1,9 @@
+title: "Word Guesser"
+layout: "main"
+page: "page"
+slug: "word-guesser"
+styles:
+  - "css/styles.css"
+scripts:
+  - "scripts/script.js"
+file: "index.html"

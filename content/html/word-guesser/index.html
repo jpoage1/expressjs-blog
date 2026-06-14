@@ -1,0 +1,119 @@
+<div class="game-header">
+  <h2>The Word Guessing Game</h2>
+  <p id="game_intro">The game that insults you, whether you win or lose!</p>
+</div>
+<form id="user_info" method="_POST">
+  <div class="form_container" id="user_info_container">
+    <div class="form_container" id="splash_screen">
+      <div class="formField">
+        <label for="user_name">Please enter your name</label>
+        <input type="text" name="user_name" id="user_name" maxlength="32"  value="Guest" />
+      </div>
+      <div class="formField">
+        <label for="wordlist_file">Please select a file (optional):</label>
+        <input type="file" name="wordlist_file" id="wordlist_file" />
+      </div>
+      <div class="formField">
+        <input type="submit" id="save_user_button" value="Play" />
+      </div>
+    </div>
+  </div>
+</form>
+<form id="game_form" method="_POST">
+  <div class="form_container" id="gameplay_container">
+    <div id="game-howto">
+      <p class="center-text">
+        Please enter a single alphabetical character (A-Z) into the input
+        box below and and click &quot;Guess&quot; to see if the letter
+        exists in the hidden word.</p>
+      </p>
+    </div>
+    <div><p id="notifications"></p></div>
+    <div class="formField word-display-field">
+      <ul id="current_word"></ul>
+    </div>
+    <div id="alphabet_container" class="alphabet-grid">
+      </div>
+    <div id="guess_letter_container" class="formField">
+      <p>Guess a letter:</p>
+      <input
+        type="text"
+        name="guess_letter"
+        id="guess_letter"
+        size="1"
+        maxlength="1"
+        pattern="[a-zA-Z]"
+        value=""
+        required
+        placeholder="?"
+        autocomplete="off"
+      />
+    </div>
+    <div id="game_metrics">
+      <div class="formField metric_group">
+        <span class="label">Attempts</span>
+        <input type="number" step="1" id="guess_count" value="0" disabled />
+      </div>
+      <div class="formField">
+        <span class="label">Guesses</span>
+        <ul id="guesses"></ul>
+      </div>
+    </div>
+    <div class="submitField">
+      <input
+        type="submit"
+        id="guess_button"
+        name="guess_button"
+        value="Guess"
+      />
+    </div>
+  </div>
+</form>
+<div id="scoreboard">
+  <div class="sb-recent">
+    <h3>Current Game Results</h3>
+    <div class="sb-card">
+      <div class="sb-label">Result</div>
+      <div class="sb-value" id="current_game_result"></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-label">Incorrect Guesses</div>
+      <div class="sb-value" id="current_game_incorrect"></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-label">Time Spent (s)</div>
+      <div class="sb-value" id="current_game_time"></div>
+    </div>
+  </div>
+
+  <hr />
+
+  <div class="sb-cumulative">
+    <h3>Overall Performance</h3>
+    <div class="sb-card">
+      <div class="sb-label">Total words attempted</div>
+      <div class="sb-value" id="total_words_attempted"></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-label">Total words completed</div>
+      <div class="sb-value" id="total_words_completed"></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-label">Total incorrect guesses</div>
+      <div class="sb-value" id="total_incorrect_guesses"></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-label">Average guesses per word</div>
+      <div class="sb-value" id="average_guesses_per_word"></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-label">Average time per word</div>
+      <div class="sb-value" id="average_time_per_word"></div>
+    </div>
+    <div class="sb-actions">
+      <input type="button" id="play_again" value="Start a new Game" />
+      <input type="button" id="quit_game" value="Quit" />
+    </div>
+  </div>
+</div>
+</main>

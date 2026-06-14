@@ -1,0 +1,68 @@
+Testing Plan: 1. C++ Pybindings Validation (GTest &amp; Pytest): Test Cases::
+<code>test_safe_assign_binding_integrity</code>: Pass Boolean, Integer, and Enum
+string types from Python dictionaries into C++ <code>hexa::RunConfig</code> via
+Pybind11. <code>TestManifestBridge</code>: Validate C++
+<code>hexa::CompilationResult</code> properties correctly reflect into Python
+<code>ManifestModel</code> schema.
+<code>ConfigSafetyTest.HandlesMalformedJSONInjection</code>: Inject deeply
+nested or malformed JSON payloads into <code>RunConfig::from_json</code>.
+Expected Outcomes:: C++ layer extracts Python variables without segmentation
+faults. Type mismatches or overflows trigger controlled fallbacks or raise
+caught <code>std::invalid_argument</code> exceptions passed back to Python.
+<code>Manifest</code> generation strictly enforces mandatory fields.
+Verification Methods:: Pytest assertions on data type mapping
+(<code>isinstance</code>). GTest <code>EXPECT_NO_THROW</code> and
+<code>EXPECT_EQ</code> ensuring safe fallback values (e.g.,
+<code>SEEDLESS_VALUE</code>). 2. Class Object Integrity (C++, Python,
+TypeScript): Test Cases:: C++ Core:: <code>OptimizerLogicTest</code> for dead
+code elimination and constant folding; <code>LinearizerTest</code> for nested
+math AST translation; <code>VMTest</code> for memory bound checks
+(<code>HighRegisterPressure</code>), loop termination, and stack underflow
+logic. Python Backend:: <code>TestOracle</code> and
+<code>HexaASTSerializer</code> for validating accurate translation of native
+Python <code>ast</code> nodes to JSON. TypeScript Frontend::
+<code>BaseCRUD</code> memento pattern tests (<code>isDirty</code> flag logic).
+<code>BaseLibrary</code> collection hydration. Expected Outcomes:: Optimizer
+reduces AST complexity without altering deterministic output. VM halts
+predictably on stack underflow or type mismatch
+(<code>ThrowsOnTypeMismatch</code>). TS models track local state mutations and
+revert cleanly. Verification Methods:: GTest executing bytecode and validating
+literal extraction (<code>get_double</code>). Pytest validating dictionary
+structure of serialized AST. Vitest verifying Svelte
+<code>$state</code> reactivity and dirty flags. 3. Backend Endpoint &amp;
+Pydantic Structure Validation: Test Cases::
+<code>TestCompilerConfigDynamicOrchestration</code>: Verify FastAPI endpoint
+schema matches the dynamically generated C++ <code>SchemaBuilder</code> payload.
+<code>test_dispatch_pipeline_success</code>: Post <code>CommandPayload</code> to
+<code>/api/dispatch</code> triggering database entry and background worker
+queue. <code>TestCompileJobOrchestration</code>: Validate DB integrity and
+cascading foreign keys across <code>AST</code>, <code>CompilerConfig</code>, and
+<code>CompileJob</code>. Expected Outcomes:: API endpoints correctly enforce
+<code>BatchConfig</code> and <code>CommandPayload</code> Pydantic contracts.
+Missing required fields yield <code>422 Unprocessable Entity</code>. Authorized
+requests insert SQLite records and spawn multiprocessing tasks successfully.
+Verification Methods:: Pytest <code>TestClient</code> executing HTTP requests.
+SQLAlchemy <code>inspect(CompilerConfig)</code> asserting exact column parity
+with C++ configuration definitions. 4. Frontend Data Dispatch Accuracy: Test
+Cases:: <code>BaseCRUD.Validation</code>: Pass invalid/incomplete forms into TS
+model before dispatch. <code>getValidPayload</code>: Verify stripping of UI-only
+properties (e.g., <code>isEditing</code>) before network transmission. Expected
+Outcomes:: Zod schemas intercept malformed data client-side, throwing
+<code>ValidationError</code> and halting <code>fetch</code>. Generated payloads
+strictly match the backend's expected JSON format. Verification Methods:: Vitest
+<code>expect(() =&gt; getValidPayload(true)).toThrow()</code>. Spying on
+internal <code>apiFetch</code> calls to assert the shape of the intercepted HTTP
+body. 5. End-to-End API Integration &amp; Telemetry Synchronization: Test
+Cases:: <code>runIntegrationSuite</code>: Execute chained sequence creating
+<code>ResearchTier</code> -&gt; <code>LLMServer</code> -&gt;
+<code>Prompt</code> -&gt; <code>LLMModel</code> -&gt; <code>PromptConfig</code>.
+<code>FullChainTest</code>: Inject Python AST payload, execute compiler pass,
+and await trace result. Expected Outcomes:: System maintains state
+synchronization across the network boundary. C++ execution yields physical
+<code>.hex</code> and <code>.meta.json</code> files. Database accurately links
+execution <code>Manifest</code> to the original <code>CompileJob</code>.
+WebSocket/Polling loops hydrate the UI <code>RegisterGrid</code> and
+<code>ASTViewer</code> with zero data mutation. Verification Methods: Vitest
+polling tests resolving simulated backend responses. GTest
+<code>fs::exists</code> verifying absolute file paths of generated artifacts in
+the scoped temporary workspace.

@@ -1,0 +1,19 @@
+sequenceDiagram
+    autonumber
+    ResearchLibrary->>_collection: clear()
+    ResearchLibrary->>_collection: set()
+    Server->>models: hydrate()
+    ServerList->>_servers: find()
+    TerminalController->>dataset: startBuild()
+    TerminalController->>dataset: stopBuild()
+    TerminalController->>dataset: pollDataset()
+    TerminalController->>systemLogs: push()
+    TerminalController->>systemLogs: shift()
+    TerminalController->>terminal: apply()
+    TerminalController->>ui: applyLayout()
+    BaseLibrary->>activeItem: isNew()
+    BaseLibrary->>+activeItem: delete()
+    activeItem-->>-BaseLibrary: result
+    LLMServerStatusLibrary->>entries: find()
+    WBSTaskLibrary->>entries: filter()
+    WBSTaskLibrary->>entries: filter()
