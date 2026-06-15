@@ -1,8 +1,0 @@
-deployment_pipeline @ git+ssh://git@git.jasonpoage.vpn:29418/jason/deployment_pipeline.git@6d8433152ebd9691dd58c089a9a66b2b5ac6c4a5
-pipeline_runner @ git+https://github.com/jpoage1/pipeline_runner.git@84288a6532b53a93c89d86e53e2bc44bb6be5010
-installer==0.7.0
-lupa==2.6
-packaging==25.0
-setuptools==80.10.1
-tomli==2.4.0
-wheel==0.46.1
