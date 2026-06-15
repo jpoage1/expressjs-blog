@@ -39,6 +39,7 @@ const contentRouter = createContentRouter({
 });
 
 import { createBlog, createStaticAssets } from "@jpoage1/expressjs-blog";
+import { trace } from "@jpoage1/middleware";
 
 const blog = createBlog({
   contentPath: meta.content_path,
@@ -82,6 +83,7 @@ const app = express();
 app.use(createStaticAssets());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(trace);
 
 if (meta.node_env === "production" || meta.node_env === "testing") {
   app.use(infra.applyProductionSecurity);

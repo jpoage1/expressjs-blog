@@ -1,6 +1,6 @@
 // src/db/migrations/001_create_visitor_tracking.js
 
-exports.up = async (knex) => {
+export const up = async (knex) => {
   // --- visitors ---
   // A unique observed identity: IP + user agent signature.
   // Classification starts as 'unknown'; you promote manually to
@@ -81,7 +81,7 @@ exports.up = async (knex) => {
   );
 };
 
-exports.down = async (knex) => {
+export const down = async (knex) => {
   await knex.schema.dropTableIfExists("security_flags");
   await knex.schema.dropTableIfExists("requests");
   await knex.schema.dropTableIfExists("visitors");

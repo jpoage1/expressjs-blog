@@ -23,7 +23,9 @@
     "@jpoage1/renderer": "portal:/srv/projects/node_packages/@jpoage1/renderer",
     "@jpoage1/security": "portal:/srv/projects/node_packages/@jpoage1/security",
     "@jpoage1/views": "portal:/srv/projects/node_packages/@jpoage1/views",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "knex": "^3.0.0",
+    "pg": "^8.0.0"
   },
   "resolutions": {
     "@jpoage1/auth": "portal:/srv/projects/node_packages/@jpoage1/auth",
