@@ -1,7 +1,8 @@
 # config.example.toml
 # Copy this to config.toml and fill in your values.
 # Environment variables override everything in this file.
-# Keys map 1:1 to the convict schema in src/config/schema.cjs
+# Keys map 1:1 to the convict schema assembled in src/app.js via
+# mergeSchemas(baseSchema, securitySchema, mailerSchema) from @jpoage1/config.
 
 # ── Meta ────────────────────────────────────────────────────────────────────
 [meta]
@@ -27,35 +28,10 @@ address   = "0.0.0.0"
 port      = 443
 base_path = ""
 
-# ── PostgreSQL ───────────────────────────────────────────────────────────────
-[db]
-# url      = "postgresql://user:pass@host/db"   # takes priority over fields below
-host     = "localhost"
-port     = 5432
-database = "expressjs-blog"
-user     = "expressjs-blog"
-# password = ""     # prefer DB_PASS env var
-pool_max = 6
-
 # ── Logging ──────────────────────────────────────────────────────────────────
 [logging]
 log_dir   = "/var/log/expressjs-blog"
 log_level = "info"              # error|warn|event|security|notice|info|debug|analytics
-db_path   = "/var/lib/expressjs-blog/data"
-
-# ── Authentication (OIDC via express-openid-connect) ─────────────────────────
-[auth]
-enabled     = false
-# verify    = "https://auth.jasonpoage.com/api/verify"
-# login     = "https://auth.jasonpoage.com"
-cache_ttl   = 120000
-timeout_ms  = 5000
-
-# ── Session cookie ────────────────────────────────────────────────────────────
-[session.cookie]
-secure    = true
-same_site = "Lax"
-domain    = "jasonpoage.com"    # enables sharing across subdomains
 
 # ── Mail ─────────────────────────────────────────────────────────────────────
 [mail]
@@ -67,16 +43,6 @@ newsletter      = "newsletter@jasonpoage.com"
 default_subject = "New Contact Form Submission"
 log_path        = "/var/lib/expressjs-blog/data/emails.json"
 # pass          = ""    # prefer MAIL_PASS env var
-
-# ── OIDC (express-openid-connect / Authelia) ─────────────────────────────────
-# Only required when [auth] enabled = true
-[auth.oidc]
-# secret          = ""    # prefer OIDC_SECRET env var — must be changed in production
-client_id         = "expressjs-blog"
-# client_secret   = ""    # prefer OIDC_CLIENT_SECRET env var
-issuer_base_url   = "https://auth.jasonpoage.com"
-scope             = "openid profile email groups"
-callback_path     = "/auth/callback"
 
 # ── hCaptcha ─────────────────────────────────────────────────────────────────
 [hcaptcha]
@@ -143,8 +109,3 @@ max_total_size_mb        = 200
 max_disk_usage_percent   = 90
 cleanup_interval_minutes = 60
 emergency_cleanup_ratio  = 0.5
-
-# ── Testing bypass credentials ────────────────────────────────────────────────
-[testing]
-username = "test"
-group    = "test-users"

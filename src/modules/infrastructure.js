@@ -1,7 +1,7 @@
 // src/modules/infrastructure.js
 //
-// Composition root for live infrastructure: logger, mailer, security, and
-// auth, built from @jpoage1/* factories and wired with this app's config.
+// Composition root for live infrastructure: logger, mailer, and security,
+// built from @jpoage1/* factories and wired with this app's config.
 
 import { createLogger } from "@jpoage1/logger";
 import { buildLogConfig, buildCspDirectives } from "@jpoage1/config";
@@ -17,20 +17,12 @@ import {
   analyzeThreatLevel,
   createProductionSecurity,
 } from "@jpoage1/security";
-import {
-  createAuthCheck,
-  createOidcMiddleware,
-  evaluateRules,
-  generateToken,
-} from "@jpoage1/auth";
 import { HttpError } from "@jpoage1/errors";
 
 export function createInfrastructure(cfg, baseUrl) {
   const logging = cfg.get("logging");
   const mailCfg = cfg.get("mail");
   const hcaptchaCfg = cfg.get("hcaptcha");
-  const authCfg = cfg.get("auth");
-  const sessionCfg = cfg.get("session");
 
   const { logger } = createLogger(buildLogConfig(cfg));
 
@@ -52,9 +44,6 @@ export function createInfrastructure(cfg, baseUrl) {
     captureSecurityData,
   };
 
-  const oidcMiddleware = createOidcMiddleware(authCfg, sessionCfg, baseUrl);
-  const authCheck = createAuthCheck({ enabled: authCfg.enabled });
-
   const securityCfg = cfg.get("security");
   const cspDirectives = buildCspDirectives(cfg, baseUrl);
   const { applyProductionSecurity, securityPolicy } = createProductionSecurity({
@@ -63,16 +52,15 @@ export function createInfrastructure(cfg, baseUrl) {
     healthCheckPath: securityCfg.health_check,
     node_env: cfg.get("meta").node_env,
     HttpError,
+    // Rate-limiting is handled by the ingress (limit-rps/limit-burst-multiplier
+    // in chart/values.yaml), so skip the in-app limiter entirely.
+    rateLimitOptions: { skip: () => true },
   });
 
   return {
     logger,
     mailer,
     security,
-    generateToken,
-    evaluateRules,
-    oidcMiddleware,
-    authCheck,
     cspDirectives,
     securityPolicy,
     applyProductionSecurity,

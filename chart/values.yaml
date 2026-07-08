@@ -1,60 +1,97 @@
+# charts/expressjs-blog/values.yaml
+# Default values for expressjs-blog.
+# This chart deploys a stateless Express.js blog application.
+
+nameOverride: ""
+
 image:
   repository: jpoage1/expressjs-blog
   tag: latest
   pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+  # - name: registry-credentials
+
 replicaCount: 1
-command: ["yarn", "start"]
+command: ["node", "src/app.js"]
+
+legacySecretGeneration:
+  enabled: false # set true only when legacy TLS cert/key are injected via Terraform set_sensitive
+
 tls:
   enabled: false
-  cert: "" # injected via Terraform set_sensitive
-  key: "" # injected via Terraform set_sensitive
+  cert: "" # injected via Terraform set_sensitive when legacySecretGeneration.enabled=true
+  key: "" # injected via Terraform set_sensitive when legacySecretGeneration.enabled=true
   bundle: "" # leave empty — unused for this chart
+  certIssuer: "" # if set, adds cert-manager.io/cluster-issuer annotation to Ingress
+
 vault:
   enabled: false
+
 env:
   NODE_ENV: development
   PUBLIC_SCHEMA: http
   PUBLIC_PORT: "80"
   PUBLIC_DOMAIN: localhost
   PUBLIC_BASE_PATH: ""
-dbSecret: "expressjs-postgresql"
-createDbSecret: true
-db:
-  host: "postgresql-service.postgresql.svc.cluster.local"
-  port: "5432"
-  name: "expressjs-blog"
-  user: "expressjs-blog"
-  password: ""
-migrations:
-  enabled: true
+
 service:
+  type: ClusterIP
   port: 80
   targetPort: 3400
+
 ingress:
-  annotations: {}
   enabled: true
+  className: nginx
+  annotations:
+    # Rate-limiting / abuse-blocking handled by ingress controller.
+    nginx.ingress.kubernetes.io/limit-rps: "10"
+    nginx.ingress.kubernetes.io/limit-burst-multiplier: "5"
   tls:
     enabled: true
-    secretName: ""
-  className: nginx
+    secretName: "" # defaults to "<nameOverride|Chart.Name>-tls" if empty
+    certIssuer: "" # optional override for tls.certIssuer
   hosts:
     - host: localhost
       paths:
         - path: /
           pathType: Prefix
+
+probes:
+  enabled: true
+  liveness:
+    httpGet:
+      path: /
+      port: 3400
+    initialDelaySeconds: 15
+    periodSeconds: 20
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readiness:
+    httpGet:
+      path: /
+      port: 3400
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3
+
 configFile:
   enabled: false
   hostPath: "" # absolute path on the host node
-  mountPath: "/etc/expressjs-blog" # where it appears inside the container
+  mountPath: "/app/config.toml" # where it appears inside the container
   filename: "config.toml"
+
 sourceConfig:
   enabled: false
   hostPath: ""
-  mountPath: "/var/lib/expressjs-blog"
+  mountPath: "/app"
+
 contentPath:
   enabled: false
   hostPath: ""
-  mountPath: "/var/lib/expressjs-blog/content"
+  mountPath: "/app/content"
+
 logs:
   enabled: true
   server: ""
@@ -64,6 +101,8 @@ logs:
   accessMode: ReadWriteOnce
   existingClaim: ""
   hostPath: ""
+  mountPath: "/var/log/expressjs-blog"
+
 resources:
   requests:
     cpu: 100m

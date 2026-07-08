@@ -1,93 +1,34 @@
-# ---- Build Stage ----
-FROM node:bookworm AS builder
+# Jerry-rigged build for the @jpoage1/* portal: dependencies.
+#
+# package.json depends on @jpoage1/* via
+# `portal:/srv/projects/node_packages/@jpoage1/*`, and node_modules/@jpoage1/*
+# are *relative* symlinks pointing four directories up into
+# /srv/projects/node_packages/@jpoage1/*. To make those symlinks resolve
+# inside the image, build with the PARENT of this repo (/srv/projects) as the
+# build context and this file as the dockerfile, e.g.:
+#
+#   docker build -f jasonpoage.com/expressjs-blog/Dockerfile \
+#     -t jpoage1/expressjs-blog:latest /srv/projects
+#
+# TODO: once @jpoage1/* packages are published to a real registry, drop the
+# portal: deps and this whole jerry-rig in favor of a normal yarn install.
 
-ARG TARGETARCH
+FROM node:24-bookworm-slim
 
-ARG GIT_REPO
-ARG GIT_COMMIT
+WORKDIR /srv/projects/jasonpoage.com/expressjs-blog
 
-WORKDIR /app
+# Sibling @jpoage1/* packages — must land at this same absolute path for the
+# relative portal symlinks in node_modules to resolve.
+COPY node_packages /srv/projects/node_packages
 
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    apt-get update && apt-get install -y \
-    python3 \
-    make \
-    g++ \
-    libvips-dev \
-    git \
-    && npm install -g corepack \
-    && rm -rf /var/lib/apt/lists/*
+COPY jasonpoage.com/expressjs-blog/package.json jasonpoage.com/expressjs-blog/yarn.lock ./
+COPY jasonpoage.com/expressjs-blog/node_modules ./node_modules
+COPY jasonpoage.com/expressjs-blog/src ./src
+COPY jasonpoage.com/expressjs-blog/content ./content
+COPY jasonpoage.com/expressjs-blog/config.prod.toml ./
 
-# Clone specific commit/branch
-# RUN git clone --depth 1 --branch "$GIT_COMMIT" "$GIT_REPO" . \
-#     || (git clone "$GIT_REPO" . && git checkout "$GIT_COMMIT")
-
-COPY ./.yarnrc.yml ./package.json ./yarn.lock ./
-COPY ./.yarn ./.yarn
-COPY ./node_modules ./node_modules
-COPY ./.puppeteer /var/cache/puppeteer
-COPY ./public ./public
-COPY ./scripts ./scripts
-COPY ./content ./content
-COPY ./src ./src
-
-RUN find . -type f -not -path '*/node_modules/*' -not -path '*/.yarn/*' -print0 | \
-    sort -z | xargs -0 sha256sum | sha256sum | cut -d' ' -f1 > /app/BUILD_SHA_FILE
-
-ENV YARN_CACHE_FOLDER=/var/cache/yarn/$TARGETARCH
-ENV PUPPETEER_CACHE_DIR=/var/cache/puppeteer/$TARGETARCH
-
-RUN --mount=type=cache,target=/root/.yarn/berry/cache/$TARGETARCH,sharing=shared \
-    --mount=type=cache,target=/app/.yarn/unplugged/$TARGETARCH,sharing=shared \
-    --mount=type=cache,target=/var/cache/puppeteer/$TARGETARCH,sharing=shared \
-    corepack enable && corepack prepare yarn@4.9.2 --activate && \
-    yarn combine:css && \
-    yarn workspaces focus --production
-
-# ---- Runtime Stage ----
-FROM node:bookworm-slim
-
-ARG BUILD_SHA
-ENV BUILD_SHA=${BUILD_SHA}
-
-WORKDIR /app
 ENV NODE_ENV=production
-ENV PORT=3000
-# These have fallback defaults built in, no need to explicitly define them.
-# Explicit definition will fail for testing
-# ENV LOG_DIR=/var/log/expressjs-blog
-# ENV CONFIG_PATH=/app/config.toml
-# ENV DB_PATH=/var/log/expressjs-blog
-# ENV CONTENT_PATH=/app/content
+ENV CONFIG_PATH=./config.prod.toml
 
-
-
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    apt-get update && apt-get install -y \
-    libvips \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY --from=builder /app/.yarnrc.yml ./
-COPY --from=builder /app/.yarn ./.yarn
-COPY --from=builder /app/package.json /app/yarn.lock ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/content ./content
-COPY --from=builder /app/src ./src
-COPY --from=builder /app/BUILD_SHA_FILE ./BUILD_SHA_FILE
-
-RUN export BUILD_SHA=$(cat ./BUILD_SHA_FILE) && \
-    echo "Build SHA: ${BUILD_SHA}"
-
-RUN mkdir -p /var/log/expressjs-blog/data && \
-    chmod 755 /var/log/expressjs-blog && \
-    chmod 755 /var/log/expressjs-blog/data
-
-RUN npm install -g corepack && \
-    corepack enable && \
-    corepack prepare yarn@4.9.2 --activate
-
-EXPOSE 3000
-CMD ["yarn", "start"]
+EXPOSE 3400
+CMD ["node", "src/app.js"]

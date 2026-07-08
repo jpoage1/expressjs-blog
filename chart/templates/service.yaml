@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Values.nameOverride | default .Chart.Name }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ .Values.nameOverride | default .Chart.Name }}
 spec:
@@ -10,5 +11,6 @@ spec:
     - port: {{ .Values.service.port | default 80 }}
       targetPort: {{ .Values.service.targetPort | default 3400 }}
       protocol: TCP
+      name: http
   selector:
     app: {{ .Values.nameOverride | default .Chart.Name }}

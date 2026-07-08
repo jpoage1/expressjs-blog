@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "nameOverride": { "type": "string" },
+    "image": {
+      "type": "object",
+      "properties": {
+        "repository": { "type": "string" },
+        "tag": { "type": "string" },
+        "pullPolicy": { "type": "string", "enum": ["Always", "IfNotPresent", "Never"] }
+      },
+      "required": ["repository", "tag"]
+    },
+    "imagePullSecrets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" }
+        },
+        "required": ["name"]
+      }
+    },
+    "replicaCount": { "type": "integer", "minimum": 0 },
+    "command": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "legacySecretGeneration": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" }
+      },
+      "required": ["enabled"]
+    },
+    "tls": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "cert": { "type": "string" },
+        "key": { "type": "string" },
+        "bundle": { "type": "string" },
+        "certIssuer": { "type": "string" }
+      }
+    },
+    "vault": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" }
+      }
+    },
+    "env": {
+      "type": "object"
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string" },
+        "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "targetPort": { "type": "integer", "minimum": 1, "maximum": 65535 }
+      }
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "className": { "type": "string" },
+        "annotations": { "type": "object" },
+        "tls": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "secretName": { "type": "string" },
+            "certIssuer": { "type": "string" }
+          }
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "host": { "type": "string" },
+              "paths": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": { "type": "string" },
+                    "pathType": { "type": "string" }
+                  },
+                  "required": ["path", "pathType"]
+                }
+              }
+            },
+            "required": ["host", "paths"]
+          }
+        }
+      }
+    },
+    "probes": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "liveness": { "type": "object" },
+        "readiness": { "type": "object" }
+      }
+    },
+    "configFile": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "hostPath": { "type": "string" },
+        "mountPath": { "type": "string" },
+        "filename": { "type": "string" }
+      }
+    },
+    "sourceConfig": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "hostPath": { "type": "string" },
+        "mountPath": { "type": "string" }
+      }
+    },
+    "contentPath": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "hostPath": { "type": "string" },
+        "mountPath": { "type": "string" }
+      }
+    },
+    "logs": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "server": { "type": "string" },
+        "path": { "type": "string" },
+        "size": { "type": "string" },
+        "storageClass": { "type": "string" },
+        "accessMode": { "type": "string" },
+        "existingClaim": { "type": "string" },
+        "hostPath": { "type": "string" },
+        "mountPath": { "type": "string" }
+      }
+    },
+    "resources": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

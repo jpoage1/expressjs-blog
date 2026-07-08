@@ -39,10 +39,11 @@ fresh-shell: kill
 build:
 	REGISTRY=$(REGISTRY) docker buildx build \
 		--platform linux/amd64,linux/arm64 \
+		-f Dockerfile \
 		--tag $(IMG):$(TAG) \
 		--tag $(IMG):$(SHA) \
 		--push \
-		.
+		../..
 
 build-shell: build fresh-shell
 
@@ -72,13 +73,23 @@ push-registry: build
 release-local:
 	docker buildx build \
 		--platform linux/amd64,linux/arm64 \
+		-f Dockerfile \
 		--tag $(IMG):$(TAG) \
 		--tag $(IMG):$(SHA) \
-		--output type=oci,dest=/tmp/finance-api.tar \
-		. && \
-	sudo k3s ctr -n k8s.io images import /tmp/finance-api.tar
+		--output type=oci,dest=/tmp/expressjs-blog.tar \
+		../.. && \
+	sudo k3s ctr -n k8s.io images import /tmp/expressjs-blog.tar
 
 release-registry: build
+
+push-chart:
+	@if grep -q '^dependencies:' chart/Chart.yaml 2>/dev/null; then \
+		helm dependency update chart; \
+	fi; \
+	tmp=$$(mktemp -d); \
+	helm package chart -d $$tmp; \
+	helm push $$tmp/*.tgz oci://$(REGISTRY)/charts; \
+	rm -rf $$tmp
 
 help:
 	@echo "Usage: make [target] [AMEND=1]"

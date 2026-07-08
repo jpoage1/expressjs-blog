@@ -3,7 +3,7 @@
 // Bootstrap order:
 //   1. Schema composition  — mergeSchemas() before anything else loads
 //   2. Config load         — createLoader() validates and resolves all values
-//   3. Infrastructure      — logger, mailer, security, auth built from cfg
+//   3. Infrastructure      — logger, mailer, security built from cfg
 //   4. Blog engine         — createBlog() receives infra as injected deps
 //   5. Express             — middleware, mount, listen
 
@@ -16,10 +16,9 @@ import {
   buildBaseUrl,
 } from "@jpoage1/config";
 import { securitySchema } from "@jpoage1/security/schema.js";
-import { authSchema } from "@jpoage1/auth/schema.js";
 import { mailerSchema } from "@jpoage1/mailer/schema.js";
 
-const appSchema = mergeSchemas(baseSchema, securitySchema, authSchema, mailerSchema);
+const appSchema = mergeSchemas(baseSchema, securitySchema, mailerSchema);
 
 const cfg = createLoader(appSchema);
 
@@ -51,15 +50,10 @@ const blog = createBlog({
   hcaptchaKey: cfg.get("hcaptcha").key,
 
   verbose: logging.verbose,
-  _oidcIssuer: cfg.get("auth").enabled
-    ? cfg.get("auth").oidc.issuer_base_url
-    : null,
 
   logger: infra.logger,
   mailer: infra.mailer,
   security: infra.security,
-  generateToken: infra.generateToken,
-  evaluateRules: infra.evaluateRules,
 
   features: {
     docs: true,
@@ -88,8 +82,6 @@ app.use(trace);
 if (meta.node_env === "production" || meta.node_env === "testing") {
   app.use(infra.applyProductionSecurity);
 }
-app.use(infra.oidcMiddleware);
-app.use(infra.authCheck);
 
 blog.mount(app);
 

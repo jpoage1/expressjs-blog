@@ -10,6 +10,10 @@ metadata:
     {{- if .Values.tls.enabled }}
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     {{- end }}
+    {{- $issuer := .Values.tls.certIssuer | default (or .Values.ingress.tls.certIssuer "") }}
+    {{- if $issuer }}
+    cert-manager.io/cluster-issuer: {{ $issuer | quote }}
+    {{- end }}
     {{- toYaml .Values.ingress.annotations | nindent 4 }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
@@ -19,9 +23,7 @@ spec:
         {{- range .Values.ingress.hosts }}
         - {{ .host }}
         {{- end }}
-      {{- if .Values.ingress.tls.secretName }}
-      secretName: {{ .Values.nameOverride | default .Chart.Name }}-tls
-      {{- end}}
+      secretName: {{ .Values.ingress.tls.secretName | default (printf "%s-tls" (.Values.nameOverride | default .Chart.Name)) }}
   {{- end }}
   rules:
     {{- range .Values.ingress.hosts }}

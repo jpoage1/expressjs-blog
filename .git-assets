@@ -8,30 +8,30 @@ tests
 # Build files
 package.json
 yarn.lock
-pyproject.toml
+# pyproject.toml
 
 # Docker
 docker-compose.yaml
 Dockerfile
-Dockerfile.dev
+# Dockerfile.dev
 
 # Config
 Makefile
 .githooks
 .git-assets
 .gitignore
-requirements.txt
-favicon-shell.nix
-ecosystem.config.js
+# requirements.txt
+# favicon-shell.nix
+# ecosystem.config.js
 version.json
 config.example.toml
 nodemon.json
 
 # CI/CD
-Jenkinsfile
-deployment
+# Jenkinsfile
+# deployment
 
 # Nix
-default.nix
-shell.nix
-package.nix
+# default.nix
+# shell.nix
+# package.nix
