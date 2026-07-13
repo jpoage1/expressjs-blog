@@ -1,0 +1,48 @@
+#!/bin/sh
+set -e
+
+# Matches the uid/gid already in use on the Pi's existing express-blog
+# install -- keep them stable so ownership of pre-existing
+# /var/lib/express-blog and /var/log/express-blog content doesn't change
+# on machines that already have this user.
+EXPRESS_BLOG_UID=20004
+EXPRESS_BLOG_GID=20004
+
+if ! getent group express-blog >/dev/null 2>&1; then
+    groupadd --system --gid "$EXPRESS_BLOG_GID" express-blog
+fi
+
+if ! getent passwd express-blog >/dev/null 2>&1; then
+    useradd --system --uid "$EXPRESS_BLOG_UID" --gid "$EXPRESS_BLOG_GID" \
+        --home-dir /var/lib/express-blog --no-create-home \
+        --shell /usr/sbin/nologin express-blog
+fi
+
+for dir in \
+    /var/lib/express-blog \
+    /var/log/express-blog \
+    /etc/express-blog
+do
+    mkdir -p "$dir"
+    chown express-blog:express-blog "$dir"
+done
+
+systemctl daemon-reload || true
+
+cat <<'EOF'
+
+expressjs-blog installed.
+
+This package does NOT auto-enable or start a service instance, and does
+NOT install the nginx vhost -- both are left as manual steps:
+
+  1. Review/edit /etc/express-blog/release.toml (seeded from
+     release.toml.example on first install; untouched on upgrade).
+  2. sudo systemctl enable --now express-blog@release.service
+  3. Merge /usr/share/expressjs-blog/nginx/jasonpoage.com.conf.example
+     into /etc/nginx/sites-enabled/jasonpoage.com.conf by hand -- that
+     file has Certbot-managed lines this package will not touch.
+
+EOF
+
+exit 0

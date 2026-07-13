@@ -85,6 +85,8 @@ if (meta.node_env === "production" || meta.node_env === "testing") {
 
 blog.mount(app);
 
-app.listen(network.port, network.address, () => {
+const server = app.listen(network.port, network.address, () => {
   infra.logger.info(`Blog listening on ${baseUrl} (${meta.node_env})`);
 });
+
+export { app, server };

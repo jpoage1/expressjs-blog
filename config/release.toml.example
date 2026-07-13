@@ -1,0 +1,59 @@
+# /etc/express-blog/release.toml
+#
+# Installed as a dpkg conffile -- if you've already customized this file,
+# `dpkg -i`/`apt install` will not overwrite it. Keys map 1:1 to the
+# convict schema assembled in src/app.js via @jpoage1/config
+# (see config.example.toml in the package payload for the full reference).
+#
+# This targets the express-blog@release.service instance, which is the
+# one nginx's production jasonpoage.com vhost proxies to on 127.0.0.1:3500.
+
+[meta]
+node_env     = "production"
+site_owner   = "Jason Poage"
+country      = "US"
+root_dir     = "/usr/lib/expressjs-blog"
+content_path = "/usr/lib/expressjs-blog/content"
+
+[network]
+schema    = "http"
+domain    = "release.jasonpoage.local"
+address   = "127.0.0.1"
+port      = 3500
+
+[public]
+schema  = "https"
+domain  = "jasonpoage.com"
+address = "192.168.1.200"
+port    = 443
+
+[logging]
+log_dir   = "/var/log/express-blog"
+log_level = "info"
+
+[mail]
+secure          = true
+host            = "smtp-relay.brevo.com"
+port            = 587
+domain          = "jasonpoage.com"
+newsletter      = "newsletter@jasonpoage.com"
+default_subject = "New Contact Form Submission"
+# user = ""   # prefer MAIL_USER env var
+# pass = ""   # prefer MAIL_PASS env var
+
+[hcaptcha]
+# secret = ""   # prefer HCAPTCHA_SECRET env var
+# key    = ""   # prefer HCAPTCHA_KEY env var
+
+[security]
+hsts_max_age     = 63072000
+healthcheck_path = "/health"
+auth_domain      = "https://auth.jasonpoage.com"
+
+[cleanup.production]
+max_session_count        = 100
+session_retention_hours  = 24
+max_total_size_mb        = 200
+max_disk_usage_percent   = 90
+cleanup_interval_minutes = 60
+emergency_cleanup_ratio  = 0.5

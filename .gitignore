@@ -44,6 +44,10 @@ target/
 /out/
 /static/
 
+# Nix build output symlinks
+/result
+/result-*
+
 / IDEs and Editors
 .vscode/
 .idea/

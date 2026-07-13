@@ -4,6 +4,8 @@ src
 content
 public
 tests
+test
+scripts
 
 # Build files
 package.json
@@ -31,7 +33,10 @@ nodemon.json
 # Jenkinsfile
 # deployment
 
-# Nix
-# default.nix
+# Nix / .deb packaging
+default.nix
+package.nix
+nixpkgs
+config
+nginx
 # shell.nix
-# package.nix

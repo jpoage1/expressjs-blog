@@ -1,0 +1,22 @@
+[Unit]
+Description=Express Blog (%i)
+After=network.target
+
+[Service]
+Type=simple
+User=express-blog
+Group=express-blog
+Restart=on-failure
+
+WorkingDirectory=/usr/lib/expressjs-blog
+Environment=NODE_ENV=production
+Environment=CONFIG_PATH=/etc/express-blog/%i.toml
+ExecStart=/usr/bin/node src/app.js
+
+# The app does its own structured logging under [logging].log_dir
+# (set to /var/log/express-blog in the shipped config). stdout/stderr here
+# is just startup output and uncaught exceptions -- journald is sufficient,
+# no need for a second set of flat log files.
+
+[Install]
+WantedBy=multi-user.target

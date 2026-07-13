@@ -1,0 +1,94 @@
+# Reference nginx vhost for jasonpoage.com.
+#
+# NOT installed automatically by the .deb -- nginx on this box is shared
+# infrastructure serving ~12 other domains, and the live file
+# (/etc/nginx/sites-enabled/jasonpoage.com.conf) has Certbot-managed lines
+# that must not be clobbered by a package install. This file mirrors that
+# live config; the only addition relative to what's already deployed is
+# the `location /api/mailer` block (and its `upstream`) near the bottom.
+# Diff this against the live file and merge by hand.
+#
+# The app itself listens on 127.0.0.1:3500 (express-blog@release.service).
+
+upstream express_blog_mailer {
+    # Same shared mailer instance finance.jasonpoage.com already proxies
+    # to via its own `finance_mailer_backend` upstream -- defined locally
+    # here instead of referencing that name directly, so this file has no
+    # load-order dependency on finance's sites-enabled file.
+    server 127.0.0.1:3100 max_fails=1 fail_timeout=2s;
+}
+
+server {
+    listen 80 default_server;
+    server_name _;
+    return 444;
+    include /etc/nginx/includes/shared_errors.conf;
+    include /etc/nginx/includes/favicon.conf;
+}
+
+server {
+    if ($host = www.jasonpoage.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+    if ($host = jasonpoage.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+    listen 80;
+    server_name jasonpoage.com *.jasonpoage.com;
+
+    set $backend_server '';
+    set $redirect_location https://jasonpoage.com;
+    set $redirect_status 301;
+
+    include includes/python_redirect.conf;
+
+    return 301 $redirect_location;
+}
+
+server {
+    listen 443 ssl;
+    server_name www.jasonpoage.com;
+
+    set $backend_server '';
+    set $redirect_location https://jasonpoage.com;
+    set $redirect_status 301;
+
+    include includes/python_redirect.conf;
+
+    return 301 $redirect_location;
+
+    include /etc/nginx/includes/wildcard_ssl.conf;
+}
+
+server {
+    listen 443 ssl;
+    server_name jasonpoage.com;
+
+    set $maintenance_mode off;
+
+    if (-f /etc/express-blog/maintenance.flag.on) {
+        set $maintenance_mode on;
+    }
+
+    include /etc/nginx/includes/maintenance.conf;
+    include /etc/nginx/includes/error_routes.conf;
+
+    # --- New: proxy to the shared mailer service, same pattern as
+    # finance.jasonpoage.com's /api/mailer location.
+    location /api/mailer {
+        proxy_pass http://express_blog_mailer;
+        include /etc/nginx/conf.d/common_proxy.conf;
+    }
+
+    location / {
+        if ($maintenance_bypass) {
+            return 503;
+        }
+        proxy_pass http://127.0.0.1:3500;
+        include /etc/nginx/conf.d/common_proxy.conf;
+        include /etc/nginx/includes/prod_errors.conf;
+        proxy_intercept_errors off;
+    }
+}
