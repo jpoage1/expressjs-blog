@@ -8,6 +8,8 @@
 //   5. Express             — middleware, mount, listen
 
 import express from "express";
+import crypto from "node:crypto";
+import path from "node:path";
 
 import {
   baseSchema,
@@ -25,7 +27,30 @@ const cfg = createLoader(appSchema);
 const meta = cfg.get("meta");
 const network = cfg.get("network");
 const logging = cfg.get("logging");
+const mail = cfg.get("mail");
 const baseUrl = buildBaseUrl(cfg.get("public"));
+
+function createAnonymousSession(req, res, next) {
+  if (!res.locals.session) {
+    res.locals.session = {
+      nonce: crypto.randomBytes(16).toString("base64"),
+      isAuthenticated: false,
+      user: null,
+      groups: [],
+    };
+  }
+
+  next();
+}
+
+function resolveNewsletterFile(mailLogPath) {
+  const dataDir = path.dirname(mailLogPath);
+  if (dataDir.includes("/node_packages/")) {
+    return path.resolve("data/newsletter-emails.json");
+  }
+
+  return path.join(dataDir, "newsletter-emails.json");
+}
 
 import { createInfrastructure } from "./modules/infrastructure.js";
 const infra = createInfrastructure(cfg, baseUrl);
@@ -48,6 +73,7 @@ const blog = createBlog({
   country: meta.country,
   endpoints: cfg.get("endpoints"),
   hcaptchaKey: cfg.get("hcaptcha").key,
+  newsletterFile: resolveNewsletterFile(mail.log_path),
 
   verbose: logging.verbose,
 
@@ -65,8 +91,19 @@ const blog = createBlog({
       { path: "/archive", title: "Archive" },
       { path: "/", title: "Home" },
     ],
-    markdownRoutes: [{ path: "/about/blog", file: "projects/about-blog" }],
-    htmlRoutes: [],
+    markdownRoutes: [
+      { path: "/tools", file: "tools", params: "tools" },
+      { path: "/about/me", file: "about-me" },
+      { path: "/about/blog", file: "projects/about-blog" },
+    ],
+    htmlRoutes: [{ path: "/games/word-guesser", contentFolder: "word-guesser" }],
+    projects: [
+      { path: "/projects/lisp-interpreter", file: "projects/lisp_interpreter" },
+      { path: "/projects/pipeline-runner", file: "projects/pipeline_runner" },
+      { path: "/projects/telemetry", file: "projects/telemetry" },
+      { path: "/projects/xmonad", file: "projects/xmonad" },
+      { path: "/projects/word-guesser", file: "projects/word-guesser" },
+    ],
     router: contentRouter,
     redirects: cfg.get("redirection"),
   },
@@ -77,6 +114,7 @@ const app = express();
 app.use(createStaticAssets());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(createAnonymousSession);
 app.use(trace);
 
 if (meta.node_env === "production" || meta.node_env === "testing") {

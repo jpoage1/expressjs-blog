@@ -93,5 +93,12 @@ export function createContentRouter({ cspDirectives, securityPolicy, domain }) {
     },
   );
 
+  router.get("/guest-access", (req, res) => {
+    res.locals.renderWithBaseContext("pages/credentials.handlebars", {
+      title: "Guest Access",
+      token: "",
+    });
+  });
+
   return router;
 }
