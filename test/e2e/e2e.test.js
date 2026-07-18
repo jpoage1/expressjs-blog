@@ -27,6 +27,10 @@
 import { test, before } from "node:test";
 import assert from "node:assert";
 import { getExpress5Routes } from "@jpoage1/middleware";
+import {
+  assertMarkdownFrontmatterParses,
+  assertPublicContractIsHealthy,
+} from "../helpers/publicContract.js";
 
 const BASE_URL = process.env.BASE_URL;
 if (!BASE_URL) {
@@ -43,11 +47,6 @@ const IGNORE_TLS = process.env.E2E_IGNORE_TLS !== "0";
 if (IGNORE_TLS) {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 }
-
-// /error (and /error/:code) share errorPageController.js, which defaults
-// to `code = 500` and deliberately calls res.status(500) to *render* a
-// generic error-display page -- intended behavior, not a crash.
-const INTENTIONAL_ERROR_STATUS_ROUTES = new Set(["/error"]);
 
 let routes;
 
@@ -106,32 +105,19 @@ test("unknown route returns 404", async () => {
   assert.strictEqual(res.status, 404);
 });
 
-test("every registered static GET route responds without a server error", async () => {
-  const staticGetRoutes = routes.filter(
-    (r) => !r.path.includes(":") && r.methods.includes("GET"),
-  );
-
-  assert.ok(staticGetRoutes.length > 0, "no static GET routes were discovered");
-
-  const failures = [];
-  for (const { path } of staticGetRoutes) {
-    if (INTENTIONAL_ERROR_STATUS_ROUTES.has(path)) continue;
-    const res = await fetchT(`${BASE_URL}${path}`);
-    if (res.status >= 500) failures.push(`${path} -> HTTP ${res.status}`);
-  }
-
-  assert.deepStrictEqual(
-    failures,
-    [],
-    `these registered routes returned a server error:\n${failures.join("\n")}`,
-  );
+test("all markdown frontmatter parses", async () => {
+  await assertMarkdownFrontmatterParses();
 });
 
-test("parameterized routes are registered (not fetched -- would need real sample data)", () => {
+test(`anonymous public URL contract is healthy on ${BASE_URL}`, async () => {
+  await assertPublicContractIsHealthy(BASE_URL);
+});
+
+test("parameterized routes are registered for sampled public URL tests", () => {
   const paramRoutes = routes.filter((r) => r.path.includes(":"));
   if (paramRoutes.length > 0) {
     console.log(
-      `  (${paramRoutes.length} parameterized route(s) not exercised by fetch-based tests: ` +
+      `  (${paramRoutes.length} parameterized route(s) are exercised through public contract samples: ` +
         paramRoutes.map((r) => r.path).join(", ") +
         ")",
     );

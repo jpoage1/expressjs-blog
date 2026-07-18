@@ -10,6 +10,10 @@
 import { test, before, after } from "node:test";
 import assert from "node:assert";
 import { getExpress5Routes } from "@jpoage1/middleware";
+import {
+  assertMarkdownFrontmatterParses,
+  assertPublicContractIsHealthy,
+} from "./helpers/publicContract.js";
 
 const PORT = 3491;
 const BASE_URL = `http://127.0.0.1:${PORT}`;
@@ -69,39 +73,20 @@ test("unknown route returns 404", async () => {
   assert.strictEqual(res.status, 404);
 });
 
-// /error (and /error/:code) share errorPageController.js, which defaults
-// to `code = 500` and deliberately calls res.status(500) to *render* a
-// generic error-display page -- that's the intended behavior, not a
-// crash, so it's exempt from the "no 5xx" check below.
-const INTENTIONAL_ERROR_STATUS_ROUTES = new Set(["/error"]);
-
-test("every registered static GET route responds without a server error", async () => {
-  const staticGetRoutes = routes.filter(
-    (r) => !r.path.includes(":") && r.methods.includes("GET"),
-  );
-
-  assert.ok(staticGetRoutes.length > 0, "no static GET routes were discovered");
-
-  const failures = [];
-  for (const { path } of staticGetRoutes) {
-    if (INTENTIONAL_ERROR_STATUS_ROUTES.has(path)) continue;
-    const res = await fetch(`${BASE_URL}${path}`);
-    if (res.status >= 500) failures.push(`${path} -> HTTP ${res.status}`);
-  }
-
-  assert.deepStrictEqual(
-    failures,
-    [],
-    `these registered routes returned a server error:\n${failures.join("\n")}`,
-  );
+test("all markdown frontmatter parses", async () => {
+  await assertMarkdownFrontmatterParses();
 });
 
-test("parameterized routes are registered (not fetched -- would need real sample data)", () => {
+test("anonymous public URL contract is healthy", async () => {
+  await assertPublicContractIsHealthy(BASE_URL);
+});
+
+test("parameterized routes are registered for sampled public URL tests", () => {
   const paramRoutes = routes.filter((r) => r.path.includes(":"));
   assert.ok(paramRoutes.length >= 0);
   if (paramRoutes.length > 0) {
     console.log(
-      `  (${paramRoutes.length} parameterized route(s) not exercised by fetch-based tests: ` +
+      `  (${paramRoutes.length} parameterized route(s) are exercised through public contract samples: ` +
         paramRoutes.map((r) => r.path).join(", ") +
         ")",
     );
