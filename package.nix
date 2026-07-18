@@ -42,9 +42,11 @@
         ) [
           "/src"
           "/content"
+          "/test"
           "/package.json"
           "/yarn.lock"
           "/.yarnrc.yml"
+          "/eslint.config.js"
           "/version.json"
           "/config.example.toml"
         ];
@@ -89,7 +91,7 @@ in
     # path already exists matching this hash, Nix reuses it outright
     # without rebuilding. Bump to lib.fakeHash and rebuild to get the new
     # real hash any time src/content/package.json changes.
-    outputHash = "sha256-ezO/384VRECpwryBteZWYdA24e//RuQoVQm8vpGqFMY=";
+    outputHash = "sha256-8wC0wH4KhEaOt5qUfj21JM8deux/eiOaMCcW8ht7eHk=";
 
     # Pure JS app, nothing to strip -- the default fixup hook invokes
     # `strip` on every file it walks (not just ELF binaries), which under
@@ -97,6 +99,7 @@ in
     # emulated `strip` subprocess spawns across node_modules and made the
     # build pathologically slow. Nothing here needs it anyway.
     dontStrip = true;
+    dontPatchShebangs = true;
 
     buildPhase = ''
       HOME=$(mktemp -d)
@@ -130,6 +133,27 @@ in
       # migration. This rewritten/migrated lockfile never gets committed
       # back to the repo.
       ${yarnBin} install
+    '';
+
+    doCheck = true;
+    checkPhase = ''
+      runHook preCheck
+
+      cp config.example.toml config.dev.toml
+      sed -i \
+        -e 's|root_dir     = "/srv/projects/expressjs-blog"|root_dir     = "."|' \
+        -e 's|content_path = "/srv/projects/expressjs-blog/content"|content_path = "./content"|' \
+        -e 's|address   = "0.0.0.0"|address   = "127.0.0.1"|' \
+        -e 's|log_dir   = "/var/log/expressjs-blog"|log_dir   = "./logs"|' \
+        -e 's|log_path        = "/var/lib/expressjs-blog/data/emails.json"|log_path        = "./data/emails.json"|' \
+        config.dev.toml
+      mkdir -p logs data
+      export NODE_OPTIONS=--preserve-symlinks
+
+      ${yarnBin} lint
+      ${yarnBin} test
+
+      runHook postCheck
     '';
 
     installPhase = ''

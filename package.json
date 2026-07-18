@@ -9,6 +9,7 @@
     "start": "node src/app.js",
     "dev": "CONFIG_PATH=./config.dev.toml nodemon src/app.js",
     "prod": "CONFIG_PATH=./config.prod.toml node src/app.js",
+    "lint": "eslint src test eslint.config.js",
     "test": "node --test \"test/*.test.js\""
   },
   "dependencies": {
@@ -37,6 +38,9 @@
     "@jpoage1/views": "portal:/srv/projects/node_packages/@jpoage1/views"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.7.0",
+    "globals": "^17.7.0",
     "nodemon": "^3.1.10"
   }
 }
