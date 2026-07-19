@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root"
+
+changed_files="$(git diff --cached --name-only --diff-filter=ACMR || true)"
+if [ -z "$changed_files" ]; then
+  exit 0
+fi
+
+# ─── Format JS files ─────────────────────────────────────────────────────────
+formatable="$(printf '%s\n' "$changed_files" | grep -E '\.js$' || true)"
+if [ -n "$formatable" ]; then
+  if command -v biome &>/dev/null; then
+    printf '%s\n' "$formatable" | xargs biome format --write --no-errors-on-unmatched
+    printf '%s\n' "$formatable" | xargs git add
+  fi
+fi
+
+# ─── Lint JS files ───────────────────────────────────────────────────────────
+lintable="$(printf '%s\n' "$changed_files" | grep -E '\.js$' || true)"
+if [ -n "$lintable" ]; then
+  if [ -f "node_modules/.bin/eslint" ]; then
+    if ! output="$(npx eslint $lintable 2>&1)"; then
+      printf '%s\n' "$output" >&2
+      echo "" >&2
+      echo "ESLint failed. Run 'yarn run lint' to check, or fix manually." >&2
+      exit 1
+    fi
+  fi
+fi
